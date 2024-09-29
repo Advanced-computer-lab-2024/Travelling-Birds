@@ -1,4 +1,5 @@
-import mongoose, {Schema} from 'mongoose';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const itinerarySchema = new Schema({
     activities: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
