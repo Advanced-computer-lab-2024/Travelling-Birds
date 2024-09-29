@@ -92,6 +92,7 @@ const sortActivities = async (req, res) => {
 
 }
 
+
 module.exports = {
     getUpcomingActivities ,
     getActivity,

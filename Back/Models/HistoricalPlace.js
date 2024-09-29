@@ -12,4 +12,4 @@ const historicalPlaceschema = new Schema({
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
-module.exports = mongoose.model('Museum', historicalPlaceschema);
+module.exports = mongoose.model('HistoricalPlace', historicalPlaceschema);

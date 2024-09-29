@@ -1,4 +1,4 @@
-const MuseumModel = require('../models/MuseumModel');
+const MuseumModel = require('../models/Museum');
 
 // get all upcoming museums
 const getUpcomingMuseums = async (req, res) => {

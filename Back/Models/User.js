@@ -19,7 +19,8 @@ const user = new Schema({
     website: String,
     hotline: String,
     companyProfile: String,
-    wallet: Number
+    wallet: Number,
+    isApproved: Boolean
 });
 
 module.exports = mongoose.model('User', user);

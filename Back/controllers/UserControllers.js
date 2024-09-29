@@ -2,7 +2,7 @@
 //const mongoose = require('mongoose');
 
 // MongoDB connection
-//mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
+//mongoose.connect(process..env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 	//.then(() => console.log('MongoDB connected'))
 	//.catch(err => console.log(err));
 const bcrypt = require('bcryptjs');
@@ -42,7 +42,7 @@ const registerGeneric = async (req, res) => {
 		previousWork,
 		website,
 		hotline,
-		companyProfile
+		companyProfile,
 	} = req.body;
 	if (!['tour_guide', 'advertiser', 'seller'].includes(role)) {
 		return res.status(400).json({error: 'Invalid role'});
@@ -58,7 +58,8 @@ const registerGeneric = async (req, res) => {
 			previousWork,
 			website,
 			hotline,
-			companyProfile
+			companyProfile,
+			isApproved: false
 		});
 		await newUser.save();
 		res.status(201).json({message: `${role} registered successfully`});
@@ -66,8 +67,26 @@ const registerGeneric = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 };
+// read tour_guide profile
+const readTourGuideProfile = async (req, res) => {
+	try {
+		const guide = await User.findById(req.params.id);
+		if (!guide) {
+			return res.status(404).json({message: 'Tour guide not found'});
+		}
+		res.status(200).json(guide);
+	}
+	catch(error)
+		{
+			res.status(500).json({error: error.message});
+		}
+}
+
+
+
 
 module.exports = {
     registerTourist,
-    registerGeneric
+    registerGeneric,
+	readTourGuideProfile
 };

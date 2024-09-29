@@ -1,4 +1,4 @@
-const HistoricalPlaceModel = require('../models/HistoricalPlaceModel');
+const HistoricalPlaceModel = require('../models/HistoricalPlace');
 
 
 

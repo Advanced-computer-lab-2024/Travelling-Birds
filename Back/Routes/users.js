@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
 	registerTourist,
-	registerGeneric
+	registerGeneric,
+	readTourGuideProfile
 
 } = require('../controllers/UserControllers');
 
@@ -12,6 +13,8 @@ router.post('/register/tourist', registerTourist );
 
 // Register as a tour guide/advertiser/seller
 router.post('/register/generic', registerGeneric )
+// Read tour guide profile
+router.get('/profile/:id', readTourGuideProfile);
 
 
 module.exports = router;
