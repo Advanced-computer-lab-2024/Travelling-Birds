@@ -38,16 +38,21 @@ const getIntinerary = async (req, res) => {
 
 }
 
-//sort all upcoming itineraries based on price or rartings
+//sort all itineraries based on price or ratings
 const sortIntineraries = async (req, res) => {
     try {
-        const { price, ratings } = req.query;
-        let query = {};
+        const { sortBy } = req.query;
+        let sortCriteria = {};
 
-        if (price) query.price = price;
-        if (ratings) query.ratings = ratings;
+        if (sortBy === 'price') {
+            sortCriteria.price = 1; // ascending order
+        } else if (sortBy === 'ratings') {
+            sortCriteria.ratings = -1; // descending order
+        } else {
+            return res.status(400).json({ message: 'Invalid sort criteria' });
+        }
 
-        const intineraries = await IntineraryModel.find(query);
+        const intineraries = await IntineraryModel.find().sort(sortCriteria);
 
         if (!intineraries) {
             return res.status(404).json({ message: 'No intineraries found' });
@@ -57,7 +62,7 @@ const sortIntineraries = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+}  
 
 // Filter all available/upcoming itineraries based on budget, date, preferences and language
 const filterIntineraries = async (req, res) => {
