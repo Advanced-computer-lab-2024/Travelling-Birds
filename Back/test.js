@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
 require('dotenv').config()
+const express = require('express');
+const app = express();
+const mongoose = require('mongoose');
 const uri = process.env.MONGO_URI;
 const clientOptions = {serverApi: {version: '1', strict: true, deprecationErrors: true}};
 
@@ -14,5 +16,10 @@ async function run() {
 		await mongoose.disconnect();
 	}
 }
+
+app.use(express.json());
+
+app.listen(3000, () => console.log('Listening to requests on http://localhost:3000'));
+
 
 run().catch(console.dir);
