@@ -1,18 +1,17 @@
-require('dotenv').config();
-const express = require('express');
-const router = express.Router();
+//require('dotenv').config();
 //const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-const User = require('../Models/User');
 
 // MongoDB connection
 //mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true, useUnifiedTopology: true})
 	//.then(() => console.log('MongoDB connected'))
 	//.catch(err => console.log(err));
+const bcrypt = require('bcryptjs');
+const User = require('../Models/User');
+
 
 // Register as a tourist
-router.post('/register/tourist', async (req, res) => {
-	const {email, username, password, mobileNumber, nationality, dob, job} = req.body;
+const registerTourist = async (req, res) => {
+    const {email, username, password, mobileNumber, nationality, dob, job} = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
@@ -30,11 +29,11 @@ router.post('/register/tourist', async (req, res) => {
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
-});
+};
 
 // Register as a tour guide/advertiser/seller
-router.post('/register/generic', async (req, res) => {
-	const {
+const registerGeneric = async (req, res) => {
+    const {
 		email,
 		username,
 		password,
@@ -66,7 +65,9 @@ router.post('/register/generic', async (req, res) => {
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
-});
+};
 
-
-module.exports = router;
+module.exports = {
+    registerTourist,
+    registerGeneric
+};
