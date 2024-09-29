@@ -1,5 +1,8 @@
 const express = require('express');
 const {
+    createIntinerary,
+    updateIntinerary,
+    displayIntinerary,
     getUpcomingIntineraries,
     getIntinerary,
     sortIntineraries,
@@ -7,6 +10,15 @@ const {
 } = require('../controllers/IntineraryControllers.js');
 
 const router = express.Router();
+
+// Create a new intinerary
+router.post('/', createIntinerary);
+
+// Update an existing intinerary
+router.put('/:id', updateIntinerary);
+
+// Display an existing intinerary
+router.get('/:id', displayIntinerary);
 
 // get all upcoming intineraries
 router.get('/', getUpcomingIntineraries);

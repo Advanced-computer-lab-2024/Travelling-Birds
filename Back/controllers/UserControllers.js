@@ -71,10 +71,39 @@ const registerGeneric = async (req, res) => {
 const readTourGuideProfile = async (req, res) => {
 	try {
 		const guide = await User.findById(req.params.id);
+		if (!guide ) {
+			return res.status(404).json({message: 'Tour guide not found'});
+		}
+		if (guide.isApproved === false) {
+			return res.status(403).json({message: 'Tour guide profile not approved yet'});
+		}
+		res.status(200).json(guide);
+	}
+	catch(error)
+		{
+			res.status(500).json({error: error.message});
+		}
+}
+// update tour_guide profile
+const updateTourGuideProfile = async (req, res) => {
+	const {
+		yearsOfExperience,
+		mobileNumber,
+		previousWork
+	} = req.body;
+	try {
+		const guide = await User.findByIdAndUpdate(req.params.id, {
+			yearsOfExperience,
+			mobileNumber,
+			previousWork
+		}, {new: true});
 		if (!guide) {
 			return res.status(404).json({message: 'Tour guide not found'});
 		}
-		res.status(200).json(guide);
+		if (guide.isApproved === false) {
+			return res.status(403).json({message: 'Tour guide profile not approved yet'});
+		}
+		res.status(200).json({message: 'Tour guide profile updated successfully'});
 	}
 	catch(error)
 		{
@@ -84,9 +113,9 @@ const readTourGuideProfile = async (req, res) => {
 
 
 
-
 module.exports = {
     registerTourist,
     registerGeneric,
-	readTourGuideProfile
+	readTourGuideProfile,
+	updateTourGuideProfile
 };

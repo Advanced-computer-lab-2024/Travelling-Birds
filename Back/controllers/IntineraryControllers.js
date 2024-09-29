@@ -1,4 +1,42 @@
-const IntineraryModel = require('../models/Intinerary.js');
+const IntineraryModel = require('../Models/Itinerary.js');
+const User = require("../Models/User");
+
+// create a new intinerary
+const createIntinerary = async (req, res) => {
+    const { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy } = req.body;
+    try {
+        const intinerary = new IntineraryModel({ activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy});
+        await intinerary.save();
+        res.status(201).json(intinerary);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+// update an existing intinerary
+const updateIntinerary = async (req, res) => {
+    const { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy } = req.body;
+    try {
+        const intinerary =  await IntineraryModel.findByIdAndUpdate(req.params.id, { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy }, { new: true });
+        if (!intinerary) {
+            return res.status(404).json({ message: 'Intinerary not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+
+}
+//display an existing intinerary
+const displayIntinerary = async (req, res) => {
+    try {
+        const intinerary = await IntineraryModel.findById(req.params.id);
+        if (!intinerary) {
+            return res.status(404).json({ message: 'Intinerary not found' });
+        }
+        res.status(200).json(intinerary);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
 
 // get all upcoming intineraries
 const getUpcomingIntineraries = async (req, res) => {
@@ -87,7 +125,10 @@ const filterIntineraries = async (req, res) => {
     }
 }
 
-module.exports = { 
+module.exports = {
+    createIntinerary,
+    updateIntinerary,
+    displayIntinerary,
     getUpcomingIntineraries,
     getIntinerary,
     sortIntineraries,
