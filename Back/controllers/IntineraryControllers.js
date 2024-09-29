@@ -1,9 +1,9 @@
-const Intinerary = require('../models/Intinerary.js');
+const IntineraryModel = require('../models/Intinerary.js');
 
 // get all upcoming intineraries
 const getUpcomingIntineraries = async (req, res) => {
     try {
-        const intineraries = await Intinerary.find({ date: { $gte: new Date() } });
+        const intineraries = await IntineraryModel.find({ date: { $gte: new Date() } });
 
         if (!intineraries) {
             return res.status(404).json({ message: 'No upcoming intineraries found' });
@@ -25,7 +25,7 @@ const getIntinerary = async (req, res) => {
         if (category) query.category = category;
         if (tag) query.tag = tag;
 
-        const intinerary = await Intinerary.findOne(query);
+        const intinerary = await IntineraryModel.findOne(query);
 
         if (!intinerary) {
             return res.status(404).json({ message: 'Intinerary not found' });
@@ -47,7 +47,7 @@ const sortIntineraries = async (req, res) => {
         if (price) query.price = price;
         if (ratings) query.ratings = ratings;
 
-        const intineraries = await Intinerary.find(query);
+        const intineraries = await IntineraryModel.find(query);
 
         if (!intineraries) {
             return res.status(404).json({ message: 'No intineraries found' });
@@ -70,7 +70,7 @@ const filterIntineraries = async (req, res) => {
         if (preferences) query.preferences = preferences;
         if (language) query.language = language;
 
-        const intineraries = await Intinerary.find(query);
+        const intineraries = await IntineraryModel.find(query);
 
         if (!intineraries) {
             return res.status(404).json({ message: 'No intineraries found' });
