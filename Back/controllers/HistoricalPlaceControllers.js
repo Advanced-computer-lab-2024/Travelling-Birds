@@ -1,6 +1,72 @@
 const HistoricalPlaceModel = require('../models/HistoricalPlace');
 
+//create Historical Place
+const addHistoricalPlace= async (req, res) => {
+    const {name, description, pictures, location, openingHours,ticketPrices,tags} = req.body;
+    try {
+        const newHistoricalPlace = new HistoricalPlaceModel(
+            {name,
+                description,
+                pictures,
+                location,
+                openingHours,
+                ticketPrices,
+                tags
+            });
+        await newHistoricalPlace.save();
+        res.status(201).json({message: 'Historical Place added successfully'});
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+// Get all historical places
+const getAllHistoricalPlaces = async (req, res) => {
+    try{
+        const historicalPlaces =  HistoricalPlaceModel.find();
+        res.status(201).json({historicalPlaces})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
 
+// Update Historical Place
+const updateHistoricalPlace = async (req, res) => {
+    const {name, description, pictures, location, openingHours,ticketPrices,tags} = req.body;
+    const tempHistoricalPlace = await HistoricalPlaceModel.find({name});
+    if (!tempHistoricalPlace) {
+        res.status(500).json({msg: "No Historical Place found with this name"});
+    }
+    else {
+        try {
+            const updatedHistoricalPlace = HistoricalPlaceModel.findOneAndUpdate(
+                {name},
+                {description, pictures, location, openingHours,ticketPrices,tags},
+                {new: true});
+            await updatedHistoricalPlace.save();
+            res.status(201).json({msg: "Historical Place updated successfully"});
+        } catch (error) {
+            res.status(500).json({error: error.message});
+        }
+    }
+}
+
+// Delete Historical Place
+const deleteHistoricalPlace = async (req, res) => {
+    const {name} = req.body;
+    const tempHistoricalPlace = await HistoricalPlaceModel.find({name});
+    if (!tempHistoricalPlace) {
+        res.status(500).json({msg: "No Historical Place found with this name"});
+    }
+    else {
+        try {
+            await HistoricalPlaceModel.deleteOne({name});
+            res.status(201).json({msg: "Historical Place deleted successfully"});
+        } catch (error) {
+            res.status(500).json({error: error.message});
+        }
+    }
+}
 // search for a specific HistoricalPlace by it's name or category or tag
 const SearchForHistoricalPlace = async (req, res) => {
     try {
@@ -62,7 +128,7 @@ const filterHistoricalPlaces = async (req, res) => {
 
 }
 // Get all created historical places
-const getAllHistoricalPlaces = async (req, res) => {
+const getAllCreatedHistoricalPlaces = async (req, res) => {
     //no reference to logged-in user
     try{
         const historicalPlaces =  HistoricalPlaceModel.find();
@@ -74,8 +140,12 @@ const getAllHistoricalPlaces = async (req, res) => {
 }
 
 module.exports = {
+    addHistoricalPlace,
+    getAllHistoricalPlaces,
+    updateHistoricalPlace,
+    deleteHistoricalPlace,
     SearchForHistoricalPlace,
     getUpcomingHistoricalPlaces,
     filterHistoricalPlaces,
-    getAllHistoricalPlaces
+    getAllCreatedHistoricalPlaces
 }

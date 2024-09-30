@@ -1,5 +1,5 @@
 const IntineraryModel = require('../Models/Itinerary.js');
-const User = require("../Models/User");
+
 
 // create a new intinerary
 const createIntinerary = async (req, res) => {
@@ -129,7 +129,7 @@ const filterIntineraries = async (req, res) => {
 }
 
 // Get all created itineraries
-const getAllIntineraries = async (req, res) => {
+const getAllCreatedIntineraries = async (req, res) => {
     //no reference to logged-in user
     try{
         const itineraries =  IntineraryModel.find();
@@ -148,5 +148,5 @@ module.exports = {
     getUpcomingIntineraries, 
     sortIntineraries,
     filterIntineraries,
-    getAllIntineraries
+    getAllCreatedIntineraries
 };

@@ -7,9 +7,9 @@ const historicalPlaceschema = new Schema({
     pictures: [String],
     location: String,
     openingHours: String,
-    ticketPrices: Number,
+    ticketPrices: String,
     tags: [String],
-    createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
+    //createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
 module.exports = mongoose.model('HistoricalPlace', historicalPlaceschema);
