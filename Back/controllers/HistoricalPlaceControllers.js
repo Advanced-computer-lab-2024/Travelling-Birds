@@ -61,9 +61,21 @@ const filterHistoricalPlaces = async (req, res) => {
     }
 
 }
+// Get all created historical places
+const getAllHistoricalPlaces = async (req, res) => {
+    //no reference to logged-in user
+    try{
+        const historicalPlaces =  HistoricalPlaceModel.find();
+        res.status(201).json({historicalPlaces})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
 
 module.exports = {
     SearchForHistoricalPlace,
     getUpcomingHistoricalPlaces,
-    filterHistoricalPlaces
+    filterHistoricalPlaces,
+    getAllHistoricalPlaces
 }

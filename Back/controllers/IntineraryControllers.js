@@ -128,6 +128,18 @@ const filterIntineraries = async (req, res) => {
     }
 }
 
+// Get all created itineraries
+const getAllIntineraries = async (req, res) => {
+    //no reference to logged-in user
+    try{
+        const itineraries =  IntineraryModel.find();
+        res.status(201).json({itineraries})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     createIntinerary,
     updateIntinerary,
@@ -135,6 +147,6 @@ module.exports = {
     SearchForIntinerary,
     getUpcomingIntineraries, 
     sortIntineraries,
-    filterIntineraries
-
+    filterIntineraries,
+    getAllIntineraries
 };

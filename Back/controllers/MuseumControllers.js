@@ -62,8 +62,21 @@ const filterMuseums = async (req, res) => {
 
 }
 
+// Get all created museums
+const getAllMuseums = async (req, res) => {
+    //no reference to logged-in user
+    try{
+        const museums =  MuseumModel.find();
+        res.status(201).json({museums})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     SearchForMuseums,
     getUpcomingMuseums,
-    filterMuseums
+    filterMuseums,
+    getAllMuseums
 }

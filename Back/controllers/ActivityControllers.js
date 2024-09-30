@@ -92,11 +92,24 @@ const sortActivities = async (req, res) => {
 
 }
 
+// Get all created activities
+const getAllActivities = async (req, res) => {
+    //no reference to logged-in user
+    try{
+        const activities =  ActivityModel.find();
+        res.status(201).json({activities})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
+
 
 module.exports = {
     SearchForActivity,
     getUpcomingActivities , 
     filterUpcomingActivities,
-    sortActivities
+    sortActivities,
+    getAllActivities
 }
 
