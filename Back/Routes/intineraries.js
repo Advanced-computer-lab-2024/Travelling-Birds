@@ -3,8 +3,8 @@ const {
     createIntinerary,
     updateIntinerary,
     displayIntinerary,
+    SearchForIntinerary,
     getUpcomingIntineraries,
-    getIntinerary,
     sortIntineraries,
     filterIntineraries
 } = require('../controllers/IntineraryControllers.js');
@@ -20,11 +20,13 @@ router.put('/:id', updateIntinerary);
 // Display an existing intinerary
 router.get('/:id', displayIntinerary);
 
+// search for a specific Intinerary by it's name or category or tag
+router.get('/search', SearchForIntinerary );
+
+
 // get all upcoming intineraries
 router.get('/', getUpcomingIntineraries);
 
-// get a single intinerary with name or category or tag
-router.get('/search', getIntinerary);
 
 // Sort upcoming intineraries by price or ratings
 router.get('/sort', sortIntineraries);

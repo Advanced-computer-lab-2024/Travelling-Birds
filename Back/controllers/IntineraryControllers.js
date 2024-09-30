@@ -38,23 +38,8 @@ const displayIntinerary = async (req, res) => {
     }
 }
 
-// get all upcoming intineraries
-const getUpcomingIntineraries = async (req, res) => {
-    try {
-        const intineraries = await IntineraryModel.find({ date: { $gte: new Date() } });
-
-        if (!intineraries) {
-            return res.status(404).json({ message: 'No upcoming intineraries found' });
-        }
-
-        res.status(200).json(intineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-// get a single intinerary with name or category or tag
-const getIntinerary = async (req, res) => {
+// search for a specific Intinerary by it's name or category or tag
+const SearchForIntinerary = async (req, res) => {
     try {
         const { name, category, tag } = req.query;
         let query = {};
@@ -75,6 +60,24 @@ const getIntinerary = async (req, res) => {
     }
 
 }
+
+
+// get all upcoming intineraries
+const getUpcomingIntineraries = async (req, res) => {
+    try {
+        const intineraries = await IntineraryModel.find({ date: { $gte: new Date() } });
+
+        if (!intineraries) {
+            return res.status(404).json({ message: 'No upcoming intineraries found' });
+        }
+
+        res.status(200).json(intineraries);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
 
 //sort all itineraries based on price or ratings
 const sortIntineraries = async (req, res) => {
@@ -129,8 +132,8 @@ module.exports = {
     createIntinerary,
     updateIntinerary,
     displayIntinerary,
-    getUpcomingIntineraries,
-    getIntinerary,
+    SearchForIntinerary,
+    getUpcomingIntineraries, 
     sortIntineraries,
     filterIntineraries
 
