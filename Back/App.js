@@ -3,7 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const usersroutes = require('./Routes/users');
 const activitiesroutes = require('./Routes/activities');
-const intineraryroutes = require('./Routes/intineraries');
+const itineraryroutes = require('./Routes/itineraries');
 const museumsroutes = require('./Routes/museums');
 const historicalplacesroutes = require('./Routes/historicalplaces');
 require('dotenv').config();
@@ -11,7 +11,7 @@ require('dotenv').config();
 app.use(express.json());
 app.use('/api/users', usersroutes);
 app.use('/api/activities', activitiesroutes); 
-app.use('/api/intineraries', intineraryroutes);
+app.use('/api/itineraries', itineraryroutes);
 app.use('/api/museums', museumsroutes);
 app.use('/api/historicalplaces', historicalplacesroutes);
 
