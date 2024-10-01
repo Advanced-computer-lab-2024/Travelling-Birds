@@ -1,23 +1,8 @@
 const ActivityModel = require('../Models/Activity.js');
 
 
-// get all upcoming activities
-const getUpcomingActivities = async (req, res) => {
-    try {
-        const activities = await ActivityModel.find({ date: { $gte: new Date() } });
-
-        if (!activities) {
-            return res.status(404).json({ message: 'No upcoming activities found' });
-        }
-
-        res.status(200).json(activities);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-// get a single activity with name or category or tag
-const getActivity = async (req, res) => {
+// search for a specific Activity by it's name or category or tag
+const SearchForActivity = async (req, res) => {
     try {
         const { name, category, tag } = req.query;
         let query = {};
@@ -39,9 +24,24 @@ const getActivity = async (req, res) => {
 
 } 
 
+// get all upcoming activities
+const getUpcomingActivities = async (req, res) => {
+    try {
+        const activities = await ActivityModel.find({ date: { $gte: new Date() } });
 
-// Filter activities based on budget or date or category or ratings
-const filterActivities = async (req, res) => {
+        if (!activities) {
+            return res.status(404).json({ message: 'No upcoming activities found' });
+        }
+
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
+// Filter all upcoming activities based on budget or date or category or ratings
+const filterUpcomingActivities = async (req, res) => {
     try {
         const { budget, date, category, ratings } = req.query;
         let query = {};
@@ -94,9 +94,9 @@ const sortActivities = async (req, res) => {
 
 
 module.exports = {
-    getUpcomingActivities ,
-    getActivity,
-    filterActivities,
+    SearchForActivity,
+    getUpcomingActivities , 
+    filterUpcomingActivities,
     sortActivities
 }
 

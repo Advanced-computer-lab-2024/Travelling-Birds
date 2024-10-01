@@ -3,8 +3,8 @@ const {
     createItinerary,
     updateItinerary,
     displayItinerary,
+    searchForItinerary,
     getUpcomingItineraries,
-    getItinerary,
     sortItineraries,
     filterItineraries
 } = require('../controllers/ItineraryControllers.js');
@@ -20,11 +20,12 @@ router.put('/:id', updateItinerary);
 // Display an existing itinerary
 router.get('/:id', displayItinerary);
 
+// search for a specific itinerary by it's name or category or tag
+router.get('/search', searchForItinerary);
+
+
 // get all upcoming itineraries
 router.get('/', getUpcomingItineraries);
-
-// get a single itinerary with name or category or tag
-router.get('/search', getItinerary);
 
 // Sort upcoming itineraries by price or ratings
 router.get('/sort', sortItineraries);

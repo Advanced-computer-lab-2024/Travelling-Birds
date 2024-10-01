@@ -1,5 +1,4 @@
 const ItineraryModel = require('../Models/Itinerary.js');
-const User = require("../Models/User");
 
 // create a new itinerary
 const createItinerary = async (req, res) => {
@@ -38,24 +37,8 @@ const displayItinerary = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
-
-// get all upcoming itineraries
-const getUpcomingItineraries = async (req, res) => {
-    try {
-        const itineraries = await itineraryModel.find({ date: { $gte: new Date() } });
-
-        if (!itineraries) {
-            return res.status(404).json({ message: 'No upcoming itineraries found' });
-        }
-
-        res.status(200).json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-// get a single itinerary with name or category or tag
-const getItinerary = async (req, res) => {
+// search for a specific Intinerary by it's name or category or tag
+const searchForItinerary = async (req, res) => {
     try {
         const { name, category, tag } = req.query;
         let query = {};
@@ -76,6 +59,23 @@ const getItinerary = async (req, res) => {
     }
 
 }
+
+// get all upcoming itineraries
+const getUpcomingItineraries = async (req, res) => {
+    try {
+        const itineraries = await ItineraryModel.find({ date: { $gte: new Date() } });
+
+        if (!itineraries) {
+            return res.status(404).json({ message: 'No upcoming itineraries found' });
+        }
+
+        res.status(200).json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
 
 //sort all itineraries based on price or ratings
 const sortItineraries = async (req, res) => {
@@ -131,8 +131,7 @@ module.exports = {
     updateItinerary,
     displayItinerary,
     getUpcomingItineraries,
-    getItinerary,
+    searchForItinerary,
     sortItineraries,
     filterItineraries
-
 };

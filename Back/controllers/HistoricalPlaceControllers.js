@@ -1,23 +1,8 @@
 const HistoricalPlaceModel = require('../models/HistoricalPlace');
 
 
-
-
-// get all upcoming historical places
-const getAllHistoricalPlaces = async (req, res) => { 
-    try {
-        const historicalPlaces = await HistoricalPlaceModel.find({ upcoming: true });  
-        if (!historicalPlaces) {
-            return res.status(404).json({ message: 'No upcoming historical places found' });
-        }
-        res.status(200).json(historicalPlaces);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-}
-
-// get a single historical place with name or category or tag
-const getHistoricalPlace = async (req, res) => {
+// search for a specific HistoricalPlace by it's name or category or tag
+const SearchForHistoricalPlace = async (req, res) => {
     try {
         const { name, category, tag } = req.query;
         let query = {};
@@ -38,6 +23,22 @@ const getHistoricalPlace = async (req, res) => {
     }
 
 }
+
+
+// get all upcoming historical places
+const getUpcomingHistoricalPlaces = async (req, res) => { 
+    try {
+        const historicalPlaces = await HistoricalPlaceModel.find({ upcoming: true });  
+        if (!historicalPlaces) {
+            return res.status(404).json({ message: 'No upcoming historical places found' });
+        }
+        res.status(200).json(historicalPlaces);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+
 
 
 //filter historical places by tag
@@ -62,7 +63,7 @@ const filterHistoricalPlaces = async (req, res) => {
 }
 
 module.exports = {
-    getAllHistoricalPlaces,
-    getHistoricalPlace,
+    SearchForHistoricalPlace,
+    getUpcomingHistoricalPlaces,
     filterHistoricalPlaces
 }
