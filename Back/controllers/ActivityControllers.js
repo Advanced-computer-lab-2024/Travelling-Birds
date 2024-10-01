@@ -1,7 +1,7 @@
 const ActivityModel = require('../Models/Activity.js');
 
 
-// search for a specific Activity by it's name or category or tag
+// search for a specific Activity by its name or category or tag
 const SearchForActivity = async (req, res) => {
     try {
         const { name, category, tag } = req.query;
@@ -92,11 +92,24 @@ const sortActivities = async (req, res) => {
 
 }
 
+// Get all created activities
+const getAllCreatedActivities = async (req, res) => {
+    //no reference to logged-in user
+    try{
+        const activities =  ActivityModel.find();
+        res.status(201).json({activities})
+    }
+    catch (error){
+        res.status(500).json({error: error.message});
+    }
+}
+
 
 module.exports = {
     SearchForActivity,
     getUpcomingActivities , 
     filterUpcomingActivities,
-    sortActivities
+    sortActivities,
+    getAllCreatedActivities
 }
 
