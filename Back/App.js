@@ -1,19 +1,24 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const usersroutes = require('./Routes/users');
-const activitiesroutes = require('./Routes/activities');
-const itineraryroutes = require('./Routes/itineraries');
-const museumsroutes = require('./Routes/museums');
-const historicalplacesroutes = require('./Routes/historicalplaces');
+const usersRoutes = require('./Routes/users');
+const activitiesRoutes = require('./Routes/activities');
+const itineraryRoutes = require('./Routes/itineraries');
+const museumsRoutes = require('./Routes/museums');
+const historicalplacesRoutes = require('./Routes/historicalplaces');
+const tagsRoutes = require('./Routes/tags');
+const productRoutes = require('./Routes/product');
 require('dotenv').config();
 
 app.use(express.json());
-app.use('/api/users', usersroutes);
-app.use('/api/activities', activitiesroutes); 
-app.use('/api/itineraries', itineraryroutes);
-app.use('/api/museums', museumsroutes);
-app.use('/api/historicalplaces', historicalplacesroutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/activities', activitiesRoutes);
+app.use('/api/itineraries', itineraryRoutes);
+app.use('/api/museums', museumsRoutes);
+app.use('/api/historicalplaces', historicalplacesRoutes);
+app.use('/api/tags', tagsRoutes);
+app.use('/api/products', productRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 

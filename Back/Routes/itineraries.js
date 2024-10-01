@@ -6,7 +6,8 @@ const {
     searchForItinerary,
     getUpcomingItineraries,
     sortItineraries,
-    filterItineraries
+    filterItineraries,
+    getAllCreatedItineraries
 } = require('../controllers/ItineraryControllers.js');
 
 const router = express.Router();
@@ -32,5 +33,8 @@ router.get('/sort', sortItineraries);
 
 // Filter itineraries by budget, date, category, and ratings
 router.get('/filter', filterItineraries);
+
+// Get all created itineraries by a specific user
+router.get('/user/:id', getAllCreatedItineraries);
 
 module.exports = router;

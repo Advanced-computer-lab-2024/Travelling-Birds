@@ -3,7 +3,8 @@ const {
     SearchForActivity,
     getUpcomingActivities,
     filterUpcomingActivities,
-    sortActivities
+    sortActivities,
+    getAllCreatedActivities
 
 } = require('../controllers/ActivityControllers.js');
 
@@ -19,7 +20,10 @@ router.get('/', getUpcomingActivities);
 router.get('/filter', filterUpcomingActivities);
 
 // Sort upcoming activities by price or ratings
-router.get('/sort', sortActivities); 
+router.get('/sort', sortActivities);
+
+// Get all created activities by a specific user
+router.get('/user/:id', getAllCreatedActivities);
 
 
 module.exports = router;

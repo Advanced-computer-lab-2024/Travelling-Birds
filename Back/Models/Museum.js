@@ -7,9 +7,9 @@ const museumSchema = new Schema({
     pictures: [String],
     location: String,
     openingHours: String,
-    ticketPrices: String,
+    ticketPrices: {type: Map, of: Number},
     tags: [String],
-    //createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
+    createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
 module.exports = mongoose.model('Museum', museumSchema);

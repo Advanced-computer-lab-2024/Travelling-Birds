@@ -5,3 +5,5 @@ const {addProduct, updateProduct} = require('../controllers/ProductControllers.j
 
 router.post('/', addProduct);
 router.put('/:id', updateProduct);
+
+module.exports = router;
