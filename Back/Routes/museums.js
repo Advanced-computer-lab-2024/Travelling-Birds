@@ -1,11 +1,12 @@
 const express = require('express');
+const router = express.Router();
+
 const {
     SearchForMuseums,
     getUpcomingMuseums,
     filterMuseums
 } = require('../controllers/MuseumControllers.js');
 
-const router = express.Router();
 
 // search for a specific Museum by it's name or category or tag
 router.get('/search', SearchForMuseums);

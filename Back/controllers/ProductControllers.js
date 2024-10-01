@@ -3,18 +3,11 @@ const Product = require('../Models/Product');
 
 // Adding product as admin or seller
 const addProduct = async (req, res) => {
-	//no reference to logged-in seller
-	const {name, description, price, availableQuantity, picture} = req.body;
+	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
 	try {
-		const newProduct = new Product(
-			{name,
-				description,
-				price,
-				availableQuantity,
-				picture,
-				seller: 'seller',
-				review: 0
-			});
+		const newProduct = new Product({
+			name, description, price, availableQuantity, picture, seller, ratings, reviews
+		});
 		await newProduct.save();
 		res.status(201).json({message: 'Product added successfully'});
 	} catch (error) {
@@ -24,22 +17,17 @@ const addProduct = async (req, res) => {
 
 // Editing product as admin or seller
 const updateProduct = async (req, res) => {
-	const {name, description, price, availableQuantity, picture} = req.body;
-	const tempProduct = await Product.find({name});
-	if (!tempProduct) {
-		res.status(500).json({msg: "No product found with this name"});
-	}
-	else {
-		try {
-			const updatedProduct = Product.findOneAndUpdate(
-				{name},
-				{description, price, availableQuantity, picture},
-				{new: true});
-			await updatedProduct.save();
-			res.status(201).json({msg: "Product updated successfully"});
-		} catch (error) {
-			res.status(500).json({error: error.message});
+	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
+	try {
+		const product = await Product.findByIdAndUpdate(req.params.id, {
+			name, description, price, availableQuantity, picture, seller, ratings, reviews
+		}, {new: true});
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
 		}
+		res.status(200).json({message: 'Product updated successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
 	}
 }
 
