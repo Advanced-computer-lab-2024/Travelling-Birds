@@ -2,10 +2,9 @@ const ActivityModel = require('../Models/Activity.js');
 
 
 // search for a specific Activity by its name or category or tag
-// However activity does not have a name
 const SearchForActivity = async (req, res) => {
 	try {
-        const { category, tags } = req.query; // extract search parameters from the query string
+        const { category, tags, name } = req.query; // extract search parameters including 'name'
 
         // Build the query object based on the search parameters
         let query = {};
@@ -20,8 +19,18 @@ const SearchForActivity = async (req, res) => {
             query.tags = { $in: tags.split(',') }; // find activities where any of the provided tags match
         }
 
+        // Search for activities based on associated Historical Places or Museums' names
+        if (name) {
+            query.$or = [
+                { 'historicalPlace.name': { $regex: new RegExp(name, 'i') } }, // Case-insensitive search for historical place names
+                { 'museum.name': { $regex: new RegExp(name, 'i') } } // Case-insensitive search for museum names
+            ];
+        }
+
         // Search for matching activities
-        const activities = await ActivityModel.find(query);
+        const activities = await ActivityModel.find(query)
+            .populate('historicalPlace') // Populate the historicalPlace field
+            .populate('museum'); // Populate the museum field
 
         // If no activities found, send a 404 response
         if (activities.length === 0) {
