@@ -3,7 +3,7 @@ const {
     createItinerary,
     updateItinerary,
     displayItinerary,
-    searchForItinerary,
+    SearchForItinerary,
     getUpcomingItineraries,
     sortItineraries,
     filterItineraries,
@@ -22,7 +22,7 @@ router.put('/:id', updateItinerary);
 router.get('/:id', displayItinerary);
 
 // search for a specific itinerary by it's name or category or tag
-router.get('/search', searchForItinerary);
+router.get('/search', SearchForItinerary);
 
 
 // get all upcoming itineraries
