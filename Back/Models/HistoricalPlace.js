@@ -9,6 +9,7 @@ const historicalPlaceSchema = new Schema({
     openingHours: String,
     ticketPrices: [Number],
     tags: [String],
+    historicalPlace: { type: mongoose.Schema.Types.ObjectId, ref: 'HistoricalPlace' }, // Link to historical place
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 

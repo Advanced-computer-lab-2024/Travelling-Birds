@@ -1,4 +1,5 @@
 const HistoricalPlaceModel = require('../models/HistoricalPlace');
+const ActivityModel = require('../models/Activity');
 
 //create Historical Place
 const addHistoricalPlace = async (req, res) => {
@@ -53,23 +54,35 @@ const deleteHistoricalPlace = async (req, res) => {
 // search for a specific HistoricalPlace by it's name or category or tag
 const SearchForHistoricalPlace = async (req, res) => {
 	try {
-		const {name, category, tag} = req.query;
-		let query = {};
+        const { name, tag } = req.query; // Extract name and tag from the query parameters
 
-		if (name) query.name = name;
-		if (category) query.category = category;
-		if (tag) query.tag = tag;
+        // Build the query object
+        let query = {};
 
-		const historicalPlace = await HistoricalPlaceModel.findOne(query);
+        // If name is provided, add a case-insensitive search using a regex
+        if (name) {
+            query.name = { $regex: new RegExp(name, 'i') }; // 'i' flag makes the search case-insensitive
+        }
 
-		if (!historicalPlace) {
-			return res.status(404).json({message: 'Historical place not found'});
-		}
+        // If tag is provided, search for historical places that contain the tag
+        if (tag) {
+            query.tags = { $in: [tag] }; // Use $in to find any historical place that has the specified tag
+        }
 
-		res.status(200).json(historicalPlace);
-	} catch (error) {
-		res.status(500).json({message: error.message});
-	}
+        // Find historical places matching the query
+        const historicalPlaces = await HistoricalPlaceModel.find(query);
+
+        // If no places found, return a 404 status
+        if (historicalPlaces.length === 0) {
+            return res.status(404).json({ message: 'No historical places found matching your search criteria' });
+        }
+
+        // Return the matching historical places
+        res.status(200).json(historicalPlaces);
+    } catch (error) {
+        // Handle any errors that occur during the search
+        res.status(500).json({ message: 'Error searching for historical places', error });
+    }
 
 }
 
@@ -77,35 +90,57 @@ const SearchForHistoricalPlace = async (req, res) => {
 // get all upcoming historical places
 const getUpcomingHistoricalPlaces = async (req, res) => {
 	try {
-		const historicalPlaces = await HistoricalPlaceModel.find({upcoming: true});
-		if (!historicalPlaces) {
-			return res.status(404).json({message: 'No upcoming historical places found'});
-		}
-		res.status(200).json(historicalPlaces);
-	} catch (error) {
-		res.status(500).json({message: error.message});
-	}
+        const currentDate = new Date();
+
+        // Find all activities that are associated with historical places and have an upcoming date
+        const upcomingActivities = await ActivityModel.find({
+            date: { $gte: currentDate }, // Only include activities with dates in the future
+            historicalPlace: { $exists: true } // Ensure the activity is linked to a historical place
+        }).populate('historicalPlace'); // Populate the historical place information
+
+        // Extract unique historical places from the upcoming activities
+        const upcomingHistoricalPlaces = upcomingActivities
+            .map(activity => activity.historicalPlace)
+            .filter((place, index, self) => self.findIndex(p => p._id.equals(place._id)) === index); // Ensure uniqueness
+
+        if (upcomingHistoricalPlaces.length === 0) {
+            return res.status(404).json({ message: 'No upcoming historical places found' });
+        }
+
+        res.status(200).json(upcomingHistoricalPlaces);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching upcoming historical places', error });
+    }
+
 }
 
 
 //filter historical places by tag
 const filterHistoricalPlaces = async (req, res) => {
 	try {
-		const {tag} = req.query;
-		let query = {};
+        const { tag } = req.query; // Extract tag from the query parameters
 
-		if (tag) query.tag = tag;
+        // Check if tag is provided, return a bad request if not
+        if (!tag) {
+            return res.status(400).json({ message: 'Tag is required for filtering' });
+        }
 
-		const historicalPlaces = await HistoricalPlaceModel.find(query);
+        // Find historical places that have the specified tag in their tags array
+        const historicalPlaces = await HistoricalPlaceModel.find({
+            tags: { $in: [tag] } // Match any historical place that has the tag in its tags array
+        });
 
-		if (!historicalPlaces) {
-			return res.status(404).json({message: 'No historical places found'});
-		}
+        // If no places are found, return a 404 response
+        if (historicalPlaces.length === 0) {
+            return res.status(404).json({ message: 'No historical places found with the specified tag' });
+        }
 
-		res.status(200).json(historicalPlaces);
-	} catch (error) {
-		res.status(500).json({message: error.message});
-	}
+        // Return the matching historical places
+        res.status(200).json(historicalPlaces);
+    } catch (error) {
+        // Handle any errors during the filtering process
+        res.status(500).json({ message: 'Error filtering historical places', error });
+    }
 
 }
 // Get all created historical places
