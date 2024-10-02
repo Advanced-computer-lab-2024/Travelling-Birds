@@ -1,5 +1,5 @@
 const HistoricalPlaceModel = require('../models/HistoricalPlace');
-const ActivityModel = require('../models/Activity');
+const ActivityModel = require('../Models/Activity');
 
 //create Historical Place
 const addHistoricalPlace = async (req, res) => {
@@ -54,35 +54,44 @@ const deleteHistoricalPlace = async (req, res) => {
 // search for a specific HistoricalPlace by it's name or category or tag
 const SearchForHistoricalPlace = async (req, res) => {
 	try {
-        const { name, tag } = req.query; // Extract name and tag from the query parameters
+        const { name, category, tags } = req.query; // Extract search filters from query string
 
-        // Build the query object
-        let query = {};
+        // Build activity query
+        let activityQuery = {};
 
-        // If name is provided, add a case-insensitive search using a regex
-        if (name) {
-            query.name = { $regex: new RegExp(name, 'i') }; // 'i' flag makes the search case-insensitive
+        // If category is provided, search for activities with matching category
+        if (category) {
+            activityQuery.category = { $regex: new RegExp(category, 'i') }; // Case-insensitive partial match
         }
 
-        // If tag is provided, search for historical places that contain the tag
-        if (tag) {
-            query.tags = { $in: [tag] }; // Use $in to find any historical place that has the specified tag
+        // If tags are provided, search for activities with matching tags
+        if (tags) {
+            activityQuery.tags = { $in: tags.split(',') };
         }
 
-        // Find historical places matching the query
-        const historicalPlaces = await HistoricalPlaceModel.find(query);
+        // Search for activities related to historicalplaces
+        const activities = await ActivityModel.find(activityQuery).populate('historicalPlace'); // Populate museum info
 
-        // If no places found, return a 404 status
-        if (historicalPlaces.length === 0) {
-            return res.status(404).json({ message: 'No historical places found matching your search criteria' });
+        // Filter out activities that don't have a related historicalplaces
+        const historicalplaces = activities
+            .filter(activity => activity.historicalPlace) // Ensure activity is connected to a historicalplace
+            .map(activity => activity.historicalPlace); // Extract historicalplace from activities
+
+        // If filtering by name, apply that condition on the historicalPlace objects
+        const filteredhistoricalPlace = historicalplaces.filter(historicalPlace =>
+            name ? historicalPlace.name.toLowerCase().includes(name.toLowerCase()) : true
+        );
+
+        if (filteredhistoricalPlace.length === 0) {
+            return res.status(404).json({ message: 'No historical place found matching your search criteria' });
         }
 
-        // Return the matching historical places
-        res.status(200).json(historicalPlaces);
+        res.status(200).json(filteredhistoricalPlace); // Return the matching historical place
     } catch (error) {
-        // Handle any errors that occur during the search
-        res.status(500).json({ message: 'Error searching for historical places', error });
+        res.status(500).json({ message: 'Error searching for  historical place', error });
     }
+
+
 
 }
 
