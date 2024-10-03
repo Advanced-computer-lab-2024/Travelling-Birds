@@ -462,5 +462,8 @@ module.exports = {
 	updateTourGuideProfile,
 	updateTouristProfile,
 	readSellerProfile,
-	updateSellerProfile
+	updateSellerProfile,
+	deleteUserByAdmin,
+	addTourismGoverner,
+	addAdmin
 };
