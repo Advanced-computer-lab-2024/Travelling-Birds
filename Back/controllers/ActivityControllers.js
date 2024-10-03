@@ -1,47 +1,38 @@
 const ActivityModel = require('../Models/Activity.js');
 
 
-// search for a specific Activity by its name or category or tag
+// search for a specific Activity by its category or tag
 const SearchForActivity = async (req, res) => {
-	try {
-        const { category, tags, name } = req.query; // extract search parameters including 'name'
+    try {
+        const { category, tags } = req.query; // Extract category and tags from query parameters
 
-        // Build the query object based on the search parameters
-        let query = {};
+        if (!category && !tags) {
+            return res.status(400).json({ message: 'Category or tags are required to search for activities.' });
+        }
 
-        // Search by category (case-insensitive partial match) - if provided
+        // Create a search query object
+        const searchQuery = {};
+
         if (category) {
-            query.category = { $regex: new RegExp(category, 'i') }; // partial match and case-insensitive
+            // Search by exact match of category
+            searchQuery.category = category;
         }
 
-        // Search by tags (match any of the provided tags) - if provided
         if (tags) {
-            query.tags = { $in: tags.split(',') }; // find activities where any of the provided tags match
+            // Use $in to match any of the provided tags
+            searchQuery.tags = { $in: tags.split(',') };
         }
 
-        // Search for activities based on associated Historical Places or Museums' names
-        if (name) {
-            query.$or = [
-                { 'historicalPlace.name': { $regex: new RegExp(name, 'i') } }, // Case-insensitive search for historical place names
-                { 'museum.name': { $regex: new RegExp(name, 'i') } } // Case-insensitive search for museum names
-            ];
-        }
+        // Find activities matching the search criteria
+        const activities = await ActivityModel.find(searchQuery);
 
-        // Search for matching activities
-        const activities = await ActivityModel.find(query)
-            .populate('historicalPlace') // Populate the historicalPlace field
-            .populate('museum'); // Populate the museum field
-
-        // If no activities found, send a 404 response
         if (activities.length === 0) {
-            return res.status(404).json({ message: 'No activities found matching your search criteria' });
+            return res.status(404).json({ message: 'No activities found matching the search criteria.' });
         }
 
-        // Send back the found activities
-        res.status(200).json(activities);
+        return res.status(200).json(activities);
     } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error searching for activities', error });
+        return res.status(500).json({ message: 'An error occurred while searching for activities.', error });
     }
 }
 

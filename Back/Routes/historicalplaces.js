@@ -5,7 +5,6 @@ const {
     updateHistoricalPlace,
     deleteHistoricalPlace,
     SearchForHistoricalPlace,
-    getUpcomingHistoricalPlaces,
     filterHistoricalPlaces,
     getAllCreatedHistoricalPlaces
 } = require('../controllers/HistoricalPlaceControllers');
@@ -24,14 +23,13 @@ router.put('/:id', updateHistoricalPlace);
 // Delete a HistoricalPlace
 router.delete('/:id', deleteHistoricalPlace);
 
-// search for a specific HistoricalPlace by it's name or category or tag
+// search for a specific HistoricalPlace by it's name or tag
 router.get('/search', SearchForHistoricalPlace);
 
-// get all upcoming historical places
-router.get('/', getUpcomingHistoricalPlaces);
-
-// Filter historical places by tag
+// Filter Historical Places 
 router.get('/filter', filterHistoricalPlaces);
+
+
 
 // Get all created historical places
 router.get('/user/:id', getAllCreatedHistoricalPlaces);

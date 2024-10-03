@@ -21,7 +21,7 @@ router.put('/:id', updateItinerary);
 // Display an existing itinerary
 router.get('/:id', displayItinerary);
 
-// search for a specific itinerary by it's name or category or tag
+// search for a specific itinerary by it's category or tag
 router.get('/search', SearchForItinerary);
 
 

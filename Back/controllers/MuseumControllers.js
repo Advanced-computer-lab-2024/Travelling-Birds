@@ -1,5 +1,5 @@
-const MuseumModel = require('../models/Museum');
-const Activity = require('../Models/Activity.js');
+const MuseumModel = require('../Models/Museum');
+
 
 
 //create museum
@@ -45,98 +45,63 @@ const deleteMuseum = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
-// search for a specific Museum by it's name or category or tag
+// search for a specific Museum by it's name or tag
 const SearchForMuseums = async (req, res) => {
-	try {
-        const { name, category, tags } = req.query; // Extract search filters from query string
+    try {
+        const { name, tags } = req.query; // Extract name and tags from query parameters
 
-        // Build activity query
-        let activityQuery = {};
-
-        // If category is provided, search for activities with matching category
-        if (category) {
-            activityQuery.category = { $regex: new RegExp(category, 'i') }; // Case-insensitive partial match
+        if (!name && !tags) {
+            return res.status(400).json({ message: 'Name or tags are required to search for museums.' });
         }
 
-        // If tags are provided, search for activities with matching tags
+        // Create a search query object
+        const searchQuery = {};
+
+        if (name) {
+            // Use a case-insensitive regular expression for name search
+            searchQuery.name = { $regex: name, $options: 'i' };
+        }
+
         if (tags) {
-            activityQuery.tags = { $in: tags.split(',') };
+            // Use $in to find museums where any of the provided tags match
+            searchQuery.tags = { $in: tags.split(',') };
         }
 
-        // Search for activities related to museums
-        const activities = await Activity.find(activityQuery).populate('museum'); // Populate museum info
+        // Find museums matching the search criteria
+        const museums = await MuseumModel.find(searchQuery);
 
-        // Filter out activities that don't have a related museum
-        const museums = activities
-            .filter(activity => activity.museum) // Ensure activity is connected to a museum
-            .map(activity => activity.museum); // Extract museums from activities
-
-        // If filtering by name, apply that condition on the museum objects
-        const filteredMuseums = museums.filter(museum =>
-            name ? museum.name.toLowerCase().includes(name.toLowerCase()) : true
-        );
-
-        if (filteredMuseums.length === 0) {
-            return res.status(404).json({ message: 'No museums found matching your search criteria' });
+        if (museums.length === 0) {
+            return res.status(404).json({ message: 'No museums found matching the search criteria.' });
         }
 
-        res.status(200).json(filteredMuseums); // Return the matching museums
+        return res.status(200).json(museums);
     } catch (error) {
-        res.status(500).json({ message: 'Error searching for museums', error });
-    }
-
-}
-
-// get all upcoming museums
-const getUpcomingMuseums = async (req, res) => {
-	try {
-        const currentDate = new Date(); // Get the current date
-
-        // Find activities with future dates and associated museums
-        const upcomingActivities = await Activity.find({ date: { $gte: currentDate } })
-            .populate('museum'); // Populate museum details
-
-        // Extract unique museums from upcoming activities
-        const upcomingMuseums = upcomingActivities
-            .map(activity => activity.museum)
-            .filter((museum, index, self) => museum && self.findIndex(m => m._id.equals(museum._id)) === index);
-
-        if (upcomingMuseums.length === 0) {
-            return res.status(404).json({ message: 'No upcoming museums found' });
-        }
-
-        res.status(200).json(upcomingMuseums); // Return the list of upcoming museums
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching upcoming museums', error });
+        return res.status(500).json({ message: 'An error occurred while searching for museums.', error });
     }
 }
+
+
 
 
 //filter museums by tag
 const filterMuseums = async (req, res) => {
-	try {
+    try {
         const { tag } = req.query; // Extract tag from the query parameters
 
-        // Check if tag is provided, return a bad request if not
         if (!tag) {
-            return res.status(400).json({ message: 'Tag is required for filtering' });
+            return res.status(400).json({ message: 'Tag is required to filter museums.' });
         }
 
-        // Find Museums that have the specified tag in their tags array
-        const museums = await MuseumModel.find({
-            tags: { $in: [tag] } // Match any Museum that has the tag in its tags array
-        });
+        // Find museums where the tags array contains the given tag
+        const museums = await MuseumModel.find({ tags: tag });
 
-        // If no museums are found, return a 404 response
         if (museums.length === 0) {
-            return res.status(404).json({ message: 'No museums found with the specified tag' });
+            return res.status(404).json({ message: 'No museums found with the given tag.' });
         }
 
-        // Return the matching historical places
-        res.status(200).json(museums);
+        return res.status(200).json(museums);
     } catch (error) {
-        // Handle any errors during the filtering process
-        res.status(500).json({ message: 'Error filtering museums', error });
+        return res.status(500).json({ message: 'An error occurred while filtering museums.', error });
     }
 }
 
@@ -151,5 +116,11 @@ const getAllCreatedMuseums = async (req, res) => {
 }
 
 module.exports = {
-	addMuseum, getMuseums, updateMuseum, deleteMuseum, SearchForMuseums, getUpcomingMuseums, filterMuseums, getAllCreatedMuseums
+	addMuseum,
+    getMuseums, 
+    updateMuseum, 
+    deleteMuseum, 
+    SearchForMuseums, 
+    filterMuseums, 
+    getAllCreatedMuseums
 }

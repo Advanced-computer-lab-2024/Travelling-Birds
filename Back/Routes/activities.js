@@ -10,7 +10,7 @@ const {
 
 const router = express.Router();
 
-// search for a specific Activity by it's name or category or tag
+// search for a specific Activity by it's category or tag
 router.get('/search', SearchForActivity);
 
 // get all upcoming activities

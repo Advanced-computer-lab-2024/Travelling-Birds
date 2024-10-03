@@ -37,7 +37,7 @@ const displayItinerary = async (req, res) => {
 		res.status(400).json({ message: error.message });
 	}
 }
-// search for a specific Intinerary by it's name or category or tag
+// search for a specific Intinerary by it's category or tag
 const SearchForItinerary = async (req, res) => {
 	try {
         const { category, tags } = req.query; // Extract category and tags from the query string

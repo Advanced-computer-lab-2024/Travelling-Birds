@@ -7,7 +7,6 @@ const {
 	updateMuseum,
 	deleteMuseum,
 	SearchForMuseums,
-	getUpcomingMuseums,
 	filterMuseums,
 	getAllCreatedMuseums
 } = require('../controllers/MuseumControllers.js');
@@ -24,11 +23,9 @@ router.put('/:id', updateMuseum);
 // Delete a Museum
 router.delete('/:id', deleteMuseum);
 
-// search for a specific Museum by it's name or category or tag
+// search for a specific Museum by it's name or tag
 router.get('/search', SearchForMuseums);
 
-// get all upcoming museums
-router.get('/upcoming', getUpcomingMuseums);
 
 // Filter museums by tag
 router.get('/filter', filterMuseums);
