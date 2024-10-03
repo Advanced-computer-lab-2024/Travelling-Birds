@@ -3,10 +3,17 @@ const Schema = mongoose.Schema;
 
 
 const activitySchema = new Schema({
-	date: {type: Date, required: true},
+	date: {type: String, required: true},
 	time: {type: String, required: true},
-	location: {type: String, required: true},
-	price: {type: Number, required: true},
+	location: {
+		lat: {type: Number,required: true},
+		lng: {type: Number,required: true}
+	},
+	price: {type: Number},
+	priceRange: {
+		lwBound: {type: Number},
+		hiBound: {type: Number}
+	},
 	category: {type: String, required: true},
 	tags: [String],
 	rating: {type: Number, default: 0},

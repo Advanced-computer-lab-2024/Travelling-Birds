@@ -1,6 +1,10 @@
 const express = require('express');
 const {
     SearchForActivity,
+    createActivity,
+    updateActivity,
+    displayActivity,
+    deleteActivity,
     getUpcomingActivities,
     filterUpcomingActivities,
     sortActivities,
@@ -12,6 +16,18 @@ const router = express.Router();
 
 // search for a specific Activity by it's category or tag
 router.get('/search', SearchForActivity);
+
+// Create a new activity
+router.post('/postActivity', createActivity);
+
+// Update an existing activity
+router.put('/putActivity/:id', updateActivity);
+
+// Display an existing activity
+router.get('/displayActivity/:id', displayActivity);
+
+//Delete an existing activity
+router.delete('/deleteActivity/:id', deleteActivity);
 
 // get all upcoming activities
 router.get('/', getUpcomingActivities);
