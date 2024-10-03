@@ -13,7 +13,6 @@ const {
 	updateTourGuideProfile,
 	updateTouristProfile,
 	updateSellerProfile
-
 } = require('../controllers/UserControllers');
 
 // Add user
@@ -46,8 +45,7 @@ router.put('/tour-guide/:id', updateTourGuideProfile);
 // Update tourist profile
 router.put('/tourist/:id', updateTouristProfile);
 
-router.put('/profile/:id', updateTourGuideProfile);
 //Update Seller Profile
-router.put('/putSeller/:id', updateSellerProfile);
+router.put('/seller/:id', updateSellerProfile);
 
 module.exports = router;
