@@ -11,7 +11,8 @@ const {
 	registerGeneric,
 	readTourGuideProfile,
 	updateTourGuideProfile,
-	updateTouristProfile
+	updateTouristProfile,
+	updateSellerProfile
 
 } = require('../controllers/UserControllers');
 
@@ -45,5 +46,8 @@ router.put('/tour-guide/:id', updateTourGuideProfile);
 // Update tourist profile
 router.put('/tourist/:id', updateTouristProfile);
 
+router.put('/profile/:id', updateTourGuideProfile);
+//Update Seller Profile
+router.put('/putSeller/:id', updateSellerProfile);
 
 module.exports = router;

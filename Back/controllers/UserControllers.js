@@ -128,10 +128,12 @@ const deleteUser = async (req, res) => {
 
 // Register as a tourist
 const registerTourist = async (req, res) => {
-	const {email, username, password, mobileNumber, nationality, dob, job} = req.body;
+    const {firstName, lastName, email, username, password, mobileNumber, nationality, dob, job} = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
+			firstName,
+			lastName,
 			email,
 			username,
 			password: hashedPassword,
@@ -150,7 +152,9 @@ const registerTourist = async (req, res) => {
 
 // Register as a tour guide/advertiser/seller
 const registerGeneric = async (req, res) => {
-	const {
+    const {
+		firstName,
+		lastName,
 		email,
 		username,
 		password,
@@ -167,6 +171,8 @@ const registerGeneric = async (req, res) => {
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
+			firstName,
+			lastName,
 			email,
 			username,
 			password: hashedPassword,
@@ -251,6 +257,52 @@ const updateTouristProfile = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// read Seller profile
+const readSellerProfile = async (req, res) => {
+	try {
+		const seller = await User.findById(req.params.id);
+		if (!seller ) {
+			return res.status(404).json({message: 'seller not found'});
+		}
+		if (seller.isApproved === false) {
+			return res.status(403).json({message: 'seller profile not approved yet'});
+		}
+		res.status(200).json(seller);
+	}
+	catch(error)
+	{
+		res.status(500).json({error: error.message});
+	}
+}
+
+// update Seller Profile
+const updateSellerProfile = async (req, res) => {
+	const {
+		firstName,
+		lastName,
+		description
+	} = req.body;
+	try {
+		const seller = await User.findByIdAndUpdate(req.params.id, {
+			firstName,
+			lastName,
+			description
+		}, {new: true});
+		if (!seller) {
+			return res.status(404).json({message: 'Seller not found'});
+		}
+		if (seller.isApproved === false) {
+			return res.status(403).json({message: 'Seller profile not approved yet'});
+		}
+		res.status(200).json({message: 'Seller profile updated successfully'});
+	}
+	catch(error)
+	{
+		res.status(500).json({error: error.message});
+	}
+}
+
+
 
 module.exports = {
 	addUser,
@@ -262,5 +314,7 @@ module.exports = {
 	registerGeneric,
 	readTourGuideProfile,
 	updateTourGuideProfile,
-	updateTouristProfile
+	updateTouristProfile,
+	readSellerProfile,
+	updateSellerProfile
 };

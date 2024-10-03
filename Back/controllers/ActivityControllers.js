@@ -1,5 +1,65 @@
 const ActivityModel = require('../Models/Activity.js');
 
+//create an activity
+const createActivity = async (req, res) => {
+    const { date, time, location, price, priceRange , category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+    try {
+        const newActivity = new ActivityModel({
+            date,
+            time,
+            location,
+            price,
+            priceRange,
+            category,
+            tags,
+            specialDiscount,
+            bookingOpen,
+            createdBy
+        });
+        await newActivity.save();
+        res.status(201).json(newActivity);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+// update an existing Activity
+const updateActivity = async (req, res) => {
+    const { date, time, location, price, category, tags, specialDiscount, bookingOpen,createdBy } = req.body;
+    try {
+        const activity =  await ActivityModel.findByIdAndUpdate(req.params.id,
+            { date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy }, { new: true });
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+
+}
+//display an existing Activity
+const displayActivity = async (req, res) => {
+    try {
+        const activity = await ActivityModel.findById(req.params.id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+        res.status(200).json(activity);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+// delete an existing activity
+const deleteActivity = async(req, res) => {
+    try {
+        const{ id }= req.params
+
+         await ActivityModel.findOneAndDelete({_id: id})
+        res.status(200).json({message:"activity deleted successfully"});
+    } catch (error) {
+            res.status(404).json ({error: "Activity is not Found(Already deleted)"})
+    }
+}
+
 
 // search for a specific Activity by its category or tag
 const SearchForActivity = async (req, res) => {
@@ -159,10 +219,14 @@ const getAllCreatedActivities = async (req, res) => {
 }
 
 module.exports = {
-	SearchForActivity,
-	getUpcomingActivities ,
-	filterUpcomingActivities,
-	sortActivities,
-	getAllCreatedActivities
+    createActivity,
+    updateActivity,
+    displayActivity,
+    deleteActivity,
+    SearchForActivity,
+    getUpcomingActivities ,
+    filterUpcomingActivities,
+    sortActivities,
+    getAllCreatedActivities
 }
 
