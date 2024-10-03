@@ -48,4 +48,15 @@ router.put('/tourist/:id', updateTouristProfile);
 //Update Seller Profile
 router.put('/seller/:id', updateSellerProfile);
 
+//begin test
+// Add an Admin
+router.post('/add-admin', addAdmin);
+
+// Add a Tourism Governor
+router.post('/add-tourism-governor', addTourismGovernor);
+
+// Delete user by Admin
+router.delete('/admin/delete-user/:username', deleteUserByAdmin);
+//end test
+
 module.exports = router;

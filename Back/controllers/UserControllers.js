@@ -257,6 +257,7 @@ const updateTouristProfile = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // read Seller profile
 const readSellerProfile = async (req, res) => {
 	try {
@@ -302,7 +303,152 @@ const updateSellerProfile = async (req, res) => {
 	}
 }
 
+//not tested yet, M.haythem will conduct the necessary tests
+//Delete account by admin
+const deleteUserByAdmin = async (req, res) => {
+	const {username} = req.params;
 
+	try {
+		if (req.user.role !== 'admin') {
+			return res.status(403).json({ message: 'Only admins can delete accounts.' });
+		}
+
+		const user = await User.findOne({ username });
+		if (!user) {
+			return res.status(404).json({ message: 'User not found. Please check the username.' });
+		}
+
+		await User.deleteOne({ username });
+
+		res.status(200).json({ message: 'User account deleted successfully' });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
+//Add Tourism Governer (I copied 'Governer' as it is)
+const addTourismGoverner = async (req, res) => {
+	const {
+		username,
+		email,
+		password,
+		role,
+		mobileNumber,
+		nationality,
+		dob,
+		job,
+		yearsOfExperience,
+		previousWork,
+		website,
+		hotline,
+		companyProfile,
+		wallet,
+		isApproved
+	} = req.body;
+
+	try {
+		if (req.user.role !== 'admin') {
+			return res.status(403).json({ message: 'Only admins can add other admins.' });
+		}
+
+		const existingUser = await User.findOne({username});
+		if (existingUser) {
+			return res.status(400).json({ message: 'Username already exists. Please choose a different one.' });
+		}
+
+		const existingEmail = await User.findOne({email});
+		if (existingEmail) {
+			return res.status(400).json({ message: 'Email already exists. Please use a different one.' });
+		}
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		const newTourismGoverner = new User({
+			username,
+			email,
+			password: hashedPassword,
+			role: 'tourismGovernor',
+			mobileNumber,
+			nationality,
+			dob,
+			job,
+			yearsOfExperience,
+			previousWork,
+			website,
+			hotline,
+			companyProfile,
+			wallet,
+			isApproved
+		});
+		await newTourismGoverner.save();
+		res.status(201).json({message: 'User added successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Add another admin
+const addAdmin = async (req, res) => {
+	const {
+		username,
+		email,
+		password,
+		role,
+		mobileNumber,
+		nationality,
+		dob,
+		job,
+		yearsOfExperience,
+		previousWork,
+		website,
+		hotline,
+		companyProfile,
+		wallet,
+		isApproved
+	} = req.body;
+
+	try {
+		if (req.user.role !== 'admin') {
+			return res.status(403).json({ message: 'Only admins can add other admins.' });
+		}
+
+		const existingUser = await User.findOne({username});
+		if (existingUser) {
+			return res.status(400).json({ message: 'Username already exists. Please choose a different one.' });
+		}
+
+		const existingEmail = await User.findOne({email});
+		if (existingEmail) {
+			return res.status(400).json({ message: 'Email already exists. Please use a different one.' });
+		}
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+		const newAdmin = new User({
+			username,
+			email,
+			password: hashedPassword,
+			role: 'admin',
+			mobileNumber,
+			nationality,
+			dob,
+			job,
+			yearsOfExperience,
+			previousWork,
+			website,
+			hotline,
+			companyProfile,
+			wallet,
+			isApproved
+		});
+		await newAdmin.save();
+		res.status(201).json({message: 'User added successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//end of test
 
 module.exports = {
 	addUser,
