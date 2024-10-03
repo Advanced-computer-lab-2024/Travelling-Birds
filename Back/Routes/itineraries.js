@@ -2,7 +2,7 @@ const express = require('express');
 const {
     createItinerary,
     updateItinerary,
-    displayItinerary,
+    getItinerary,
     SearchForItinerary,
     getUpcomingItineraries,
     sortItineraries,
@@ -19,7 +19,7 @@ router.post('/', createItinerary);
 router.put('/:id', updateItinerary);
 
 // Display an existing itinerary
-router.get('/:id', displayItinerary);
+router.get('/:id', getItinerary);
 
 // search for a specific itinerary by it's category or tag
 router.get('/search', SearchForItinerary);

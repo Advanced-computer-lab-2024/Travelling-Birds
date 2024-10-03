@@ -1,217 +1,284 @@
 const ItineraryModel = require('../Models/Itinerary.js');
 
-// create a new itinerary
-const createItinerary = async (req, res) => {
-	const { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy } = req.body;
+// Add itinerary
+const addItinerary = async (req, res) => {
+	const {
+		activities,
+		locations,
+		timeline,
+		duration,
+		language,
+		price,
+		availableDates,
+		accessibility,
+		pickupLocation,
+		dropoffLocation,
+		createdBy
+	} = req.body;
 	try {
-		const itinerary = new ItineraryModel({ activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy});
+		const itinerary = new ItineraryModel({
+			activities,
+			locations,
+			timeline,
+			duration,
+			language,
+			price,
+			availableDates,
+			accessibility,
+			pickupLocation,
+			dropoffLocation,
+			createdBy
+		});
 		await itinerary.save();
 		res.status(201).json(itinerary);
 	} catch (error) {
-		res.status(400).json({ message: error.message });
+		res.status(400).json({message: error.message});
 	}
 }
-// update an existing itinerary
-const updateItinerary = async (req, res) => {
-	const { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy } = req.body;
-	try {
-		const itinerary =  await ItineraryModel.findByIdAndUpdate(req.params.id, { activities, locations, timeline, duration, language, price, availableDates, accessibility, pickupLocation, dropoffLocation, createdBy }, { new: true });
-		if (!itinerary) {
-			return res.status(404).json({ message: 'itinerary not found' });
-		}
-		res.status(200).json(itinerary);
-	} catch (error) {
-		res.status(400).json({ message: error.message });
-	}
 
+// Get all itineraries
+const getAllItineraries = async (req, res) => {
+	try {
+		const itineraries = await ItineraryModel.find();
+		res.status(200).json(itineraries);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 }
-//display an existing itinerary
-const displayItinerary = async (req, res) => {
+
+// Get specific itinerary
+const getItinerary = async (req, res) => {
 	try {
 		const itinerary = await ItineraryModel.findById(req.params.id);
 		if (!itinerary) {
-			return res.status(404).json({ message: 'itinerary not found' });
+			return res.status(404).json({message: 'itinerary not found'});
 		}
 		res.status(200).json(itinerary);
 	} catch (error) {
-		res.status(400).json({ message: error.message });
+		res.status(400).json({message: error.message});
 	}
 }
-// search for a specific Intinerary by it's category or tag
-const SearchForItinerary = async (req, res) => {
+
+// Update itinerary
+const updateItinerary = async (req, res) => {
+	const {
+		activities,
+		locations,
+		timeline,
+		duration,
+		language,
+		price,
+		availableDates,
+		accessibility,
+		pickupLocation,
+		dropoffLocation,
+		createdBy
+	} = req.body;
 	try {
-        const { category, tags } = req.query; // Extract category and tags from the query string
+		const itinerary = await ItineraryModel.findByIdAndUpdate(req.params.id, {
+			activities,
+			locations,
+			timeline,
+			duration,
+			language,
+			price,
+			availableDates,
+			accessibility,
+			pickupLocation,
+			dropoffLocation,
+			createdBy
+		}, {new: true});
+		if (!itinerary) {
+			return res.status(404).json({message: 'itinerary not found'});
+		}
+		res.status(200).json(itinerary);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 
-        // Build the query for activities
-        let activityQuery = {};
-
-        // If category is provided, search for activities with a matching category (case-insensitive partial match)
-        if (category) {
-            activityQuery.category = { $regex: new RegExp(category, 'i') }; // Partial match and case-insensitive
-        }
-
-        // If tags are provided, search for activities with matching tags (any of the tags in the array)
-        if (tags) {
-            activityQuery.tags = { $in: tags.split(',') }; // Find activities where any of the provided tags match
-        }
-
-        // Find itineraries where any of the activities match the category or tags query
-        const itineraries = await ItineraryModel.find()
-            .populate({
-                path: 'activities', // Populate the activities field
-                match: activityQuery // Apply the activity query filter
-            });
-
-        // Filter out itineraries that have no matching activities
-        const filteredItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
-
-        // If no itineraries are found, return a 404 response
-        if (filteredItineraries.length === 0) {
-            return res.status(404).json({ message: 'No itineraries found matching your search criteria' });
-        }
-
-        // Return the filtered itineraries
-        res.status(200).json(filteredItineraries);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error searching for itineraries', error });
-    }
 }
 
+// Delete itinerary
+const deleteItinerary = async (req, res) => {
+	try {
+		await ItineraryModel.findByIdAndDelete(req.params.id);
+		res.status(200).json({message: 'itinerary deleted successfully'});
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
+}
 
+// search for a specific Intinerary by it's name or category or tag
+const SearchForItinerary = async (req, res) => {
+	try {
+		const {category, tags} = req.query; // Extract category and tags from the query string
+
+		// Build the query for activities
+		let activityQuery = {};
+
+		// If category is provided, search for activities with a matching category (case-insensitive partial match)
+		if (category) {
+			activityQuery.category = {$regex: new RegExp(category, 'i')}; // Partial match and case-insensitive
+		}
+
+		// If tags are provided, search for activities with matching tags (any of the tags in the array)
+		if (tags) {
+			activityQuery.tags = {$in: tags.split(',')}; // Find activities where any of the provided tags match
+		}
+
+		// Find itineraries where any of the activities match the category or tags query
+		const itineraries = await ItineraryModel.find()
+			.populate({
+				path: 'activities', // Populate the activities field
+				match: activityQuery // Apply the activity query filter
+			});
+
+		// Filter out itineraries that have no matching activities
+		const filteredItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+
+		// If no itineraries are found, return a 404 response
+		if (filteredItineraries.length === 0) {
+			return res.status(404).json({message: 'No itineraries found matching your search criteria'});
+		}
+
+		// Return the filtered itineraries
+		res.status(200).json(filteredItineraries);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error searching for itineraries', error});
+	}
+}
 
 // get all upcoming itineraries
 const getUpcomingItineraries = async (req, res) => {
 	try {
-        const currentDate = new Date(); // Get the current date
+		const currentDate = new Date(); // Get the current date
 
-        // Find itineraries and populate activities
-        const itineraries = await ItineraryModel.find()
-            .populate({
-                path: 'activities', // Populate the activities field
-                match: { date: { $gte: currentDate } } // Only include activities with dates in the future
-            });
+		// Find itineraries and populate activities
+		const itineraries = await ItineraryModel.find()
+			.populate({
+				path: 'activities', // Populate the activities field
+				match: {date: {$gte: currentDate}} // Only include activities with dates in the future
+			});
 
-        // Filter out itineraries that have no upcoming activities
-        const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+		// Filter out itineraries that have no upcoming activities
+		const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
 
-        // If no upcoming itineraries are found, return a 404 response
-        if (upcomingItineraries.length === 0) {
-            return res.status(404).json({ message: 'No upcoming itineraries found' });
-        }
+		// If no upcoming itineraries are found, return a 404 response
+		if (upcomingItineraries.length === 0) {
+			return res.status(404).json({message: 'No upcoming itineraries found'});
+		}
 
-        // Return the filtered upcoming itineraries
-        res.status(200).json(upcomingItineraries);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error fetching upcoming itineraries', error });
-    }
+		// Return the filtered upcoming itineraries
+		res.status(200).json(upcomingItineraries);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error fetching upcoming itineraries', error});
+	}
 }
-
-
 
 //sort all itineraries based on price or ratings
 const sortItineraries = async (req, res) => {
 	try {
-        const { sortBy } = req.query; // Extract the sort criteria (price or rating) from the query string
-        const currentDate = new Date(); // Get the current date
+		const {sortBy} = req.query; // Extract the sort criteria (price or rating) from the query string
+		const currentDate = new Date(); // Get the current date
 
-        // Find all itineraries and populate their activities
-        const itineraries = await ItineraryModel.find()
-            .populate({
-                path: 'activities', // Populate the activities field
-                match: { date: { $gte: currentDate } } // Only include activities with upcoming dates
-            });
+		// Find all itineraries and populate their activities
+		const itineraries = await ItineraryModel.find()
+			.populate({
+				path: 'activities', // Populate the activities field
+				match: {date: {$gte: currentDate}} // Only include activities with upcoming dates
+			});
 
-        // Filter out itineraries that have no upcoming activities
-        let upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+		// Filter out itineraries that have no upcoming activities
+		let upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
 
-        // Sort by price if requested
-        if (sortBy === 'price') {
-            upcomingItineraries = upcomingItineraries.sort((a, b) => a.price - b.price);
-        }
+		// Sort by price if requested
+		if (sortBy === 'price') {
+			upcomingItineraries = upcomingItineraries.sort((a, b) => a.price - b.price);
+		}
 
-        // Sort by average rating of activities if requested
-        if (sortBy === 'rating') {
-            upcomingItineraries = upcomingItineraries.sort((a, b) => {
-                const avgRatingA = a.activities.reduce((sum, activity) => sum + activity.rating, 0) / a.activities.length;
-                const avgRatingB = b.activities.reduce((sum, activity) => sum + activity.rating, 0) / b.activities.length;
-                return avgRatingB - avgRatingA; // Sort in descending order (higher ratings first)
-            });
-        }
+		// Sort by average rating of activities if requested
+		if (sortBy === 'rating') {
+			upcomingItineraries = upcomingItineraries.sort((a, b) => {
+				const avgRatingA = a.activities.reduce((sum, activity) => sum + activity.rating, 0) / a.activities.length;
+				const avgRatingB = b.activities.reduce((sum, activity) => sum + activity.rating, 0) / b.activities.length;
+				return avgRatingB - avgRatingA; // Sort in descending order (higher ratings first)
+			});
+		}
 
-        // If no itineraries found, send a 404 response
-        if (upcomingItineraries.length === 0) {
-            return res.status(404).json({ message: 'No upcoming itineraries found' });
-        }
+		// If no itineraries found, send a 404 response
+		if (upcomingItineraries.length === 0) {
+			return res.status(404).json({message: 'No upcoming itineraries found'});
+		}
 
-        // Return the sorted itineraries
-        res.status(200).json(upcomingItineraries);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error sorting itineraries', error });
-    }
+		// Return the sorted itineraries
+		res.status(200).json(upcomingItineraries);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error sorting itineraries', error});
+	}
 
 }
 
 // Filter all available/upcoming itineraries based on budget, date, preferences and language
 const filterItineraries = async (req, res) => {
 	try {
-        const { price, date, language, preferences } = req.query; // Extract filter parameters from the query string
-        const currentDate = new Date(); // Get the current date
+		const {price, date, language, preferences} = req.query; // Extract filter parameters from the query string
+		const currentDate = new Date(); // Get the current date
 
-        // Build the query for filtering itineraries based on language, preferences, and price
-        let itineraryQuery = {};
+		// Build the query for filtering itineraries based on language, preferences, and price
+		let itineraryQuery = {};
 
-        // Filter by language if provided
-        if (language) {
-            itineraryQuery.language = { $regex: new RegExp(language, 'i') }; // Case-insensitive partial match for language
-        }
+		// Filter by language if provided
+		if (language) {
+			itineraryQuery.language = {$regex: new RegExp(language, 'i')}; // Case-insensitive partial match for language
+		}
 
-        // Filter by preferences if provided
-        if (preferences) {
-            itineraryQuery.preferences = { $regex: new RegExp(preferences, 'i') }; // Case-insensitive partial match for preferences
-        }
+		// Filter by preferences if provided
+		if (preferences) {
+			itineraryQuery.preferences = {$regex: new RegExp(preferences, 'i')}; // Case-insensitive partial match for preferences
+		}
 
-        // Filter by price if provided
-        if (price) {
-            itineraryQuery.price = price;
-        }
+		// Filter by price if provided
+		if (price) {
+			itineraryQuery.price = price;
+		}
 
-        // Find itineraries based on the itinerary query (language, preferences, price)
-        let itineraries = await ItineraryModel.find(itineraryQuery)
-            .populate({
-                path: 'activities', // Populate the activities field
-                match: { date: { $gte: currentDate } } // Only include activities with upcoming dates
-            });
+		// Find itineraries based on the itinerary query (language, preferences, price)
+		let itineraries = await ItineraryModel.find(itineraryQuery)
+			.populate({
+				path: 'activities', // Populate the activities field
+				match: {date: {$gte: currentDate}} // Only include activities with upcoming dates
+			});
 
-        // If date filter is provided, filter itineraries where activities have matching upcoming dates
-        if (date) {
-            const filteredItineraries = itineraries.filter(itinerary =>
-                itinerary.activities.some(activity => {
-                    const activityDate = new Date(activity.date);
-                    return activityDate.toISOString().split('T')[0] === date; // Match specific date (YYYY-MM-DD format)
-                })
-            );
+		// If date filter is provided, filter itineraries where activities have matching upcoming dates
+		if (date) {
+			const filteredItineraries = itineraries.filter(itinerary =>
+				itinerary.activities.some(activity => {
+					const activityDate = new Date(activity.date);
+					return activityDate.toISOString().split('T')[0] === date; // Match specific date (YYYY-MM-DD format)
+				})
+			);
 
-            itineraries = filteredItineraries; // Update itineraries list with date-filtered results
-        }
+			itineraries = filteredItineraries; // Update itineraries list with date-filtered results
+		}
 
-        // Filter out itineraries that have no upcoming activities after the filters
-        const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+		// Filter out itineraries that have no upcoming activities after the filters
+		const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
 
-        // If no itineraries are found, return a 404 response
-        if (upcomingItineraries.length === 0) {
-            return res.status(404).json({ message: 'No itineraries found matching your filters' });
-        }
+		// If no itineraries are found, return a 404 response
+		if (upcomingItineraries.length === 0) {
+			return res.status(404).json({message: 'No itineraries found matching your filters'});
+		}
 
-        // Return the filtered itineraries
-        res.status(200).json(upcomingItineraries);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error filtering itineraries', error });
-    }
-	
+		// Return the filtered itineraries
+		res.status(200).json(upcomingItineraries);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error filtering itineraries', error});
+	}
+
 }
 
 // Get all created itineraries
@@ -224,13 +291,14 @@ const getAllCreatedItineraries = async (req, res) => {
 	}
 }
 
-
 module.exports = {
-	createItinerary,
+	addItinerary,
+	getAllItineraries,
+	getItinerary,
 	updateItinerary,
-	displayItinerary,
-	getUpcomingItineraries,
+	deleteItinerary,
 	SearchForItinerary,
+	getUpcomingItineraries,
 	sortItineraries,
 	filterItineraries,
 	getAllCreatedItineraries

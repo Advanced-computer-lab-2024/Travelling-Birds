@@ -1,7 +1,7 @@
 const HistoricalPlaceModel = require('../Models/HistoricalPlace');
 
 
-//create Historical Place
+// Add Historical Place
 const addHistoricalPlace = async (req, res) => {
 	const {name, description, pictures, location, openingHours, ticketPrices, tags,createdBy} = req.body;
 	try {
@@ -22,11 +22,25 @@ const addHistoricalPlace = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // Get all historical places
 const getAllHistoricalPlaces = async (req, res) => {
 	try {
 		const historicalPlaces = await HistoricalPlaceModel.find();
 		res.status(201).json({historicalPlaces})
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get specific historical place
+const getHistoricalPlace = async (req, res) => {
+	try {
+		const historicalPlace = await HistoricalPlaceModel.findById(req.params.id);
+		if (!historicalPlace) {
+			return res.status(404).json({message: 'Historical Place not found'});
+		}
+		res.status(200).json(historicalPlace);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -51,6 +65,7 @@ const deleteHistoricalPlace = async (req, res) => {
 			res.status(500).json({error: error.message});
 		}
 }
+
 // search for a specific HistoricalPlace by it's name or tag
 const SearchForHistoricalPlace = async (req, res) => {
 	try {
@@ -89,7 +104,6 @@ const SearchForHistoricalPlace = async (req, res) => {
 
 }
 
-
 //filter historical places by tag
 const filterHistoricalPlaces = async (req, res) => {
     try {
@@ -112,6 +126,7 @@ const filterHistoricalPlaces = async (req, res) => {
     }
 
 }
+
 // Get all created historical places
 const getAllCreatedHistoricalPlaces = async (req, res) => {
 	try {
@@ -125,6 +140,7 @@ const getAllCreatedHistoricalPlaces = async (req, res) => {
 module.exports = {
 	addHistoricalPlace,
 	getAllHistoricalPlaces,
+	getHistoricalPlace,
 	updateHistoricalPlace,
 	deleteHistoricalPlace,
 	SearchForHistoricalPlace,

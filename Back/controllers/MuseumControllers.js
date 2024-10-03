@@ -17,10 +17,23 @@ const addMuseum = async (req, res) => {
 }
 
 // Get all  museums
-const getMuseums = async (req, res) => {
+const getAllMuseums = async (req, res) => {
 	try {
 		const museums =  await MuseumModel.find();
 		res.status(201).json({museums})
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get specific museum
+const getMuseum = async (req, res) => {
+	try {
+		const museum = await MuseumModel.findById(req.params.id);
+		if (!museum) {
+			return res.status(404).json({message: 'Museum not found'});
+		}
+		res.status(200).json(museum);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -45,6 +58,7 @@ const deleteMuseum = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // search for a specific Museum by it's name or tag
 const SearchForMuseums = async (req, res) => {
     try {
@@ -82,7 +96,6 @@ const SearchForMuseums = async (req, res) => {
 
 
 
-
 //filter museums by tag
 const filterMuseums = async (req, res) => {
     try {
@@ -117,10 +130,11 @@ const getAllCreatedMuseums = async (req, res) => {
 
 module.exports = {
 	addMuseum,
-    getMuseums, 
-    updateMuseum, 
-    deleteMuseum, 
-    SearchForMuseums, 
-    filterMuseums, 
-    getAllCreatedMuseums
+	getAllMuseums,
+	getMuseum,
+	updateMuseum,
+	deleteMuseum,
+	SearchForMuseums,
+	filterMuseums,
+	getAllCreatedMuseums
 }

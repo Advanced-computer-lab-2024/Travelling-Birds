@@ -5,17 +5,20 @@ const {
 	registerTourist,
 	registerGeneric,
 	readTourGuideProfile,
-	updateTourGuideProfile
+	updateTourGuideProfile,
+	updateTouristProfile
 
 } = require('../controllers/UserControllers');
 
 // Register as a tourist
-router.post('/register/tourist', registerTourist );
+router.post('/tourist', registerTourist );
 // Register as a tour guide/advertiser/seller
-router.post('/register/generic', registerGeneric )
+router.post('/generic', registerGeneric )
 // Read tour guide profile
-router.get('/profile/:id', readTourGuideProfile);
+router.get('/generic/:id', readTourGuideProfile);
 // Update tour guide profile
-router.put('/profile/:id', updateTourGuideProfile);
+router.put('/generic/:id', updateTourGuideProfile);
+// Update tourist profile
+router.put('/tourist/:id', updateTouristProfile);
 
 module.exports = router;

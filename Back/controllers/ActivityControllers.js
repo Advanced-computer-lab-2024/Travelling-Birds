@@ -59,7 +59,6 @@ const getUpcomingActivities = async (req, res) => {
 
 }
 
-
 // Filter all upcoming activities based on budget or date or category or ratings
 const filterUpcomingActivities = async (req, res) => {
 	try {
@@ -104,7 +103,6 @@ const filterUpcomingActivities = async (req, res) => {
     }
 
 }
-
 
 // Sort upcoming activities based on price or ratings
 const sortActivities = async (req, res) => {

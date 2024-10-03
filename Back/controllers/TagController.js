@@ -1,6 +1,6 @@
 const Tag = require('../models/Tag');
 
-// Add a new tag
+// Add tag
 const addTag = async (req, res) => {
 	const {name} = req.body;
 	try {
@@ -12,7 +12,8 @@ const addTag = async (req, res) => {
 	}
 }
 
-const getTags = async (req, res) => {
+// Get all tags
+const getAllTags = async (req, res) => {
 	try {
 		const tags = await Tag.find();
 		res.status(201).json(tags)
@@ -21,6 +22,20 @@ const getTags = async (req, res) => {
 	}
 }
 
+// Get specific tag
+const getTag = async (req, res) => {
+	try {
+		const tag = await Tag.findById(req.params.id);
+		if (!tag) {
+			return res.status(404).json({message: 'Tag not found'});
+		}
+		res.status(200).json(tag);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Update tag
 const updateTag = async (req, res) => {
 	try {
 		await Tag.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
@@ -30,6 +45,7 @@ const updateTag = async (req, res) => {
 	}
 }
 
+// Delete tag
 const deleteTag = async (req, res) => {
 	try {
 		await Tag.findByIdAndDelete(req.params.id);
@@ -39,4 +55,10 @@ const deleteTag = async (req, res) => {
 	}
 }
 
-module.exports = {addTag, getTags, updateTag, deleteTag};
+module.exports = {
+	addTag,
+	getAllTags,
+	getTag,
+	updateTag,
+	deleteTag
+};

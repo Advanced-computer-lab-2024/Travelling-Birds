@@ -1,16 +1,6 @@
 const Product = require('../Models/Product');
 
-// Get
-const getProducts = async (req, res) => {
-	try {
-		const products = await Product.find();
-		res.status(200).json(products);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
-
-// Adding product as admin or seller
+// Add Product
 const addProduct = async (req, res) => {
 	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
 	try {
@@ -24,7 +14,30 @@ const addProduct = async (req, res) => {
 	}
 }
 
-// Editing product as admin or seller
+// Get products
+const getAllProducts = async (req, res) => {
+	try {
+		const products = await Product.find();
+		res.status(200).json(products);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get specific product
+const getProduct = async (req, res) => {
+	try {
+		const product = await Product.findById(req.params.id);
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
+		}
+		res.status(200).json(product);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Update product
 const updateProduct = async (req, res) => {
 	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
 	try {
@@ -40,5 +53,21 @@ const updateProduct = async (req, res) => {
 	}
 }
 
-module.exports = {getProducts, addProduct, updateProduct};
+// Delete product
+const deleteProduct = async (req, res) => {
+	try {
+		await Product.findByIdAndDelete(req.params.id);
+		res.status(200).json({message: 'Product deleted successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+module.exports = {
+	addProduct,
+	getAllProducts,
+	getProduct,
+	updateProduct,
+	deleteProduct
+};
 
