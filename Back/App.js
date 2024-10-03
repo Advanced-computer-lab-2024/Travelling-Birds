@@ -5,7 +5,7 @@ const usersRoutes = require('./Routes/users');
 const activitiesRoutes = require('./Routes/activities');
 const itineraryRoutes = require('./Routes/itineraries');
 const museumsRoutes = require('./Routes/museums');
-const historicalplacesRoutes = require('./Routes/historicalplaces');
+const historicalPlacesRoutes = require('./Routes/historicalPlaces');
 const tagsRoutes = require('./Routes/tags');
 const productRoutes = require('./Routes/product');
 require('dotenv').config();
@@ -15,7 +15,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/activities', activitiesRoutes);
 app.use('/api/itineraries', itineraryRoutes);
 app.use('/api/museums', museumsRoutes);
-app.use('/api/historicalplaces', historicalplacesRoutes);
+app.use('/api/historicalPlaces', historicalPlacesRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/products', productRoutes);
 

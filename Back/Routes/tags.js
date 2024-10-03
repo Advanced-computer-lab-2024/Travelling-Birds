@@ -1,18 +1,27 @@
 const express = require('express');
 const router = express.Router();
 
-const {addTag, getTags, updateTag, deleteTag} = require('../controllers/TagController.js');
+const {
+	addTag,
+	getAllTags,
+	getTag,
+	updateTag,
+	deleteTag
+} = require('../controllers/TagController.js');
 
-// Add a new tag
+// Add tag
 router.post('/', addTag);
 
 // Get all tags
-router.get('/', getTags);
+router.get('/', getAllTags);
 
-// Update a tag
+// Get specific tag
+router.get('/:id', getTag);
+
+// Update tag
 router.put('/:id', updateTag);
 
-// Delete a tag
+// Delete tag
 router.delete('/:id', deleteTag);
 
 module.exports = router;

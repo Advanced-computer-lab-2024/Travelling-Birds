@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const {
+	addUser,
+	getUsers,
+	getUser,
+	updateUser,
+	deleteUser,
 	registerTourist,
 	registerGeneric,
 	readTourGuideProfile,
@@ -10,15 +15,35 @@ const {
 
 } = require('../controllers/UserControllers');
 
-// Register as a tourist
-router.post('/tourist', registerTourist );
-// Register as a tour guide/advertiser/seller
-router.post('/generic', registerGeneric )
+// Add user
+router.post('/', addUser);
+
+// Get all users
+router.get('/', getUsers);
+
+// Get specific user
+router.get('/:id', getUser);
+
+// Update user
+router.put('/:id', updateUser);
+
+// Delete user
+router.delete('/:id', deleteUser);
+
+// Register tourist
+router.post('/register-tourist', registerTourist);
+
+// Register generic user
+router.post('/register-generic', registerGeneric);
+
 // Read tour guide profile
-router.get('/generic/:id', readTourGuideProfile);
+router.get('/tour-guide/:id', readTourGuideProfile);
+
 // Update tour guide profile
-router.put('/generic/:id', updateTourGuideProfile);
+router.put('/tour-guide/:id', updateTourGuideProfile);
+
 // Update tourist profile
 router.put('/tourist/:id', updateTouristProfile);
+
 
 module.exports = router;

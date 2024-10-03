@@ -1,40 +1,48 @@
 const express = require('express');
 const {
-    createItinerary,
-    updateItinerary,
-    getItinerary,
-    SearchForItinerary,
-    getUpcomingItineraries,
-    sortItineraries,
-    filterItineraries,
-    getAllCreatedItineraries
+	addItinerary,
+	getAllItineraries,
+	getItinerary,
+	updateItinerary,
+	deleteItinerary,
+	SearchForItinerary,
+	getUpcomingItineraries,
+	sortItineraries,
+	filterItineraries,
+	getAllCreatedItineraries
 } = require('../controllers/ItineraryControllers.js');
 
 const router = express.Router();
 
-// Create a new itinerary
-router.post('/', createItinerary);
+// Add itinerary
+router.post('/', addItinerary);
 
-// Update an existing itinerary
-router.put('/:id', updateItinerary);
+// Get all itineraries
+router.get('/', getAllItineraries);
 
-// Display an existing itinerary
+// Get specific itinerary
 router.get('/:id', getItinerary);
 
-// search for a specific itinerary by it's category or tag
+// Update itinerary
+router.put('/:id', updateItinerary);
+
+// Delete itinerary
+router.delete('/:id', deleteItinerary);
+
+// Search for itineraries
 router.get('/search', SearchForItinerary);
 
+// Get upcoming itineraries
+router.get('/upcoming', getUpcomingItineraries);
 
-// get all upcoming itineraries
-router.get('/', getUpcomingItineraries);
-
-// Sort upcoming itineraries by price or ratings
+// Sort itineraries
 router.get('/sort', sortItineraries);
 
-// Filter itineraries by budget, date, category, and ratings
+// Filter itineraries
 router.get('/filter', filterItineraries);
 
 // Get all created itineraries by a specific user
 router.get('/user/:id', getAllCreatedItineraries);
+
 
 module.exports = router;

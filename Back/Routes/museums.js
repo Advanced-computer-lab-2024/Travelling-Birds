@@ -3,7 +3,8 @@ const router = express.Router();
 
 const {
 	addMuseum,
-	getMuseums,
+	getAllMuseums,
+	getMuseum,
 	updateMuseum,
 	deleteMuseum,
 	SearchForMuseums,
@@ -11,26 +12,28 @@ const {
 	getAllCreatedMuseums
 } = require('../controllers/MuseumControllers.js');
 
-// Add a new Museum
+// Add museum
 router.post('/', addMuseum);
 
-// Get all Museums
-router.get('/', getMuseums);
+// Get all museums
+router.get('/', getAllMuseums);
 
-// Update a Museum
+// Get specific museum
+router.get('/:id', getMuseum);
+
+// Update museum
 router.put('/:id', updateMuseum);
 
-// Delete a Museum
+// Delete museum
 router.delete('/:id', deleteMuseum);
 
-// search for a specific Museum by it's name or tag
+// Search for museums
 router.get('/search', SearchForMuseums);
 
-
-// Filter museums by tag
+// Filter museums
 router.get('/filter', filterMuseums);
 
-// Get all created museums
+// Get all created museums by a specific user
 router.get('/user/:id', getAllCreatedMuseums);
 
 module.exports = router;
