@@ -12,7 +12,10 @@ const {
 	readTourGuideProfile,
 	updateTourGuideProfile,
 	updateTouristProfile,
-	updateSellerProfile
+	updateSellerProfile,
+	addAdmin,
+	addTourismGovernor,
+	deleteUserByAdmin
 } = require('../controllers/UserControllers');
 
 // Add user

@@ -149,4 +149,4 @@ dist
 # IDE
 /.idea
 package-lock.json
-/Back/.env
+*.env

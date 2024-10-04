@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const mongoose = require('mongoose');
 const usersRoutes = require('./Routes/users');
 const activitiesRoutes = require('./Routes/activities');
@@ -10,6 +11,7 @@ const tagsRoutes = require('./Routes/tags');
 const productRoutes = require('./Routes/product');
 require('dotenv').config();
 
+app.use(cors());
 app.use(express.json());
 app.use('/api/users', usersRoutes);
 app.use('/api/activities', activitiesRoutes);

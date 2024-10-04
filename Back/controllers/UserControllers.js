@@ -4,6 +4,8 @@ const User = require('../Models/User');
 // Add user
 const addUser = async (req, res) => {
 	const {
+		firstName,
+		lastName,
 		username,
 		email,
 		password,
@@ -18,11 +20,14 @@ const addUser = async (req, res) => {
 		hotline,
 		companyProfile,
 		wallet,
-		isApproved
+		isApproved,
+		description
 	} = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
+			firstName,
+			lastName,
 			username,
 			email,
 			password: hashedPassword,
@@ -37,7 +42,8 @@ const addUser = async (req, res) => {
 			hotline,
 			companyProfile,
 			wallet,
-			isApproved
+			isApproved,
+			description
 		});
 		await newUser.save();
 		res.status(201).json({message: 'User added successfully'});
@@ -72,6 +78,8 @@ const getUser = async (req, res) => {
 // Update user
 const updateUser = async (req, res) => {
 	const {
+		firstName,
+		lastName,
 		username,
 		email,
 		password,
@@ -86,11 +94,14 @@ const updateUser = async (req, res) => {
 		hotline,
 		companyProfile,
 		wallet,
-		isApproved
+		isApproved,
+		description
 	} = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const user = await User.findByIdAndUpdate(req.params.id, {
+			firstName,
+			lastName,
 			username,
 			email,
 			password: hashedPassword,
@@ -105,7 +116,8 @@ const updateUser = async (req, res) => {
 			hotline,
 			companyProfile,
 			wallet,
-			isApproved
+			isApproved,
+			description
 		}, {new: true});
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
@@ -128,7 +140,7 @@ const deleteUser = async (req, res) => {
 
 // Register as a tourist
 const registerTourist = async (req, res) => {
-    const {firstName, lastName, email, username, password, mobileNumber, nationality, dob, job} = req.body;
+	const {firstName, lastName, email, username, password, mobileNumber, nationality, dob, job} = req.body;
 	try {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
@@ -152,7 +164,7 @@ const registerTourist = async (req, res) => {
 
 // Register as a tour guide/advertiser/seller
 const registerGeneric = async (req, res) => {
-    const {
+	const {
 		firstName,
 		lastName,
 		email,
@@ -262,16 +274,14 @@ const updateTouristProfile = async (req, res) => {
 const readSellerProfile = async (req, res) => {
 	try {
 		const seller = await User.findById(req.params.id);
-		if (!seller ) {
+		if (!seller) {
 			return res.status(404).json({message: 'seller not found'});
 		}
 		if (seller.isApproved === false) {
 			return res.status(403).json({message: 'seller profile not approved yet'});
 		}
 		res.status(200).json(seller);
-	}
-	catch(error)
-	{
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -296,9 +306,7 @@ const updateSellerProfile = async (req, res) => {
 			return res.status(403).json({message: 'Seller profile not approved yet'});
 		}
 		res.status(200).json({message: 'Seller profile updated successfully'});
-	}
-	catch(error)
-	{
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -310,24 +318,24 @@ const deleteUserByAdmin = async (req, res) => {
 
 	try {
 		if (req.user.role !== 'admin') {
-			return res.status(403).json({ message: 'Only admins can delete accounts.' });
+			return res.status(403).json({message: 'Only admins can delete accounts.'});
 		}
 
-		const user = await User.findOne({ username });
+		const user = await User.findOne({username});
 		if (!user) {
-			return res.status(404).json({ message: 'User not found. Please check the username.' });
+			return res.status(404).json({message: 'User not found. Please check the username.'});
 		}
 
-		await User.deleteOne({ username });
+		await User.deleteOne({username});
 
-		res.status(200).json({ message: 'User account deleted successfully' });
+		res.status(200).json({message: 'User account deleted successfully'});
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		res.status(500).json({error: error.message});
 	}
 };
 
-//Add Tourism Governer (I copied 'Governer' as it is)
-const addTourismGoverner = async (req, res) => {
+//Add Tourism Governor
+const addTourismGovernor = async (req, res) => {
 	const {
 		username,
 		email,
@@ -348,17 +356,17 @@ const addTourismGoverner = async (req, res) => {
 
 	try {
 		if (req.user.role !== 'admin') {
-			return res.status(403).json({ message: 'Only admins can add other admins.' });
+			return res.status(403).json({message: 'Only admins can add other admins.'});
 		}
 
 		const existingUser = await User.findOne({username});
 		if (existingUser) {
-			return res.status(400).json({ message: 'Username already exists. Please choose a different one.' });
+			return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
 		}
 
 		const existingEmail = await User.findOne({email});
 		if (existingEmail) {
-			return res.status(400).json({ message: 'Email already exists. Please use a different one.' });
+			return res.status(400).json({message: 'Email already exists. Please use a different one.'});
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -409,17 +417,17 @@ const addAdmin = async (req, res) => {
 
 	try {
 		if (req.user.role !== 'admin') {
-			return res.status(403).json({ message: 'Only admins can add other admins.' });
+			return res.status(403).json({message: 'Only admins can add other admins.'});
 		}
 
 		const existingUser = await User.findOne({username});
 		if (existingUser) {
-			return res.status(400).json({ message: 'Username already exists. Please choose a different one.' });
+			return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
 		}
 
 		const existingEmail = await User.findOne({email});
 		if (existingEmail) {
-			return res.status(400).json({ message: 'Email already exists. Please use a different one.' });
+			return res.status(400).json({message: 'Email already exists. Please use a different one.'});
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -464,6 +472,6 @@ module.exports = {
 	readSellerProfile,
 	updateSellerProfile,
 	deleteUserByAdmin,
-	addTourismGoverner,
+	addTourismGovernor,
 	addAdmin
 };
