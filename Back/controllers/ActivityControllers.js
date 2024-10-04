@@ -3,8 +3,10 @@ const ActivityModel = require('../Models/Activity.js');
 //create an activity
 const createActivity = async (req, res) => {
     const { date, time, location, price, priceRange , category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+    //const newDate = new Date(date)
     try {
         const newActivity = new ActivityModel({
+           // newDate,
             date,
             time,
             location,
