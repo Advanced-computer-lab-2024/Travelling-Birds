@@ -1,6 +1,6 @@
 const {useState} = require("react");
 
-const SellerForm = () => {
+export const SellerForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -73,4 +73,3 @@ const SellerForm = () => {
 	);
 }
 
-module.exports = SellerForm;

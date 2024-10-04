@@ -1,6 +1,6 @@
 const {useState} = require("react");
 
-const TourGuideForm = () => {
+export const TourGuideForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -80,4 +80,3 @@ const TourGuideForm = () => {
 	);
 }
 
-module.exports = TourGuideForm;

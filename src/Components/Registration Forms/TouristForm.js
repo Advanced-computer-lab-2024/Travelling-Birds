@@ -1,4 +1,7 @@
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 const {useState} = require("react");
+
 
 export const TouristForm = () => {
 	const [firstName, setFirstName] = useState('');
@@ -10,9 +13,9 @@ export const TouristForm = () => {
 	const [nationality, setNationality] = useState('');
 	const [dob, setDob] = useState('');
 	const [job, setJob] = useState('');
+	const navigate = useNavigate();
 
 	const registerTourist = () => {
-		console.log('Button clicked');
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users`, {
 			method: 'POST',
 			headers: {
@@ -31,9 +34,17 @@ export const TouristForm = () => {
 				role: 'tourist'
 			})
 		})
+
 			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error('Error:', error));
+			.then((data) => {
+				if (data && data._id) {
+					const userId = data._id;
+					toast.success('User added successfully');
+					navigate(`/profile/${userId}`);
+				} else {
+					toast.error('Failed to register user');
+				}
+			})
 	}
 
 	return (

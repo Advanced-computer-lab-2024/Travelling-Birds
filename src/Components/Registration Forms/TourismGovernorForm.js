@@ -1,6 +1,6 @@
 const {useState} = require("react");
 
-const TourismGovernorForm = () => {
+export const TourismGovernorForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -66,4 +66,3 @@ const TourismGovernorForm = () => {
 	);
 }
 
-module.exports = TourismGovernorForm;

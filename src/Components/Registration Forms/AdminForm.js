@@ -1,6 +1,6 @@
 const {useState} = require("react");
 
-const AdminForm = () => {
+export const AdminForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -25,6 +25,7 @@ const AdminForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => console.log(data))
+			.then
 			.catch((error) => console.error('Error:', error));
 	}
 
@@ -66,4 +67,3 @@ const AdminForm = () => {
 	);
 }
 
-module.exports = AdminForm;

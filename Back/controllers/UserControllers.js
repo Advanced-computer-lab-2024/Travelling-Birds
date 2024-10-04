@@ -46,6 +46,7 @@ const addUser = async (req, res) => {
 			description
 		});
 		await newUser.save();
+		res.status(200).json({data: newUser});
 		res.status(201).json({message: 'User added successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});

@@ -1,6 +1,6 @@
 const {useState} = require("react");
 
-const AdvertiserForm = () => {
+ export const AdvertiserForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -10,7 +10,7 @@ const AdvertiserForm = () => {
 	const [hotline, setHotline] = useState('');
 	const [companyProfile, setCompanyProfile] = useState('');
 
-	const registerAdvertiser = () => {
+const registerAdvertiser = () => {
 		console.log('Button clicked');
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users`, {
 			method: 'POST',
@@ -86,5 +86,6 @@ const AdvertiserForm = () => {
 		</div>
 	);
 }
+export default AdvertiserForm;
 
-module.exports = AdvertiserForm;
+
