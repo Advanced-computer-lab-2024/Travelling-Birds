@@ -1,45 +1,48 @@
 const express = require('express');
 const {
-    SearchForActivity,
-    createActivity,
-    updateActivity,
-    displayActivity,
-    deleteActivity,
-    getUpcomingActivities,
-    filterUpcomingActivities,
-    sortActivities,
-    getAllCreatedActivities
+    addActivity,
+	getAllActivities,
+	getActivity,
+	updateActivity,
+	deleteActivity,
+	SearchForActivity,
+	getUpcomingActivities,
+	filterUpcomingActivities,
+	sortActivities,
+	getAllCreatedActivities
 
 } = require('../controllers/ActivityControllers.js');
 
 const router = express.Router();
 
-// search for a specific Activity by it's category or tag
+// Add an activity
+router.post('/', addActivity);
+
+// Get all activities
+router.get('/', getAllActivities);
+
+// Get specific activity
+router.get('/:id', getActivity);
+
+// Update an activity
+router.put('/:id', updateActivity);
+
+// Delete an activity
+router.delete('/:id', deleteActivity);
+
+// Search for an activity
 router.get('/search', SearchForActivity);
 
-// Create a new activity
-router.post('/postActivity', createActivity);
+// Get upcoming activities
+router.get('/upcoming', getUpcomingActivities);
 
-// Update an existing activity
-router.put('/putActivity/:id', updateActivity);
-
-// Display an existing activity
-router.get('/displayActivity/:id', displayActivity);
-
-//Delete an existing activity
-router.delete('/deleteActivity/:id', deleteActivity);
-
-// get all upcoming activities
-router.get('/', getUpcomingActivities);
-
-// Filter all upcoming activities by budget, date, category, and ratings
+// Filter upcoming activities
 router.get('/filter', filterUpcomingActivities);
 
-// Sort upcoming activities by price or ratings
+// Sort activities
 router.get('/sort', sortActivities);
 
-// Get all created activities by a specific user
+// Get all created activities
 router.get('/user/:id', getAllCreatedActivities);
-
 
 module.exports = router;

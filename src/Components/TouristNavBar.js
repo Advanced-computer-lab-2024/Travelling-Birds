@@ -1,5 +1,6 @@
 import logo from '../logo.svg';
-import { NavLink } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
+
 const TouristNavBar = () => {
 	const activeStyle = ({isActive}) => {
 		return isActive ? 'text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2' : 'text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'
@@ -13,21 +14,9 @@ const TouristNavBar = () => {
 						</NavLink>
 						<div className="md:ml-auto">
 							<div className="flex space-x-2">
-								<NavLink
-									to="/"
-									className={activeStyle}
-								>Profile</NavLink
-								>
-								<NavLink
-									to="/profile"
-									className={activeStyle}
-								>Products</NavLink
-								>
-								<NavLink
-									to='/places'
-									className={activeStyle}
-								>Places</NavLink
-								>
+								<NavLink to="/" className={activeStyle}>Profile</NavLink>
+								<NavLink to="/profile" className={activeStyle}>Products</NavLink>
+								<NavLink to='/places' className={activeStyle}>Places</NavLink>
 							</div>
 						</div>
 					</div>

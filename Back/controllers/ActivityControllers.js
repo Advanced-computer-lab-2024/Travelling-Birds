@@ -1,212 +1,223 @@
 const ActivityModel = require('../Models/Activity.js');
 
-//create an activity
-const createActivity = async (req, res) => {
-    const { date, time, location, price, priceRange , category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
-    //const newDate = new Date(date)
-    try {
-        const newActivity = new ActivityModel({
-           // newDate,
-            date,
-            time,
-            location,
-            price,
-            priceRange,
-            category,
-            tags,
-            specialDiscount,
-            bookingOpen,
-            createdBy
-        });
-        await newActivity.save();
-        res.status(201).json(newActivity);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+// Add Activity
+const addActivity = async (req, res) => {
+	const {date, time, location, price, priceRange, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	try {
+		const newActivity = new ActivityModel({
+			date,
+			time,
+			location,
+			price,
+			priceRange,
+			category,
+			tags,
+			specialDiscount,
+			bookingOpen,
+			createdBy
+		});
+		await newActivity.save();
+		res.status(201).json(newActivity);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 }
+
+// Get all activities
+const getAllActivities = async (req, res) => {
+	try {
+		const activities = await ActivityModel.find();
+		res.status(201).json({activities})
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get specific activity
+const getActivity = async (req, res) => {
+	try {
+		const activity = await ActivityModel.findById(req.params.id);
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
+		res.status(200).json(activity);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
+}
+
 // update an existing Activity
 const updateActivity = async (req, res) => {
-    const { date, time, location, price, category, tags, specialDiscount, bookingOpen,createdBy } = req.body;
-    try {
-        const activity =  await ActivityModel.findByIdAndUpdate(req.params.id,
-            { date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy }, { new: true });
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+	const {date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	try {
+		const activity = await ActivityModel.findByIdAndUpdate(req.params.id,
+			{date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy}, {new: true});
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 
 }
-//display an existing Activity
-const displayActivity = async (req, res) => {
-    try {
-        const activity = await ActivityModel.findById(req.params.id);
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
-        res.status(200).json(activity);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-}
+
 // delete an existing activity
-const deleteActivity = async(req, res) => {
-    try {
-        const{ id }= req.params
+const deleteActivity = async (req, res) => {
+	try {
+		const {id} = req.params
 
-         await ActivityModel.findOneAndDelete({_id: id})
-        res.status(200).json({message:"activity deleted successfully"});
-    } catch (error) {
-            res.status(404).json ({error: "Activity is not Found(Already deleted)"})
-    }
+		await ActivityModel.findOneAndDelete({_id: id})
+		res.status(200).json({message: "activity deleted successfully"});
+	} catch (error) {
+		res.status(404).json({error: "Activity is not Found(Already deleted)"})
+	}
 }
 
 
 // search for a specific Activity by its category or tag
 const SearchForActivity = async (req, res) => {
-    try {
-        const { category, tags } = req.query; // Extract category and tags from query parameters
+	try {
+		const {category, tags} = req.query; // Extract category and tags from query parameters
 
-        if (!category && !tags) {
-            return res.status(400).json({ message: 'Category or tags are required to search for activities.' });
-        }
+		if (!category && !tags) {
+			return res.status(400).json({message: 'Category or tags are required to search for activities.'});
+		}
 
-        // Create a search query object
-        const searchQuery = {};
+		// Create a search query object
+		const searchQuery = {};
 
-        if (category) {
-            // Search by exact match of category
-            searchQuery.category = category;
-        }
+		if (category) {
+			// Search by exact match of category
+			searchQuery.category = category;
+		}
 
-        if (tags) {
-            // Use $in to match any of the provided tags
-            searchQuery.tags = { $in: tags.split(',') };
-        }
+		if (tags) {
+			// Use $in to match any of the provided tags
+			searchQuery.tags = {$in: tags.split(',')};
+		}
 
-        // Find activities matching the search criteria
-        const activities = await ActivityModel.find(searchQuery);
+		// Find activities matching the search criteria
+		const activities = await ActivityModel.find(searchQuery);
 
-        if (activities.length === 0) {
-            return res.status(404).json({ message: 'No activities found matching the search criteria.' });
-        }
+		if (activities.length === 0) {
+			return res.status(404).json({message: 'No activities found matching the search criteria.'});
+		}
 
-        return res.status(200).json(activities);
-    } catch (error) {
-        return res.status(500).json({ message: 'An error occurred while searching for activities.', error });
-    }
+		return res.status(200).json(activities);
+	} catch (error) {
+		return res.status(500).json({message: 'An error occurred while searching for activities.', error});
+	}
 }
 
 // get all upcoming activities
 const getUpcomingActivities = async (req, res) => {
 	try {
-        // Get the current date and time
-        const currentDate = new Date();
+		// Get the current date and time
+		const currentDate = new Date();
 
-        // Find activities with a date greater than or equal to the current date
-        const upcomingActivities = await ActivityModel.find({ date: { $gte: currentDate } });
+		// Find activities with a date greater than or equal to the current date
+		const upcomingActivities = await ActivityModel.find({date: {$gte: currentDate}});
 
-        // If no upcoming activities are found, send a 404 response
-        if (upcomingActivities.length === 0) {
-            return res.status(404).json({ message: 'No upcoming activities found' });
-        }
+		// If no upcoming activities are found, send a 404 response
+		if (upcomingActivities.length === 0) {
+			return res.status(404).json({message: 'No upcoming activities found'});
+		}
 
-        // Send back the found upcoming activities
-        res.status(200).json(upcomingActivities);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error fetching upcoming activities', error });
-    }
+		// Send back the found upcoming activities
+		res.status(200).json(upcomingActivities);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error fetching upcoming activities', error});
+	}
 
 }
 
 // Filter all upcoming activities based on budget or date or category or ratings
 const filterUpcomingActivities = async (req, res) => {
 	try {
-        const { budget, date, category, rating } = req.query; // Extract filter parameters
+		const {budget, date, category, rating} = req.query; // Extract filter parameters
 
-        // Get the current date and time if no date is provided
-        const currentDate = date ? new Date(date) : new Date();
+		// Get the current date and time if no date is provided
+		const currentDate = date ? new Date(date) : new Date();
 
-        // Build the query object
-        let query = {
-            date: { $gte: currentDate } // Only activities on or after the current date
-        };
+		// Build the query object
+		let query = {
+			date: {$gte: currentDate} // Only activities on or after the current date
+		};
 
-        // Filter by budget (price)
-        if (budget) {
-            query.price = { $lte: Number(budget) }; // Only activities with price <= budget
-        }
+		// Filter by budget (price)
+		if (budget) {
+			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
+		}
 
-        // Filter by category (case-insensitive partial match)
-        if (category) {
-            query.category = { $regex: new RegExp(category, 'i') }; // partial match and case-insensitive
-        }
+		// Filter by category (case-insensitive partial match)
+		if (category) {
+			query.category = {$regex: new RegExp(category, 'i')}; // partial match and case-insensitive
+		}
 
-        // Filter by rating
-        if (rating) {
-            query.rating = { $gte: Number(rating) }; // Only activities with rating >= specified rating
-        }
+		// Filter by rating
+		if (rating) {
+			query.rating = {$gte: Number(rating)}; // Only activities with rating >= specified rating
+		}
 
-        // Fetch matching activities from the database
-        const filteredActivities = await ActivityModel.find(query);
+		// Fetch matching activities from the database
+		const filteredActivities = await ActivityModel.find(query);
 
-        // If no activities found, send a 404 response
-        if (filteredActivities.length === 0) {
-            return res.status(404).json({ message: 'No upcoming activities found matching your filters' });
-        }
+		// If no activities found, send a 404 response
+		if (filteredActivities.length === 0) {
+			return res.status(404).json({message: 'No upcoming activities found matching your filters'});
+		}
 
-        // Send back the filtered activities
-        res.status(200).json(filteredActivities);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error filtering activities', error });
-    }
+		// Send back the filtered activities
+		res.status(200).json(filteredActivities);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error filtering activities', error});
+	}
 
 }
 
 // Sort upcoming activities based on price or ratings
 const sortActivities = async (req, res) => {
 	try {
-        // Extract the sort parameter from the query string (price or rating)
-        const { sortBy } = req.query;
+		// Extract the sort parameter from the query string (price or rating)
+		const {sortBy} = req.query;
 
-        // Get the current date
-        const currentDate = new Date();
+		// Get the current date
+		const currentDate = new Date();
 
-        // Build the base query to find only upcoming activities
-        let query = {
-            date: { $gte: currentDate } // Only activities happening today or later
-        };
+		// Build the base query to find only upcoming activities
+		let query = {
+			date: {$gte: currentDate} // Only activities happening today or later
+		};
 
-        // Determine the sort criteria based on the sortBy parameter
-        let sortCriteria = {};
+		// Determine the sort criteria based on the sortBy parameter
+		let sortCriteria = {};
 
-        // If the user wants to sort by price or rating
-        if (sortBy === 'price') {
-            sortCriteria.price = 1; // 1 for ascending order (cheapest first)
-        } else if (sortBy === 'rating') {
-            sortCriteria.rating = -1; // -1 for descending order (highest rated first)
-        } else {
-            // If no sortBy parameter is provided or is invalid, default to sorting by date
-            sortCriteria.date = 1; // Sort by date (earliest upcoming first)
-        }
+		// If the user wants to sort by price or rating
+		if (sortBy === 'price') {
+			sortCriteria.price = 1; // 1 for ascending order (cheapest first)
+		} else if (sortBy === 'rating') {
+			sortCriteria.rating = -1; // -1 for descending order (highest rated first)
+		} else {
+			// If no sortBy parameter is provided or is invalid, default to sorting by date
+			sortCriteria.date = 1; // Sort by date (earliest upcoming first)
+		}
 
-        // Fetch the upcoming activities from the database and apply the sort criteria
-        const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);
+		// Fetch the upcoming activities from the database and apply the sort criteria
+		const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);
 
-        // If no activities are found, return a 404 error
-        if (sortedActivities.length === 0) {
-            return res.status(404).json({ message: 'No upcoming activities found to sort' });
-        }
+		// If no activities are found, return a 404 error
+		if (sortedActivities.length === 0) {
+			return res.status(404).json({message: 'No upcoming activities found to sort'});
+		}
 
-        // Send back the sorted activities
-        res.status(200).json(sortedActivities);
-    } catch (error) {
-        // Handle errors and send a 500 status if something goes wrong
-        res.status(500).json({ message: 'Error sorting activities', error });
-    }
+		// Send back the sorted activities
+		res.status(200).json(sortedActivities);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		res.status(500).json({message: 'Error sorting activities', error});
+	}
 
 }
 
@@ -221,14 +232,15 @@ const getAllCreatedActivities = async (req, res) => {
 }
 
 module.exports = {
-    createActivity,
-    updateActivity,
-    displayActivity,
-    deleteActivity,
-    SearchForActivity,
-    getUpcomingActivities ,
-    filterUpcomingActivities,
-    sortActivities,
-    getAllCreatedActivities
+	addActivity,
+	getAllActivities,
+	getActivity,
+	updateActivity,
+	deleteActivity,
+	SearchForActivity,
+	getUpcomingActivities,
+	filterUpcomingActivities,
+	sortActivities,
+	getAllCreatedActivities
 }
 
