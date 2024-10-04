@@ -356,7 +356,7 @@ const addTourismGovernor = async (req, res) => {
 
 	try {
 		if (req.user.role !== 'admin') {
-			return res.status(403).json({message: 'Only admins can add other admins.'});
+			return res.status(403).json({message: 'Only admins can add Tourism Governor.'});
 		}
 
 		const existingUser = await User.findOne({username});
