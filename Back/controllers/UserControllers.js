@@ -337,6 +337,8 @@ const deleteUserByAdmin = async (req, res) => {
 //Add Tourism Governor
 const addTourismGovernor = async (req, res) => {
 	const {
+		firstName,
+		lastName,
 		username,
 		email,
 		password,
@@ -372,6 +374,8 @@ const addTourismGovernor = async (req, res) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		const newTourismGoverner = new User({
+			firstName,
+			lastName,
 			username,
 			email,
 			password: hashedPassword,
@@ -398,6 +402,8 @@ const addTourismGovernor = async (req, res) => {
 //Add another admin
 const addAdmin = async (req, res) => {
 	const {
+		firstName,
+		lastName,
 		username,
 		email,
 		password,
@@ -416,23 +422,25 @@ const addAdmin = async (req, res) => {
 	} = req.body;
 
 	try {
-		if (req.user.role !== 'admin') {
-			return res.status(403).json({message: 'Only admins can add other admins.'});
-		}
+		// if (req.user.role !== 'admin') {
+		// 	return res.status(403).json({message: 'Only admins can add other admins.'});
+		// }
 
-		const existingUser = await User.findOne({username});
-		if (existingUser) {
-			return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
-		}
+		//const existingUser = await User.findOne({username});
+		//if (existingUser) {
+			//return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
+		//}
 
-		const existingEmail = await User.findOne({email});
-		if (existingEmail) {
-			return res.status(400).json({message: 'Email already exists. Please use a different one.'});
-		}
+		//const existingEmail = await User.findOne({email});
+		//if (existingEmail) {
+			//return res.status(400).json({message: 'Email already exists. Please use a different one.'});
+		//}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		const newAdmin = new User({
+			firstName,
+			lastName,
 			username,
 			email,
 			password: hashedPassword,
@@ -450,7 +458,7 @@ const addAdmin = async (req, res) => {
 			isApproved
 		});
 		await newAdmin.save();
-		res.status(201).json({message: 'User added successfully'});
+		res.status(201).json({message: 'Admin added successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
