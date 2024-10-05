@@ -8,7 +8,7 @@ const museumSchema = new Schema({
     location: String,
     openingHours: String,
     ticketPrices: {type: Map, of: Number},
-    tags: [String],
+    tags: [{type: String, ref: 'Tag'}],
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 
