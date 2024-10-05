@@ -20,7 +20,7 @@ function App() {
 				<Route path='/advertiser' element={<AdvertiserForm/>}/>
 				<Route path='/tourismgoverner' element={<TourismGovernorForm/>}/>
 				<Route path='/profile' element={<ProfilePage/>}/>
-				<Route path="/explore" component={explorepage} />
+				<Route path='/search' element={<SearchPage/>}/>
 			</>
 		)
 	);
