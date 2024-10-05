@@ -15,7 +15,7 @@ const activitySchema = new Schema({
 		hiBound: {type: Number}
 	},
 	category: {type: String, required: true},
-	tags: [String],
+	tags: [{type: String, ref: 'Tag'}],
 	rating: {type: Number, default: 0},
 	specialDiscounts: String,
 	bookingOpen: {type: Boolean, default: true},
