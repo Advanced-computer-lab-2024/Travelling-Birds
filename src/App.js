@@ -11,6 +11,7 @@ import {SellerForm} from "./Components/Registration Forms/SellerForm";
 import {AdminForm} from "./Components/Registration Forms/AdminForm";
 import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
+import {explorepage} from "../Pages/explorepage";
 import ProfilePage from "./Pages/ProfilePage";
 function App() {
 	const router = createBrowserRouter(
@@ -24,6 +25,7 @@ function App() {
 				<Route path='/advertiser' element={<AdvertiserForm/>}/>
 				<Route path='/tourismgoverner' element={<TourismGovernorForm/>}/>
 				<Route path='/tourist/profile/:userId' element={<ProfilePage/>}/>
+				<Route path="/explore" component={explorepage} />
 			</>
 		)
 	);
