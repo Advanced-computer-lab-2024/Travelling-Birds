@@ -1,6 +1,10 @@
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
+import ReusableInput from "../ReuseableInput";
+
 const {useState} = require("react");
 
- export const AdvertiserForm = () => {
+export const AdvertiserForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -9,8 +13,9 @@ const {useState} = require("react");
 	const [website, setWebsite] = useState('');
 	const [hotline, setHotline] = useState('');
 	const [companyProfile, setCompanyProfile] = useState('');
+	const navigate = useNavigate();
 
-const registerAdvertiser = () => {
+	const registerAdvertiser = () => {
 		console.log('Button clicked');
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users`, {
 			method: 'POST',
@@ -30,9 +35,17 @@ const registerAdvertiser = () => {
 			})
 		})
 			.then((response) => response.json())
-			.then((data) => console.log(data))
-			.catch((error) => console.error('Error:', error));
-	}
+			.then((data) => {
+				if (data && data.data._id) {
+					sessionStorage.setItem('user id', data.data._id);
+					sessionStorage.setItem('role', 'advertiser');
+					toast.success('User added successfully');
+					navigate('/profile', {replace: true});
+				} else {
+					toast.error('Failed to register user');
+				}
+			});
+	};
 
 	return (
 		<div>
@@ -41,51 +54,26 @@ const registerAdvertiser = () => {
 				registerAdvertiser();
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Register</h1>
-				<label className="block mb-2">First Name
-					{/**/}
-					<input type="text" name="firstName" className="w-full px-3 py-2 border rounded mt-1"
-					       value={firstName} onChange={e => setFirstName(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Last Name
-					{/**/}
-					<input type="text" name="lastName" className="w-full px-3 py-2 border rounded mt-1" value={lastName}
-					       onChange={e => setLastName(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Email
-					{/**/}
-					<input type="email" name="email" className="w-full px-3 py-2 border rounded mt-1" value={email}
-					       onChange={e => setEmail(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Username
-					{/**/}
-					<input type="text" name="username" className="w-full px-3 py-2 border rounded mt-1" value={username}
-					       onChange={e => setUsername(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Password
-					{/**/}
-					<input type="password" name="password" className="w-full px-3 py-2 border rounded mt-1"
-					       value={password} onChange={e => setPassword(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Website
-					{/**/}
-					<input type="text" name="website" className="w-full px-3 py-2 border rounded mt-1" value={website}
-					       onChange={e => setWebsite(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Hotline
-					{/**/}
-					<input type="text" name="hotline" className="w-full px-3 py-2 border rounded mt-1" value={hotline}
-					       onChange={e => setHotline(e.target.value)}/>
-				</label>
-				<label className="block mb-2">Company Profile
-					{/**/}
-					<input type="text" name="companyProfile" className="w-full px-3 py-2 border rounded mt-1"
-					       value={companyProfile} onChange={e => setCompanyProfile(e.target.value)}/>
-				</label>
+				<ReusableInput type="text" name="First Name" value={firstName}
+				               onChange={e => setFirstName(e.target.value)}/>
+				<ReusableInput type="text" name="Last Name" value={lastName}
+				               onChange={e => setLastName(e.target.value)}/>
+				<ReusableInput type="email" name="Email" value={email}
+				               onChange={e => setEmail(e.target.value)}/>
+				<ReusableInput type="text" name="Username" value={username}
+				               onChange={e => setUsername(e.target.value)}/>
+				<ReusableInput type="password" name="Password" value={password}
+				               onChange={e => setPassword(e.target.value)}/>
+				<ReusableInput type="text" name="Website" value={website}
+				               onChange={e => setWebsite(e.target.value)}/>
+				<ReusableInput type="text" name="Hotline" value={hotline}
+				               onChange={e => setHotline(e.target.value)}/>
+				<ReusableInput type="text" name="Company Profile" value={companyProfile}
+				               onChange={e => setCompanyProfile(e.target.value)}/>
 				<button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">Register</button>
 			</form>
 		</div>
 	);
-}
+};
+
 export default AdvertiserForm;
-
-
