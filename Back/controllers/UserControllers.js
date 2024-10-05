@@ -312,24 +312,24 @@ const updateSellerProfile = async (req, res) => {
 	}
 }
 
-//not tested yet, M.haythem will conduct the necessary tests
 //Delete account by admin
 const deleteUserByAdmin = async (req, res) => {
-	const {username} = req.params;
+	const { username } = req.params;
 
 	try {
 		if (req.user.role !== 'admin') {
 			return res.status(403).json({message: 'Only admins can delete accounts.'});
 		}
 
-		const user = await User.findOne({username});
+		const user = await User.findOne({ username });
 		if (!user) {
-			return res.status(404).json({message: 'User not found. Please check the username.'});
+			return res.status(404).json({ message: 'User not found. Please check the username.' });
 		}
 
-		await User.deleteOne({username});
+		await User.deleteOne({ username });
 
 		res.status(200).json({message: 'User account deleted successfully'});
+
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -380,7 +380,7 @@ const addTourismGovernor = async (req, res) => {
 			username,
 			email,
 			password: hashedPassword,
-			role: 'tourismGovernor',
+			role: 'tourism_governor',
 			mobileNumber,
 			nationality,
 			dob,
@@ -423,19 +423,19 @@ const addAdmin = async (req, res) => {
 	} = req.body;
 
 	try {
-		// if (req.user.role !== 'admin') {
-		// 	return res.status(403).json({message: 'Only admins can add other admins.'});
-		// }
+		if (req.user.role !== 'admin') {
+			return res.status(403).json({message: 'Only admins can add other admins.'});
+		}
 
-		//const existingUser = await User.findOne({username});
-		//if (existingUser) {
-			//return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
-		//}
+		const existingUser = await User.findOne({username});
+		if (existingUser) {
+			return res.status(400).json({message: 'Username already exists. Please choose a different one.'});
+		}
 
-		//const existingEmail = await User.findOne({email});
-		//if (existingEmail) {
-			//return res.status(400).json({message: 'Email already exists. Please use a different one.'});
-		//}
+		const existingEmail = await User.findOne({email});
+		if (existingEmail) {
+			return res.status(400).json({message: 'Email already exists. Please use a different one.'});
+		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -464,8 +464,6 @@ const addAdmin = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
-
-//end of test
 
 module.exports = {
 	addUser,
