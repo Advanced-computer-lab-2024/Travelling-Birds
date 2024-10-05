@@ -5,6 +5,8 @@ import App from './App';
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import HomeCards from "./Components/HomeCards";
+import TouristNavBar from "./Components/NavBars/TouristNavBar";
+import AdminNavBar from "./Components/NavBars/AdminNavBar";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,11 +20,11 @@ root.render(
 
 function Layout({children}) {
 	return (
-		<div className="container mx-auto">
-			{/*{children}*/}
+		<>
+			{children}
 			{sessionStorage.getItem('role') === '' && <HomeCards/>}
 			{sessionStorage.getItem('role') === 'tourist' && <TouristNavBar/>}
 			{sessionStorage.getItem('role') === 'admin' && <AdminNavBar/>}
-		</div>
+		</>
 	);
 }
