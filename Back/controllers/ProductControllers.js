@@ -17,8 +17,8 @@ const addProduct = async (req, res) => {
 // Get products
 const getAllProducts = async (req, res) => {
 	try {
-		const products = await Product.find();
-		res.status(200).json(products);
+		const product = await Product.find();
+		res.status(200).json(product);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -62,12 +62,79 @@ const deleteProduct = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// Search Product
+const searchProducts = async (req, res) => {
+	const {name} = req.query;
+	try {
+		const products = await Product.find({ name: { $regex: new RegExp(name, 'i') } });
+
+		if (!products) {
+			return res.status(404).json({message: "No Products Found With This Name"});
+
+		}
+		res.status(200).json(products);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Filter Product
+const filterProducts = async (req, res) => {
+	const {maxPrice} = req.query;
+	const filterByMax = {};
+	if (maxPrice) {
+		filterByMax.price = {$lte: parseFloat(maxPrice)};
+	}
+
+	try {
+		const products = await Product.find(filterByMax);
+		if (!products) {
+			return res.status(404).json({message: "No Products Found Within This Specified Price"});
+
+		}
+		res.status(200).json(products);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Sort Product
+const sortProductsByRating = async (req, res) => {
+	const {productsOrder} = req.query
+	;
+	const sortOrder = (productsOrder && productsOrder.trim().toLowerCase() === 'asc') ? 1 : -1;
+	try {
+		const products = await Product.aggregate([
+			// Step 1: Calculate the average rating for each product
+			{
+				$addFields: {
+					avgRating: { $avg: "$ratings" }
+				}
+			},
+			// Step 2: Sort the products by the calculated average rating
+			{
+				$sort: { avgRating: sortOrder }
+			}
+		]);
+		if (!products) {
+			return res.status(404).json({message: "Product Not Found"});
+		}
+
+		res.status(200).json(products);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+
+}
 
 module.exports = {
 	addProduct,
 	getAllProducts,
 	getProduct,
 	updateProduct,
-	deleteProduct
+	deleteProduct,
+	sortProductsByRating,
+	filterProducts,
+	searchProducts
 };
 
