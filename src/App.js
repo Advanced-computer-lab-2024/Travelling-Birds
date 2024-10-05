@@ -13,6 +13,7 @@ import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
 import explorepage from "./Pages/explorepage";
 import ProfilePage from "./Pages/ProfilePage";
+import TouristNavBar from "./Components/NavBars/TouristNavBar";
 function App() {
 	const router = createBrowserRouter(
 		createRoutesFromElements(
