@@ -4,10 +4,7 @@ import TouristNavBar from "../Components/NavBars/TouristNavBar";
 
 const RegisterPage = () => {
 	return (
-		<>
-			<TouristNavBar/>
 		<HomeCards/>
-		</>
 	);
 }
 export default RegisterPage;
