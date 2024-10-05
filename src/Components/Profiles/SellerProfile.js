@@ -4,20 +4,17 @@ import ReusableInput from "../ReuseableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
-const TouristProfile = ({user}) => {
+const SellerProfile = ({user}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
 	const [lastName, setLastName] = useState(user.lastName || '');
 	const [email, setEmail] = useState(user.email || '');
 	const [username, setUsername] = useState(user.username || '');
 	const [password, setPassword] = useState('');
-	const [mobileNumber, setMobileNumber] = useState(user.mobileNumber || '');
-	const [nationality, setNationality] = useState(user.nationality || '');
-	const [dob, setDob] = useState(user.dob || '');
-	const [job, setJob] = useState(user.job || '');
+	const [description, setDescription] = useState(user.description || '');
 	const [isEditing, setIsEditing] = useState(false);
 	const navigate = useNavigate();
 
-	const updateTourist = () => {
+	const updateSeller = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
 			headers: {
@@ -28,10 +25,7 @@ const TouristProfile = ({user}) => {
 				lastName,
 				email,
 				username,
-				mobileNumber,
-				nationality,
-				dob,
-				job,
+				description,
 			})
 		}).then((response) => response.json())
 			.then((data) => {
@@ -51,10 +45,7 @@ const TouristProfile = ({user}) => {
 		setLastName(user.lastName);
 		setEmail(user.email);
 		setUsername(user.username);
-		setMobileNumber(user.mobileNumber);
-		setNationality(user.nationality);
-		setDob(user.dob);
-		setJob(user.job);
+		setDescription(user.description);
 	}, [user]);
 
 	return (
@@ -62,7 +53,7 @@ const TouristProfile = ({user}) => {
 			<form className="w-full max-w-sm mx-auto" onSubmit={(e) => {
 				e.preventDefault();
 				if (isEditing) {
-					updateTourist();
+					updateSeller();
 				}
 				setIsEditing(!isEditing);
 			}}>
@@ -77,14 +68,8 @@ const TouristProfile = ({user}) => {
 				               onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
 				<ReusableInput type="password" name="Password" value={password}
 				               onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Mobile Number" value={mobileNumber}
-				               onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Nationality" value={nationality}
-				               onChange={e => setNationality(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="date" name="Date of Birth" value={dob}
-				               onChange={e => setDob(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Job" value={job}
-				               onChange={e => setJob(e.target.value)} disabled={!isEditing}/>
+				<ReusableInput type="text" name="Description" value={description}
+				               onChange={e => setDescription(e.target.value)} disabled={!isEditing}/>
 				<button type="submit"
 				        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
 					{isEditing ? 'Confirm' : 'Update'}
@@ -94,18 +79,15 @@ const TouristProfile = ({user}) => {
 	);
 }
 
-TouristProfile.propTypes = {
+SellerProfile.propTypes = {
 	user: PropTypes.shape({
 		firstName: PropTypes.string.isRequired,
 		lastName: PropTypes.string.isRequired,
 		email: PropTypes.string.isRequired,
 		username: PropTypes.string.isRequired,
-		mobileNumber: PropTypes.string,
-		nationality: PropTypes.string,
-		dob: PropTypes.string,
-		job: PropTypes.string,
+		description: PropTypes.string,
 		_id: PropTypes.string.isRequired,
 	}).isRequired,
 };
 
-export default TouristProfile;
+export default SellerProfile;

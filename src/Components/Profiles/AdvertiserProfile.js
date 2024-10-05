@@ -4,20 +4,19 @@ import ReusableInput from "../ReuseableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
-const TouristProfile = ({user}) => {
+const AdvertiserProfile = ({user}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
 	const [lastName, setLastName] = useState(user.lastName || '');
 	const [email, setEmail] = useState(user.email || '');
 	const [username, setUsername] = useState(user.username || '');
 	const [password, setPassword] = useState('');
-	const [mobileNumber, setMobileNumber] = useState(user.mobileNumber || '');
-	const [nationality, setNationality] = useState(user.nationality || '');
-	const [dob, setDob] = useState(user.dob || '');
-	const [job, setJob] = useState(user.job || '');
+	const [website, setWebsite] = useState(user.website || '');
+	const [hotline, setHotline] = useState(user.hotline || '');
+	const [companyProfile, setCompanyProfile] = useState(user.companyProfile || '');
 	const [isEditing, setIsEditing] = useState(false);
 	const navigate = useNavigate();
 
-	const updateTourist = () => {
+	const updateAdvertiser = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
 			headers: {
@@ -28,10 +27,9 @@ const TouristProfile = ({user}) => {
 				lastName,
 				email,
 				username,
-				mobileNumber,
-				nationality,
-				dob,
-				job,
+				website,
+				hotline,
+				companyProfile,
 			})
 		}).then((response) => response.json())
 			.then((data) => {
@@ -51,10 +49,9 @@ const TouristProfile = ({user}) => {
 		setLastName(user.lastName);
 		setEmail(user.email);
 		setUsername(user.username);
-		setMobileNumber(user.mobileNumber);
-		setNationality(user.nationality);
-		setDob(user.dob);
-		setJob(user.job);
+		setWebsite(user.website);
+		setHotline(user.hotline);
+		setCompanyProfile(user.companyProfile);
 	}, [user]);
 
 	return (
@@ -62,7 +59,7 @@ const TouristProfile = ({user}) => {
 			<form className="w-full max-w-sm mx-auto" onSubmit={(e) => {
 				e.preventDefault();
 				if (isEditing) {
-					updateTourist();
+					updateAdvertiser();
 				}
 				setIsEditing(!isEditing);
 			}}>
@@ -77,14 +74,12 @@ const TouristProfile = ({user}) => {
 				               onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
 				<ReusableInput type="password" name="Password" value={password}
 				               onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Mobile Number" value={mobileNumber}
-				               onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Nationality" value={nationality}
-				               onChange={e => setNationality(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="date" name="Date of Birth" value={dob}
-				               onChange={e => setDob(e.target.value)} disabled={!isEditing}/>
-				<ReusableInput type="text" name="Job" value={job}
-				               onChange={e => setJob(e.target.value)} disabled={!isEditing}/>
+				<ReusableInput type="text" name="Website" value={website}
+				               onChange={e => setWebsite(e.target.value)} disabled={!isEditing}/>
+				<ReusableInput type="text" name="Hotline" value={hotline}
+				               onChange={e => setHotline(e.target.value)} disabled={!isEditing}/>
+				<ReusableInput type="text" name="Company Profile" value={companyProfile}
+				               onChange={e => setCompanyProfile(e.target.value)} disabled={!isEditing}/>
 				<button type="submit"
 				        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
 					{isEditing ? 'Confirm' : 'Update'}
@@ -94,18 +89,17 @@ const TouristProfile = ({user}) => {
 	);
 }
 
-TouristProfile.propTypes = {
+AdvertiserProfile.propTypes = {
 	user: PropTypes.shape({
 		firstName: PropTypes.string.isRequired,
 		lastName: PropTypes.string.isRequired,
 		email: PropTypes.string.isRequired,
 		username: PropTypes.string.isRequired,
-		mobileNumber: PropTypes.string,
-		nationality: PropTypes.string,
-		dob: PropTypes.string,
-		job: PropTypes.string,
+		website: PropTypes.string,
+		hotline: PropTypes.string,
+		companyProfile: PropTypes.string,
 		_id: PropTypes.string.isRequired,
 	}).isRequired,
 };
 
-export default TouristProfile;
+export default AdvertiserProfile;
