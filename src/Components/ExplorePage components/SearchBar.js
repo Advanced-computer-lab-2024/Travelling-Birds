@@ -1,44 +1,54 @@
-import React from "react";
+import React, { useState } from 'react';
 
-const SearchBar = ({ searchParams, setSearchParams, onSearch }) => {
-  const handleChange = (e) => {
+const SearchBar = ({ onSearch }) => {
+  const [searchTerms, setSearchTerms] = useState({
+    name: '',
+    category: '',
+    tag: ''
+  });
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setSearchParams((prev) => ({ ...prev, [name]: value }));
+    setSearchTerms((prev) => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSearch();
+  const handleSearch = () => {
+    onSearch(searchTerms);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
+    <div className="flex flex-col space-y-4 mb-4">
       <input
         type="text"
-        name="term"
-        value={searchParams.term}
-        onChange={handleChange}
-        placeholder="Search Museums or Historical Places"
-        className="border p-2 m-2 w-full"
+        name="name"
+        placeholder="Search by Name"
+        value={searchTerms.name}
+        onChange={handleInputChange}
+        className="border p-2 rounded"
       />
       <input
         type="text"
         name="category"
-        value={searchParams.category}
-        onChange={handleChange}
-        placeholder="Search Activities and Itineraries by Category"
-        className="border p-2 m-2 w-full"
+        placeholder="Search by Category"
+        value={searchTerms.category}
+        onChange={handleInputChange}
+        className="border p-2 rounded"
       />
       <input
         type="text"
         name="tag"
-        value={searchParams.tag}
-        onChange={handleChange}
-        placeholder="Search Activities and Itineraries by Tag"
-        className="border p-2 m-2 w-full"
+        placeholder="Search by Tag"
+        value={searchTerms.tag}
+        onChange={handleInputChange}
+        className="border p-2 rounded"
       />
-      <button type="submit" className="bg-blue-500 text-white p-2 m-2">Search</button>
-    </form>
+      <button onClick={handleSearch} className="bg-blue-500 text-white p-2 rounded">
+        Search
+      </button>
+    </div>
   );
 };
 

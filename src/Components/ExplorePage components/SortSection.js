@@ -1,35 +1,21 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const SortSection = ({ activities, itineraries }) => {
-  const [sortOption, setSortOption] = useState("price");
+const SortSection = ({ onSort }) => {
+  const [sortBy, setSortBy] = useState('');
 
-  const sortResults = (e) => {
-    e.preventDefault();
-
-    const sortedActivities = [...activities].sort((a, b) => {
-      return sortOption === "price" ? a.price - b.price : b.rating - a.rating;
-    });
-
-    const sortedItineraries = [...itineraries].sort((a, b) => {
-      return sortOption === "price" ? a.price - b.price : b.rating - a.rating;
-    });
-
-    console.log("Sorted Activities:", sortedActivities);
-    console.log("Sorted Itineraries:", sortedItineraries);
+  const handleSort = () => {
+    onSort(sortBy);
   };
 
   return (
-    <form onSubmit={sortResults} className="mb-4">
-      <select
-        value={sortOption}
-        onChange={(e) => setSortOption(e.target.value)}
-        className="border p-2 m-2"
-      >
-        <option value="price">Sort by Price</option>
-        <option value="rating">Sort by Rating</option>
+    <div className="flex flex-col space-y-4 mb-4">
+      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="border p-2 rounded">
+        <option value="">Sort By</option>
+        <option value="price">Price</option>
+        <option value="rating">Rating</option>
       </select>
-      <button type="submit" className="bg-blue-500 text-white p-2 m-2">Sort</button>
-    </form>
+      <button onClick={handleSort} className="bg-blue-500 text-white p-2 rounded">Sort</button>
+    </div>
   );
 };
 
