@@ -1,7 +1,5 @@
 import {useState} from "react";
-import PropTypes from "prop-types";
-import ReusableInput from "../ReuseableInput";
-import {useNavigate} from "react-router-dom";
+import ReusableInput from "../../ReusableInput";
 import {toast} from "react-toastify";
 
 const ActivityForm = () => {
@@ -17,7 +15,6 @@ const ActivityForm = () => {
 	const [rating, setRating] = useState(0);
 	const [specialDiscounts, setSpecialDiscounts] = useState('');
 	const [bookingOpen, setBookingOpen] = useState(true);
-	//const navigate = useNavigate();
 
 	const registerActivity = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/activities`, {
@@ -41,9 +38,8 @@ const ActivityForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data && data._id) {
+				if (data?._id) {
 					toast.success('Activity added successfully');
-					//navigate('/profile', {replace: true});
 				} else {
 					toast.error('Failed to register activity');
 				}
@@ -90,11 +86,5 @@ const ActivityForm = () => {
 		</div>
 	);
 }
-
-ActivityForm.propTypes = {
-	user: PropTypes.shape({
-		_id: PropTypes.string.isRequired,
-	}).isRequired,
-};
 
 export default ActivityForm;
