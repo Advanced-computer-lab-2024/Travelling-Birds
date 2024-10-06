@@ -73,7 +73,6 @@ const ActivityForm = ({activity}) => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity updated successfully');
-					update();
 					navigate('/activities', {replace: true});
 				} else {
 					toast.error('Failed to update activity');

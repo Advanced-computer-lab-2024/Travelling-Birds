@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { FaMapMarker } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import {useState} from 'react';
+import {FaMapMarker} from 'react-icons/fa';
 import PropTypes from "prop-types";
 
-const ActivityDisplay = ({ activity }) => {
+const ActivityDisplay = ({activity}) => {
 	const [showMore, setShowMore] = useState(false);
 	const description = activity.specialDiscounts ? activity.specialDiscounts.substring(0, 100) : '';
 
@@ -42,7 +41,7 @@ const ActivityDisplay = ({ activity }) => {
 
 				<div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
 			</div>
-			<button onClick={update} className="bg-indigo-500 text-white py-2 w-full rounded-b-xl">
+			<button className="bg-indigo-500 text-white py-2 w-full rounded-b-xl">
 				Update Activity
 			</button>
 		</div>
