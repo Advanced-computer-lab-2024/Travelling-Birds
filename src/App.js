@@ -8,6 +8,10 @@ import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
 import SearchPage from "./Pages/SearchPage";
 import ProfilePage from "./Pages/ProfilePage";
+import ActivityPage from "./Pages/ActivitiesPage";
+import ActivityForm from "./Components/Model Forms/Activity Form";
+
+
 function App() {
 	const router = createBrowserRouter(
 		createRoutesFromElements(
@@ -21,11 +25,14 @@ function App() {
 				<Route path='/tourismgoverner' element={<TourismGovernorForm/>}/>
 				<Route path='/profile' element={<ProfilePage/>}/>
 				<Route path='/search' element={<SearchPage/>}/>
+				<Route path='/activities' element={<ActivityPage/>}/>
+				<Route path='/create-activity' element={<ActivityForm/>}/>
 			</>
 		)
 	);
 	return (
-		<RouterProvider router={router}/>
+		//<RouterProvider router={router}/>
+		<ActivityPage/>
 	);
 }
 
