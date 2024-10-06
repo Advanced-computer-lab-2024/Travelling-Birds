@@ -10,7 +10,7 @@ const TourGuideProfile = ({user, displayOnly}) => {
 	const [email, setEmail] = useState(user.email || '');
 	const [username, setUsername] = useState(user.username || '');
 	const [password, setPassword] = useState('');
-	const [yearsOfExperience, setYearsOfExperience] = useState(user.yearsOfExperience || '');
+	const [yearsOfExperience, setYearsOfExperience] = useState(user.yearsOfExperience || 0);
 	const [previousWork, setPreviousWork] = useState(user.previousWork || '');
 	const [isEditing, setIsEditing] = useState(false);
 	const navigate = useNavigate();
@@ -115,7 +115,7 @@ TourGuideProfile.propTypes = {
 		lastName: PropTypes.string.isRequired,
 		email: PropTypes.string.isRequired,
 		username: PropTypes.string.isRequired,
-		yearsOfExperience: PropTypes.string,
+		yearsOfExperience: PropTypes.number,
 		previousWork: PropTypes.string,
 		_id: PropTypes.string.isRequired,
 	}).isRequired,

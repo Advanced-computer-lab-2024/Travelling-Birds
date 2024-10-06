@@ -26,6 +26,9 @@ import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Models/Forms/ActivityForm";
 import ExplorePage from "./Pages/ExplorePage";
 import UsersPage from "./Pages/UsersPage";
+import Itinerary from "./Components/Itinerary";
+import ItinerariesPage from "./Pages/ItinerariesPage";
+import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -45,7 +48,9 @@ root.render(
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
+					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm/>}/>
+					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 				</Route>
 			</Routes>
