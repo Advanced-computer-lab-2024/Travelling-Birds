@@ -4,7 +4,7 @@ import ReusableInput from "../ReusableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
-const TourismGovernorProfile = ({user}) => {
+const TourismGovernorProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
 	const [lastName, setLastName] = useState(user.lastName || '');
 	const [email, setEmail] = useState(user.email || '');
@@ -37,6 +37,20 @@ const TourismGovernorProfile = ({user}) => {
 			console.log(error);
 		});
 	}
+	const deleteTourismGovernor = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'User deleted successfully') {
+					toast.success('User deleted successfully');
+				} else {
+					toast.error('Failed to delete user');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	}
 
 	useEffect(() => {
 		setFirstName(user.firstName);
@@ -54,7 +68,7 @@ const TourismGovernorProfile = ({user}) => {
 				}
 				setIsEditing(!isEditing);
 			}}>
-				<h1 className="text-2xl font-bold mb-4">Update Profile</h1>
+				{!displayOnly && <h1 className="text-2xl font-bold mb-4">Update Profile</h1>}
 				<ReusableInput type="text" name="First Name" value={firstName}
 				               onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
 				<ReusableInput type="text" name="Last Name" value={lastName}
@@ -65,9 +79,20 @@ const TourismGovernorProfile = ({user}) => {
 				               onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
 				<ReusableInput type="password" name="Password" value={password}
 				               onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
-				<button type="submit"
-				        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
-					{isEditing ? 'Confirm' : 'Update'}
+				{!displayOnly &&
+					<button type="submit"
+					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
+						{isEditing ? 'Confirm' : 'Update'}
+					</button>
+				}
+				<button type="button"
+				        onClick={() => {
+					        if (window.confirm('Are you sure you wish to delete this item?')) {
+						        deleteTourismGovernor();
+					        }
+				        }}
+				        className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-1">
+					Delete
 				</button>
 			</form>
 		</div>
@@ -82,6 +107,7 @@ TourismGovernorProfile.propTypes = {
 		username: PropTypes.string.isRequired,
 		_id: PropTypes.string.isRequired,
 	}).isRequired,
+	displayOnly: PropTypes.bool.isRequired,
 };
 
 export default TourismGovernorProfile;
