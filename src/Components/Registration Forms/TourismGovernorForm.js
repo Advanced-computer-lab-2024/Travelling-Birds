@@ -29,7 +29,7 @@ export const TourismGovernorForm = () => {
 			})
 		}).then((response) => response.json())
 			.then((data) => {
-				if (data && data.data._id) {
+				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'tourism_governor');
 					toast.success('User added successfully');
