@@ -26,6 +26,19 @@ const ActivityPage = ({ isHome = false }) => {
 	const handleCreateActivity = () => {
 		navigate('/create-activity')
 	}
+	const handleViewMyActivities = async () => {
+		const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/user/${sessionStorage.getItem('user id')}`;
+		try {
+			const res = await fetch(apiUrl);
+			const data = await res.json();
+			setActivities(data.activities);
+			console.log('Activities:', data.activities);
+		} catch (err) {
+			console.log('Error fetching activities', err);
+		} finally {
+			setLoading(false);
+		}
+	}
 
 	return (
 		<div>
@@ -41,6 +54,16 @@ const ActivityPage = ({ isHome = false }) => {
 								className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6"
 							>
 								Create New Activity
+							</button>
+						)
+					}
+					{
+						['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+							<button
+								onClick={handleViewMyActivities}
+								className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6"
+							>
+								View My Created Activities
 							</button>
 						)
 					}

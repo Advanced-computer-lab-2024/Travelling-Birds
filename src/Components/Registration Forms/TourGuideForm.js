@@ -2,6 +2,7 @@ import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
 import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
+import {number} from "prop-types";
 
 const {useState} = require("react");
 
@@ -11,7 +12,7 @@ const TourGuideForm = () => {
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [yearsOfExperience, setYearsOfExperience] = useState('');
+	const [yearsOfExperience, setYearsOfExperience] = useState(0);
 	const [previousWork, setPreviousWork] = useState('');
 	const navigate = useNavigate();
 
