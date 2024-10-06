@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from "react";
 import Activity from "../Components/Activity";
 import Itinerary from "../Components/Itinerary";
+import {useNavigate} from "react-router-dom";
 
 const ItinerariesPage = () => {
 	const [itineraries, setItineraries] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const navigate = useNavigate();
 	useEffect(() => {
 		const fetchItineraries = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/itineraries/`;
