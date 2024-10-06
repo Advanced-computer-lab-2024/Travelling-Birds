@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FaMapMarker } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-const Activity = ({ activity }) => {
+const ActivityDisplay = ({ activity }) => {
 	const [showMore, setShowMore] = useState(false);
 	const description = activity.specialDiscounts ? activity.specialDiscounts.substring(0, 100) : '';
 
@@ -45,4 +45,4 @@ const Activity = ({ activity }) => {
 	);
 };
 
-export default Activity;
+export default ActivityDisplay;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 
-const Itinerary = ({ itinerary }) => {
+const ItineraryDisplay = ({ itinerary }) => {
 	const [showMore, setShowMore] = useState(false);
 	const timelinePreview = itinerary.timeline ? itinerary.timeline.substring(0, 100) : '';
 	const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
@@ -54,4 +54,4 @@ const Itinerary = ({ itinerary }) => {
 	);
 };
 
-export default Itinerary;
+export default ItineraryDisplay;

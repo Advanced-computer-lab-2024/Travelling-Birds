@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Activity from "../Components/Activity";
+import {ActivityDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
 
 const ActivityPage = ({isHome = false}) => {
@@ -70,7 +70,7 @@ const ActivityPage = ({isHome = false}) => {
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
 							activities.map((activity) => (
-								<Activity key={activity._id} activity={activity}/>
+								<ActivityDisplay key={activity._id} activity={activity}/>
 							))
 						) : (
 							<p>Loading activities...</p>

@@ -26,7 +26,7 @@ import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Models/Forms/ActivityForm";
 import ExplorePage from "./Pages/ExplorePage";
 import UsersPage from "./Pages/UsersPage";
-import Itinerary from "./Components/Itinerary";
+import {ItineraryDisplay} from "./Components/Models/Displays";
 import ItinerariesPage from "./Pages/ItinerariesPage";
 import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
 
