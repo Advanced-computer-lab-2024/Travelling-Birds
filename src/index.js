@@ -29,6 +29,7 @@ import UsersPage from "./Pages/UsersPage";
 import {ItineraryDisplay} from "./Components/Models/Displays";
 import ItinerariesPage from "./Pages/ItinerariesPage";
 import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
+import ProductsPage from "./Pages/ProductsPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -52,6 +53,7 @@ root.render(
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
+					<Route path="products" element={<ProductsPage/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import ReusableInput from "../ReusableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const TouristProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
@@ -51,6 +52,10 @@ const TouristProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
+					sessionStorage.removeItem('user id');
+					sessionStorage.removeItem('role');
+					window.dispatchEvent(sessionStorageEvent);
+					if (displayOnly) navigate('/', {replace: true});
 					toast.success('User deleted successfully');
 				} else {
 					toast.error('Failed to delete user');
