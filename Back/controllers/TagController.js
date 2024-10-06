@@ -16,7 +16,7 @@ const addTag = async (req, res) => {
 const getAllTags = async (req, res) => {
 	try {
 		const tags = await Tag.find();
-		res.status(201).json(tags)
+		res.status(200).json(tags)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

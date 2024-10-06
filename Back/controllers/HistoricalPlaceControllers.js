@@ -27,7 +27,7 @@ const addHistoricalPlace = async (req, res) => {
 const getAllHistoricalPlaces = async (req, res) => {
 	try {
 		const historicalPlaces = await HistoricalPlaceModel.find();
-		res.status(201).json({historicalPlaces})
+		res.status(200).json(historicalPlaces)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

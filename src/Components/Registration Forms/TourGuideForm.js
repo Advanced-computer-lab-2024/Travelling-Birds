@@ -1,16 +1,17 @@
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
-export const TourGuideForm = () => {
+const TourGuideForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [yearsOfExperience, setYearsOfExperience] = useState('');
+	const [yearsOfExperience, setYearsOfExperience] = useState(0);
 	const [previousWork, setPreviousWork] = useState('');
 	const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ export const TourGuideForm = () => {
 				email,
 				username,
 				password,
-				role: 'tourGuide',
+				role: 'tour_guide',
 				yearsOfExperience,
 				previousWork
 			})
@@ -37,6 +38,7 @@ export const TourGuideForm = () => {
 				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'tour_guide');
+					window.dispatchEvent(sessionStorageEvent);
 					toast.success('User added successfully');
 					navigate('/profile', {replace: true});
 				} else {
@@ -71,4 +73,4 @@ export const TourGuideForm = () => {
 		</div>
 	);
 }
-
+export default TourGuideForm;

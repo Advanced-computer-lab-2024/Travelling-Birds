@@ -1,6 +1,7 @@
 import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
 import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 const ActivityForm = () => {
 	const [date, setDate] = useState('');
@@ -15,6 +16,7 @@ const ActivityForm = () => {
 	const [rating, setRating] = useState(0);
 	const [specialDiscounts, setSpecialDiscounts] = useState('');
 	const [bookingOpen, setBookingOpen] = useState(true);
+	const navigate = useNavigate();
 
 	const registerActivity = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/activities`, {
@@ -40,6 +42,7 @@ const ActivityForm = () => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity added successfully');
+					navigate('/activities', {replace: true});
 				} else {
 					toast.error('Failed to register activity');
 				}

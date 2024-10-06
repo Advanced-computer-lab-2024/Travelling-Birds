@@ -1,10 +1,11 @@
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
-export const AdvertiserForm = () => {
+const AdvertiserForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -39,6 +40,7 @@ export const AdvertiserForm = () => {
 				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'advertiser');
+					window.dispatchEvent(sessionStorageEvent);
 					toast.success('User added successfully');
 					navigate('/profile', {replace: true});
 				} else {

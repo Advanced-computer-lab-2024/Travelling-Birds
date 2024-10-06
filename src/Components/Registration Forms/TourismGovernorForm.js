@@ -1,10 +1,11 @@
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
-export const TourismGovernorForm = () => {
+const TourismGovernorForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -32,6 +33,7 @@ export const TourismGovernorForm = () => {
 				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'tourism_governor');
+					window.dispatchEvent(sessionStorageEvent);
 					toast.success('User added successfully');
 					navigate('/profile', {replace: true});
 				} else {
@@ -64,3 +66,4 @@ export const TourismGovernorForm = () => {
 	);
 }
 
+export default TourismGovernorForm;
