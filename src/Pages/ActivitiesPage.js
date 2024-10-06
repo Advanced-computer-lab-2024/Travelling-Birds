@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
-import {ActivityForm} from "../Components/Models/Forms";
 
 const ActivityPage = () => {
 	const [activities, setActivities] = useState([]);
-	const [isUpdating, setIsUpdating] = useState(activities.map(() => false));
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
