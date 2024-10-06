@@ -1,4 +1,9 @@
-import {createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from "react-router-dom";
+import {
+	createBrowserRouter,
+	createRoutesFromElements,
+	Route,
+	RouterProvider
+} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import {TouristForm} from "./Components/Registration Forms/TouristForm";
 import {TourGuideForm} from "./Components/Registration Forms/TourGuideForm";
@@ -8,7 +13,7 @@ import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
 import ExplorePage from "./Pages/ExplorePage";
 import ProfilePage from "./Pages/ProfilePage";
-
+import Product from "./Pages/ProductsPage";
 
 function App() {
 	const router = createBrowserRouter(
@@ -27,7 +32,8 @@ function App() {
 		)
 	);
 	return (
-		<RouterProvider router={router}/>
+		// <RouterProvider router={router}/>
+		<Product/>
 	);
 }
 

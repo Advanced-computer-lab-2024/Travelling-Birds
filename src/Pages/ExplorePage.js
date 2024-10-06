@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import SearchBar from '../Components/ExplorePage components/SearchBar';
-import FilterSection from '../Components/ExplorePage components/FilterSection';
-import SortSection from '../Components/ExplorePage components/SortSection';
-import ResultsList from '../Components/ExplorePage components/ResultsList';
+import SearchBar from '../Components/Explore Page/SearchBar';
+import FilterSection from '../Components/Explore Page/FilterSection';
+import SortSection from '../Components/Explore Page/SortSection';
+import ResultsList from '../Components/Explore Page/ResultsList';
 
 const ExplorePage = () => {
   const [results, setResults] = useState([]);
