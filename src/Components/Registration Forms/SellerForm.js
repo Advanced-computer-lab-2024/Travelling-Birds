@@ -1,10 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import ReusableInput from "../ReusableInput";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
-export const SellerForm = () => {
+const SellerForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -35,6 +36,7 @@ export const SellerForm = () => {
 				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'seller');
+					window.dispatchEvent(sessionStorageEvent);
 					toast.success('User added successfully');
 					navigate('/profile', {replace: true});
 				} else {
@@ -68,4 +70,4 @@ export const SellerForm = () => {
 		</div>
 	);
 }
-
+export default SellerForm;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ActivityListing from '../Components/Activity';
 import Activity from "../Components/Activity";
 import {useNavigate} from "react-router-dom";
 
@@ -36,7 +35,7 @@ const ActivityPage = ({ isHome = false }) => {
 						 All Activities
 					</h2>
 					{
-						['tour_guide', 'advertiser', 'tourism_governor'].includes(sessionStorage.getItem('role')) && (
+						['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 							<button
 								onClick={handleCreateActivity}
 								className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6"

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { FaMapMarker } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 
 const Activity = ({ activity }) => {
 	const [showMore, setShowMore] = useState(false);
