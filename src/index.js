@@ -1,33 +1,89 @@
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import TouristNavBar from "./Components/NavBars/TouristNavBar";
-import AdminNavBar from "./Components/NavBars/AdminNavBar";
+import {
+	AdminNavBar,
+	AdvertiserNavBar,
+	SellerNavBar,
+	TourGuideNavBar,
+	TourismGovernorNavBar,
+	TouristNavBar
+} from "./Components/NavBars";
+import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
+import RegisterPage from "./Pages/RegisterPage";
+import {
+	AdminForm,
+	AdvertiserForm,
+	SellerForm,
+	TourGuideForm,
+	TourismGovernorForm,
+	TouristForm
+} from "./Components/Registration Forms";
+import ProfilePage from "./Pages/ProfilePage";
+import ActivityPage from "./Pages/ActivitiesPage";
+import ActivityForm from "./Components/Models/Forms/ActivityForm";
+import ExplorePage from "./Pages/ExplorePage";
+import UsersPage from "./Pages/UsersPage";
+import Itinerary from "./Components/Itinerary";
+import ItinerariesPage from "./Pages/ItinerariesPage";
+import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
 	<React.StrictMode>
-		<NavBarContainer>
-			<App/>
-		</NavBarContainer>
+		<BrowserRouter>
+			<Routes>
+				<Route path='/' element={<NavBarContainer/>}>
+					<Route index element={<RegisterPage/>}/>
+					<Route path='tourist' element={<TouristForm/>}/>
+					<Route path='tourguide' element={<TourGuideForm/>}/>
+					<Route path='seller' element={<SellerForm/>}/>
+					<Route path='admin' element={<AdminForm/>}/>
+					<Route path='advertiser' element={<AdvertiserForm/>}/>
+					<Route path='tourismgoverner' element={<TourismGovernorForm/>}/>
+					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='users' element={<UsersPage/>}/>
+					<Route path='activities' element={<ActivityPage/>}/>
+					<Route path='itineraries' element={<ItinerariesPage/>}/>
+					<Route path='create-activity' element={<ActivityForm/>}/>
+					<Route path='create-itinerary' element={<ItineraryForm/>}/>
+					<Route path="explore" element={<ExplorePage/>}/>
+				</Route>
+			</Routes>
+		</BrowserRouter>
 		<ToastContainer/>
 	</React.StrictMode>
 );
 
-function NavBarContainer({children}) {
-	const [role, setRole] = React.useState("HELLOOOOOO");
+function NavBarContainer() {
+	const [role, setRole] = React.useState('');
+	const [user, setUser] = React.useState('');
 	useEffect(() => {
-		setRole(sessionStorage.getItem('role'));
+		const updateRoleAndUser = () => {
+			setRole(sessionStorage.getItem('role'));
+			setUser(sessionStorage.getItem('user id'));
+		};
+		updateRoleAndUser();
+		window.addEventListener('sessionStorageUpdated', updateRoleAndUser);
+
+		return () => {
+			window.removeEventListener('sessionStorageUpdated', updateRoleAndUser);
+		};
 	}, []);
 	return (
-		<div id='layout'>
-			{role}
-			{children}
+		<>
+			role: {role}, id: {user}
 			{role === 'tourist' && <TouristNavBar/>}
 			{role === 'admin' && <AdminNavBar/>}
-		</div>
+			{role === 'tour_guide' && <TourGuideNavBar/>}
+			{role === 'seller' && <SellerNavBar/>}
+			{role === 'advertiser' && <AdvertiserNavBar/>}
+			{role === 'tourism_governor' && <TourismGovernorNavBar/>}
+			<Outlet/>
+		</>
 	);
 }

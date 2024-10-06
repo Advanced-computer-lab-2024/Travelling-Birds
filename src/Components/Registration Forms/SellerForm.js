@@ -1,10 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import ReusableInput from "../ReusableInput";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
-export const SellerForm = () => {
+const SellerForm = () => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [email, setEmail] = useState('');
@@ -32,9 +33,10 @@ export const SellerForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data && data.data._id) {
+				if (data?.data._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'seller');
+					window.dispatchEvent(sessionStorageEvent);
 					toast.success('User added successfully');
 					navigate('/profile', {replace: true});
 				} else {
@@ -49,7 +51,6 @@ export const SellerForm = () => {
 				e.preventDefault();
 				registerSeller();
 			}}>
-				<h1 className="text-2xl font-bold mb-4">Register</h1>
 				<h1 className="text-2xl font-bold mb-4">Register</h1>
 				<ReusableInput type="text" name="First Name" value={firstName}
 				               onChange={e => setFirstName(e.target.value)}/>
@@ -68,4 +69,4 @@ export const SellerForm = () => {
 		</div>
 	);
 }
-
+export default SellerForm;
