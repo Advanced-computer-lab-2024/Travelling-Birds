@@ -22,10 +22,9 @@ const UsersPage = () => {
 	}, []);
 
 	return (
-		<div>
+		<div className="flex flex-col items-center space-y-4">
 			{loading && <p>Loading...</p>}
 			{!loading && users.map((user) => (
-				// add card display to each profile
 				<div key={user._id} className='bg-pink-900 max-w-fit mx-4 px-4 rounded-l py-4'>
 					{(user.role === 'tourist') && <TouristProfile user={user} displayOnly={true}/>}
 					{(user.role === 'tour_guide') && <TourGuideProfile user={user} displayOnly={true}/>}
