@@ -1,122 +1,50 @@
-// ExplorePage.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import ResultList from '../Components/explorepage components/ResultsList';
-import SearchBar from '../Components/explorepage components/SearchBar';
-import FilterSection from '../Components/explorepage components/FilterSection';
-import SortSection from '../Components/explorepage components/SortSection';
+import React, { useState } from 'react';
+import SearchBar from '../Components/ExplorePage components/SearchBar';
+import FilterSection from '../Components/ExplorePage components/FilterSection';
+import SortSection from '../Components/ExplorePage components/SortSection';
+import ResultsList from '../Components/ExplorePage components/ResultsList';
 
 const ExplorePage = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [results, setResults] = useState([]);
-    const [filter, setFilter] = useState({});
-    const [type, setType] = useState('activity'); // default to activities
+  const [results, setResults] = useState([]);
 
-    const handleSearch = async () => {
-        try {
-            let response;
-            switch (type) {
-                case 'activity':
-                    response = await axios.get('/api/activities/search', { params: { category: searchTerm, tag: searchTerm } });
-                    break;
-                case 'itinerary':
-                    response = await axios.get('/api/itineraries/search', { params: { category: searchTerm, tag: searchTerm } });
-                    break;
-                case 'museum':
-                    response = await axios.get('/api/museums/search', { params: { name: searchTerm, tag: searchTerm } });
-                    break;
-                case 'historicalPlace':
-                    response = await axios.get('/api/historicalPlaces/search', { params: { name: searchTerm, tag: searchTerm } });
-                    break;
-                default:
-                    return;
-            }
-            setResults(response.data);
-        } catch (error) {
-            console.error('Error fetching search results:', error);
-        }
-    };
+  const handleSearch = async (searchTerms) => {
+    let data;
+    if (searchTerms.category || searchTerms.tag) {
+      // Fetch activities and itineraries by category/tag
+      data = await fetch(`/api/activities/search?category=${searchTerms.category}&tag=${searchTerms.tag}`);
+    } else if (searchTerms.name || searchTerms.tag) {
+      // Fetch historical places and museums by name/tag
+      data = await fetch(`/api/museums/search?name=${searchTerms.name}&tag=${searchTerms.tag}`);
+    }
+    setResults(await data.json());
+  };
 
-    const handleFilter = async () => {
-        try {
-            let response;
-            switch (type) {
-                case 'activity':
-                    response = await axios.get('/api/activities/filter', { params: filter });
-                    break;
-                case 'itinerary':
-                    response = await axios.get('/api/itineraries/filter', { params: filter });
-                    break;
-                case 'museum':
-                    response = await axios.get('/api/museums/filter', { params: { tag: filter.tag } });
-                    break;
-                case 'historicalPlace':
-                    response = await axios.get('/api/historicalPlaces/filter', { params: { tag: filter.tag } });
-                    break;
-                default:
-                    return;
-            }
-            setResults(response.data);
-        } catch (error) {
-            console.error('Error fetching filter results:', error);
-        }
-    };
+  const handleFilter = async (filters) => {
+    let data;
+    if (filters.budget || filters.rating) {
+      data = await fetch(`/api/activities/filter?budget=${filters.budget}&date=${filters.date}&category=${filters.category}&rating=${filters.rating}`);
+    } else if (filters.preferences || filters.language) {
+      data = await fetch(`/api/itineraries/filter?budget=${filters.budget}&date=${filters.date}&preferences=${filters.preferences}&language=${filters.language}`);
+    } else if (filters.tags) {
+      data = await fetch(`/api/museums/filter?tags=${filters.tags}`);
+    }
+    setResults(await data.json());
+  };
 
-    const handleSort = async (sortField) => {
-        try {
-            let response;
-            if (type === 'activity') {
-                response = await axios.get('/api/activities/sort', { params: { sortBy: sortField } });
-            } else if (type === 'itinerary') {
-                response = await axios.get('/api/itineraries/sort', { params: { sortBy: sortField } });
-            }
-            setResults(response.data);
-        } catch (error) {
-            console.error('Error sorting results:', error);
-        }
-    };
+  const handleSort = async (sortBy) => {
+    let data = await fetch(`/api/activities/sort?sort=${sortBy}`);
+    setResults(await data.json());
+  };
 
-    const handleTypeChange = (event) => {
-        setType(event.target.value);
-        setResults([]); // Clear results when switching types
-    };
-
-    useEffect(() => {
-        // Fetch upcoming activities/itineraries when the page loads
-        const fetchUpcoming = async () => {
-            try {
-                if (type === 'activity') {
-                    const response = await axios.get('/api/activities/upcoming');
-                    setResults(response.data);
-                } else if (type === 'itinerary') {
-                    const response = await axios.get('/api/itineraries/upcoming');
-                    setResults(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching upcoming data:', error);
-            }
-        };
-
-        fetchUpcoming();
-    }, [type]);
-
-    return (
-        <div>
-            <h1>Explore</h1>
-            <select onChange={handleTypeChange} value={type}>
-                <option value="activity">Activities</option>
-                <option value="itinerary">Itineraries</option>
-                <option value="museum">Museums</option>
-                <option value="historicalPlace">Historical Places</option>
-            </select>
-
-            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} handleSearch={handleSearch} />
-            <FilterSection type={type} filter={filter} setFilter={setFilter} handleFilter={handleFilter} />
-            <SortSection handleSort={handleSort} />
-
-            <ResultList results={results} type={type} />
-        </div>
-    );
+  return (
+    <div className="p-4">
+      <h1 className="text-3xl font-bold mb-4">Explore</h1>
+      <SearchBar onSearch={handleSearch} />
+      <FilterSection onFilter={handleFilter} />
+      <SortSection onSort={handleSort} />
+      <ResultsList results={results} />
+    </div>
+  );
 };
 
 export default ExplorePage;

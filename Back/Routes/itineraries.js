@@ -29,16 +29,16 @@ router.put('/:id', updateItinerary);
 // Delete itinerary
 router.delete('/:id', deleteItinerary);
 
-// Search for itineraries
+// Search for itineraries by category or tag
 router.get('/search', SearchForItinerary);
 
 // Get upcoming itineraries
 router.get('/upcoming', getUpcomingItineraries);
 
-// Sort itineraries
+// Sort itineraries by price or rating
 router.get('/sort', sortItineraries);
 
-// Filter itineraries
+// Filter itineraries by budget or date or preferences or language
 router.get('/filter', filterItineraries);
 
 // Get all created itineraries by a specific user
