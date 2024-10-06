@@ -30,16 +30,16 @@ router.put('/:id', updateActivity);
 // Delete an activity
 router.delete('/:id', deleteActivity);
 
-// Search for an activity
+// Search for an activity by category or tag
 router.get('/search', SearchForActivity);
 
 // Get upcoming activities
 router.get('/upcoming', getUpcomingActivities);
 
-// Filter upcoming activities
+// Filter upcoming activities by budget , date , category , rating
 router.get('/filter', filterUpcomingActivities);
 
-// Sort activities
+// Sort activities by price or rating
 router.get('/sort', sortActivities);
 
 // Get all created activities

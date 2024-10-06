@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
@@ -26,15 +26,16 @@ root.render(
 );
 
 function NavBarContainer({children}) {
+	const [role, setRole] = React.useState("HELLOOOOOO");
+	useEffect(() => {
+		setRole(sessionStorage.getItem('role'));
+	}, []);
 	return (
-		<>
+		<div id='layout'>
+			{role}
 			{children}
-			{sessionStorage.getItem('role') === 'tourist' && <TouristNavBar/>}
-			{sessionStorage.getItem('role') === 'admin' && <AdminNavBar/>}
-			{sessionStorage.getItem('role') === 'tour_guide' && <TourGuideNavBar/>}
-			{sessionStorage.getItem('role') === 'seller' && <SellerNavBar/>}
-			{sessionStorage.getItem('role') === 'advertiser' && <AdvertiserNavBar/>}
-			{sessionStorage.getItem('role') === 'tourism_governor' && <TourismGovernorNavBar/>}
-		</>
+			{role === 'tourist' && <TouristNavBar/>}
+			{role === 'admin' && <AdminNavBar/>}
+		</div>
 	);
 }

@@ -6,8 +6,9 @@ import {SellerForm} from "./Components/Registration Forms/SellerForm";
 import {AdminForm} from "./Components/Registration Forms/AdminForm";
 import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
-import SearchPage from "./Pages/SearchPage";
+import ExplorePage from "./Pages/ExplorePage";
 import ProfilePage from "./Pages/ProfilePage";
+import Product from "./Pages/ProductsPage";
 import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Model Forms/Activity Form";
 
@@ -27,12 +28,12 @@ function App() {
 				<Route path='/search' element={<SearchPage/>}/>
 				<Route path='/activities' element={<ActivityPage/>}/>
 				<Route path='/create-activity' element={<ActivityForm/>}/>
+				<Route path="/explore" element={<ExplorePage/>}/>
 			</>
 		)
 	);
 	return (
-		//<RouterProvider router={router}/>
-		<ActivityPage/>
+		<RouterProvider router={router}/>
 	);
 }
 

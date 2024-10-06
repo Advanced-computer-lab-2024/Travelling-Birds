@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
-import ReusableInput from "../ReuseableInput";
+import ReusableInput from "../ReusableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 

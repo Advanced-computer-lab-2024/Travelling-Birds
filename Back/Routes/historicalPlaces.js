@@ -27,10 +27,10 @@ router.put('/:id', updateHistoricalPlace);
 // Delete historical place
 router.delete('/:id', deleteHistoricalPlace);
 
-// Search for historical places
+// Search for historical places by name or tag
 router.get('/search', SearchForHistoricalPlace);
 
-// Filter historical places
+// Filter historical places by tag
 router.get('/filter', filterHistoricalPlaces);
 
 // Get all created historical places by a specific user

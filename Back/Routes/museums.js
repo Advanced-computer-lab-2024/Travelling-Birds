@@ -27,10 +27,10 @@ router.put('/:id', updateMuseum);
 // Delete museum
 router.delete('/:id', deleteMuseum);
 
-// Search for museums
+// Search for museums by name or tag
 router.get('/search', SearchForMuseums);
 
-// Filter museums
+// Filter museums by tag
 router.get('/filter', filterMuseums);
 
 // Get all created museums by a specific user

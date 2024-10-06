@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-import ReusableInput from "../ReuseableInput";
+import ReusableInput from "../ReusableInput";
 
 const {useState} = require("react");
 
