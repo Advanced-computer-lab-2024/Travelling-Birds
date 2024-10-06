@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Itinerary from "../Components/Itinerary";
+import {ItineraryDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
 
 const ItinerariesPage = () => {
@@ -68,7 +68,7 @@ const ItinerariesPage = () => {
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
 							itineraries.map((itinerary) => (
-								<Itinerary key={itinerary._id} itinerary={itinerary}/>
+								<ItineraryDisplay key={itinerary._id} itinerary={itinerary}/>
 							))
 						) : (
 							<p>Loading activities...</p>
