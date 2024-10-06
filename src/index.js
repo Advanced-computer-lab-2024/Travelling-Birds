@@ -27,7 +27,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
-			<Route path='/' element={<RegisterPage/>}/>
+			<Route path='/' element={<App/>}/>
 			<Route path='/tourist' element={<TouristForm/>}/>
 			<Route path='/tourguide' element={<TourGuideForm/>}/>
 			<Route path='/seller' element={<SellerForm/>}/>
@@ -41,7 +41,6 @@ const router = createBrowserRouter(
 		</>
 	)
 );
-
 root.render(
 	<React.StrictMode>
 		<RouterProvider router={router}>

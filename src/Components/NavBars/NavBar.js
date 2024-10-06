@@ -12,7 +12,7 @@ const NavBar = ({children}) => {
 						<NavLink className="flex flex-shrink-0 items-center mr-4" to="/index.html"></NavLink>
 						<div className="md:ml-auto">
 							<div className="flex space-x-2">
-								{children}
+								{children} className={activeStyle}
 							</div>
 						</div>
 					</div>

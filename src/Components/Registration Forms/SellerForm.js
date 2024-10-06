@@ -50,7 +50,6 @@ export const SellerForm = () => {
 				registerSeller();
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Register</h1>
-				<h1 className="text-2xl font-bold mb-4">Register</h1>
 				<ReusableInput type="text" name="First Name" value={firstName}
 				               onChange={e => setFirstName(e.target.value)}/>
 				<ReusableInput type="text" name="Last Name" value={lastName}
