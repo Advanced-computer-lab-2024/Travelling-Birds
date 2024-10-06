@@ -100,7 +100,7 @@ const updateUser = async (req, res) => {
 	} = req.body;
 	try {
 		let hashedPassword = password;
-		if(req.body.password) {
+		if (req.body.password) {
 			hashedPassword = await bcrypt.hash(password, 10);
 		}
 		const user = await User.findByIdAndUpdate(req.params.id, {
@@ -318,19 +318,19 @@ const updateSellerProfile = async (req, res) => {
 
 //Delete account by admin
 const deleteUserByAdmin = async (req, res) => {
-	const { username } = req.params;
+	const {username} = req.params;
 
 	try {
 		if (req.user.role !== 'admin') {
 			return res.status(403).json({message: 'Only admins can delete accounts.'});
 		}
 
-		const user = await User.findOne({ username });
+		const user = await User.findOne({username});
 		if (!user) {
-			return res.status(404).json({ message: 'User not found. Please check the username.' });
+			return res.status(404).json({message: 'User not found. Please check the username.'});
 		}
 
-		await User.deleteOne({ username });
+		await User.deleteOne({username});
 
 		res.status(200).json({message: 'User account deleted successfully'});
 
@@ -469,6 +469,23 @@ const addAdmin = async (req, res) => {
 	}
 }
 
+const login = async (req, res) => {
+	const {username, password} = req.body;
+
+	try {
+		const user = await User.findOne({username});
+		if (!user) {
+			return res.status(404).json({message: 'User not found. Please check the username.'});
+		}
+		if (!await bcrypt.compare(password, user.password)) {
+			return res.status(401).json({message: 'Invalid password. Please try again.'});
+		}
+		res.status(200).json({message: 'Login successful', user});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -484,5 +501,6 @@ module.exports = {
 	updateSellerProfile,
 	deleteUserByAdmin,
 	addTourismGovernor,
-	addAdmin
+	addAdmin,
+	login
 };

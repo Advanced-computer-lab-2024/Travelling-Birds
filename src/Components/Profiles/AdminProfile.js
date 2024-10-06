@@ -4,6 +4,7 @@ import ReusableInput from "../ReusableInput";
 import {toast} from "react-toastify";
 import { sessionStorageEvent } from '../../utils/sessionStorageEvent';
 import {useNavigate} from "react-router-dom";
+import {userDeletionEvent} from "../../utils/userDeletionEvent";
 
 const AdminProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
@@ -46,7 +47,8 @@ const AdminProfile = ({user, displayOnly}) => {
 					sessionStorage.removeItem('user id');
 					sessionStorage.removeItem('role');
 					window.dispatchEvent(sessionStorageEvent);
-					if (displayOnly) navigate('/', {replace: true});
+					window.dispatchEvent(userDeletionEvent);
+					if (!displayOnly) navigate('/', {replace: true});
 					toast.success('User deleted successfully');
 				} else {
 					toast.error('Failed to delete user');

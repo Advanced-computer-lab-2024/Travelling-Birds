@@ -39,7 +39,7 @@ const TouristForm = () => {
 
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?._id) {
+				if (data?.data?._id) {
 					console.log(data);
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'tourist');

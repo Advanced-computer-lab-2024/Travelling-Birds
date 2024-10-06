@@ -8,7 +8,6 @@ import {AdvertiserForm} from "./Components/Registration Forms/AdvertiserForm";
 import {TourismGovernorForm} from "./Components/Registration Forms/TourismGovernorForm";
 import ExplorePage from "./Pages/ExplorePage";
 import ProfilePage from "./Pages/ProfilePage";
-import ProductsHomePage from "./Components/Product Page/ProductsHomePage";
 import ProductsPage from "./Pages/ProductsPage";
 
 

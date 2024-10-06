@@ -4,6 +4,7 @@ import ReusableInput from "../ReusableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
+import {userDeletionEvent} from "../../utils/userDeletionEvent";
 
 const TourGuideProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
@@ -36,7 +37,8 @@ const TourGuideProfile = ({user, displayOnly}) => {
 					sessionStorage.removeItem('user id');
 					sessionStorage.removeItem('role');
 					window.dispatchEvent(sessionStorageEvent);
-					if (displayOnly) navigate('/', {replace: true});
+					window.dispatchEvent(userDeletionEvent);
+					if (!displayOnly) navigate('/', {replace: true});
 					toast.success('User updated successfully');
 				} else {
 					toast.error('Failed to update user');

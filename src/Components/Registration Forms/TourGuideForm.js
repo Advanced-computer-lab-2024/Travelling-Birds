@@ -35,7 +35,7 @@ const TourGuideForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.data._id) {
+				if (data?.data?._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'tour_guide');
 					window.dispatchEvent(sessionStorageEvent);

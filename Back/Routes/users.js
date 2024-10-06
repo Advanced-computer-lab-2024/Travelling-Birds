@@ -15,7 +15,8 @@ const {
 	updateSellerProfile,
 	addAdmin,
 	addTourismGovernor,
-	deleteUserByAdmin
+	deleteUserByAdmin,
+	login
 } = require('../controllers/UserControllers');
 
 // Add user
@@ -59,5 +60,8 @@ router.post('/add-tourism-governor', addTourismGovernor);
 
 // Delete user by Admin
 router.delete('/admin/delete-user/:username', deleteUserByAdmin);
+
+// Login
+router.post('/login', login);
 
 module.exports = router;
