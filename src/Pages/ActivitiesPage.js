@@ -12,9 +12,9 @@ const ActivityPage = ({isHome = false}) => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/`;
 			try {
 				const res = await fetch(apiUrl);
-				const data = await res.json();
-				setActivities(data.activities);
-				console.log('Activities:', data.activities);
+				const activities = await res.json();
+				setActivities(activities);
+				console.log('Activities:', activities);
 			} catch (err) {
 				console.log('Error fetching activities', err);
 			} finally {
@@ -30,9 +30,9 @@ const ActivityPage = ({isHome = false}) => {
 		const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/user/${sessionStorage.getItem('user id')}`;
 		try {
 			const res = await fetch(apiUrl);
-			const data = await res.json();
-			setActivities(data.activities);
-			console.log('Activities:', data.activities);
+			const activities = await res.json();
+			setActivities(activities);
+			console.log('Activities:', activities);
 		} catch (err) {
 			console.log('Error fetching activities', err);
 		} finally {

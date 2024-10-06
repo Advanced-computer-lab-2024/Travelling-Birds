@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import Activity from "../Components/Activity";
 import Itinerary from "../Components/Itinerary";
 import {useNavigate} from "react-router-dom";
 
@@ -9,19 +8,19 @@ const ItinerariesPage = () => {
 	const navigate = useNavigate();
 	useEffect(() => {
 		const fetchItineraries = async () => {
-			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/itineraries/`;
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/itineraries`;
 			try {
 				const res = await fetch(apiUrl);
-				const data = await res.json();
-				setItineraries(data.itineraries);
-				console.log('Itineraries:', data.itineraries);
+				const itineraries = await res.json();
+				setItineraries(itineraries);
+				console.log('Itineraries:', itineraries);
 			} catch (err) {
 				console.log('Error fetching itineraries', err);
 			} finally {
 				setLoading(false);
 			}
 		};
-		fetchItineraries();
+		fetchItineraries().then(r => r);
 	}, []);
 	const handleCreateItinerary = () => {
 		navigate('/create-itinerary')
@@ -39,7 +38,7 @@ const ItinerariesPage = () => {
 			setLoading(false);
 		}
 	}
-	  return (
+	return (
 		<div>
 			<section className="bg-blue-50 px-4 py-10">
 				<div className="container-xl lg:container m-auto">
@@ -68,8 +67,8 @@ const ItinerariesPage = () => {
 					}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
-							itineraries.map((itineraries) => (
-								<Itinerary key={itineraries._id} activity={itineraries} />
+							itineraries.map((itinerary) => (
+								<Itinerary key={itinerary._id} itinerary={itinerary}/>
 							))
 						) : (
 							<p>Loading activities...</p>
@@ -78,6 +77,6 @@ const ItinerariesPage = () => {
 				</div>
 			</section>
 		</div>
-  );
+	);
 }
 export default ItinerariesPage;

@@ -20,7 +20,7 @@ const addMuseum = async (req, res) => {
 const getAllMuseums = async (req, res) => {
 	try {
 		const museums =  await MuseumModel.find();
-		res.status(201).json({museums})
+		res.status(200).json(museums)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
