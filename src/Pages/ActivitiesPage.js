@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {ActivityDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
 
-const ActivityPage = ({isHome = false}) => {
+const ActivityPage = () => {
 	const [activities, setActivities] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
@@ -21,7 +21,7 @@ const ActivityPage = ({isHome = false}) => {
 				setLoading(false);
 			}
 		};
-		fetchActivities();
+		fetchActivities().then(r => r);
 	}, []);
 	const handleCreateActivity = () => {
 		navigate('/create-activity')
@@ -39,7 +39,6 @@ const ActivityPage = ({isHome = false}) => {
 			setLoading(false);
 		}
 	}
-
 	return (
 		<div>
 			<section className="bg-blue-50 px-4 py-10">
