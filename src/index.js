@@ -11,7 +11,7 @@ import {
 	TourismGovernorNavBar,
 	TouristNavBar
 } from "./Components/NavBars";
-import {BrowserRouter, createBrowserRouter, createRoutesFromElements, Outlet, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import {
 	AdminForm,
@@ -25,6 +25,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Models/Forms/ActivityForm";
 import ExplorePage from "./Pages/ExplorePage";
+import UsersPage from "./Pages/UsersPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -42,6 +43,7 @@ root.render(
 					<Route path='advertiser' element={<AdvertiserForm/>}/>
 					<Route path='tourismgoverner' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='users' element={<UsersPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>

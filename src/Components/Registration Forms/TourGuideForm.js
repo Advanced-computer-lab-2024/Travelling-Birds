@@ -2,7 +2,6 @@ import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
 import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
-import {number} from "prop-types";
 
 const {useState} = require("react");
 
