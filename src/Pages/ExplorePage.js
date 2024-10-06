@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import FilterSection from "../Components/SearchPage components/FilterSection";
-import ItineraryFilterSection from "../Components/SearchPage components/ItineraryFilterSection";
-import ResultsList from "../Components/SearchPage components/ResultsList";
-import SearchBar from "../Components/SearchPage components/SearchBar";
-import SortSection from "../Components/SearchPage components/SortSection";
-import TagFilterSection from "../Components/SearchPage components/TagFilterSection";
+import FilterSection from "../Components/ExplorePage components/FilterSection";
+import ItineraryFilterSection from "../Components/ExplorePage components/ItineraryFilterSection";
+import ResultsList from "../Components/ExplorePage components/ResultsList";
+import SearchBar from "../Components/ExplorePage components/SearchBar";
+import SortSection from "../Components/ExplorePage components/SortSection";
+import TagFilterSection from "../Components/ExplorePage components/TagFilterSection";
 
 const SearchPage = () => {
   const [filteredActivities, setFilteredActivities] = useState([]);
@@ -83,7 +83,7 @@ const SearchPage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-4">Search Page</h1>
+      <h1 className="text-3xl font-bold mb-4">Explore Page</h1>
       <SearchBar 
         searchParams={searchParams} 
         setSearchParams={setSearchParams} 
