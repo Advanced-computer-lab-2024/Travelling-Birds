@@ -22,6 +22,7 @@ import TourGuideNavBar from "./Components/NavBars/TourGuideNavBar";
 import SellerNavBar from "./Components/NavBars/SellerNavBar";
 import AdvertiserNavBar from "./Components/NavBars/AdvertiserNavBar";
 import TourismGovernorNavBar from "./Components/NavBars/TourismGovernorNavBar";
+import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter(
@@ -37,6 +38,7 @@ const router = createBrowserRouter(
 			<Route path='/profile' element={<ProfilePage/>}/>
 			<Route path='/activities' element={<ActivityPage/>}/>
 			<Route path='/create-activity' element={<ActivityForm/>}/>
+			<Route path='create-itinerary' element={<ItineraryForm/>}/>
 			<Route path="/explore" element={<ExplorePage/>}/>
 		</>
 	)
