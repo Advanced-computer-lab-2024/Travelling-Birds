@@ -12,6 +12,7 @@ const {
 	readTourGuideProfile,
 	updateTourGuideProfile,
 	updateTouristProfile,
+	readSellerProfile,
 	updateSellerProfile,
 	addAdmin,
 	addTourismGovernor,
@@ -47,6 +48,9 @@ router.put('/tour-guide/:id', updateTourGuideProfile);
 
 // Update tourist profile
 router.put('/tourist/:id', updateTouristProfile);
+
+//read seller profile
+router.get('/seller/:id', readSellerProfile);
 
 //Update Seller Profile
 router.put('/seller/:id', updateSellerProfile);

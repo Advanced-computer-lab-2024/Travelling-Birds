@@ -278,7 +278,8 @@ const updateTouristProfile = async (req, res) => {
 // read Seller profile
 const readSellerProfile = async (req, res) => {
 	try {
-		const seller = await User.findById(req.params.id);
+		const {id} =req.params;
+		const seller = await User.findById(id);
 		if (!seller) {
 			return res.status(404).json({message: 'seller not found'});
 		}
@@ -298,8 +299,9 @@ const updateSellerProfile = async (req, res) => {
 		lastName,
 		description
 	} = req.body;
+	const {id}= req.params;
 	try {
-		const seller = await User.findByIdAndUpdate(req.params.id, {
+		const seller = await User.findByIdAndUpdate(id, {
 			firstName,
 			lastName,
 			description
