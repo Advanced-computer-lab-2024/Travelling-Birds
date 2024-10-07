@@ -385,21 +385,22 @@ const ProductHomePage = () => {
 									)}
 								</ul>
 								{/* Edit Button */}
+								{['seller', 'admin'].includes(sessionStorage.getItem('role')) && (
 								<button
 									onClick={() => handleUpdateProduct(product)}
 									className="absolute top-2 right-10 w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition duration-300"
 									title="Edit Product"
 								>
 									✎
-								</button>
-
+								</button>)}
+								{['seller', 'admin'].includes(sessionStorage.getItem('role')) && (
 								<button
 									onClick={() => handleDeleteProduct(product._id)}
 									className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition duration-300"
 									title="Delete Product"
 								>
 									⌫
-								</button>
+								</button>)}
 							</div>
 						))}
 

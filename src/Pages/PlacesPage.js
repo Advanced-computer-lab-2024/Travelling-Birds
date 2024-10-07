@@ -77,7 +77,7 @@ const PlacesPage = () => {
 			const museumsApiUrl = `${process.env.REACT_APP_BACKEND}/api/museums/user/${sessionStorage.getItem('user id')}`;
 			const historicalPlacesApiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces/user/${sessionStorage.getItem('user id')}`;
 
-			try {
+			try{
 				const [museumsRes, historicalPlacesRes] = await Promise.all([
 					fetch(museumsApiUrl),
 					fetch(historicalPlacesApiUrl),
@@ -139,6 +139,7 @@ const PlacesPage = () => {
 							<p>Loading tags...</p>
 						)
 						}
+						{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) &&
 						<Popup
 							className="h-fit overflow-y-scroll"
 							trigger={
@@ -151,7 +152,7 @@ const PlacesPage = () => {
 							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}} /* Darken background for modal */
 						>
 							<TagForm className="overflow-y-scroll"/>
-						</Popup>
+						</Popup>}
 					</div>
 
 					<div className="mb-10">

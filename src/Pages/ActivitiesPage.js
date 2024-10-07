@@ -119,6 +119,7 @@ const ActivityPage = () => {
 							<p>Loading tags...</p>
 						)
 						}
+						{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 						<Popup
 							className="h-fit overflow-y-scroll"
 							trigger={
@@ -131,7 +132,7 @@ const ActivityPage = () => {
 							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}} /* Darken background for modal */
 						>
 							<TagForm className="overflow-y-scroll"/>
-						</Popup>
+						</Popup>)}
 					</div>
 					<div className="flex flex-row gap-6 py-4">
 						{!loading ? (

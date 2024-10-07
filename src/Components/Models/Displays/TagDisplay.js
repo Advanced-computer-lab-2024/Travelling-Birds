@@ -31,6 +31,7 @@ const TagDisplay = ({tag}) => {
 		<div className="bg-white rounded-lg shadow-md p-2 flex items-center justify-between">
 			<span className="text-gray-800">{name}</span>
 			<div className="flex items-center">
+				{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) &&
 				<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
@@ -43,11 +44,13 @@ const TagDisplay = ({tag}) => {
 				overlayStyle={{background: 'rgba(0, 0, 0, 0.5)' }} /* Darken background for modal */
 			>
 				<TagForm className="overflow-y-scroll" tag={tag} />
-			</Popup>
+			</Popup>}
 
+				{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) &&
 				<button onClick={deleteTag} className="text-red-500 hover:text-red-700 ml-2">
 					<i className="fas fa-trash"></i>
 				</button>
+				}
 			</div>
 		</div>
 	);
