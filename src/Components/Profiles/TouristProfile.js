@@ -16,6 +16,7 @@ const TouristProfile = ({user, displayOnly}) => {
 	const [nationality, setNationality] = useState(user.nationality || '');
 	const [dob, setDob] = useState(user.dob || '');
 	const [job, setJob] = useState(user.job || '');
+	const [wallet, setWallet] = useState(user.wallet || 0);
 	const [isEditing, setIsEditing] = useState(false);
 	const navigate = useNavigate();
 
@@ -106,6 +107,8 @@ const TouristProfile = ({user, displayOnly}) => {
 				               onChange={e => setDob(e.target.value)} disabled={!isEditing}/>
 				<ReusableInput type="text" name="Job" value={job}
 				               onChange={e => setJob(e.target.value)} disabled={!isEditing}/>
+				<ReusableInput type="number" name="Wallet" value={wallet}
+				               onChange={e => setWallet(e.target.value)} disabled={true}/>
 				{!displayOnly &&
 					<button type="submit"
 					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
@@ -136,6 +139,7 @@ TouristProfile.propTypes = {
 		nationality: PropTypes.string,
 		dob: PropTypes.string,
 		job: PropTypes.string,
+		wallet: PropTypes.number,
 		_id: PropTypes.string.isRequired,
 	}).isRequired,
 	displayOnly: PropTypes.bool.isRequired,

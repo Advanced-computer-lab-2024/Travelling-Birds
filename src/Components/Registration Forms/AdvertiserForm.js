@@ -32,7 +32,8 @@ const AdvertiserForm = () => {
 				role: 'advertiser',
 				website,
 				hotline,
-				companyProfile
+				companyProfile,
+				isApproved: false
 			})
 		})
 			.then((response) => response.json())

@@ -61,6 +61,28 @@ const SellerProfile = ({user, displayOnly}) => {
 		});
 	}
 
+	const approveSeller = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				isApproved: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?._id) {
+					toast.success('User approved successfully');
+					navigate('/profile', {replace: true});
+				} else {
+					toast.error('Failed to approve user');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	}
+
 	useEffect(() => {
 		setFirstName(user.firstName);
 		setLastName(user.lastName);
@@ -95,6 +117,13 @@ const SellerProfile = ({user, displayOnly}) => {
 					<button type="submit"
 					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
 						{isEditing ? 'Confirm' : 'Update'}
+					</button>
+				}
+				{displayOnly &&
+					<button type="button"
+					        onClick={approveSeller}
+					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
+						Approve User
 					</button>
 				}
 				<button type="button"

@@ -13,7 +13,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
                 <h3 className="text-md font-semibold">Upcoming Activities</h3>
                 {activities && activities.length > 0 ? (
                     activities.map((activity) => (
-                        <ActivityDisplay className='mb-4 pb-4' key={activity._id} activity={activity} />
+                        <ActivityDisplay key={activity._id} activity={activity} />
                     ))
                 ) : (
                     <p>No activities found.</p>

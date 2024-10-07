@@ -28,7 +28,8 @@ const SellerForm = () => {
 				username,
 				password,
 				role: 'seller',
-				description
+				description,
+				isApproved: false
 			})
 		})
 			.then((response) => response.json())

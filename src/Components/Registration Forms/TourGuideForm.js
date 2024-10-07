@@ -30,7 +30,8 @@ const TourGuideForm = () => {
 				password,
 				role: 'tour_guide',
 				yearsOfExperience,
-				previousWork
+				previousWork,
+				isApproved: false
 			})
 		})
 			.then((response) => response.json())

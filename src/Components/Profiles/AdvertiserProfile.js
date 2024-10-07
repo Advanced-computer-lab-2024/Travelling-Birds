@@ -63,6 +63,26 @@ const AdvertiserProfile = ({user, displayOnly}) => {
 			console.log(error);
 		});
 	}
+	const approveAdvertiser = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				isApproved: true
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?._id) {
+					toast.success('User approved successfully');
+				} else {
+					toast.error('Failed to approve user');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	}
 
 	useEffect(() => {
 		setFirstName(user.firstName);
@@ -104,6 +124,13 @@ const AdvertiserProfile = ({user, displayOnly}) => {
 					<button type="submit"
 					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
 						{isEditing ? 'Confirm' : 'Update'}
+					</button>
+				}
+				{displayOnly &&
+					<button type="button"
+					        onClick={approveAdvertiser}
+					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
+						Approve User
 					</button>
 				}
 				<button type="button"
