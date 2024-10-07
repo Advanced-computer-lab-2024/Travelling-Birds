@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchBar from '../Components/Explore Page/SearchBar';
 import FilterSection from '../Components/Explore Page/FilterSection';
 import SortSection from '../Components/Explore Page/SortSection';
@@ -6,6 +6,30 @@ import ResultsList from '../Components/Explore Page/ResultsList';
 
 const ExplorePage = () => {
     const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
+
+    useEffect(() => {
+        const fetchInitialResults = async () => {
+            try {
+                const responses = await Promise.all([
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`),
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/historical-places`),
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/museums`)
+                ]);
+
+                const data = await Promise.all(responses.map(res => res.json()));
+                setResults({
+                    activities: data[0],
+                    itineraries: data[1],
+                    historicalPlaces: data[2],
+                    museums: data[3]
+                });
+            } catch (error) {
+                console.error('Error fetching initial results:', error);
+            }
+        }
+        fetchInitialResults();
+    }, []);
 
     const handleSearch = async (searchParams) => {
         try {
