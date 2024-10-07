@@ -4,9 +4,9 @@ const CategoryModel  = require('../models/Category');
 const addCategory = async (req, res) => {
     const {name} = req.body;
     try {
-        const newCategory = new Category({name});
+        const newCategory = new CategoryModel({name});
         await newCategory.save();
-        res.status(201).json({message: 'Category added successfully'});
+        res.status(201).json(newCategory);
     } catch (error) {
         res.status(500).json({error: error.message});
     }
@@ -37,9 +37,10 @@ const getCategory = async (req, res) => {
 
 // Update Category
 const updateCategory = async (req, res) => {
+    const {name} = req.body;
     try {
-        await CategoryModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-        res.status(201).json({msg: "Category updated successfully"});
+        const category = await CategoryModel.findByIdAndUpdate(req.params.id, {name}, {new: true});
+        res.status(200).json(category);
     } catch (error) {
         res.status(500).json({error: error.message});
     }

@@ -29,6 +29,9 @@ import UsersPage from "./Pages/UsersPage";
 import ItinerariesPage from "./Pages/ItinerariesPage";
 import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
 import ProductsPage from "./Pages/ProductsPage";
+import MuseumForm from "./Components/Models/Forms/MuseumForm";
+import {HistoricalPlaceForm} from "./Components/Models/Forms";
+import PlacesPage from "./Pages/PlacesPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -47,10 +50,13 @@ root.render(
 					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path='users' element={<UsersPage/>}/>
+					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
+					<Route path='create-museum' element={<MuseumForm/>}/>
+					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 				</Route>

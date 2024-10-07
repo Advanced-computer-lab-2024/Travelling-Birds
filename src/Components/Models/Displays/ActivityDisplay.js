@@ -3,14 +3,29 @@ import {FaMapMarker} from 'react-icons/fa';
 import PropTypes from "prop-types";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import Card from "../../Card";
 import {ActivityForm} from "../Forms";
+import {toast} from "react-toastify";
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 
 
 const ActivityDisplay = ({activity}) => {
 	const [showMore, setShowMore] = useState(false);
 	const description = activity.specialDiscounts ? activity.specialDiscounts.substring(0, 100) : '';
-
+	const deleteActivity =()=>{
+		fetch (`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`,{
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'activity deleted successfully') {
+					toast.success('Activity deleted successfully');
+					window.dispatchEvent(modelModificationEvent);
+				} else {
+					toast.error('Failed to delete activity');
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
+	}
 	return (
 		<div className="bg-white rounded-xl shadow-md relative">
 			<div className="p-4">
@@ -44,12 +59,18 @@ const ActivityDisplay = ({activity}) => {
 					</div>
 				</div>
 				<div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
+			{/*	tags*/}
+				<div className="text-gray-600 mb-2">
+					{activity.tags?.map((tag, index) => (
+						<span key={index} className="bg-gray-200 text-gray-800 rounded-full px-2 py-1 mr-2">{tag}</span>
+					))}
+				</div>
 			</div>
-
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 			<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
-					<button className="bg-indigo-500 text-white py-2 w-full rounded-b-xl">
+					<button className="bg-indigo-500 text-white py-2 w-full">
 						Update Activity
 					</button>
 				}
@@ -58,7 +79,14 @@ const ActivityDisplay = ({activity}) => {
 				overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }} /* Darken background for modal */
 			>
 				<ActivityForm className="overflow-y-scroll" activity={activity} />
-			</Popup>
+			</Popup>)}
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+			<button onClick={() => {
+				if (window.confirm('Are you sure you wish to delete this item?')) {
+					deleteActivity();
+				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
+				Delete Activity
+			</button>)}
 		</div>
 	);
 };
@@ -68,13 +96,17 @@ ActivityDisplay.propTypes = {
 		_id: PropTypes.string.isRequired,
 		date: PropTypes.string.isRequired,
 		time: PropTypes.string.isRequired,
-		lat: PropTypes.number.isRequired,
-		lng: PropTypes.number.isRequired,
+		location: PropTypes.shape({
+			lat: PropTypes.number.isRequired,
+			lng: PropTypes.number.isRequired,
+		}).isRequired,
 		price: PropTypes.number,
-		lwBound: PropTypes.number,
-		hiBound: PropTypes.number,
+		priceRange: PropTypes.shape({
+			lwBound: PropTypes.number.isRequired,
+			hiBound: PropTypes.number.isRequired,
+		}),
 		category: PropTypes.string.isRequired,
-		tags: PropTypes.string,
+		tags: PropTypes.arrayOf(PropTypes.string),
 		specialDiscounts: PropTypes.string,
 	}).isRequired
 }

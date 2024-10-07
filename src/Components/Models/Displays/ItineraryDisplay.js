@@ -1,16 +1,50 @@
-import { useState } from 'react';
-import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import {useEffect, useState} from 'react';
+import {FaCalendarAlt, FaMapMarkerAlt} from 'react-icons/fa';
+import Popup from "reactjs-popup";
+import {ItineraryForm} from "../Forms";
+import {toast} from "react-toastify";
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
+import PropTypes from "prop-types";
 
 const ItineraryDisplay = ({ itinerary }) => {
 	const [showMore, setShowMore] = useState(false);
 	const timelinePreview = itinerary.timeline ? itinerary.timeline.substring(0, 100) : '';
 	const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
+	const [userName, setUserName] = useState('');
+	const deleteItinerary = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'itinerary deleted successfully') {
+					toast.success('Itinerary deleted successfully');
+					window.dispatchEvent(modelModificationEvent);
+				} else {
+					toast.error('Failed to delete itinerary');
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
+	}
+	useEffect(() => {
+		const fetchUser = async () => {
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}`;
+			try {
+				const res = await fetch(apiUrl);
+				const user = await res.json();
+				setUserName(user.firstName + ' ' + user.lastName);
+			} catch (err) {
+				console.log('Error fetching user', err);
+			}
+		}
+		fetchUser().then();
+	});
 
 	return (
 		<div className="bg-white rounded-xl shadow-md relative">
 			<div className="p-4">
 				<div className="mb-6">
-					<h3 className="text-xl font-bold">{`Itinerary by ${itinerary.createdBy.name}`}</h3>
+					<h3 className="text-xl font-bold">{`Itinerary by ${userName}`}</h3>
 					<div className="text-gray-600 my-2">{`Language: ${itinerary.language}`}</div>
 				</div>
 
@@ -48,10 +82,49 @@ const ItineraryDisplay = ({ itinerary }) => {
 
 				<div className="text-gray-600 mb-2">{`Pickup Location: ${itinerary.pickupLocation}`}</div>
 				<div className="text-gray-600 mb-2">{`Dropoff Location: ${itinerary.dropoffLocation}`}</div>
-
 			</div>
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+			<Popup
+				className="h-fit overflow-y-scroll"
+				trigger={
+					<button className="bg-indigo-500 text-white py-2 w-full">
+						Update Itinerary
+					</button>
+				}
+				modal
+				contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+				overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+			>
+				<ItineraryForm className="overflow-y-scroll" itinerary={itinerary}/>
+			</Popup>)}
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+			<button onClick={() => {
+				if (window.confirm('Are you sure you wish to delete this item?')) {
+					deleteItinerary();
+				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
+				Delete Itinerary
+			</button>)}
 		</div>
 	);
 };
+
+ItineraryDisplay.propTypes = {
+	itinerary: PropTypes.shape({
+		activities: PropTypes.arrayOf(PropTypes.string),
+		locations: PropTypes.arrayOf(PropTypes.string),
+		timeline: PropTypes.string,
+		duration: PropTypes.string,
+		language: PropTypes.string,
+		price: PropTypes.number,
+		availableDates: PropTypes.arrayOf(PropTypes.any),
+		accessibility: PropTypes.string,
+		pickupLocation: PropTypes.string,
+		dropoffLocation: PropTypes.string,
+		preferences: PropTypes.string,
+		isBooked: PropTypes.bool,
+		createdBy: PropTypes.string,
+		_id: PropTypes.string.isRequired,
+	})
+}
 
 export default ItineraryDisplay;

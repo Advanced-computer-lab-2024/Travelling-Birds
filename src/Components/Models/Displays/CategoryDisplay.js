@@ -2,28 +2,28 @@ import {toast} from "react-toastify";
 import {useState} from "react";
 import PropTypes from "prop-types";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import {TagForm} from "../Forms";
+import {CategoryForm} from "../Forms";
 import Popup from "reactjs-popup";
-import {tagModificationEvent} from "../../../utils/tagModificationEvent";
+import {categoryModificationEvent} from "../../../utils/categoryModificationEvent";
 
-const TagDisplay = ({tag}) => {
-	const [name, setName] = useState(tag?.name || '');
-	const deleteTag = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/tags/${tag._id}`, {
+const CategoryDisplay = ({category}) => {
+	const [name, setName] = useState(category?.name || '');
+	const deleteCategory = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/categories/${category._id}`, {
 			method: 'DELETE',
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				if (data?.msg?.includes('deleted')) {
-					window.dispatchEvent(tagModificationEvent);
-					toast.success('Tag deleted successfully');
+					window.dispatchEvent(categoryModificationEvent);
+					toast.success('Category deleted successfully');
 				} else {
-					toast.error('Failed to delete tag');
+					toast.error('Failed to delete category');
 				}
 			})
 			.catch((error) => {
 				console.log(error);
-				toast.error('Failed to delete tag');
+				toast.error('Failed to delete category');
 			});
 	}
 
@@ -42,10 +42,10 @@ const TagDisplay = ({tag}) => {
 				contentStyle={{maxHeight: '80vh', overflowY: 'auto'}} /* Ensures scroll */
 				overlayStyle={{background: 'rgba(0, 0, 0, 0.5)' }} /* Darken background for modal */
 			>
-				<TagForm className="overflow-y-scroll" tag={tag} />
+				<CategoryForm className="overflow-y-scroll" category={category} />
 			</Popup>
 
-				<button onClick={deleteTag} className="text-red-500 hover:text-red-700 ml-2">
+				<button onClick={deleteCategory} className="text-red-500 hover:text-red-700 ml-2">
 					<i className="fas fa-trash"></i>
 				</button>
 			</div>
@@ -53,10 +53,10 @@ const TagDisplay = ({tag}) => {
 	);
 }
 
-export default TagDisplay;
+export default CategoryDisplay;
 
-TagDisplay.propTypes = {
-	tag: PropTypes.shape({
+CategoryDisplay.propTypes = {
+	category: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
 		name: PropTypes.string.isRequired,
 	})

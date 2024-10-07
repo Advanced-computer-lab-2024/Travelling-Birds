@@ -2,7 +2,7 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-	const {date, time, location, price, priceRange, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	const {date, time, location, price, priceRange, category, tags, specialDiscount,rating, bookingOpen, createdBy} = req.body;
 	try {
 		const newActivity = new ActivityModel({
 			date,
@@ -13,6 +13,7 @@ const addActivity = async (req, res) => {
 			category,
 			tags,
 			specialDiscount,
+			rating,
 			bookingOpen,
 			createdBy
 		});
@@ -67,7 +68,7 @@ const deleteActivity = async (req, res) => {
 	try {
 		const {id} = req.params
 
-		await ActivityModel.findOneAndDelete({_id: id})
+		await ActivityModel.findByIdAndDelete(id);
 		res.status(200).json({message: "activity deleted successfully"});
 	} catch (error) {
 		res.status(404).json({error: "Activity is not Found(Already deleted)"})
@@ -114,8 +115,8 @@ const SearchForActivity = async (req, res) => {
 const getUpcomingActivities = async (req, res) => {
 	try {
 		// Get the current date and time
-		const currentDate = new Date();
-
+	    const currentDate = new Date();
+		
 		// Find activities with a date greater than or equal to the current date
 		const upcomingActivities = await ActivityModel.find({date: {$gte: currentDate}});
 
@@ -124,7 +125,7 @@ const getUpcomingActivities = async (req, res) => {
 			return res.status(404).json({message: 'No upcoming activities found'});
 		}
 
-		// Send back the found upcoming activities
+		
 		res.status(200).json(upcomingActivities);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
@@ -139,27 +140,29 @@ const filterUpcomingActivities = async (req, res) => {
 		const {budget, date, category, rating} = req.query; // Extract filter parameters
 
 		// Get the current date and time if no date is provided
-		const currentDate = date ? new Date(date) : new Date();
+		const parsedDate = date ? new Date(date) : new Date();
 
 		// Build the query object
 		let query = {
-			date: {$gte: currentDate} // Only activities on or after the current date
+			date: {$gte: parsedDate} // Only activities on or after the current date
 		};
 
 		// Filter by budget (price)
 		if (budget) {
 			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
 		}
+		
 
 		// Filter by category (case-insensitive partial match)
 		if (category) {
-			query.category = {$regex: new RegExp(category, 'i')}; // partial match and case-insensitive
+			query.category = category; // partial match and case-insensitive
 		}
 
 		// Filter by rating
 		if (rating) {
 			query.rating = {$gte: Number(rating)}; // Only activities with rating >= specified rating
 		}
+
 
 		// Fetch matching activities from the database
 		const filteredActivities = await ActivityModel.find(query);
@@ -184,12 +187,11 @@ const sortActivities = async (req, res) => {
 		// Extract the sort parameter from the query string (price or rating)
 		const {sortBy} = req.query;
 
-		// Get the current date
-		const currentDate = new Date();
+		
 
 		// Build the base query to find only upcoming activities
 		let query = {
-			date: {$gte: currentDate} // Only activities happening today or later
+		
 		};
 
 		// Determine the sort criteria based on the sortBy parameter
@@ -200,10 +202,7 @@ const sortActivities = async (req, res) => {
 			sortCriteria.price = 1; // 1 for ascending order (cheapest first)
 		} else if (sortBy === 'rating') {
 			sortCriteria.rating = -1; // -1 for descending order (highest rated first)
-		} else {
-			// If no sortBy parameter is provided or is invalid, default to sorting by date
-			sortCriteria.date = 1; // Sort by date (earliest upcoming first)
-		}
+		} 
 
 		// Fetch the upcoming activities from the database and apply the sort criteria
 		const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);

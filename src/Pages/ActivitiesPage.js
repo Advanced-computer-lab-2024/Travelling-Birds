@@ -1,44 +1,70 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityDisplay} from "../Components/Models/Displays";
+import {ActivityDisplay, CategoryDisplay, TagDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
-import TagDisplay from "../Components/Models/Displays/TagDisplay";
+import Popup from "reactjs-popup";
+import {CategoryForm, TagForm} from "../Components/Models/Forms";
 
 const ActivityPage = () => {
 	const [activities, setActivities] = useState([]);
 	const [tags, setTags] = useState([]);
+	const [categories, setCategories] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		const fetchActivities = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/`;
+			setLoading(true);
 			try {
 				const res = await fetch(apiUrl);
 				const activities = await res.json();
 				setActivities(activities);
-				console.log('Activities:', activities);
 			} catch (err) {
 				console.log('Error fetching activities', err);
 			} finally {
 				setLoading(false);
 			}
 		};
-		fetchActivities().then(r => r);
+
 		const fetchTags = async () => {
-			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags/`;
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags`;
+			setLoading(true);
 			try {
 				const res = await fetch(apiUrl);
 				const tags = await res.json();
 				setTags(tags);
 			} catch (err) {
 				console.log('Error fetching tags', err);
+			} finally {
+				setLoading(false);
 			}
 		}
-		fetchTags().then(r => r);
+		const fetchCategories = async () => {
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/categories`;
+			setLoading(true);
+			try {
+				const res = await fetch(apiUrl);
+				const categories = await res.json();
+				setCategories(categories);
+			} catch (err) {
+				console.log('Error fetching categories', err);
+			} finally {
+				setLoading(false);
+			}
+		}
+
+		fetchActivities().then();
+		fetchTags().then();
+		fetchCategories().then();
+
 		window.addEventListener('modelModified', fetchActivities);
+		window.addEventListener('tagModified', fetchTags);
+		window.addEventListener('categoryModified', fetchCategories);
 
 		return () => {
 			window.removeEventListener('modelModified', fetchActivities);
+			window.removeEventListener('tagModified', fetchTags);
+			window.removeEventListener('categoryModified', fetchCategories);
 		};
 	}, []);
 
@@ -85,14 +111,51 @@ const ActivityPage = () => {
 							</button>
 						)
 					}
-					{
-					// Map all tags to tag display
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							{tags.map((tag) => (
-								<TagDisplay key={tag._id} tag={tag}/>
-							))}
-						</div>
-					}
+					<div className="flex flex-row gap-6 py-4">
+						{!loading ? (
+							tags.map((tag) => (
+								<TagDisplay className='py-4' key={tag._id} tag={tag}/>
+							))) : (
+							<p>Loading tags...</p>
+						)
+						}
+						<Popup
+							className="h-fit overflow-y-scroll"
+							trigger={
+								<button className="bg-indigo-500 text-white px-4 py-2 rounded-lg mr-4">
+									New Tag
+								</button>
+							}
+							modal
+							contentStyle={{maxHeight: '80vh', overflowY: 'auto'}} /* Ensures scroll */
+							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}} /* Darken background for modal */
+						>
+							<TagForm className="overflow-y-scroll"/>
+						</Popup>
+					</div>
+					<div className="flex flex-row gap-6 py-4">
+						{!loading ? (
+							categories.map((category) => (
+								<CategoryDisplay className='py-4' key={category._id} category={category}/>
+							))) : (
+							<p>Loading categories...</p>
+						)
+						}
+						<Popup
+							className="h-fit overflow-y-scroll"
+							trigger={
+								<button className="bg-indigo-500 text-white px-4 py-2 rounded-lg mr-4">
+									New Category
+								</button>
+							}
+							modal
+							contentStyle={{maxHeight: '80vh', overflowY: 'auto'}} /* Ensures scroll */
+							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}} /* Darken background for modal */
+						>
+							<CategoryForm className="overflow-y-scroll"/>
+						</Popup>
+					</div>
+
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
 							activities.map((activity) => (
