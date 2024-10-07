@@ -5,13 +5,16 @@ import SortSection from '../Components/Explore Page/SortSection';
 import ResultsList from '../Components/Explore Page/ResultsList';
 import ActivityDisplay from '../Components/Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
+import { set } from 'mongoose';
 
 const ExplorePage = () => {
     const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
+    const [loading, setLoading] = useState(true);
 
     
         const fetchInitialResults = async () => {
             try {
+                setLoading(true);
                 const responses = await Promise.all([
                     fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
                     //fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${encodeURIComponent("sdfdfasad")}&tag=${encodeURIComponent("fdasfdas")}`),
@@ -27,16 +30,18 @@ const ExplorePage = () => {
                     historicalPlaces: data[2],
                     museums: data[3]
                 });
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching initial results:', error);
             }
         }
-        fetchInitialResults();
+        
     
     
     
     const handleSearch = async (searchParams) => {
         try {
+            setLoading(true);
             const responses = await Promise.all([
                 fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tag=${searchParams.activityTag}`),
                 fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tag=${searchParams.itineraryTag}`),
@@ -44,13 +49,18 @@ const ExplorePage = () => {
                 fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tag=${searchParams.museumTag}`)
             ]);
 
+
             const data = await Promise.all(responses.map(res => res.json()));
+            console.log(data[0]);
             setResults({
                 activities: data[0],
                 itineraries: data[1],
                 historicalPlaces: data[2],
                 museums: data[3]
             });
+
+            console.log(data[0]);
+            setLoading(false);
         } catch (error) {
             console.error('Error fetching search results:', error);
         }
@@ -113,12 +123,12 @@ const ExplorePage = () => {
             <SearchBar onSearch={handleSearch} />
             <FilterSection onFilter={handleFilter} />
             <SortSection onSort={handleSort} />
-            <ResultsList 
+            {!loading && <ResultsList   
                 activities={results.activities} 
                 itineraries={results.itineraries}
                 museums={results.museums}
                 historicalPlaces={results.historicalPlaces} 
-            />
+            />}
         </div>
     );
 };
