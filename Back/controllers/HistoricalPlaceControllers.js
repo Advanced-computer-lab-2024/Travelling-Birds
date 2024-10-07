@@ -131,7 +131,7 @@ const filterHistoricalPlaces = async (req, res) => {
 const getAllCreatedHistoricalPlaces = async (req, res) => {
 	try {
 		const historicalPlaces = await HistoricalPlaceModel.find({createdBy: req.params.id});
-		res.status(201).json({historicalPlaces})
+		res.status(201).json(historicalPlaces)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

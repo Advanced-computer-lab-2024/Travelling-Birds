@@ -10,7 +10,7 @@ const addMuseum = async (req, res) => {
 			name, description, pictures, location, openingHours, ticketPrices, tags, createdBy
 		});
 		await newMuseum.save();
-		res.status(201).json({message: 'Museum added successfully'});
+		res.status(201).json(newMuseum);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -122,7 +122,7 @@ const filterMuseums = async (req, res) => {
 const getAllCreatedMuseums = async (req, res) => {
 	try {
 		const museums = await MuseumModel.find({createdBy: req.params.id});
-		res.status(201).json({museums})
+		res.status(201).json(museums)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

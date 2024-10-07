@@ -18,7 +18,6 @@ router.post('/', addHistoricalPlace);
 // Get all historical places
 router.get('/', getAllHistoricalPlaces);
 
-
 // Search for historical places by name or tag
 router.get('/search', SearchForHistoricalPlace);
 
@@ -33,7 +32,6 @@ router.put('/:id', updateHistoricalPlace);
 
 // Delete historical place
 router.delete('/:id', deleteHistoricalPlace);
-
 
 // Get all created historical places by a specific user
 router.get('/user/:id', getAllCreatedHistoricalPlaces);

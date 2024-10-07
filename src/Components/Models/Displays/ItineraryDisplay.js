@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 import Popup from "reactjs-popup";
-import {ActivityForm, ItineraryForm} from "../Forms";
+import {ItineraryForm} from "../Forms";
 import {toast} from "react-toastify";
 import {modelModificationEvent} from "../../../utils/modelModificationEvent";
+import PropTypes from "prop-types";
 
 const ItineraryDisplay = ({ itinerary }) => {
 	const [showMore, setShowMore] = useState(false);
@@ -87,9 +88,28 @@ const ItineraryDisplay = ({ itinerary }) => {
 					deleteItinerary();
 				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
 				Delete Itinerary
-			</button>)}§
+			</button>)}
 		</div>
 	);
 };
+
+ItineraryDisplay.propTypes = {
+	itinerary: PropTypes.shape({
+		activities: PropTypes.arrayOf(PropTypes.string),
+		locations: PropTypes.arrayOf(PropTypes.string),
+		timeline: PropTypes.string,
+		duration: PropTypes.string,
+		language: PropTypes.string,
+		price: PropTypes.number,
+		availableDates: PropTypes.arrayOf(PropTypes.any),
+		accessibility: PropTypes.string,
+		pickupLocation: PropTypes.string,
+		dropoffLocation: PropTypes.string,
+		preferences: PropTypes.string,
+		isBooked: PropTypes.bool,
+		createdBy: PropTypes.string,
+		_id: PropTypes.string.isRequired,
+	})
+}
 
 export default ItineraryDisplay;
