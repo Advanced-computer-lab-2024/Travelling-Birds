@@ -80,7 +80,7 @@ const SearchForHistoricalPlace = async (req, res) => {
 
         if (name) {
             // Use a case-insensitive regular expression for name search
-            searchQuery.name = { $regex: name, $options: 'i' };
+            searchQuery.name = name;
         }
 
         if (tags) {

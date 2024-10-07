@@ -239,12 +239,12 @@ const filterItineraries = async (req, res) => {
 
 		// Filter by language if provided
 		if (language) {
-			itineraryQuery.language = {$regex: new RegExp(language, 'i')}; // Case-insensitive partial match for language
+			itineraryQuery.language = language // Case-insensitive partial match for language
 		}
 
 		// Filter by preferences if provided
 		if (preferences) {
-			itineraryQuery.preferences = {$regex: new RegExp(preferences, 'i')}; // Case-insensitive partial match for preferences
+			itineraryQuery.preferences = preferences // Case-insensitive partial match for preferences
 		}
 
 		// Filter by price if provided

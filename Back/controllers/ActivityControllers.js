@@ -2,7 +2,7 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-	const {date, time, location, price, priceRange, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	const {date, time, location, price, priceRange, category, tags, specialDiscount,rating, bookingOpen, createdBy} = req.body;
 	try {
 		const newActivity = new ActivityModel({
 			date,
@@ -13,6 +13,7 @@ const addActivity = async (req, res) => {
 			category,
 			tags,
 			specialDiscount,
+			rating,
 			bookingOpen,
 			createdBy
 		});
@@ -139,27 +140,29 @@ const filterUpcomingActivities = async (req, res) => {
 		const {budget, date, category, rating} = req.query; // Extract filter parameters
 
 		// Get the current date and time if no date is provided
-		const currentDate = date ? new Date(date) : new Date();
+		const parsedDate = date ? new Date(date) : new Date();
 
 		// Build the query object
 		let query = {
-			date: {$gte: currentDate} // Only activities on or after the current date
+			date: {$gte: parsedDate} // Only activities on or after the current date
 		};
 
 		// Filter by budget (price)
 		if (budget) {
 			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
 		}
+		
 
 		// Filter by category (case-insensitive partial match)
 		if (category) {
-			query.category = {$regex: new RegExp(category, 'i')}; // partial match and case-insensitive
+			query.category = category; // partial match and case-insensitive
 		}
 
 		// Filter by rating
 		if (rating) {
 			query.rating = {$gte: Number(rating)}; // Only activities with rating >= specified rating
 		}
+
 
 		// Fetch matching activities from the database
 		const filteredActivities = await ActivityModel.find(query);
@@ -185,11 +188,11 @@ const sortActivities = async (req, res) => {
 		const {sortBy} = req.query;
 
 		// Get the current date
-		const currentDate = new Date();
+		//const currentDate = new Date();
 
 		// Build the base query to find only upcoming activities
 		let query = {
-			date: {$gte: currentDate} // Only activities happening today or later
+			//date: {$gte: currentDate} // Only activities happening today or later
 		};
 
 		// Determine the sort criteria based on the sortBy parameter
@@ -200,10 +203,7 @@ const sortActivities = async (req, res) => {
 			sortCriteria.price = 1; // 1 for ascending order (cheapest first)
 		} else if (sortBy === 'rating') {
 			sortCriteria.rating = -1; // -1 for descending order (highest rated first)
-		} else {
-			// If no sortBy parameter is provided or is invalid, default to sorting by date
-			sortCriteria.date = 1; // Sort by date (earliest upcoming first)
-		}
+		} 
 
 		// Fetch the upcoming activities from the database and apply the sort criteria
 		const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);

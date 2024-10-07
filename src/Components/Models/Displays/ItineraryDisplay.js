@@ -1,11 +1,29 @@
 import { useState } from 'react';
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import Popup from "reactjs-popup";
+import {ActivityForm, ItineraryForm} from "../Forms";
+import {toast} from "react-toastify";
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 
 const ItineraryDisplay = ({ itinerary }) => {
 	const [showMore, setShowMore] = useState(false);
 	const timelinePreview = itinerary.timeline ? itinerary.timeline.substring(0, 100) : '';
 	const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
-
+	const deleteItinerary = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'itinerary deleted successfully') {
+					toast.success('Itinerary deleted successfully');
+					window.dispatchEvent(modelModificationEvent);
+				} else {
+					toast.error('Failed to delete itinerary');
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
+	}
 	return (
 		<div className="bg-white rounded-xl shadow-md relative">
 			<div className="p-4">
@@ -48,8 +66,26 @@ const ItineraryDisplay = ({ itinerary }) => {
 
 				<div className="text-gray-600 mb-2">{`Pickup Location: ${itinerary.pickupLocation}`}</div>
 				<div className="text-gray-600 mb-2">{`Dropoff Location: ${itinerary.dropoffLocation}`}</div>
-
 			</div>
+			<Popup
+				className="h-fit overflow-y-scroll"
+				trigger={
+					<button className="bg-indigo-500 text-white py-2 w-full">
+						Update Itinerary
+					</button>
+				}
+				modal
+				contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+				overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+			>
+				<ItineraryForm className="overflow-y-scroll" itinerary={itinerary}/>
+			</Popup>
+			<button onClick={() => {
+				if (window.confirm('Are you sure you wish to delete this item?')) {
+					deleteItinerary();
+				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
+				Delete Itinerary
+			</button>
 		</div>
 	);
 };

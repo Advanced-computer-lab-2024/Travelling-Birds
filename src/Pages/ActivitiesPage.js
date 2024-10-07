@@ -25,6 +25,7 @@ const ActivityPage = () => {
 				setLoading(false);
 			}
 		};
+
 		const fetchTags = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags`;
 			setLoading(true);
