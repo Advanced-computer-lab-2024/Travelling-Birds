@@ -2,7 +2,7 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-	const {date, time, location, price, priceRange, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	const {date, time, location, price, priceRange, category, tags, specialDiscount,rating, bookingOpen, createdBy} = req.body;
 	try {
 		const newActivity = new ActivityModel({
 			date,
@@ -13,6 +13,7 @@ const addActivity = async (req, res) => {
 			category,
 			tags,
 			specialDiscount,
+			rating,
 			bookingOpen,
 			createdBy
 		});
@@ -139,27 +140,31 @@ const filterUpcomingActivities = async (req, res) => {
 		const {budget, date, category, rating} = req.query; // Extract filter parameters
 
 		// Get the current date and time if no date is provided
-		const currentDate = date ? new Date(date) : new Date();
+		//const currentDate = date ? new Date(date) : new Date();
 
 		// Build the query object
 		let query = {
-			date: {$gte: currentDate} // Only activities on or after the current date
+			//date: {$gte: currentDate} // Only activities on or after the current date
 		};
 
 		// Filter by budget (price)
 		if (budget) {
 			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
 		}
+		if (date) {
+			query.date = {$gte: Date(date)}; 
+		}
 
 		// Filter by category (case-insensitive partial match)
 		if (category) {
-			query.category = {$regex: new RegExp(category, 'i')}; // partial match and case-insensitive
+			query.category = category; // partial match and case-insensitive
 		}
 
 		// Filter by rating
 		if (rating) {
 			query.rating = {$gte: Number(rating)}; // Only activities with rating >= specified rating
 		}
+
 
 		// Fetch matching activities from the database
 		const filteredActivities = await ActivityModel.find(query);
