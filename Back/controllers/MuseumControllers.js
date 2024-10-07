@@ -42,8 +42,8 @@ const getMuseum = async (req, res) => {
 // Update Museum
 const updateMuseum = async (req, res) => {
 	try {
-		await MuseumModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-		res.status(201).json({msg: "Museum updated successfully"});
+		const museum = await MuseumModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
+		res.status(201).json(museum);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

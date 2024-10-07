@@ -17,7 +17,7 @@ const addHistoricalPlace = async (req, res) => {
 				createdBy
 			});
 		await newHistoricalPlace.save();
-		res.status(201).json({message: 'Historical Place added successfully'});
+		res.status(201).json(newHistoricalPlace);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
