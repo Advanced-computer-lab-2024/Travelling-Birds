@@ -88,7 +88,7 @@ const ExplorePage = () => {
             setLoading(true);
             if (sortParams.type === 'activity') {
             const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?criterion=${sortParams.criterion}`)
+                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?sortBy=${sortParams.criterion}`)
 
             ]);
             const data = await Promise.all(responses.map(res => res.json()));
@@ -101,7 +101,7 @@ const ExplorePage = () => {
         }
         else if (sortParams.type === 'itinerary') {
             const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?criterion=${sortParams.criterion}`)
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
             ]);
             const data = await Promise.all(responses.map(res => res.json()));
             setResults({
