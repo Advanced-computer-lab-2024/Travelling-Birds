@@ -83,7 +83,7 @@ function NavBarContainer() {
 	}, []);
 	return (
 		<>
-			role: {role}, id: {user}
+			{/*role: {role}, id: {user}*/}
 			{role === 'tourist' && <TouristNavBar/>}
 			{role === 'admin' && <AdminNavBar/>}
 			{role === 'tour_guide' && <TourGuideNavBar/>}
