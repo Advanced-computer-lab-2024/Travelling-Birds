@@ -21,6 +21,10 @@ const ItinerariesPage = () => {
 			}
 		};
 		fetchItineraries().then(r => r);
+		window.addEventListener('modelModified', fetchItineraries);
+		return () => {
+			window.removeEventListener('modelModified', fetchItineraries);
+		};
 	}, []);
 	const handleCreateItinerary = () => {
 		navigate('/create-itinerary')
