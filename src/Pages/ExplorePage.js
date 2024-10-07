@@ -35,7 +35,7 @@ const ExplorePage = () => {
          
     },
     []);
-
+    
     const handleSearch = async (searchParams) => {
         try {
             const responses = await Promise.all([
