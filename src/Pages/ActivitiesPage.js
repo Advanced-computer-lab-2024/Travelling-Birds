@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {ActivityDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
 import TagDisplay from "../Components/Models/Displays/TagDisplay";
+import Popup from "reactjs-popup";
+import {TagForm} from "../Components/Models/Forms";
 
 const ActivityPage = () => {
 	const [activities, setActivities] = useState([]);
@@ -12,39 +14,40 @@ const ActivityPage = () => {
 	useEffect(() => {
 		const fetchActivities = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/`;
+			setLoading(true);
 			try {
 				const res = await fetch(apiUrl);
 				const activities = await res.json();
 				setActivities(activities);
-				console.log('Activities:', activities);
 			} catch (err) {
 				console.log('Error fetching activities', err);
 			} finally {
 				setLoading(false);
 			}
 		};
-		fetchActivities().then(r => r);
-		window.addEventListener('modelModified', fetchActivities);
-
-		return () => {
-			window.removeEventListener('modelModified', fetchActivities);
-		};
-
 		const fetchTags = async () => {
-			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags/`;
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags`;
+			setLoading(true);
 			try {
 				const res = await fetch(apiUrl);
 				const tags = await res.json();
 				setTags(tags);
 			} catch (err) {
 				console.log('Error fetching tags', err);
+			} finally {
+				setLoading(false);
 			}
 		}
+
+		fetchActivities().then(r => r);
 		fetchTags().then(r => r);
+
 		window.addEventListener('modelModified', fetchActivities);
+		window.addEventListener('tagModified', fetchTags);
 
 		return () => {
 			window.removeEventListener('modelModified', fetchActivities);
+			window.removeEventListener('tagModified', fetchTags);
 		};
 	}, []);
 
@@ -91,14 +94,28 @@ const ActivityPage = () => {
 							</button>
 						)
 					}
-					{
-					// Map all tags to tag display
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-							{tags.map((tag) => (
-								<TagDisplay key={tag._id} tag={tag}/>
-							))}
-						</div>
-					}
+					<div className="flex flex-row gap-6 py-4">
+						{!loading ? (
+							tags.map((tag) => (
+								<TagDisplay className='py-4' key={tag._id} tag={tag}/>
+							))) : (
+							<p>Loading tags...</p>
+						)
+						}
+						<Popup
+							className="h-fit overflow-y-scroll"
+							trigger={
+								<button className="bg-indigo-500 text-white px-4 py-2 rounded-lg mr-4">
+									New Tag
+								</button>
+							}
+							modal
+							contentStyle={{maxHeight: '80vh', overflowY: 'auto'}} /* Ensures scroll */
+							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}} /* Darken background for modal */
+						>
+							<TagForm className="overflow-y-scroll"/>
+						</Popup>
+					</div>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
 							activities.map((activity) => (
