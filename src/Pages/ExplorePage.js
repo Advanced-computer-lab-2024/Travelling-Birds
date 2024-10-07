@@ -38,8 +38,8 @@ const ExplorePage = () => {
 		try {
 			setLoading(true);
 			const responses = await Promise.all([
-				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tag=${searchParams.activityTag}`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tag=${searchParams.itineraryTag}`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tags=${searchParams.activityTag}`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tags=${searchParams.itineraryTag}`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/search?name=${searchParams.historicalPlaceName}&tags=${searchParams.historicalPlaceTag}`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tags=${searchParams.museumTag}`)
 			]);
@@ -90,31 +90,32 @@ const ExplorePage = () => {
 				const responses = await Promise.all([
 					fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?sortBy=${sortParams.criterion}`)
 
-				]);
-				const data = await Promise.all(responses.map(res => res.json()));
-				setResults({
-					activities: data[0]?.message?.includes('No') ? [] : data[0],
-					itineraries: data[1]?.message?.includes('No') ? [] : data[1],
-					historicalPlaces: [],
-					museums: []
-				});
-			} else if (sortParams.type === 'itinerary') {
-				const responses = await Promise.all([
-					fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
-				]);
-				const data = await Promise.all(responses.map(res => res.json()));
-				setResults({
-					activities: data[0]?.message?.includes('No') ? [] : data[0],
-					itineraries: data[1]?.message?.includes('No') ? [] : data[1],
-					historicalPlaces: [],
-					museums: []
-				});
-			}
-			setLoading(false);
-		} catch (error) {
-			console.error('Error fetching sort results:', error);
-		}
-	};
+            ]);
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: data[0]?.message?.includes('No') ? [] : data[0],
+				itineraries: [],
+                historicalPlaces: [],
+                museums: []
+            });
+        }
+        else if (sortParams.type === 'itinerary') {
+            const responses = await Promise.all([
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
+            ]);
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: [],
+				itineraries: data[0]?.message?.includes('No') ? [] : data[0],
+                historicalPlaces: [],
+                museums: []
+            });
+        }
+        setLoading(false);
+        } catch (error) {
+            console.error('Error fetching sort results:', error);
+        }
+    };
 
 	useEffect(() => {
 		fetchInitialResults().then();
