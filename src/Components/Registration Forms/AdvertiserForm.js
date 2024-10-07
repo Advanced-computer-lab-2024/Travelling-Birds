@@ -37,7 +37,7 @@ const AdvertiserForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.data._id) {
+				if (data?.data?._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'advertiser');
 					window.dispatchEvent(sessionStorageEvent);
