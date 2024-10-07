@@ -125,7 +125,7 @@ const SearchForItinerary = async (req, res) => {
 
 		// If category is provided, search for activities with a matching category (case-insensitive partial match)
 		if (category) {
-			activityQuery.category = {$regex: new RegExp(category, 'i')}; // Partial match and case-insensitive
+			activityQuery.category = category // Partial match and case-insensitive
 		}
 
 		// If tags are provided, search for activities with matching tags (any of the tags in the array)

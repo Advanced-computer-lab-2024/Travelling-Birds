@@ -187,12 +187,11 @@ const sortActivities = async (req, res) => {
 		// Extract the sort parameter from the query string (price or rating)
 		const {sortBy} = req.query;
 
-		// Get the current date
-		//const currentDate = new Date();
+		
 
 		// Build the base query to find only upcoming activities
 		let query = {
-			//date: {$gte: currentDate} // Only activities happening today or later
+		
 		};
 
 		// Determine the sort criteria based on the sortBy parameter
