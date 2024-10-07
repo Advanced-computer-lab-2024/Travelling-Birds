@@ -15,7 +15,7 @@ const ExplorePage = () => {
 			const responses = await Promise.all([
 				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/upcoming`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalplaces`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/museums`)
 			]);
 
