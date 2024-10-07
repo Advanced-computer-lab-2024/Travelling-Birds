@@ -30,6 +30,8 @@ const LogIn = () => {
 					window.dispatchEvent(sessionStorageEvent);
 					toast.success('Logged in successfully');
 					navigate('/profile', {replace: true});
+				} else if (data?.message === 'Profile not approved yet. Please wait for admin approval.') {
+					toast.error('Profile not approved yet. Please wait for admin approval.');
 				} else {
 					toast.error('Invalid credentials');
 				}

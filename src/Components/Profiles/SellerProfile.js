@@ -75,8 +75,8 @@ const SellerProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
+					window.dispatchEvent(userDeletionEvent);
 					toast.success('User approved successfully');
-					navigate('/profile', {replace: true});
 				} else {
 					toast.error('Failed to approve user');
 				}
@@ -121,7 +121,7 @@ const SellerProfile = ({user, displayOnly}) => {
 						{isEditing ? 'Confirm' : 'Update'}
 					</button>
 				}
-				{displayOnly &&
+				{displayOnly && !user.isApproved &&
 					<button type="button"
 					        onClick={approveSeller}
 					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
@@ -150,6 +150,7 @@ SellerProfile.propTypes = {
 		username: PropTypes.string.isRequired,
 		description: PropTypes.string,
 		_id: PropTypes.string.isRequired,
+		isApproved: PropTypes.bool,
 	}).isRequired,
 	displayOnly: PropTypes.bool.isRequired,
 };

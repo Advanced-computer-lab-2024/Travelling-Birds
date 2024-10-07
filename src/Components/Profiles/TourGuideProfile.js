@@ -76,6 +76,7 @@ const TourGuideProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
+					window.dispatchEvent(userDeletionEvent);
 					toast.success('User approved successfully');
 				} else {
 					toast.error('Failed to approve user');
@@ -124,7 +125,7 @@ const TourGuideProfile = ({user, displayOnly}) => {
 						{isEditing ? 'Confirm' : 'Update'}
 					</button>
 				}
-				{displayOnly &&
+				{displayOnly && !user.isApproved &&
 					<button type="button"
 					        onClick={approveTourGuide}
 					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
@@ -154,6 +155,7 @@ TourGuideProfile.propTypes = {
 		yearsOfExperience: PropTypes.number,
 		previousWork: PropTypes.string,
 		_id: PropTypes.string.isRequired,
+		isApproved: PropTypes.bool,
 	}).isRequired,
 	displayOnly: PropTypes.bool.isRequired,
 };
