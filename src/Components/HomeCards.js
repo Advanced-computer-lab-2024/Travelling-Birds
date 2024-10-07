@@ -1,5 +1,6 @@
 import Card from "./Card";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
+import LogIn from "./LogIn";
 
 const HomeCards = () => {
 	return (
@@ -19,7 +20,7 @@ const HomeCards = () => {
 						</Link>
 
 						<Link
-							to="/tourguide"
+							to="/tour-guide"
 							className="inline-block bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-700 ml-2"
 						>
 							Tour Guide
@@ -43,11 +44,12 @@ const HomeCards = () => {
 							Advertiser
 						</Link>
 						<Link
-							to="/tourismgoverner"
+							to="/tourism-governor"
 							className="inline-block bg-black text-white rounded-lg px-4 py-2 hover:bg-gray-700 ml-2"
 						>
 							Tourism Governer
 						</Link>
+						<LogIn/>
 					</Card>
 				</div>
 			</div>

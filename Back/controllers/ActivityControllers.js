@@ -55,6 +55,7 @@ const updateActivity = async (req, res) => {
 		if (!activity) {
 			return res.status(404).json({message: 'Activity not found'});
 		}
+		res.status(200).json(activity);
 	} catch (error) {
 		res.status(400).json({message: error.message});
 	}

@@ -5,46 +5,82 @@ import SortSection from '../Components/Explore Page/SortSection';
 import ResultsList from '../Components/Explore Page/ResultsList';
 
 const ExplorePage = () => {
-  const [results, setResults] = useState([]);
+    const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
 
-  const handleSearch = async (searchTerms) => {
-    let data;
-    if (searchTerms.category || searchTerms.tag) {
-      // Fetch activities and itineraries by category/tag
-      data = await fetch(`/api/activities/search?category=${searchTerms.category}&tag=${searchTerms.tag}`);
-    } else if (searchTerms.name || searchTerms.tag) {
-      // Fetch historical places and museums by name/tag
-      data = await fetch(`/api/museums/search?name=${searchTerms.name}&tag=${searchTerms.tag}`);
-    }
-    setResults(await data.json());
-  };
+    const handleSearch = async (searchParams) => {
+        try {
+            const responses = await Promise.all([
+                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tag=${searchParams.activityTag}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tag=${searchParams.itineraryTag}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/historical-places/search?name=${searchParams.historicalPlaceName}&tag=${searchParams.historicalPlaceTag}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tag=${searchParams.museumTag}`)
+            ]);
 
-  const handleFilter = async (filters) => {
-    let data;
-    if (filters.budget || filters.rating) {
-      data = await fetch(`/api/activities/filter?budget=${filters.budget}&date=${filters.date}&category=${filters.category}&rating=${filters.rating}`);
-    } else if (filters.preferences || filters.language) {
-      data = await fetch(`/api/itineraries/filter?budget=${filters.budget}&date=${filters.date}&preferences=${filters.preferences}&language=${filters.language}`);
-    } else if (filters.tags) {
-      data = await fetch(`/api/museums/filter?tags=${filters.tags}`);
-    }
-    setResults(await data.json());
-  };
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: data[0],
+                itineraries: data[1],
+                historicalPlaces: data[2],
+                museums: data[3]
+            });
+        } catch (error) {
+            console.error('Error fetching search results:', error);
+        }
+    };
 
-  const handleSort = async (sortBy) => {
-    let data = await fetch(`/api/activities/sort?sort=${sortBy}`);
-    setResults(await data.json());
-  };
+    const handleFilter = async (filterParams) => {
+        try {
+            const responses = await Promise.all([
+                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/filter?budget=${filterParams.activityBudget}&date=${filterParams.activityDate}&category=${filterParams.activityCategory}&rating=${filterParams.activityRating}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/filter?budget=${filterParams.itineraryBudget}&date=${filterParams.itineraryDate}&preferences=${filterParams.itineraryPreferences}&language=${filterParams.itineraryLanguage}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/historical-places/filter?tag=${filterParams.historicalPlaceTag}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/museums/filter?tag=${filterParams.museumTag}`)
+            ]);
 
-  return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-4">Explore</h1>
-      <SearchBar onSearch={handleSearch} />
-      <FilterSection onFilter={handleFilter} />
-      <SortSection onSort={handleSort} />
-      <ResultsList results={results} />
-    </div>
-  );
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: data[0],
+                itineraries: data[1],
+                historicalPlaces: data[2],
+                museums: data[3]
+            });
+        } catch (error) {
+            console.error('Error fetching filter results:', error);
+        }
+    };
+
+    const handleSort = async (sortParams) => {
+        try {
+            const responses = await Promise.all([
+                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?price=${sortParams.activityPrice}&rating=${sortParams.activityRating}`),
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?price=${sortParams.itineraryPrice}&rating=${sortParams.itineraryRating}`)
+            ]);
+
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: data[0],
+                itineraries: data[1],
+                historicalPlaces: [],
+                museums: []
+            });
+        } catch (error) {
+            console.error('Error fetching sort results:', error);
+        }
+    };
+
+    return (
+        <div className="p-4 bg-gray-50 min-h-screen">
+            <SearchBar onSearch={handleSearch} />
+            <FilterSection onFilter={handleFilter} />
+            <SortSection onSort={handleSort} />
+            <ResultsList 
+                activities={results.activities} 
+                itineraries={results.itineraries}
+                museums={results.museums}
+                historicalPlaces={results.historicalPlaces} 
+            />
+        </div>
+    );
 };
 
 export default ExplorePage;

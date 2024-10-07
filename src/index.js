@@ -26,10 +26,9 @@ import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Models/Forms/ActivityForm";
 import ExplorePage from "./Pages/ExplorePage";
 import UsersPage from "./Pages/UsersPage";
-import {ItineraryDisplay} from "./Components/Models/Displays";
 import ItinerariesPage from "./Pages/ItinerariesPage";
 import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
-import ProductsHomePage from "./Components/Product Page/ProductsHomePage";
+import ProductsPage from "./Pages/ProductsPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -41,11 +40,11 @@ root.render(
 				<Route path='/' element={<NavBarContainer/>}>
 					<Route index element={<RegisterPage/>}/>
 					<Route path='tourist' element={<TouristForm/>}/>
-					<Route path='tourguide' element={<TourGuideForm/>}/>
+					<Route path='tour-guide' element={<TourGuideForm/>}/>
 					<Route path='seller' element={<SellerForm/>}/>
 					<Route path='admin' element={<AdminForm/>}/>
 					<Route path='advertiser' element={<AdvertiserForm/>}/>
-					<Route path='tourismgoverner' element={<TourismGovernorForm/>}/>
+					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
@@ -53,8 +52,8 @@ root.render(
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
-					<Route path="product" element={<ProductsHomePage/>}/>
- 				</Route>
+					<Route path="products" element={<ProductsPage/>}/>
+				</Route>
 			</Routes>
 		</BrowserRouter>
 		<ToastContainer/>

@@ -31,7 +31,7 @@ const AdminForm = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.data._id) {
+				if (data?.data?._id) {
 					sessionStorage.setItem('user id', data.data._id);
 					sessionStorage.setItem('role', 'admin');
 					window.dispatchEvent(sessionStorageEvent);

@@ -1,40 +1,54 @@
 import React, { useState } from 'react';
 
 const FilterSection = ({ onFilter }) => {
-  const [filters, setFilters] = useState({
-    budget: '',
-    date: '',
-    category: '',
-    rating: '',
-    preferences: '',
-    language: '',
-    tags: ''
-  });
+    const [activityBudget, setActivityBudget] = useState('');
+    const [activityDate, setActivityDate] = useState('');
+    const [activityCategory, setActivityCategory] = useState('');
+    const [activityRating, setActivityRating] = useState('');
+    const [itineraryBudget, setItineraryBudget] = useState('');
+    const [itineraryDate, setItineraryDate] = useState('');
+    const [itineraryPreferences, setItineraryPreferences] = useState('');
+    const [itineraryLanguage, setItineraryLanguage] = useState('');
+    const [historicalPlaceTag, setHistoricalPlaceTag] = useState('');
+    const [museumTag, setMuseumTag] = useState('');
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+    const handleFilter = () => {
+        onFilter({
+            activityBudget,
+            activityDate,
+            activityCategory,
+            activityRating,
+            itineraryBudget,
+            itineraryDate,
+            itineraryPreferences,
+            itineraryLanguage,
+            historicalPlaceTag,
+            museumTag,
+        });
+    };
 
-  const handleFilter = () => {
-    onFilter(filters);
-  };
+    return (
+        <div className="p-4 bg-gray-100 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-4">Filter</h2>
+            {/* Activity Filters */}
+            <input type="number" placeholder="Activity Budget" className="p-2 mb-2 border" onChange={(e) => setActivityBudget(e.target.value)} />
+            <input type="date" placeholder="Activity Date" className="p-2 mb-2 border" onChange={(e) => setActivityDate(e.target.value)} />
+            <input type="text" placeholder="Activity Category" className="p-2 mb-2 border" onChange={(e) => setActivityCategory(e.target.value)} />
+            <input type="number" placeholder="Activity Rating" className="p-2 mb-2 border" onChange={(e) => setActivityRating(e.target.value)} />
 
-  return (
-    <div className="flex flex-col space-y-4 mb-4">
-      <input type="number" name="budget" placeholder="Budget" value={filters.budget} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="date" name="date" placeholder="Date" value={filters.date} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="text" name="category" placeholder="Category" value={filters.category} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="number" name="rating" placeholder="Rating" value={filters.rating} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="text" name="preferences" placeholder="Preferences" value={filters.preferences} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="text" name="language" placeholder="Language" value={filters.language} onChange={handleInputChange} className="border p-2 rounded" />
-      <input type="text" name="tags" placeholder="Tags" value={filters.tags} onChange={handleInputChange} className="border p-2 rounded" />
-      <button onClick={handleFilter} className="bg-blue-500 text-white p-2 rounded">Filter</button>
-    </div>
-  );
+            {/* Itinerary Filters */}
+            <input type="number" placeholder="Itinerary Budget" className="p-2 mb-2 border" onChange={(e) => setItineraryBudget(e.target.value)} />
+            <input type="date" placeholder="Itinerary Date" className="p-2 mb-2 border" onChange={(e) => setItineraryDate(e.target.value)} />
+            <input type="text" placeholder="Itinerary Preferences" className="p-2 mb-2 border" onChange={(e) => setItineraryPreferences(e.target.value)} />
+            <input type="text" placeholder="Itinerary Language" className="p-2 mb-2 border" onChange={(e) => setItineraryLanguage(e.target.value)} />
+
+            {/* Historical Place and Museum Filters */}
+            <input type="text" placeholder="Historical Place Tag" className="p-2 mb-2 border" onChange={(e) => setHistoricalPlaceTag(e.target.value)} />
+            <input type="text" placeholder="Museum Tag" className="p-2 mb-2 border" onChange={(e) => setMuseumTag(e.target.value)} />
+
+            <button onClick={handleFilter} className="bg-green-500 text-white px-4 py-2 rounded-lg">Filter</button>
+        </div>
+    );
 };
 
 export default FilterSection;

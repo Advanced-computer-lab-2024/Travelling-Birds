@@ -1,22 +1,25 @@
 import React from 'react';
+import ActivityDisplay from '../Models/Displays/ActivityDisplay';
+import ItineraryDisplay from '../Models/Displays/ItineraryDisplay';
 
-const ResultsList = ({ results }) => {
-  return (
-    <div className="space-y-4">
-      {results.map((result, index) => (
-        <div key={index} className="border p-4 rounded bg-gray-100">
-          {result.date && <p><strong>Date:</strong> {result.date}</p>}
-          {result.time && <p><strong>Time:</strong> {result.time}</p>}
-          {result.location && <p><strong>Location:</strong> {result.location.lat}, {result.location.lng}</p>}
-          {result.price && <p><strong>Price:</strong> ${result.price}</p>}
-          {result.category && <p><strong>Category:</strong> {result.category}</p>}
-          {result.rating && <p><strong>Rating:</strong> {result.rating}</p>}
-          {result.tags && <p><strong>Tags:</strong> {result.tags.join(', ')}</p>}
-          {result.description && <p><strong>Description:</strong> {result.description}</p>}
+const ResultsList = ({ activities, itineraries }) => {
+    return (
+        <div className="p-4">
+            <h2 className="text-lg font-semibold mb-4">Results</h2>
+            <div className="mb-6">
+                <h3 className="text-md font-semibold">Upcoming Activities</h3>
+                {activities.map((activity) => (
+                    <ActivityDisplay key={activity._id} activity={activity} />
+                ))}
+            </div>
+            <div>
+                <h3 className="text-md font-semibold">Upcoming Itineraries</h3>
+                {itineraries.map((itinerary) => (
+                    <ItineraryDisplay key={itinerary._id} itinerary={itinerary} />
+                ))}
+            </div>
         </div>
-      ))}
-    </div>
-  );
+    );
 };
 
 export default ResultsList;

@@ -1,4 +1,5 @@
 import {NavLink} from "react-router-dom";
+import LogOut from "../LogOut";
 
 const NavBar = ({children}) => {
 	const activeStyle = ({isActive}) => {
@@ -13,6 +14,7 @@ const NavBar = ({children}) => {
 						<div className="md:ml-auto">
 							<div className="flex space-x-2">
 								{children}
+								<LogOut/>
 							</div>
 						</div>
 					</div>
