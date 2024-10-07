@@ -24,6 +24,12 @@ const ActivityPage = () => {
 			}
 		};
 		fetchActivities().then(r => r);
+		window.addEventListener('modelModified', fetchActivities);
+
+		return () => {
+			window.removeEventListener('modelModified', fetchActivities);
+		};
+
 		const fetchTags = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags/`;
 			try {
