@@ -3,6 +3,8 @@ import SearchBar from '../Components/Explore Page/SearchBar';
 import FilterSection from '../Components/Explore Page/FilterSection';
 import SortSection from '../Components/Explore Page/SortSection';
 import ResultsList from '../Components/Explore Page/ResultsList';
+import ActivityDisplay from '../Components/Models/Displays/ActivityDisplay';
+import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
 
 const ExplorePage = () => {
     const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
@@ -12,8 +14,8 @@ const ExplorePage = () => {
             try {
                 const responses = await Promise.all([
                     fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
-                    fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`),
-                    fetch(`${process.env.REACT_APP_BACKEND}/api/historical-places`),
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/upcoming`),
+                    fetch(`${process.env.REACT_APP_BACKEND}/api/historicalplaces`),
                     fetch(`${process.env.REACT_APP_BACKEND}/api/museums`)
                 ]);
 
@@ -29,7 +31,10 @@ const ExplorePage = () => {
             }
         }
         fetchInitialResults();
-    }, []);
+    
+         
+    },
+    []);
 
     const handleSearch = async (searchParams) => {
         try {
@@ -91,6 +96,13 @@ const ExplorePage = () => {
             console.error('Error fetching sort results:', error);
         }
     };
+    
+      
+
+
+
+
+
 
     return (
         <div className="p-4 bg-gray-50 min-h-screen">
@@ -106,5 +118,7 @@ const ExplorePage = () => {
         </div>
     );
 };
+
+      
 
 export default ExplorePage;
