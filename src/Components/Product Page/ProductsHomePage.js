@@ -1,12 +1,10 @@
 // src/Components/Product Page/ProductHomePage.js
 
-import React, { useState, useEffect } from 'react'; // Import React and necessary hooks
-import { toast, ToastContainer } from 'react-toastify'; // Import toast and ToastContainer
+import React, {useState} from 'react'; // Import React and necessary hooks
+import {toast} from 'react-toastify'; // Import toast and ToastContainer
 import 'react-toastify/dist/ReactToastify.css'; // Import react-toastify styles
 
 const ProductHomePage = () => {
-	// State Variables
-
 	const [products, setProducts] = useState([]); // State to store the list of fetched products
 	const [loading, setLoading] = useState(false); // State to manage the loading status
 	const [searchTerm, setSearchTerm] = useState(''); // State to hold the current search term entered by the user
@@ -182,8 +180,8 @@ const ProductHomePage = () => {
 	 * @param {Object} e - The event object.
 	 */
 	const handleNewProductChange = (e) => {
-		const { name, value } = e.target; // Destructure name and value from the input
-		setNewProduct({ ...newProduct, [name]: value }); // Update the 'newProduct' state with the new value
+		const {name, value} = e.target; // Destructure name and value from the input
+		setNewProduct({...newProduct, [name]: value}); // Update the 'newProduct' state with the new value
 	};
 
 	/**
@@ -358,8 +356,10 @@ const ProductHomePage = () => {
 								<h3 className="font-bold text-lg">{product.name}</h3> {/* Display the product's name */}
 								<p>{product.description}</p> {/* Display the product's description */}
 								<p><strong>Price:</strong> ${product.price}</p> {/* Display the product's price */}
-								<p><strong>Available Quantity:</strong> {product.availableQuantity}</p> {/* Display the available quantity */}
-								<p><strong>Average Rating:</strong> {calculateAvgRating(product.ratings)}</p> {/* Display the average rating calculated from ratings */}
+								<p><strong>Available Quantity:</strong> {product.availableQuantity}
+								</p> {/* Display the available quantity */}
+								<p><strong>Average Rating:</strong> {calculateAvgRating(product.ratings)}
+								</p> {/* Display the average rating calculated from ratings */}
 								<p><strong>Reviews:</strong></p> {/* Label for the reviews section */}
 								<ul className="list-disc ml-5">
 									{product.reviews.length > 0 ? ( // Check if there are any reviews
@@ -378,12 +378,17 @@ const ProductHomePage = () => {
 
 			{/* Create Product Modal */}
 			{isCreateModalOpen && (
-				<div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-20">
+				<div
+					className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-20">
 					<div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
 						<h2 className="text-2xl mb-4">Create New Product</h2>
-						<form onSubmit={(e) => { e.preventDefault(); handleCreateProduct(); }}>
+						<form onSubmit={(e) => {
+							e.preventDefault();
+							handleCreateProduct();
+						}}>
 							<div className="mb-4">
-								<label className="block text-gray-700">Name<span className="text-red-500">*</span></label>
+								<label className="block text-gray-700">Name<span
+									className="text-red-500">*</span></label>
 								<input
 									type="text"
 									name="name"
@@ -395,7 +400,8 @@ const ProductHomePage = () => {
 								/>
 							</div>
 							<div className="mb-4">
-								<label className="block text-gray-700">Description<span className="text-red-500">*</span></label>
+								<label className="block text-gray-700">Description<span
+									className="text-red-500">*</span></label>
 								<textarea
 									name="description"
 									placeholder="Description"
@@ -420,7 +426,8 @@ const ProductHomePage = () => {
 								/>
 							</div>
 							<div className="mb-4">
-								<label className="block text-gray-700">Available Quantity<span className="text-red-500">*</span></label>
+								<label className="block text-gray-700">Available Quantity<span
+									className="text-red-500">*</span></label>
 								<input
 									type="number"
 									name="availableQuantity"
@@ -433,7 +440,8 @@ const ProductHomePage = () => {
 								/>
 							</div>
 							<div className="mb-4">
-								<label className="block text-gray-700">Picture URL<span className="text-red-500">*</span></label>
+								<label className="block text-gray-700">Picture URL<span
+									className="text-red-500">*</span></label>
 								<input
 									type="text"
 									name="picture"

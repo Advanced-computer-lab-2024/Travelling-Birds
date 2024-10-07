@@ -1,0 +1,1 @@
+export const tagModificationEvent = new Event('tagModified');

@@ -1,4 +1,3 @@
-import React from 'react';
 import ActivityDisplay from '../Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Models/Displays/ItineraryDisplay';
 
@@ -10,7 +9,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
             {/* Activities Section */}
             <div className="mb-6">
                 <h3 className="text-md font-semibold">Upcoming Activities</h3>
-                {activities.length > 0 ? (
+                {activities && activities.length > 0 ? (
                     activities.map((activity) => (
                         <ActivityDisplay key={activity._id} activity={activity} />
                     ))
@@ -22,7 +21,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
             {/* Itineraries Section */}
             <div className="mb-6">
                 <h3 className="text-md font-semibold">Upcoming Itineraries</h3>
-                {itineraries.length > 0 ? (
+                {itineraries && itineraries.length > 0 ? (
                     itineraries.map((itinerary) => (
                         <ItineraryDisplay key={itinerary._id} itinerary={itinerary} />
                     ))
@@ -34,7 +33,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
             {/* Museums Section */}
             <div className="mb-6">
                 <h3 className="text-md font-semibold">Museums</h3>
-                {museums.length > 0 ? (
+                {museums && museums.length > 0 ? (
                     museums.map((museum) => (
                         <div key={museum._id} className="museum-item">
                             <p className="text-lg">{museum.name}</p>
@@ -48,7 +47,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
             {/* Historical Places Section */}
             <div>
                 <h3 className="text-md font-semibold">Historical Places</h3>
-                {historicalPlaces.length > 0 ? (
+                {historicalPlaces && historicalPlaces.length > 0 ? (
                     historicalPlaces.map((place) => (
                         <div key={place._id} className="historical-place-item">
                             <p className="text-lg">{place.name}</p>
