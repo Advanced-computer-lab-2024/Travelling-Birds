@@ -35,11 +35,7 @@ const SellerForm = () => {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data?.data?._id) {
-					sessionStorage.setItem('user id', data.data._id);
-					sessionStorage.setItem('role', 'seller');
-					window.dispatchEvent(sessionStorageEvent);
-					toast.success('User added successfully');
-					navigate('/profile', {replace: true});
+					toast.success('User added successfully, Please wait for admin approval');
 				} else {
 					toast.error('Failed to register user');
 				}
