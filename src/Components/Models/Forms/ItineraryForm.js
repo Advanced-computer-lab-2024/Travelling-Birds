@@ -2,20 +2,21 @@ import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 
-const ItineraryForm = () => {
-	const [activities, setActivities] = useState('');
-	const [locations, setLocations] = useState('');
-	const [timeline, setTimeline] = useState('');
-	const [duration, setDuration] = useState('');
-	const [language, setLanguage] = useState('');
-	const [price, setPrice] = useState('');
-	const [availableDates, setAvailableDates] = useState('');
-	const [accessibility, setAccessibility] = useState('');
-	const [pickupLocation, setPickupLocation] = useState('');
-	const [dropoffLocation, setDropoffLocation] = useState('');
-	const [preferences, setPreferences] = useState('');
-	const [isBooked, setIsBooked] = useState(false);
+const ItineraryForm = ({itinerary}) => {
+	const [activities, setActivities] = useState(itinerary?.activities?.join(',') || '');
+	const [locations, setLocations] = useState(itinerary?.locations?.join(',') ||'');
+	const [timeline, setTimeline] = useState(itinerary?.timeline || '');
+	const [duration, setDuration] = useState(itinerary?.duration || '');
+	const [language, setLanguage] = useState(itinerary?.language || '');
+	const [price, setPrice] = useState(itinerary?.price || '');
+	const [availableDates, setAvailableDates] = useState(itinerary?.availableDates?.map(date => new Date(date).toLocaleDateString()).join(', ') || '');
+	const [accessibility, setAccessibility] = useState(itinerary?.accessibility || '');
+	const [pickupLocation, setPickupLocation] = useState(itinerary?.pickupLocation || '');
+	const [dropoffLocation, setDropoffLocation] = useState(itinerary?.dropoffLocation ||'');
+	const [preferences, setPreferences] = useState(itinerary?.preferences ||'');
+	const [isBooked, setIsBooked] = useState(itinerary?.isBooked || false);
 
 	const registerItinerary = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`, {
@@ -43,6 +44,7 @@ const ItineraryForm = () => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Itinerary added successfully');
+					window.dispatchEvent(modelModificationEvent);
 				} else {
 					toast.error('Failed to register itinerary');
 				}
@@ -52,12 +54,45 @@ const ItineraryForm = () => {
 				toast.error('Failed to register itinerary');
 			});
 	}
+	const updateItinerary = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				activities: activities.split(',').map(id => id.trim()),
+				locations: locations.split(',').map(loc => loc.trim()),
+				timeline,
+				duration,
+				language,
+				price: parseFloat(price),
+				availableDates: availableDates.split(',').map(date => new Date(date.trim())),
+				accessibility,
+				pickupLocation,
+				dropoffLocation,
+				preferences,
+				isBooked,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?._id) {
+					toast.success('Itinerary updated successfully');
+					window.dispatchEvent(modelModificationEvent);
+				} else {
+					toast.error('Failed to update itinerary');
+				}
+			}).catch((error) => {
+				console.log(error);
+				toast.error('Failed to update itinerary');
+			});
+	}
 
 	return (
 		<div>
 			<form className="w-full max-w-sm mx-auto" onSubmit={(e) => {
 				e.preventDefault();
-				registerItinerary();
+				!itinerary ? registerItinerary(): updateItinerary();
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Register Itinerary</h1>
 				<ReusableInput type="text" name="Activities" value={activities}
@@ -84,7 +119,10 @@ const ItineraryForm = () => {
 				               onChange={e => setPreferences(e.target.value)}/>
 				<ReusableInput type="checkbox" name="Is Booked" checked={isBooked}
 				               onChange={e => setIsBooked(e.target.checked)}/>
-				<button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">Register</button>
+				{!itinerary ?
+					<button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">Register</button>
+					:
+					<button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">Update</button>}
 			</form>
 		</div>
 	);
