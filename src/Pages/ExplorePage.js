@@ -94,7 +94,7 @@ const ExplorePage = () => {
             const data = await Promise.all(responses.map(res => res.json()));
             setResults({
                 activities: data[0]?.message?.includes('No') ? [] : data[0],
-				itineraries: data[1]?.message?.includes('No') ? [] : data[1],
+				itineraries: [],
                 historicalPlaces: [],
                 museums: []
             });
@@ -105,8 +105,8 @@ const ExplorePage = () => {
             ]);
             const data = await Promise.all(responses.map(res => res.json()));
             setResults({
-                activities: data[0]?.message?.includes('No') ? [] : data[0],
-				itineraries: data[1]?.message?.includes('No') ? [] : data[1],
+                activities: [],
+				itineraries: data[0]?.message?.includes('No') ? [] : data[0],
                 historicalPlaces: [],
                 museums: []
             });
