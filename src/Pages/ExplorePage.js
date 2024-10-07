@@ -9,11 +9,12 @@ import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
 const ExplorePage = () => {
     const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
 
-    useEffect(() => {
+    
         const fetchInitialResults = async () => {
             try {
                 const responses = await Promise.all([
                     fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
+                    //fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${encodeURIComponent("sdfdfasad")}&tag=${encodeURIComponent("fdasfdas")}`),
                     fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/upcoming`),
                     fetch(`${process.env.REACT_APP_BACKEND}/api/historicalplaces`),
                     fetch(`${process.env.REACT_APP_BACKEND}/api/museums`)
@@ -32,9 +33,7 @@ const ExplorePage = () => {
         }
         fetchInitialResults();
     
-         
-    },
-    []);
+    
     
     const handleSearch = async (searchParams) => {
         try {
@@ -97,12 +96,16 @@ const ExplorePage = () => {
         }
     };
     
-      
-
-
-
-
-
+    useEffect(() => {
+        if (
+            results.activities.length === 0 &&
+            results.itineraries.length === 0 &&
+            results.historicalPlaces.length === 0 &&
+            results.museums.length === 0
+        ) {
+            fetchInitialResults();
+        }
+    }, [results]);
 
     return (
         <div className="p-4 bg-gray-50 min-h-screen">
