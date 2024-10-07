@@ -1,0 +1,1 @@
+export const modelModificationEvent = new Event('modelModified');
