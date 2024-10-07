@@ -49,7 +49,7 @@ const ItinerariesPage = () => {
 						['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 							<button
 								onClick={handleCreateItinerary}
-								className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6"
+								className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6 mr-4 "
 							>
 								Create New Itinerary
 							</button>

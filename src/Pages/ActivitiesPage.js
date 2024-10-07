@@ -22,7 +22,13 @@ const ActivityPage = () => {
 			}
 		};
 		fetchActivities().then(r => r);
+		window.addEventListener('modelModified', fetchActivities);
+
+		return () => {
+			window.removeEventListener('modelModified', fetchActivities);
+		};
 	}, []);
+
 	const handleCreateActivity = () => {
 		navigate('/create-activity')
 	}
