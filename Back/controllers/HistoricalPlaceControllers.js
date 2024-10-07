@@ -49,8 +49,8 @@ const getHistoricalPlace = async (req, res) => {
 // Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
 		try {
-			await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-			res.status(201).json({msg: "Historical Place updated successfully"});
+			const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
+			res.status(200).json(historicalPlace);
 		} catch (error) {
 			res.status(500).json({error: error.message});
 		}
@@ -66,7 +66,7 @@ const deleteHistoricalPlace = async (req, res) => {
 		}
 }
 
-// search for a specific HistoricalPlace by it's name or tag
+// search for a specific HistoricalPlace by its name or tag
 const SearchForHistoricalPlace = async (req, res) => {
 	try {
         const { name, tags } = req.query; // Extract name and tags from query parameters

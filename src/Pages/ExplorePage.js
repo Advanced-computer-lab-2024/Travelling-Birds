@@ -102,21 +102,16 @@ const ExplorePage = () => {
 		}
 	};
 
-
 	useEffect(() => {
-
-			fetchInitialResults();
-
-		}
-		, []);
-
+		fetchInitialResults().then();
+	}, []);
 
 	return (
 		<div className="p-4 bg-gray-50 min-h-screen">
 			<SearchBar onSearch={handleSearch}/>
 			<FilterSection onFilter={handleFilter}/>
 			<SortSection onSort={handleSort}/>
-			{!loading && <ResultsList
+			{loading? <p>Loading...</p> : <ResultsList
 				activities={results.activities}
 				itineraries={results.itineraries}
 				museums={results.museums}

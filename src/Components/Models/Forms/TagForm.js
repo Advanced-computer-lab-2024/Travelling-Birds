@@ -17,7 +17,7 @@ const TagForm = ({tag}) => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.message?.includes('successfully')) {
+				if (data?._id) {
 					toast.success('Tag added successfully');
 					window.dispatchEvent(tagModificationEvent);
 				} else {

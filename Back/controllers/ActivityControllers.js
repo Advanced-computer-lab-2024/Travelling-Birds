@@ -67,7 +67,7 @@ const deleteActivity = async (req, res) => {
 	try {
 		const {id} = req.params
 
-		await ActivityModel.findOneAndDelete({_id: id})
+		await ActivityModel.findByIdAndDelete(id);
 		res.status(200).json({message: "activity deleted successfully"});
 	} catch (error) {
 		res.status(404).json({error: "Activity is not Found(Already deleted)"})
