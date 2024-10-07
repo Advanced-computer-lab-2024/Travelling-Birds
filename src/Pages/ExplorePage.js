@@ -17,6 +17,7 @@ const ExplorePage = () => {
 			data = await fetch(`/api/museums/search?name=${searchTerms.name}&tag=${searchTerms.tag}`);
 		}
 		setResults(await data.json());
+		console.log(results);
 	};
 
 	const handleFilter = async (filters) => {

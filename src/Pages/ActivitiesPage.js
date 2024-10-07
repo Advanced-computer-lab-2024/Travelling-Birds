@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityDisplay} from "../Components/Models/Displays";
 import {useNavigate} from "react-router-dom";
+import TagDisplay from "../Components/Models/Displays/TagDisplay";
 
 const ActivityPage = () => {
 	const [activities, setActivities] = useState([]);
+	const [tags, setTags] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
@@ -22,6 +24,17 @@ const ActivityPage = () => {
 			}
 		};
 		fetchActivities().then(r => r);
+		const fetchTags = async () => {
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags/`;
+			try {
+				const res = await fetch(apiUrl);
+				const tags = await res.json();
+				setTags(tags);
+			} catch (err) {
+				console.log('Error fetching tags', err);
+			}
+		}
+		fetchTags().then(r => r);
 		window.addEventListener('modelModified', fetchActivities);
 
 		return () => {
@@ -71,6 +84,14 @@ const ActivityPage = () => {
 								View My Created Activities
 							</button>
 						)
+					}
+					{
+					// Map all tags to tag display
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+							{tags.map((tag) => (
+								<TagDisplay key={tag._id} tag={tag}/>
+							))}
+						</div>
 					}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{!loading ? (
