@@ -124,7 +124,7 @@ const getUpcomingActivities = async (req, res) => {
 			return res.status(404).json({message: 'No upcoming activities found'});
 		}
 
-		// Send back the found upcoming activities
+		
 		res.status(200).json(upcomingActivities);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong

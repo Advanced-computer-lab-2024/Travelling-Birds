@@ -1,4 +1,3 @@
-import React from 'react';
 import ActivityDisplay from '../Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Models/Displays/ItineraryDisplay';
 

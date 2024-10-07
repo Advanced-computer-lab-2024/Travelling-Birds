@@ -21,6 +21,10 @@ router.post('/', addActivity);
 // Get all activities
 router.get('/', getAllActivities);
 
+
+// Get upcoming activities
+router.get('/upcoming', getUpcomingActivities);
+
 // Get specific activity
 router.get('/:id', getActivity);
 
@@ -33,8 +37,7 @@ router.delete('/:id', deleteActivity);
 // Search for an activity by category or tag
 router.get('/search', SearchForActivity);
 
-// Get upcoming activities
-router.get('/upcoming', getUpcomingActivities);
+
 
 // Filter upcoming activities by budget , date , category , rating
 router.get('/filter', filterUpcomingActivities);
