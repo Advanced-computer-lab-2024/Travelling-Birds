@@ -67,6 +67,7 @@ const ItineraryDisplay = ({ itinerary }) => {
 				<div className="text-gray-600 mb-2">{`Pickup Location: ${itinerary.pickupLocation}`}</div>
 				<div className="text-gray-600 mb-2">{`Dropoff Location: ${itinerary.dropoffLocation}`}</div>
 			</div>
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 			<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
@@ -79,13 +80,14 @@ const ItineraryDisplay = ({ itinerary }) => {
 				overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
 			>
 				<ItineraryForm className="overflow-y-scroll" itinerary={itinerary}/>
-			</Popup>
+			</Popup>)}
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 			<button onClick={() => {
 				if (window.confirm('Are you sure you wish to delete this item?')) {
 					deleteItinerary();
 				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
 				Delete Itinerary
-			</button>
+			</button>)}§
 		</div>
 	);
 };

@@ -60,6 +60,7 @@ const ActivityDisplay = ({activity}) => {
 				</div>
 				<div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
 			</div>
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 			<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
@@ -72,13 +73,14 @@ const ActivityDisplay = ({activity}) => {
 				overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }} /* Darken background for modal */
 			>
 				<ActivityForm className="overflow-y-scroll" activity={activity} />
-			</Popup>
+			</Popup>)}
+			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 			<button onClick={() => {
 				if (window.confirm('Are you sure you wish to delete this item?')) {
 					deleteActivity();
 				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
 				Delete Activity
-			</button>
+			</button>)}
 		</div>
 	);
 };
