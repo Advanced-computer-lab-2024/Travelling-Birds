@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 
 const activitySchema = new Schema({
-	date: {type: Date, required: true},
+	date: {type: Date , required: true},
 	time: {type: String, required: true},
 	location: {
 		lat: {type: Number,required: true},

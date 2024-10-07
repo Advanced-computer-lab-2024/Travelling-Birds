@@ -114,8 +114,8 @@ const SearchForActivity = async (req, res) => {
 const getUpcomingActivities = async (req, res) => {
 	try {
 		// Get the current date and time
-		const currentDate = new Date();
-
+	    const currentDate = new Date();
+		
 		// Find activities with a date greater than or equal to the current date
 		const upcomingActivities = await ActivityModel.find({date: {$gte: currentDate}});
 
