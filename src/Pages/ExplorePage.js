@@ -101,15 +101,12 @@ const ExplorePage = () => {
  
     
     useEffect(() => {
-        if (
-            results.activities.length === 0 &&
-            results.itineraries.length === 0 &&
-            results.historicalPlaces.length === 0 &&
-            results.museums.length === 0
-        ) {
+         
             fetchInitialResults();
-        }
-    }, []);
+        
+    }
+    , []);
+   
 
     return (
         <div className="p-4 bg-gray-50 min-h-screen">
