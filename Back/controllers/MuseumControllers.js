@@ -1,7 +1,6 @@
 const MuseumModel = require('../Models/Museum');
 
 
-
 //create museum
 const addMuseum = async (req, res) => {
 	const {name, description, pictures, location, openingHours, ticketPrices, tags, createdBy} = req.body;
@@ -19,7 +18,7 @@ const addMuseum = async (req, res) => {
 // Get all  museums
 const getAllMuseums = async (req, res) => {
 	try {
-		const museums =  await MuseumModel.find();
+		const museums = await MuseumModel.find();
 		res.status(200).json(museums)
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -61,61 +60,60 @@ const deleteMuseum = async (req, res) => {
 
 // search for a specific Museum by it's name or tag
 const SearchForMuseums = async (req, res) => {
-    try {
-        const { name, tags } = req.query; // Extract name and tags from query parameters
+	try {
+		const {name, tags} = req.query; // Extract name and tags from query parameters
 
-        if (!name && !tags) {
-            return res.status(400).json({ message: 'Name or tags are required to search for museums.' });
-        }
+		if (!name && !tags) {
+			return res.status(400).json({message: 'Name or tags are required to search for museums.'});
+		}
 
-        // Create a search query object
-        const searchQuery = {};
+		// Create a search query object
+		const searchQuery = {};
 
-        if (name) {
-            // Use a case-insensitive regular expression for name search
-            searchQuery.name = { $regex: name, $options: 'i' };
-        }
+		if (name) {
+			// Use a case-insensitive regular expression for name search
+			searchQuery.name = {$regex: name, $options: 'i'};
+		}
 
-        if (tags) {
-            // Use $in to find museums where any of the provided tags match
-            searchQuery.tags = { $in: tags.split(',') };
-        }
+		if (tags) {
+			// Use $in to find museums where any of the provided tags match
+			searchQuery.tags = {$in: tags.split(',')};
+		}
 
-        // Find museums matching the search criteria
-        const museums = await MuseumModel.find(searchQuery);
+		// Find museums matching the search criteria
+		const museums = await MuseumModel.find(searchQuery);
 
-        if (museums.length === 0) {
-            return res.status(404).json({ message: 'No museums found matching the search criteria.' });
-        }
+		if (museums.length === 0) {
+			return res.status(404).json({message: 'No museums found matching the search criteria.'});
+		}
 
-        return res.status(200).json(museums);
-    } catch (error) {
-        return res.status(500).json({ message: 'An error occurred while searching for museums.', error });
-    }
+		return res.status(200).json(museums);
+	} catch (error) {
+		return res.status(500).json({message: 'An error occurred while searching for museums.', error});
+	}
 }
-
 
 
 //filter museums by tag
 const filterMuseums = async (req, res) => {
-    try {
-        const { tag } = req.query; // Extract tag from the query parameters
+	try {
+		const {tag} = req.query; // Extract tag from the query parameters
 
-        if (!tag) {
-            return res.status(400).json({ message: 'Tag is required to filter museums.' });
-        }
+		if (!tag) {
+			return res.status(400).json({message: 'Tag is required to filter museums.'});
+		}
 
-        // Find museums where the tags array contains the given tag
-        const museums = await MuseumModel.find({ tags: tag });
+		// Find museums where the tags array contains the given tag
+		const museums = await MuseumModel.find({tags: tag});
 
-        if (museums.length === 0) {
-            return res.status(404).json({ message: 'No museums found with the given tag.' });
-        }
+		if (museums.length === 0) {
+			return res.status(404).json({message: 'No museums found with the given tag.'});
+		}
 
-        return res.status(200).json(museums);
-    } catch (error) {
-        return res.status(500).json({ message: 'An error occurred while filtering museums.', error });
-    }
+		return res.status(200).json(museums);
+	} catch (error) {
+		return res.status(500).json({message: 'An error occurred while filtering museums.', error});
+	}
 }
 
 // Get all created museums
