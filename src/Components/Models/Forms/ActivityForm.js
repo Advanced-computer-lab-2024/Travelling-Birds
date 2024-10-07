@@ -7,7 +7,7 @@ import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 import {sessionStorageEvent} from "../../../utils/sessionStorageEvent";
 
 const ActivityForm = ({activity}) => {
-	const [date, setDate] = useState(activity?.date || '');
+	const [date, setDate] = useState(activity?.date || Date);
 	const [time, setTime] = useState(activity?.time || '');
 	const [lat, setLat] = useState(activity?.location?.lat || 0);
 	const [lng, setLng] = useState(activity?.location?.lng || 0);
@@ -94,7 +94,7 @@ const ActivityForm = ({activity}) => {
 				!activity ? registerActivity() : updateActivity();
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Register Activity</h1>
-				<ReusableInput type="text" name="Date" value={date}
+				<ReusableInput type="Date" name="Date" value={date}
 				               onChange={e => setDate(e.target.value)}/>
 				<ReusableInput type="text" name="Time" value={time}
 				               onChange={e => setTime(e.target.value)}/>
@@ -128,7 +128,7 @@ const ActivityForm = ({activity}) => {
 ActivityForm.propTypes = {
 	activity: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
-		date: PropTypes.string.isRequired,
+		date: PropTypes.object.isRequired,
 		time: PropTypes.string.isRequired,
 		location: PropTypes.shape({
 			lat: PropTypes.number.isRequired,

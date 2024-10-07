@@ -226,7 +226,7 @@ const sortActivities = async (req, res) => {
 const getAllCreatedActivities = async (req, res) => {
 	try {
 		const activities = await ActivityModel.find({createdBy: req.params.id});
-		res.status(201).json({activities})
+		res.status(200).json(activities)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
