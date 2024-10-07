@@ -79,22 +79,26 @@ const ExplorePage = () => {
 
     const handleSort = async (sortParams) => {
         try {
-            const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?price=${sortParams.activityPrice}&rating=${sortParams.activityRating}`),
-                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?price=${sortParams.itineraryPrice}&rating=${sortParams.itineraryRating}`)
-            ]);
-
-            const data = await Promise.all(responses.map(res => res.json()));
-            setResults({
-                activities: data[0],
-                itineraries: data[1],
-                historicalPlaces: [],
-                museums: []
-            });
+            let sortURL = '';
+            if (sortParams.type === 'activity') {
+                sortURL = `${process.env.REACT_APP_BACKEND}/api/activities/sort?criterion=${sortParams.criterion}`;
+            } else if (sortParams.type === 'itinerary') {
+                sortURL = `${process.env.REACT_APP_BACKEND}/api/itineraries/sort?criterion=${sortParams.criterion}`;
+            }
+            
+            const response = await fetch(sortURL);
+            const sortedData = await response.json();
+    
+            setResults(prevResults => ({
+                ...prevResults,
+                [sortParams.type + 's']: sortedData, // activities or itineraries
+            }));
         } catch (error) {
             console.error('Error fetching sort results:', error);
         }
     };
+
+ 
     
     useEffect(() => {
         if (
@@ -105,7 +109,7 @@ const ExplorePage = () => {
         ) {
             fetchInitialResults();
         }
-    }, [results]);
+    }, []);
 
     return (
         <div className="p-4 bg-gray-50 min-h-screen">
