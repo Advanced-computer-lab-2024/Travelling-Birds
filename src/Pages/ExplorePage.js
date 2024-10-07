@@ -117,9 +117,6 @@ const ExplorePage = () => {
         }
     };
 
-
-
-
 	useEffect(() => {
 		fetchInitialResults().then();
 	}, []);

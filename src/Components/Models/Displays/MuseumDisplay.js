@@ -4,6 +4,7 @@ import { MuseumForm } from "../Forms";
 import { toast } from "react-toastify";
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import PropTypes from "prop-types";
 
 const MuseumDisplay = ({ museum }) => {
 	const [showMore, setShowMore] = useState(false);
@@ -17,7 +18,7 @@ const MuseumDisplay = ({ museum }) => {
 			method: 'DELETE',
 		}).then((response) => response.json())
 			.then((data) => {
-				if (data?.message === 'Museum deleted successfully') {
+				if (data?.msg === 'Museum deleted successfully') {
 					toast.success('Museum deleted successfully');
 					window.dispatchEvent(modelModificationEvent);
 				} else {
@@ -83,6 +84,21 @@ const MuseumDisplay = ({ museum }) => {
 				</button>)}
 		</div>
 	);
+};
+
+MuseumDisplay.propTypes = {
+	museum: PropTypes.shape(
+		{
+			_id: PropTypes.string,
+			name: PropTypes.string,
+			description: PropTypes.string,
+			pictures: PropTypes.array,
+			location: PropTypes.string,
+			openingHours: PropTypes.string,
+			ticketPrices: PropTypes.object,
+			tags: PropTypes.array,
+		}
+	)
 };
 
 export default MuseumDisplay;

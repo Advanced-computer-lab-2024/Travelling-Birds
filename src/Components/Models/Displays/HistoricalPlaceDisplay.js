@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import Popup from "reactjs-popup";
-import { HistoricalPlaceForm } from "../Forms";
-import { toast } from "react-toastify";
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import {HistoricalPlaceForm} from "../Forms";
+import {toast} from "react-toastify";
+import {FaMapMarkerAlt} from 'react-icons/fa';
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
+import PropTypes from "prop-types";
 
-const HistoricalPlaceDisplay = ({ historicalPlace }) => {
+const HistoricalPlaceDisplay = ({historicalPlace}) => {
 	const [showMore, setShowMore] = useState(false);
 	const descriptionPreview = historicalPlace.description ? historicalPlace.description.substring(0, 100) : '';
 
@@ -14,7 +15,7 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
 			method: 'DELETE',
 		}).then((response) => response.json())
 			.then((data) => {
-				if (data?.message === 'Historical place deleted successfully') {
+				if (data?.msg === 'Historical Place deleted successfully') {
 					toast.success('Historical place deleted successfully');
 					window.dispatchEvent(modelModificationEvent);
 				} else {
@@ -42,7 +43,7 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
 				)}
 
 				<div className="text-orange-700 mb-3">
-					<FaMapMarkerAlt className="inline mr-1 mb-1" />
+					<FaMapMarkerAlt className="inline mr-1 mb-1"/>
 					{historicalPlace.location}
 				</div>
 
@@ -62,21 +63,35 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
 						</button>
 					}
 					modal
-					contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-					overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+					contentStyle={{maxHeight: '80vh', overflowY: 'auto'}}
+					overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}}
 				>
-					<HistoricalPlaceForm historicalPlace={historicalPlace} />
+					<HistoricalPlaceForm historicalPlace={historicalPlace}/>
 				</Popup>)}
 
 			{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
 				<button onClick={() => {
 					if (window.confirm('Are you sure you wish to delete this historical place?')) {
 						deleteHistoricalPlace();
-					} }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
+					}
+				}} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
 					Delete Historical Place
 				</button>)}
 		</div>
 	);
 };
+
+HistoricalPlaceDisplay.propTypes = {
+	historicalPlace: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		name: PropTypes.string,
+		description: PropTypes.string,
+		pictures: PropTypes.arrayOf(PropTypes.string),
+		location: PropTypes.string,
+		openingHours: PropTypes.string,
+		ticketPrices: PropTypes.arrayOf(PropTypes.string),
+		tags: PropTypes.arrayOf(PropTypes.string),
+	})
+}
 
 export default HistoricalPlaceDisplay;
