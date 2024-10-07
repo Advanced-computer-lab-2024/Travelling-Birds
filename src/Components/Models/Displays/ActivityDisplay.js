@@ -90,13 +90,17 @@ ActivityDisplay.propTypes = {
 		_id: PropTypes.string.isRequired,
 		date: PropTypes.string.isRequired,
 		time: PropTypes.string.isRequired,
-		lat: PropTypes.number.isRequired,
-		lng: PropTypes.number.isRequired,
+		location: PropTypes.shape({
+			lat: PropTypes.number.isRequired,
+			lng: PropTypes.number.isRequired,
+		}).isRequired,
 		price: PropTypes.number,
-		lwBound: PropTypes.number,
-		hiBound: PropTypes.number,
+		priceRange: PropTypes.shape({
+			lwBound: PropTypes.number.isRequired,
+			hiBound: PropTypes.number.isRequired,
+		}),
 		category: PropTypes.string.isRequired,
-		tags: PropTypes.string,
+		tags: PropTypes.arrayOf(PropTypes.string),
 		specialDiscounts: PropTypes.string,
 	}).isRequired
 }

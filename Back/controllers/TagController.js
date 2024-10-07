@@ -6,7 +6,7 @@ const addTag = async (req, res) => {
 	try {
 		const newTag = new Tag({name});
 		await newTag.save();
-		res.status(201).json({message: 'Tag added successfully'});
+		res.status(201).json(newTag);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

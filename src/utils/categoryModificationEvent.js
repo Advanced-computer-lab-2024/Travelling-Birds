@@ -1,0 +1,1 @@
+export const categoryModificationEvent = new Event('categoryModified');
