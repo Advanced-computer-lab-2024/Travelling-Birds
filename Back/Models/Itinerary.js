@@ -14,7 +14,6 @@ const itinerarySchema = new Schema({
     dropoffLocation: String,
     preferences: String,
     isBooked: Boolean,
-
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import {useEffect, useState} from 'react';
+import {FaCalendarAlt, FaMapMarkerAlt} from 'react-icons/fa';
 import Popup from "reactjs-popup";
 import {ItineraryForm} from "../Forms";
 import {toast} from "react-toastify";
@@ -10,6 +10,7 @@ const ItineraryDisplay = ({ itinerary }) => {
 	const [showMore, setShowMore] = useState(false);
 	const timelinePreview = itinerary.timeline ? itinerary.timeline.substring(0, 100) : '';
 	const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
+	const [userName, setUserName] = useState('');
 	const deleteItinerary = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
 			method: 'DELETE',
@@ -25,11 +26,25 @@ const ItineraryDisplay = ({ itinerary }) => {
 				console.log(error);
 			});
 	}
+	useEffect(() => {
+		const fetchUser = async () => {
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}`;
+			try {
+				const res = await fetch(apiUrl);
+				const user = await res.json();
+				setUserName(user.firstName + ' ' + user.lastName);
+			} catch (err) {
+				console.log('Error fetching user', err);
+			}
+		}
+		fetchUser().then();
+	});
+
 	return (
 		<div className="bg-white rounded-xl shadow-md relative">
 			<div className="p-4">
 				<div className="mb-6">
-					<h3 className="text-xl font-bold">{`Itinerary by ${itinerary.createdBy.name}`}</h3>
+					<h3 className="text-xl font-bold">{`Itinerary by ${userName}`}</h3>
 					<div className="text-gray-600 my-2">{`Language: ${itinerary.language}`}</div>
 				</div>
 

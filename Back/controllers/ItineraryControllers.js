@@ -160,6 +160,7 @@ const SearchForItinerary = async (req, res) => {
 const getUpcomingItineraries = async (req, res) => {
 	try {
 		const currentDate = new Date(); // Get the current date
+		console.log('Current Date:', currentDate);
 
 		// Find itineraries and populate activities
 		const itineraries = await ItineraryModel.find()
@@ -167,9 +168,11 @@ const getUpcomingItineraries = async (req, res) => {
 				path: 'activities', // Populate the activities field
 				match: {date: {$gte: currentDate}} // Only include activities with dates in the future
 			});
+		console.log('Fetched Itineraries:', itineraries);
 
 		// Filter out itineraries that have no upcoming activities
 		const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+		console.log('Upcoming Itineraries:', upcomingItineraries);
 
 		// If no upcoming itineraries are found, return a 404 response
 		if (upcomingItineraries.length === 0) {
@@ -180,6 +183,7 @@ const getUpcomingItineraries = async (req, res) => {
 		res.status(200).json(upcomingItineraries);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
+		console.error('Error fetching upcoming itineraries:', error);
 		res.status(500).json({message: 'Error fetching upcoming itineraries', error});
 	}
 }
