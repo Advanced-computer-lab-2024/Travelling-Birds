@@ -93,7 +93,7 @@ const ActivityForm = ({activity}) => {
 				!activity ? registerActivity() : updateActivity();
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Register Activity</h1>
-				<ReusableInput type="text" name="Date" value={date}
+				<ReusableInput type="date" name="Date" value={date}
 				               onChange={e => setDate(e.target.value)}/>
 				<ReusableInput type="text" name="Time" value={time}
 				               onChange={e => setTime(e.target.value)}/>
