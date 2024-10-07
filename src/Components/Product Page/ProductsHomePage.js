@@ -256,13 +256,14 @@ const ProductHomePage = () => {
 		>
 			{/* Top-left "Create Product" button */}
 			<div className="absolute top-4 left-4 z-10">
+				{['seller', 'admin'].includes(sessionStorage.getItem('role')) && (
 				<button
 					className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 transition duration-300 text-2xl"
 					onClick={handleCreateButtonClick}
 					title="Create Product"
 				>
 					＋
-				</button>
+				</button>)}
 			</div>
 
 			{/* Top-right buttons for Search, Filter, and Sort */}
