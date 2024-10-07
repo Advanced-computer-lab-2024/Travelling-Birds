@@ -61,7 +61,7 @@ const ExplorePage = () => {
 	};
 
 	const handleFilter = async (filterParams) => {
-        setLoading(true);
+		setLoading(true);
 		try {
 			const responses = await Promise.all([
 				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/filter?budget=${filterParams.activityBudget}&date=${filterParams.activityDate}&category=${filterParams.activityCategory}&rating=${filterParams.activityRating}`),
@@ -77,45 +77,44 @@ const ExplorePage = () => {
 				historicalPlaces: data[2],
 				museums: data[3]
 			});
-            setLoading(false);
+			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching filter results:', error);
 		}
 	};
 
-    const handleSort = async (sortParams) => {
-        try {
-            setLoading(true);
-            if (sortParams.type === 'activity') {
-            const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?sortBy=${sortParams.criterion}`)
+	const handleSort = async (sortParams) => {
+		try {
+			setLoading(true);
+			if (sortParams.type === 'activity') {
+				const responses = await Promise.all([
+					fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?sortBy=${sortParams.criterion}`)
 
-            ]);
-            const data = await Promise.all(responses.map(res => res.json()));
-            setResults({
-                activities: data[0]?.message?.includes('No') ? [] : data[0],
-				itineraries: data[1]?.message?.includes('No') ? [] : data[1],
-                historicalPlaces: [],
-                museums: []
-            });
-        }
-        else if (sortParams.type === 'itinerary') {
-            const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
-            ]);
-            const data = await Promise.all(responses.map(res => res.json()));
-            setResults({
-                activities: data[0]?.message?.includes('No') ? [] : data[0],
-				itineraries: data[1]?.message?.includes('No') ? [] : data[1],
-                historicalPlaces: [],
-                museums: []
-            });
-        }
-        setLoading(false);
-        } catch (error) {
-            console.error('Error fetching sort results:', error);
-        }
-    };
+				]);
+				const data = await Promise.all(responses.map(res => res.json()));
+				setResults({
+					activities: data[0]?.message?.includes('No') ? [] : data[0],
+					itineraries: data[1]?.message?.includes('No') ? [] : data[1],
+					historicalPlaces: [],
+					museums: []
+				});
+			} else if (sortParams.type === 'itinerary') {
+				const responses = await Promise.all([
+					fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
+				]);
+				const data = await Promise.all(responses.map(res => res.json()));
+				setResults({
+					activities: data[0]?.message?.includes('No') ? [] : data[0],
+					itineraries: data[1]?.message?.includes('No') ? [] : data[1],
+					historicalPlaces: [],
+					museums: []
+				});
+			}
+			setLoading(false);
+		} catch (error) {
+			console.error('Error fetching sort results:', error);
+		}
+	};
 
 	useEffect(() => {
 		fetchInitialResults().then();
@@ -126,7 +125,7 @@ const ExplorePage = () => {
 			<SearchBar onSearch={handleSearch}/>
 			<FilterSection onFilter={handleFilter}/>
 			<SortSection onSort={handleSort}/>
-			{loading? <p>Loading...</p> : <ResultsList
+			{loading ? <p>Loading...</p> : <ResultsList
 				activities={results.activities}
 				itineraries={results.itineraries}
 				museums={results.museums}
