@@ -5,17 +5,17 @@ import {useNavigate} from "react-router-dom";
 import PropTypes, {string} from "prop-types";
 
 const ActivityForm = ({activity}) => {
-	const [date, setDate] = useState(activity.date || '');
-	const [time, setTime] = useState(activity.time || '');
-	const [lat, setLat] = useState(activity.location.lat || 0);
-	const [lng, setLng] = useState(activity.location.lng || 0);
-	const [price, setPrice] = useState(activity.price || 0);
-	const [lwBound, setLwBound] = useState(activity.priceRange.lwBound || 0);
-	const [hiBound, setHiBound] = useState(activity.priceRange.hiBound || 0);
-	const [category, setCategory] = useState(activity.category || '');
-	const [tags, setTags] = useState(activity.tags.join(',') || '');
-	const [specialDiscounts, setSpecialDiscounts] = useState(activity.specialDiscounts || '');
-	const [bookingOpen, setBookingOpen] = useState(activity.bookingOpen || false);
+	const [date, setDate] = useState(activity?.date || '');
+	const [time, setTime] = useState(activity?.time || '');
+	const [lat, setLat] = useState(activity?.location?.lat || 0);
+	const [lng, setLng] = useState(activity?.location?.lng || 0);
+	const [price, setPrice] = useState(activity?.price || 0);
+	const [lwBound, setLwBound] = useState(activity?.priceRange?.lwBound || 0);
+	const [hiBound, setHiBound] = useState(activity?.priceRange?.hiBound || 0);
+	const [category, setCategory] = useState(activity?.category || '');
+	const [tags, setTags] = useState(activity?.tags?.join(',') || '');
+	const [specialDiscounts, setSpecialDiscounts] = useState(activity?.specialDiscounts || '');
+	const [bookingOpen, setBookingOpen] = useState(activity?.bookingOpen || false);
 	const navigate = useNavigate();
 
 	const registerActivity = () => {
