@@ -35,6 +35,11 @@ const ActivityPage = () => {
 			}
 		}
 		fetchTags().then(r => r);
+		window.addEventListener('modelModified', fetchActivities);
+
+		return () => {
+			window.removeEventListener('modelModified', fetchActivities);
+		};
 	}, []);
 
 	const handleCreateActivity = () => {
