@@ -3,10 +3,7 @@ import {FaMapMarker} from 'react-icons/fa';
 import PropTypes from "prop-types";
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import Card from "../../Card";
 import {ActivityForm} from "../Forms";
-import {sessionStorageEvent} from "../../../utils/sessionStorageEvent";
-import {userDeletionEvent} from "../../../utils/userDeletionEvent";
 import {toast} from "react-toastify";
 import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 
@@ -66,7 +63,7 @@ const ActivityDisplay = ({activity}) => {
 			<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
-					<button className="bg-indigo-500 text-white py-2 w-full rounded-b-xl">
+					<button className="bg-indigo-500 text-white py-2 w-full">
 						Update Activity
 					</button>
 				}
@@ -79,7 +76,7 @@ const ActivityDisplay = ({activity}) => {
 			<button onClick={() => {
 				if (window.confirm('Are you sure you wish to delete this item?')) {
 					deleteActivity();
-				} }}  className="bg-red-800 text-white py-2 w-full rounded-b-xl">
+				} }}  className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
 				Delete Activity
 			</button>
 		</div>

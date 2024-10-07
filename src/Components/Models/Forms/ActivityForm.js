@@ -4,7 +4,6 @@ import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import PropTypes, {string} from "prop-types";
 import {modelModificationEvent} from "../../../utils/modelModificationEvent";
-import {sessionStorageEvent} from "../../../utils/sessionStorageEvent";
 
 const ActivityForm = ({activity}) => {
 	const [date, setDate] = useState(activity?.date || '');
