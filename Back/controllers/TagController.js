@@ -38,8 +38,8 @@ const getTag = async (req, res) => {
 // Update tag
 const updateTag = async (req, res) => {
 	try {
-		await Tag.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-		res.status(201).json({msg: "Tag updated successfully"});
+		const tag = await Tag.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
+		res.status(201).json(tag);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

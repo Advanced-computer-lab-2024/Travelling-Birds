@@ -39,7 +39,7 @@ const CategoryForm = ({category}) => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.msg?.includes('updated')) {
+				if (data?._id) {
 					window.dispatchEvent(categoryModificationEvent);
 					toast.success('Category updated successfully');
 				} else {

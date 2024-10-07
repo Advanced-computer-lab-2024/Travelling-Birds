@@ -54,11 +54,13 @@ const TouristProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
-					sessionStorage.removeItem('user id');
-					sessionStorage.removeItem('role');
-					window.dispatchEvent(sessionStorageEvent);
 					window.dispatchEvent(userDeletionEvent);
-					if (!displayOnly) navigate('/', {replace: true});
+					if (!displayOnly) {
+						sessionStorage.removeItem('user id');
+						sessionStorage.removeItem('role');
+						window.dispatchEvent(sessionStorageEvent);
+						navigate('/', {replace: true});
+					}
 					toast.success('User deleted successfully');
 				} else {
 					toast.error('Failed to delete user');
