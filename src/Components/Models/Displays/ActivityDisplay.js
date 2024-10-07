@@ -5,12 +5,30 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Card from "../../Card";
 import {ActivityForm} from "../Forms";
+import {sessionStorageEvent} from "../../../utils/sessionStorageEvent";
+import {userDeletionEvent} from "../../../utils/userDeletionEvent";
+import {toast} from "react-toastify";
+import {modelModificationEvent} from "../../../utils/modelModificationEvent";
 
 
 const ActivityDisplay = ({activity}) => {
 	const [showMore, setShowMore] = useState(false);
 	const description = activity.specialDiscounts ? activity.specialDiscounts.substring(0, 100) : '';
-
+	const deleteActivity =()=>{
+		fetch (`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`,{
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'activity deleted successfully') {
+					toast.success('Activity deleted successfully');
+					window.dispatchEvent(modelModificationEvent);
+				} else {
+					toast.error('Failed to delete activity');
+				}
+			}).catch((error) => {
+				console.log(error);
+			});
+	}
 	return (
 		<div className="bg-white rounded-xl shadow-md relative">
 			<div className="p-4">
@@ -45,7 +63,6 @@ const ActivityDisplay = ({activity}) => {
 				</div>
 				<div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
 			</div>
-
 			<Popup
 				className="h-fit overflow-y-scroll"
 				trigger={
@@ -59,6 +76,12 @@ const ActivityDisplay = ({activity}) => {
 			>
 				<ActivityForm className="overflow-y-scroll" activity={activity} />
 			</Popup>
+			<button onClick={() => {
+				if (window.confirm('Are you sure you wish to delete this item?')) {
+					deleteActivity();
+				} }}  className="bg-red-800 text-white py-2 w-full rounded-b-xl">
+				Delete Activity
+			</button>
 		</div>
 	);
 };
