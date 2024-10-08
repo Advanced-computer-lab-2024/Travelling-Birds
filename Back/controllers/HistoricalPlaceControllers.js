@@ -17,7 +17,7 @@ const addHistoricalPlace = async (req, res) => {
 				createdBy
 			});
 		await newHistoricalPlace.save();
-		res.status(201).json({message: 'Historical Place added successfully'});
+		res.status(201).json(newHistoricalPlace);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -49,8 +49,8 @@ const getHistoricalPlace = async (req, res) => {
 // Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
 		try {
-			await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-			res.status(201).json({msg: "Historical Place updated successfully"});
+			const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
+			res.status(200).json(historicalPlace);
 		} catch (error) {
 			res.status(500).json({error: error.message});
 		}
@@ -66,7 +66,7 @@ const deleteHistoricalPlace = async (req, res) => {
 		}
 }
 
-// search for a specific HistoricalPlace by it's name or tag
+// search for a specific HistoricalPlace by its name or tag
 const SearchForHistoricalPlace = async (req, res) => {
 	try {
         const { name, tags } = req.query; // Extract name and tags from query parameters
@@ -80,7 +80,7 @@ const SearchForHistoricalPlace = async (req, res) => {
 
         if (name) {
             // Use a case-insensitive regular expression for name search
-            searchQuery.name = { $regex: name, $options: 'i' };
+            searchQuery.name = name;
         }
 
         if (tags) {
@@ -131,7 +131,7 @@ const filterHistoricalPlaces = async (req, res) => {
 const getAllCreatedHistoricalPlaces = async (req, res) => {
 	try {
 		const historicalPlaces = await HistoricalPlaceModel.find({createdBy: req.params.id});
-		res.status(201).json({historicalPlaces})
+		res.status(201).json(historicalPlaces)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

@@ -125,7 +125,7 @@ const SearchForItinerary = async (req, res) => {
 
 		// If category is provided, search for activities with a matching category (case-insensitive partial match)
 		if (category) {
-			activityQuery.category = {$regex: new RegExp(category, 'i')}; // Partial match and case-insensitive
+			activityQuery.category = category // Partial match and case-insensitive
 		}
 
 		// If tags are provided, search for activities with matching tags (any of the tags in the array)
@@ -160,6 +160,7 @@ const SearchForItinerary = async (req, res) => {
 const getUpcomingItineraries = async (req, res) => {
 	try {
 		const currentDate = new Date(); // Get the current date
+		console.log('Current Date:', currentDate);
 
 		// Find itineraries and populate activities
 		const itineraries = await ItineraryModel.find()
@@ -167,9 +168,11 @@ const getUpcomingItineraries = async (req, res) => {
 				path: 'activities', // Populate the activities field
 				match: {date: {$gte: currentDate}} // Only include activities with dates in the future
 			});
+		console.log('Fetched Itineraries:', itineraries);
 
 		// Filter out itineraries that have no upcoming activities
 		const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
+		console.log('Upcoming Itineraries:', upcomingItineraries);
 
 		// If no upcoming itineraries are found, return a 404 response
 		if (upcomingItineraries.length === 0) {
@@ -180,6 +183,7 @@ const getUpcomingItineraries = async (req, res) => {
 		res.status(200).json(upcomingItineraries);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
+		console.error('Error fetching upcoming itineraries:', error);
 		res.status(500).json({message: 'Error fetching upcoming itineraries', error});
 	}
 }
@@ -239,12 +243,12 @@ const filterItineraries = async (req, res) => {
 
 		// Filter by language if provided
 		if (language) {
-			itineraryQuery.language = {$regex: new RegExp(language, 'i')}; // Case-insensitive partial match for language
+			itineraryQuery.language = language // Case-insensitive partial match for language
 		}
 
 		// Filter by preferences if provided
 		if (preferences) {
-			itineraryQuery.preferences = {$regex: new RegExp(preferences, 'i')}; // Case-insensitive partial match for preferences
+			itineraryQuery.preferences = preferences // Case-insensitive partial match for preferences
 		}
 
 		// Filter by price if provided

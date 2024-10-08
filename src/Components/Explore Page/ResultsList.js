@@ -1,5 +1,7 @@
 import ActivityDisplay from '../Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Models/Displays/ItineraryDisplay';
+import HistoricalPlaceDisplay from '../Models/Displays/HistoricalPlaceDisplay';
+import MuseumDisplay from '../Models/Displays/MuseumDisplay';
 
 const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => {
     return (
@@ -35,9 +37,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
                 <h3 className="text-md font-semibold">Museums</h3>
                 {museums && museums.length > 0 ? (
                     museums.map((museum) => (
-                        <div key={museum._id} className="museum-item">
-                            <p className="text-lg">{museum.name}</p>
-                        </div>
+                        <MuseumDisplay key={museum._id} museum={museum} />
                     ))
                 ) : (
                     <p>No museums found.</p>
@@ -49,9 +49,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
                 <h3 className="text-md font-semibold">Historical Places</h3>
                 {historicalPlaces && historicalPlaces.length > 0 ? (
                     historicalPlaces.map((place) => (
-                        <div key={place._id} className="historical-place-item">
-                            <p className="text-lg">{place.name}</p>
-                        </div>
+                        <HistoricalPlaceDisplay key={place._id} historicalPlace={place} />
                     ))
                 ) : (
                     <p>No historical places found.</p>

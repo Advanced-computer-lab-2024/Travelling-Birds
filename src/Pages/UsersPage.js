@@ -42,6 +42,7 @@ const UsersPage = () => {
 			{loading && <p>Loading...</p>}
 			{!loading && users.map((user) => (
 				<div key={user._id} className='bg-pink-900 max-w-fit mx-4 px-4 rounded-l py-4'>
+					<p className='text-white text-sm'>{user.role}</p>
 					{(user.role === 'tourist') && <TouristProfile user={user} displayOnly={true}/>}
 					{(user.role === 'tour_guide') && <TourGuideProfile user={user} displayOnly={true}/>}
 					{(user.role === 'advertiser') && <AdvertiserProfile user={user} displayOnly={true}/>}

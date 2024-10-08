@@ -482,6 +482,9 @@ const login = async (req, res) => {
 		if (!await bcrypt.compare(password, user.password)) {
 			return res.status(401).json({message: 'Invalid password. Please try again.'});
 		}
+		if (['tour_guide', 'advertiser', 'seller'].includes(user.role) && user.isApproved === false) {
+			return res.status(403).json({message: 'Profile not approved yet. Please wait for admin approval.'});
+		}
 		res.status(200).json({message: 'Login successful', user});
 	} catch (error) {
 		res.status(500).json({error: error.message});

@@ -68,7 +68,7 @@ const deleteActivity = async (req, res) => {
 	try {
 		const {id} = req.params
 
-		await ActivityModel.findOneAndDelete({_id: id})
+		await ActivityModel.findByIdAndDelete(id);
 		res.status(200).json({message: "activity deleted successfully"});
 	} catch (error) {
 		res.status(404).json({error: "Activity is not Found(Already deleted)"})
@@ -140,20 +140,18 @@ const filterUpcomingActivities = async (req, res) => {
 		const {budget, date, category, rating} = req.query; // Extract filter parameters
 
 		// Get the current date and time if no date is provided
-		//const currentDate = date ? new Date(date) : new Date();
+		const parsedDate = date ? new Date(date) : new Date();
 
 		// Build the query object
 		let query = {
-			//date: {$gte: currentDate} // Only activities on or after the current date
+			date: {$gte: parsedDate} // Only activities on or after the current date
 		};
 
 		// Filter by budget (price)
 		if (budget) {
 			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
 		}
-		if (date) {
-			query.date = {$gte: Date(date)}; 
-		}
+		
 
 		// Filter by category (case-insensitive partial match)
 		if (category) {
@@ -189,12 +187,11 @@ const sortActivities = async (req, res) => {
 		// Extract the sort parameter from the query string (price or rating)
 		const {sortBy} = req.query;
 
-		// Get the current date
-		const currentDate = new Date();
+		
 
 		// Build the base query to find only upcoming activities
 		let query = {
-			date: {$gte: currentDate} // Only activities happening today or later
+		
 		};
 
 		// Determine the sort criteria based on the sortBy parameter
@@ -205,10 +202,7 @@ const sortActivities = async (req, res) => {
 			sortCriteria.price = 1; // 1 for ascending order (cheapest first)
 		} else if (sortBy === 'rating') {
 			sortCriteria.rating = -1; // -1 for descending order (highest rated first)
-		} else {
-			// If no sortBy parameter is provided or is invalid, default to sorting by date
-			sortCriteria.date = 1; // Sort by date (earliest upcoming first)
-		}
+		} 
 
 		// Fetch the upcoming activities from the database and apply the sort criteria
 		const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);
@@ -231,7 +225,7 @@ const sortActivities = async (req, res) => {
 const getAllCreatedActivities = async (req, res) => {
 	try {
 		const activities = await ActivityModel.find({createdBy: req.params.id});
-		res.status(201).json({activities})
+		res.status(200).json(activities)
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

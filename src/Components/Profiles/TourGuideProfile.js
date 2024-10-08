@@ -34,12 +34,8 @@ const TourGuideProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
-					sessionStorage.removeItem('user id');
-					sessionStorage.removeItem('role');
-					window.dispatchEvent(sessionStorageEvent);
-					window.dispatchEvent(userDeletionEvent);
-					if (!displayOnly) navigate('/', {replace: true});
 					toast.success('User updated successfully');
+					navigate('/profile', {replace: true});
 				} else {
 					toast.error('Failed to update user');
 				}
@@ -53,9 +49,37 @@ const TourGuideProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
+					window.dispatchEvent(userDeletionEvent);
+					if (!displayOnly) {
+						sessionStorage.removeItem('user id');
+						sessionStorage.removeItem('role');
+						window.dispatchEvent(sessionStorageEvent);
+						navigate('/', {replace: true});
+					}
 					toast.success('User deleted successfully');
 				} else {
 					toast.error('Failed to delete user');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	}
+	const approveTourGuide = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				isApproved: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?._id) {
+					window.dispatchEvent(userDeletionEvent);
+					toast.success('User approved successfully');
+				} else {
+					toast.error('Failed to approve user');
 				}
 			}).catch((error) => {
 			console.log(error);
@@ -101,6 +125,13 @@ const TourGuideProfile = ({user, displayOnly}) => {
 						{isEditing ? 'Confirm' : 'Update'}
 					</button>
 				}
+				{displayOnly && !user.isApproved &&
+					<button type="button"
+					        onClick={approveTourGuide}
+					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
+						Approve User
+					</button>
+				}
 				<button type="button"
 				        onClick={() => {
 					        if (window.confirm('Are you sure you wish to delete this item?')) {
@@ -124,6 +155,7 @@ TourGuideProfile.propTypes = {
 		yearsOfExperience: PropTypes.number,
 		previousWork: PropTypes.string,
 		_id: PropTypes.string.isRequired,
+		isApproved: PropTypes.bool,
 	}).isRequired,
 	displayOnly: PropTypes.bool.isRequired,
 };

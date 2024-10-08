@@ -17,7 +17,7 @@ const TagForm = ({tag}) => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.message?.includes('successfully')) {
+				if (data?._id) {
 					toast.success('Tag added successfully');
 					window.dispatchEvent(tagModificationEvent);
 				} else {
@@ -39,7 +39,7 @@ const TagForm = ({tag}) => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				if (data?.msg?.includes('updated')) {
+				if (data?._id) {
 					window.dispatchEvent(tagModificationEvent);
 					toast.success('Tag updated successfully');
 				} else {

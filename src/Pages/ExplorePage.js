@@ -15,7 +15,7 @@ const ExplorePage = () => {
 			const responses = await Promise.all([
 				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/upcoming`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/upcoming`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalplaces`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces`),
 				fetch(`${process.env.REACT_APP_BACKEND}/api/museums`)
 			]);
 
@@ -38,10 +38,10 @@ const ExplorePage = () => {
 		try {
 			setLoading(true);
 			const responses = await Promise.all([
-				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tag=${searchParams.activityTag}`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tag=${searchParams.itineraryTag}`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/search?name=${searchParams.historicalPlaceName}&tag=${searchParams.historicalPlaceTag}`),
-				fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tag=${searchParams.museumTag}`)
+				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tags=${searchParams.activityTag}`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tags=${searchParams.itineraryTag}`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/search?name=${searchParams.historicalPlaceName}&tags=${searchParams.historicalPlaceTag}`),
+				fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tags=${searchParams.museumTag}`)
 			]);
 
 
@@ -61,7 +61,7 @@ const ExplorePage = () => {
 	};
 
 	const handleFilter = async (filterParams) => {
-        setLoading(true);
+		setLoading(true);
 		try {
 			const responses = await Promise.all([
 				fetch(`${process.env.REACT_APP_BACKEND}/api/activities/filter?budget=${filterParams.activityBudget}&date=${filterParams.activityDate}&category=${filterParams.activityCategory}&rating=${filterParams.activityRating}`),
@@ -77,7 +77,7 @@ const ExplorePage = () => {
 				historicalPlaces: data[2],
 				museums: data[3]
 			});
-            setLoading(false);
+			setLoading(false);
 		} catch (error) {
 			console.error('Error fetching filter results:', error);
 		}
@@ -85,40 +85,48 @@ const ExplorePage = () => {
 
 	const handleSort = async (sortParams) => {
 		try {
-			let sortURL = '';
+			setLoading(true);
 			if (sortParams.type === 'activity') {
-				sortURL = `${process.env.REACT_APP_BACKEND}/api/activities/sort?criterion=${sortParams.criterion}`;
-			} else if (sortParams.type === 'itinerary') {
-				sortURL = `${process.env.REACT_APP_BACKEND}/api/itineraries/sort?criterion=${sortParams.criterion}`;
-			}
+				const responses = await Promise.all([
+					fetch(`${process.env.REACT_APP_BACKEND}/api/activities/sort?sortBy=${sortParams.criterion}`)
 
-			const response = await fetch(sortURL);
-			const sortedData = await response.json();
-
-			setResults(prevResults => ({
-				...prevResults,
-				[sortParams.type + 's']: sortedData, // activities or itineraries
-			}));
-		} catch (error) {
-			console.error('Error fetching sort results:', error);
-		}
-	};
-
+            ]);
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: data[0]?.message?.includes('No') ? [] : data[0],
+				itineraries: [],
+                historicalPlaces: [],
+                museums: []
+            });
+        }
+        else if (sortParams.type === 'itinerary') {
+            const responses = await Promise.all([
+                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`)
+            ]);
+            const data = await Promise.all(responses.map(res => res.json()));
+            setResults({
+                activities: [],
+				itineraries: data[0]?.message?.includes('No') ? [] : data[0],
+                historicalPlaces: [],
+                museums: []
+            });
+        }
+        setLoading(false);
+        } catch (error) {
+            console.error('Error fetching sort results:', error);
+        }
+    };
 
 	useEffect(() => {
-
-			fetchInitialResults();
-
-		}
-		, []);
-
+		fetchInitialResults().then();
+	}, []);
 
 	return (
 		<div className="p-4 bg-gray-50 min-h-screen">
 			<SearchBar onSearch={handleSearch}/>
 			<FilterSection onFilter={handleFilter}/>
 			<SortSection onSort={handleSort}/>
-			{!loading && <ResultsList
+			{loading ? <p>Loading...</p> : <ResultsList
 				activities={results.activities}
 				itineraries={results.itineraries}
 				museums={results.museums}

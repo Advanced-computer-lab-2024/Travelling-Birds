@@ -47,14 +47,38 @@ const SellerProfile = ({user, displayOnly}) => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
-					sessionStorage.removeItem('user id');
-					sessionStorage.removeItem('role');
-					window.dispatchEvent(sessionStorageEvent);
 					window.dispatchEvent(userDeletionEvent);
-					if (!displayOnly) navigate('/', {replace: true});
+					if (!displayOnly) {
+						sessionStorage.removeItem('user id');
+						sessionStorage.removeItem('role');
+						window.dispatchEvent(sessionStorageEvent);
+						navigate('/', {replace: true});
+					}
 					toast.success('User deleted successfully');
 				} else {
 					toast.error('Failed to delete user');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	}
+
+	const approveSeller = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				isApproved: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?._id) {
+					window.dispatchEvent(userDeletionEvent);
+					toast.success('User approved successfully');
+				} else {
+					toast.error('Failed to approve user');
 				}
 			}).catch((error) => {
 			console.log(error);
@@ -97,6 +121,13 @@ const SellerProfile = ({user, displayOnly}) => {
 						{isEditing ? 'Confirm' : 'Update'}
 					</button>
 				}
+				{displayOnly && !user.isApproved &&
+					<button type="button"
+					        onClick={approveSeller}
+					        className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-1">
+						Approve User
+					</button>
+				}
 				<button type="button"
 				        onClick={() => {
 					        if (window.confirm('Are you sure you wish to delete this item?')) {
@@ -119,6 +150,7 @@ SellerProfile.propTypes = {
 		username: PropTypes.string.isRequired,
 		description: PropTypes.string,
 		_id: PropTypes.string.isRequired,
+		isApproved: PropTypes.bool,
 	}).isRequired,
 	displayOnly: PropTypes.bool.isRequired,
 };
