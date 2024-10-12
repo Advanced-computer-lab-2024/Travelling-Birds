@@ -10,7 +10,7 @@ const {
 	SearchForMuseums,
 	filterMuseums,
 	getAllCreatedMuseums
-} = require('../controllers/MuseumControllers.js');
+} = require('../Controllers/MuseumControllers.js');
 
 // Add museum
 router.post('/', addMuseum);

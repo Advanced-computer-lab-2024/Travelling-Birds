@@ -10,7 +10,7 @@ const {
 	sortItineraries,
 	filterItineraries,
 	getAllCreatedItineraries
-} = require('../controllers/ItineraryControllers.js');
+} = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
 

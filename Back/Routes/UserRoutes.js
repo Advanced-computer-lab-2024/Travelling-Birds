@@ -17,7 +17,7 @@ const {
 	addTourismGovernor,
 	deleteUserByAdmin,
 	login
-} = require('../controllers/UserControllers');
+} = require('../Controllers/UserControllers');
 
 // Add user
 router.post('/', addUser);
