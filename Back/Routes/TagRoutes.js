@@ -7,7 +7,7 @@ const {
 	getTag,
 	updateTag,
 	deleteTag
-} = require('../controllers/TagController.js');
+} = require('../Controllers/TagController.js');
 
 // Add tag
 router.post('/', addTag);

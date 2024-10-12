@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from "prop-types";
 
 const FilterSection = ({ onFilter }) => {
     const [activityBudget, setActivityBudget] = useState('');
@@ -91,6 +92,10 @@ const FilterSection = ({ onFilter }) => {
             <button onClick={handleFilter} className="bg-green-500 text-white px-4 py-2 rounded-lg">Filter</button>
         </div>
     );
+};
+
+FilterSection.propTypes = {
+    onFilter: PropTypes.func.isRequired,
 };
 
 export default FilterSection;

@@ -10,7 +10,7 @@ const {
 	getProduct,
 	updateProduct,
 	deleteProduct
-} = require('../controllers/ProductControllers.js');
+} = require('../Controllers/ProductControllers.js');
 
 // Add product
 router.post('/', addProduct);

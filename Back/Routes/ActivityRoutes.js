@@ -11,7 +11,7 @@ const {
 	sortActivities,
 	getAllCreatedActivities
 
-} = require('../controllers/ActivityControllers.js');
+} = require('../Controllers/ActivityControllers.js');
 
 const router = express.Router();
 

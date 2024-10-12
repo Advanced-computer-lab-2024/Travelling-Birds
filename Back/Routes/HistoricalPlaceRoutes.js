@@ -8,7 +8,7 @@ const {
 	SearchForHistoricalPlace,
 	filterHistoricalPlaces,
 	getAllCreatedHistoricalPlaces
-} = require('../controllers/HistoricalPlaceControllers');
+} = require('../Controllers/HistoricalPlaceControllers');
 
 const router = express.Router();
 
