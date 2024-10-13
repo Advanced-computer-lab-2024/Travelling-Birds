@@ -120,20 +120,44 @@ const ExplorePage = () => {
 	useEffect(() => {
 		fetchInitialResults().then();
 	}, []);
-
 	return (
-		<div className="p-4 bg-gray-50 min-h-screen">
-			<SearchBar onSearch={handleSearch}/>
-			<FilterSection onFilter={handleFilter}/>
-			<SortSection onSort={handleSort}/>
-			{loading ? <p>Loading...</p> : <ResultsList
-				activities={results.activities}
-				itineraries={results.itineraries}
-				museums={results.museums}
-				historicalPlaces={results.historicalPlaces}
-			/>}
-		</div>
+	<div className="p-6 bg-gray-50 min-h-screen">
+    <div className="max-w-7xl mx-auto space-y-6">
+        {/* SearchBar at the top */}
+        <SearchBar onSearch={handleSearch} />
+
+        {/* Video underneath the SearchBar */}
+        <div className="w-full overflow-hidden rounded-lg shadow-lg mb-6">
+            <video className="w-full h-auto" controls autoPlay muted loop>
+                <source src={require('../assests/video.mp4')} type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        {/* Main content with Filter, Sort, and Results */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="md:col-span-1 space-y-4">
+                <FilterSection onFilter={handleFilter} />
+                <SortSection onSort={handleSort} />
+            </div>
+            
+            <div className="md:col-span-3">
+                {loading ? (
+                    <p>Loading...</p>
+                ) : (
+                    <ResultsList
+                        activities={results.activities}
+                        itineraries={results.itineraries}
+                        museums={results.museums}
+                        historicalPlaces={results.historicalPlaces}
+                    />
+                )}
+            </div>
+        </div>
+    </div>
+</div>
 	);
+
 };
 
 

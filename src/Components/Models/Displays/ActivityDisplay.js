@@ -61,8 +61,8 @@ const ActivityDisplay = ({activity}) => {
 				<div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
 			{/*	tags*/}
 				<div className="text-gray-600 mb-2">
-					{activity.tags?.map((tag, index) => (
-						<span key={index} className="bg-gray-200 text-gray-800 rounded-full px-2 py-1 mr-2">{tag}</span>
+					{activity.tags?.map((tag) => (
+						<span key={tag} className="bg-gray-200 text-gray-800 rounded-full px-2 py-1 mr-2">{tag}</span>
 					))}
 				</div>
 			</div>
@@ -100,6 +100,7 @@ ActivityDisplay.propTypes = {
 			lat: PropTypes.number.isRequired,
 			lng: PropTypes.number.isRequired,
 		}).isRequired,
+		rating: PropTypes.number,
 		price: PropTypes.number,
 		priceRange: PropTypes.shape({
 			lwBound: PropTypes.number.isRequired,

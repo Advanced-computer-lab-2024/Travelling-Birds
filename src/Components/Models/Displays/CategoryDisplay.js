@@ -7,7 +7,7 @@ import Popup from "reactjs-popup";
 import {categoryModificationEvent} from "../../../utils/categoryModificationEvent";
 
 const CategoryDisplay = ({category}) => {
-	const [name, setName] = useState(category?.name || '');
+	const name = category?.name || '';
 	const deleteCategory = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/categories/${category._id}`, {
 			method: 'DELETE',

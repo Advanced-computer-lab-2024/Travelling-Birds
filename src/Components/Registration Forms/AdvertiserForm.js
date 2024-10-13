@@ -1,7 +1,6 @@
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 import ReusableInput from "../ReusableInput";
-import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const {useState} = require("react");
 
@@ -14,7 +13,6 @@ const AdvertiserForm = () => {
 	const [website, setWebsite] = useState('');
 	const [hotline, setHotline] = useState('');
 	const [companyProfile, setCompanyProfile] = useState('');
-	const navigate = useNavigate();
 
 	const registerAdvertiser = () => {
 		console.log('Button clicked');
