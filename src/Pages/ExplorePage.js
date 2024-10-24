@@ -124,31 +124,39 @@ const ExplorePage = () => {
 	
 	return (
 		<div className="p-6 bg-gray-50 min-h-screen">
-		  <div className="max-w-7xl mx-auto space-y-6">
-			{/* SearchBar at the top */}
-			<SearchBar onSearch={handleSearch} />
-	  
-			{/* Display search results directly under the search bar */}
-			{!loading && (searchResults.activities.length || searchResults.itineraries.length || searchResults.historicalPlaces.length || searchResults.museums.length) ? (
-			  <div>
-				<h3 className="text-lg font-semibold">Search Results:</h3>
-				<ResultsList
-				  activities={searchResults.activities}
-				  itineraries={searchResults.itineraries}
-				  museums={searchResults.museums}
-				  historicalPlaces={searchResults.historicalPlaces}
-				/>
-			  </div>
-			) : null}
-	  
-			{/* Video underneath the SearchBar */}
-			<div className="w-full overflow-hidden rounded-lg shadow-lg mb-6">
-			  <video className="w-full h-auto" controls autoPlay muted loop>
-				<source src={require('../assests/video.mp4')} type="video/mp4" />
-				Your browser does not support the video tag.
-			  </video>
-			</div>
-	  
+        {/* Hero Section */}
+        <div className="relative bg-gray-800 text-white py-12 mb-6">
+          <div className="max-w-7xl mx-auto px-6">
+            <h1 className="text-4xl font-bold">Discover Your Next Adventure</h1>
+              <p className="mt-4 text-lg">Find the best activities, museums, historical places, and itineraries to make your trip unforgettable.</p>
+         </div>
+        <div className="absolute inset-0 z-0">
+          <video className="w-full h-full object-cover opacity-40" controls autoPlay muted loop>
+            <source src={require('../assests/video.mp4')} type="video/mp4" />
+          </video>
+         </div>
+        </div>
+
+      {/* Main Content */}
+	  <div className="max-w-full mx-auto mb-6">
+        {/* SearchBar */}
+        <div className="relative z-10">
+          <SearchBar onSearch={handleSearch} />
+        </div>
+
+        {/* Search Results */}
+        {!loading && (searchResults.activities.length || searchResults.itineraries.length || searchResults.historicalPlaces.length || searchResults.museums.length) ? (
+          <div className="relative z-10">
+            <h3 className="text-lg font-semibold">Search Results:</h3>
+            <ResultsList
+              activities={searchResults.activities}
+              itineraries={searchResults.itineraries}
+              museums={searchResults.museums}
+              historicalPlaces={searchResults.historicalPlaces}
+            />
+          </div>
+        ) : null}
+
 			{/* Main content with Filter, Sort, and Results */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-6">
 			  <div className="md:col-span-1 space-y-4">
