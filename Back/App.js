@@ -10,6 +10,7 @@ const historicalPlacesRoutes = require('./Routes/HistoricalPlaceRoutes');
 const tagsRoutes = require('./Routes/TagRoutes');
 const productsRoutes = require('./Routes/ProductRoutes');
 const categoriesRoutes = require('./Routes/CategoryRoutes');
+const complaintRoutes = require('./Routes/ComplaintRoutes');
 require('dotenv').config();
 
 app.use(cors());
@@ -22,7 +23,7 @@ app.use('/api/historicalPlaces', historicalPlacesRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/categories', categoriesRoutes);
-
+app.use('/api/complaints', complaintRoutes);
 
 const PORT = process.env.PORT || 5000;
 
