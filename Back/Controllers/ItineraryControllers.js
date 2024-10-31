@@ -253,7 +253,7 @@ const filterItineraries = async (req, res) => {
 
 		// Filter by price if provided
 		if (price) {
-			itineraryQuery.price = price;
+			itineraryQuery.price = {$lte: Number(price)};
 		}
 
 		// Find itineraries based on the itinerary query (language, preferences, price)
