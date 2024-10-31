@@ -42,24 +42,28 @@ const ExplorePage = () => {
     const handleSearch = async (searchParams) => {
         try {
             setLoading(true);
-            const responses = await Promise.all([
-                fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tags=${searchParams.activityTag}`),
-                fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tags=${searchParams.itineraryTag}`),
-                fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/search?name=${searchParams.historicalPlaceName}&tags=${searchParams.historicalPlaceTag}`),
-                fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tags=${searchParams.museumTag}`)
-            ]);
+            let response;
+            if (searchParams.activeSection === 'activities') {
+                response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/search?category=${searchParams.activityCategory}&tags=${searchParams.activityTag}`);
+            } else if (searchParams.activeSection === 'itineraries') {
+                response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/search?category=${searchParams.itineraryCategory}&tags=${searchParams.itineraryTag}`);
+            } else if (searchParams.activeSection === 'historicalPlaces') {
+                response = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/search?name=${searchParams.historicalPlaceName}&tags=${searchParams.historicalPlaceTag}`);
+            } else if (searchParams.activeSection === 'museums') {
+                response = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tags=${searchParams.museumTag}`);
+            }
 
-            const data = await Promise.all(responses.map(res => res.json()));
-
+            const data = response ? await response.json() : [];
             setSearchResults({
-                activities: Array.isArray(data[0]) ? data[0] : [],
-                itineraries: Array.isArray(data[1]) ? data[1] : [],
-                historicalPlaces: Array.isArray(data[2]) ? data[2] : [],
-                museums: Array.isArray(data[3]) ? data[3] : []
+                activities: searchParams.activeSection === 'activities' ? data : [],
+                itineraries: searchParams.activeSection === 'itineraries' ? data : [],
+                historicalPlaces: searchParams.activeSection === 'historicalPlaces' ? data : [],
+                museums: searchParams.activeSection === 'museums' ? data : []
             });
             setLoading(false);
         } catch (error) {
             console.error('Error fetching search results:', error);
+            setLoading(false);
         }
     };
 

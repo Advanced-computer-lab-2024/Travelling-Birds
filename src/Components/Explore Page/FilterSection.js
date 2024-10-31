@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import { FaStar } from 'react-icons/fa';
 
 const FilterSection = ({ onFilter }) => {
-    const [activityBudget, setActivityBudget] = useState('');
+    const [activityBudget, setActivityBudget] = useState(1000); // Default single value: 500
     const [activityDate, setActivityDate] = useState('');
     const [activityCategory, setActivityCategory] = useState('');
-    const [activityRating, setActivityRating] = useState('');
-    const [itineraryBudget, setItineraryBudget] = useState('');
+    const [activityRating, setActivityRating] = useState(0); // Default star rating: 0 stars
+    const [itineraryBudget, setItineraryBudget] = useState(2000); // Default single value: 1000
     const [itineraryDate, setItineraryDate] = useState('');
     const [itineraryPreferences, setItineraryPreferences] = useState('');
     const [itineraryLanguage, setItineraryLanguage] = useState('');
@@ -36,60 +39,86 @@ const FilterSection = ({ onFilter }) => {
                 {/* Activity Filters */}
                 <div>
                     <h3 className="text-lg font-semibold text-gray-600 mb-2">Activity Filters</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <input 
-                            type="number" 
-                            placeholder="Budget" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
-                            onChange={(e) => setActivityBudget(e.target.value)} 
+                    <div className="mb-4">
+                        <label className="block text-gray-600">Budget</label>
+                        <Slider 
+                            min={0} 
+                            max={1000} 
+                            defaultValue={activityBudget} 
+                            onChange={setActivityBudget} 
+                            trackStyle={{ backgroundColor: '#4A90E2' }} 
+                            handleStyle={{ borderColor: '#4A90E2' }}
                         />
+                        <p className="text-sm text-gray-500 mt-1">Selected budget: ${activityBudget}</p>
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="date" 
                             placeholder="Date" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setActivityDate(e.target.value)} 
                         />
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="text" 
                             placeholder="Category" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setActivityCategory(e.target.value)} 
                         />
-                        <input 
-                            type="number" 
-                            placeholder="Rating" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
-                            onChange={(e) => setActivityRating(e.target.value)} 
-                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-600">Rating</label>
+                        <div className="flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <FaStar
+                                    key={star}
+                                    size={24}
+                                    className={`cursor-pointer ${activityRating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                                    onClick={() => setActivityRating(star)}
+                                />
+                            ))}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Selected rating: {activityRating} star(s)</p>
                     </div>
                 </div>
 
                 {/* Itinerary Filters */}
                 <div>
                     <h3 className="text-lg font-semibold text-gray-600 mb-2">Itinerary Filters</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                        <input 
-                            type="number" 
-                            placeholder="Budget" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
-                            onChange={(e) => setItineraryBudget(e.target.value)} 
+                    <div className="mb-4">
+                        <label className="block text-gray-600">Budget</label>
+                        <Slider 
+                            min={0} 
+                            max={2000} 
+                            defaultValue={itineraryBudget} 
+                            onChange={setItineraryBudget} 
+                            trackStyle={{ backgroundColor: '#34D399' }} 
+                            handleStyle={{ borderColor: '#34D399' }}
                         />
+                        <p className="text-sm text-gray-500 mt-1">Selected budget: ${itineraryBudget}</p>
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="date" 
                             placeholder="Date" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setItineraryDate(e.target.value)} 
                         />
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="text" 
                             placeholder="Preferences" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setItineraryPreferences(e.target.value)} 
                         />
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="text" 
                             placeholder="Language" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setItineraryLanguage(e.target.value)} 
                         />
                     </div>
@@ -98,17 +127,19 @@ const FilterSection = ({ onFilter }) => {
                 {/* Historical Place and Museum Filters */}
                 <div>
                     <h3 className="text-lg font-semibold text-gray-600 mb-2">Tags</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="mb-4">
                         <input 
                             type="text" 
                             placeholder="Historical Place Tag" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setHistoricalPlaceTag(e.target.value)} 
                         />
+                    </div>
+                    <div className="mb-4">
                         <input 
                             type="text" 
                             placeholder="Museum Tag" 
-                            className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
+                            className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-400" 
                             onChange={(e) => setMuseumTag(e.target.value)} 
                         />
                     </div>

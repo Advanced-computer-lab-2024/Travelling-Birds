@@ -14,16 +14,28 @@ const SearchBar = ({ onSearch, searchResults, onSelectItem, isModalOpen }) => {
     const [message, setMessage] = useState('Where to?');
 
     const handleSearch = () => {
-        onSearch({
-            activityCategory,
-            activityTag,
-            itineraryCategory,
-            itineraryTag,
-            historicalPlaceName,
-            historicalPlaceTag,
-            museumName,
-            museumTag,
-        });
+        const searchParams = { activeSection };
+        switch (activeSection) {
+            case 'activities':
+                searchParams.activityCategory = activityCategory;
+                searchParams.activityTag = activityTag;
+                break;
+            case 'itineraries':
+                searchParams.itineraryCategory = itineraryCategory;
+                searchParams.itineraryTag = itineraryTag;
+                break;
+            case 'historicalPlaces':
+                searchParams.historicalPlaceName = historicalPlaceName;
+                searchParams.historicalPlaceTag = historicalPlaceTag;
+                break;
+            case 'museums':
+                searchParams.museumName = museumName;
+                searchParams.museumTag = museumTag;
+                break;
+            default:
+                break;
+        }
+        onSearch(searchParams);
     };
 
     return (

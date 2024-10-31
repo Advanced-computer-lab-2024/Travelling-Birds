@@ -49,10 +49,10 @@ const getActivity = async (req, res) => {
 
 // update an existing Activity
 const updateActivity = async (req, res) => {
-	const {date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy} = req.body;
+	const {date, time, location, price, category, tags, rating , specialDiscount, bookingOpen, createdBy} = req.body;
 	try {
 		const activity = await ActivityModel.findByIdAndUpdate(req.params.id,
-			{date, time, location, price, category, tags, specialDiscount, bookingOpen, createdBy}, {new: true});
+			{date, time, location, price, category, tags, rating , specialDiscount, bookingOpen, createdBy}, {new: true});
 		if (!activity) {
 			return res.status(404).json({message: 'Activity not found'});
 		}
