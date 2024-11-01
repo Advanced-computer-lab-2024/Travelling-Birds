@@ -5,8 +5,15 @@ const MuseumModel = require('../Models/Museum');
 const addMuseum = async (req, res) => {
 	const {name, description, pictures, location, openingHours, ticketPrices, tags, createdBy} = req.body;
 	try {
+		let image = null;
+        if (req.file) {
+            image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
 		const newMuseum = new MuseumModel({
-			name, description, pictures, location, openingHours, ticketPrices, tags, createdBy
+			name, description, pictures, location, openingHours, ticketPrices, tags,image, createdBy
 		});
 		await newMuseum.save();
 		res.status(201).json(newMuseum);
@@ -40,14 +47,26 @@ const getMuseum = async (req, res) => {
 
 // Update Museum
 const updateMuseum = async (req, res) => {
-	try {
-		const museum = await MuseumModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-		res.status(201).json(museum);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+    try {
+        const updatedFields = { ...req.body };
 
+        // Handle image upload
+        if (req.file) {
+            updatedFields.image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const museum = await MuseumModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+        if (!museum) {
+            return res.status(404).json({ message: 'Museum not found' });
+        }
+        res.status(200).json(museum);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 // Delete Museum
 const deleteMuseum = async (req, res) => {
 	try {

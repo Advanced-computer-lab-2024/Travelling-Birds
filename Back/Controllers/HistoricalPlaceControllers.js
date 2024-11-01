@@ -5,6 +5,13 @@ const HistoricalPlaceModel = require('../Models/HistoricalPlace');
 const addHistoricalPlace = async (req, res) => {
 	const {name, description, pictures, location, openingHours, ticketPrices, tags,createdBy} = req.body;
 	try {
+		let image = null;
+        if (req.file) {
+            image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
 		const newHistoricalPlace = new HistoricalPlaceModel(
 			{
 				name,
@@ -14,6 +21,7 @@ const addHistoricalPlace = async (req, res) => {
 				openingHours,
 				ticketPrices,
 				tags,
+				image,
 				createdBy
 			});
 		await newHistoricalPlace.save();
@@ -48,13 +56,26 @@ const getHistoricalPlace = async (req, res) => {
 
 // Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
-		try {
-			const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-			res.status(200).json(historicalPlace);
-		} catch (error) {
-			res.status(500).json({error: error.message});
-		}
-}
+    try {
+        const updatedFields = { ...req.body };
+
+        // Handle image upload
+        if (req.file) {
+            updatedFields.image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+        if (!historicalPlace) {
+            return res.status(404).json({ message: 'Historical place not found' });
+        }
+        res.status(200).json(historicalPlace);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Delete Historical Place
 const deleteHistoricalPlace = async (req, res) => {

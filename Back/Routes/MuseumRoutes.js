@@ -11,9 +11,10 @@ const {
 	filterMuseums,
 	getAllCreatedMuseums
 } = require('../Controllers/MuseumControllers.js');
+const upload = require('../Controllers/middleware/upload');
 
 // Add museum
-router.post('/', addMuseum);
+router.post('/', upload.single('image'), addMuseum);
 
 // Get all museums
 router.get('/', getAllMuseums);
@@ -28,7 +29,7 @@ router.get('/filter', filterMuseums);
 router.get('/:id', getMuseum);
 
 // Update museum
-router.put('/:id', updateMuseum);
+router.put('/:id', upload.single('image'), updateMuseum);
 
 // Delete museum
 router.delete('/:id', deleteMuseum);

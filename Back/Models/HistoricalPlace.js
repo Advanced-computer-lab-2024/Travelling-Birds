@@ -9,6 +9,7 @@ const historicalPlaceSchema = new Schema({
     openingHours: String,
     ticketPrices: [Number],
     tags: [{type: String, ref: 'Tag'}],
+    image: { data: Buffer, contentType: String }, // Field to store image data
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 

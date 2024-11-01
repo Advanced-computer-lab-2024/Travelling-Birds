@@ -16,6 +16,13 @@ const addItinerary = async (req, res) => {
 		createdBy
 	} = req.body;
 	try {
+		let image = null;
+        if (req.file) {
+            image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
 		const itinerary = new ItineraryModel({
 			activities,
 			locations,
@@ -27,6 +34,7 @@ const addItinerary = async (req, res) => {
 			accessibility,
 			pickupLocation,
 			dropoffLocation,
+			image,
 			createdBy
 		});
 		await itinerary.save();
@@ -61,42 +69,52 @@ const getItinerary = async (req, res) => {
 
 // Update itinerary
 const updateItinerary = async (req, res) => {
-	const {
-		activities,
-		locations,
-		timeline,
-		duration,
-		language,
-		price,
-		availableDates,
-		accessibility,
-		pickupLocation,
-		dropoffLocation,
-		createdBy
-	} = req.body;
-	try {
-		const itinerary = await ItineraryModel.findByIdAndUpdate(req.params.id, {
-			activities,
-			locations,
-			timeline,
-			duration,
-			language,
-			price,
-			availableDates,
-			accessibility,
-			pickupLocation,
-			dropoffLocation,
-			createdBy
-		}, {new: true});
-		if (!itinerary) {
-			return res.status(404).json({message: 'itinerary not found'});
-		}
-		res.status(200).json(itinerary);
-	} catch (error) {
-		res.status(400).json({message: error.message});
-	}
+    const {
+        activities,
+        locations,
+        timeline,
+        duration,
+        language,
+        price,
+        availableDates,
+        accessibility,
+        pickupLocation,
+        dropoffLocation,
+        createdBy
+    } = req.body;
 
-}
+    try {
+        const updatedFields = {
+            activities,
+            locations,
+            timeline,
+            duration,
+            language,
+            price,
+            availableDates,
+            accessibility,
+            pickupLocation,
+            dropoffLocation,
+            createdBy
+        };
+
+        // Handle image upload
+        if (req.file) {
+            updatedFields.image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const itinerary = await ItineraryModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+        res.status(200).json(itinerary);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 // Delete itinerary
 const deleteItinerary = async (req, res) => {
