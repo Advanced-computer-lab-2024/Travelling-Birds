@@ -2,27 +2,38 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-	const {date, time, location, price, priceRange, category, tags, specialDiscount,rating, bookingOpen, createdBy} = req.body;
-	try {
-		const newActivity = new ActivityModel({
-			date,
-			time,
-			location,
-			price,
-			priceRange,
-			category,
-			tags,
-			specialDiscount,
-			rating,
-			bookingOpen,
-			createdBy
-		});
-		await newActivity.save();
-		res.status(201).json(newActivity);
-	} catch (error) {
-		res.status(400).json({message: error.message});
-	}
-}
+    const { date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen, createdBy } = req.body;
+
+    try {
+        // Prepare image data if a file is provided
+        let image = null;
+        if (req.file) {
+            image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const newActivity = new ActivityModel({
+            date,
+            time,
+            location,
+            price,
+            priceRange,
+            category,
+            tags,
+            specialDiscount,
+            rating,
+            bookingOpen,
+            image, // Store image data in the document
+            createdBy
+        });
+        await newActivity.save();
+        res.status(201).json(newActivity);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 // Get all activities
 const getAllActivities = async (req, res) => {
@@ -49,19 +60,40 @@ const getActivity = async (req, res) => {
 
 // update an existing Activity
 const updateActivity = async (req, res) => {
-	const {date, time, location, price, category, tags, rating , specialDiscount, bookingOpen, createdBy} = req.body;
-	try {
-		const activity = await ActivityModel.findByIdAndUpdate(req.params.id,
-			{date, time, location, price, category, tags, rating , specialDiscount, bookingOpen, createdBy}, {new: true});
-		if (!activity) {
-			return res.status(404).json({message: 'Activity not found'});
-		}
-		res.status(200).json(activity);
-	} catch (error) {
-		res.status(400).json({message: error.message});
-	}
+    const { date, time, location, price, category, tags, rating, specialDiscount, bookingOpen, createdBy } = req.body;
 
-}
+    try {
+        const updatedFields = {
+            date,
+            time,
+            location,
+            price,
+            category,
+            tags,
+            rating,
+            specialDiscount,
+            bookingOpen,
+            createdBy
+        };
+
+        // Update image data if a new file is uploaded
+        if (req.file) {
+            updatedFields.image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const activity = await ActivityModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        res.status(200).json(activity);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 // delete an existing activity
 const deleteActivity = async (req, res) => {
