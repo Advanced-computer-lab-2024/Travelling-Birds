@@ -32,6 +32,7 @@ import ProductsPage from "./Pages/ProductsPage";
 import MuseumForm from "./Components/Models/Forms/MuseumForm";
 import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
+import ComplaintsPage from "./Pages/ComplaintsPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -59,6 +60,7 @@ root.render(
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
+					<Route path="complaints" element={<ComplaintsPage/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
