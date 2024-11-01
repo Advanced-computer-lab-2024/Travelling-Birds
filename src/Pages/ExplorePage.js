@@ -52,14 +52,16 @@ const ExplorePage = () => {
             } else if (searchParams.activeSection === 'museums') {
                 response = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/search?name=${searchParams.museumName}&tags=${searchParams.museumTag}`);
             }
-
+    
             const data = response ? await response.json() : [];
+    
             setSearchResults({
-                activities: searchParams.activeSection === 'activities' ? data : [],
-                itineraries: searchParams.activeSection === 'itineraries' ? data : [],
-                historicalPlaces: searchParams.activeSection === 'historicalPlaces' ? data : [],
-                museums: searchParams.activeSection === 'museums' ? data : []
+                activities: searchParams.activeSection === 'activities' ? (Array.isArray(data) ? data : []) : [],
+                itineraries: searchParams.activeSection === 'itineraries' ? (Array.isArray(data) ? data : []) : [],
+                historicalPlaces: searchParams.activeSection === 'historicalPlaces' ? (Array.isArray(data) ? data : []) : [],
+                museums: searchParams.activeSection === 'museums' ? (Array.isArray(data) ? data : []) : []
             });
+    
             setLoading(false);
         } catch (error) {
             console.error('Error fetching search results:', error);
@@ -161,7 +163,7 @@ const ExplorePage = () => {
             {/* Video Section under SearchBar */}
             <div className="relative mt-6 w-full h-80 rounded-lg overflow-hidden shadow-lg"> {/* Kept spacing consistent below the search bar */}
                 <video className="w-full h-full object-cover" autoPlay muted loop>
-                    <source src={require('../assests/video.mp4')} type="video/mp4" />
+                    <source src={require('../assets/video.mp4')} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-6">
                     <div className="text-center space-y-2">
