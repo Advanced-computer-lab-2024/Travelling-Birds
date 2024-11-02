@@ -3,24 +3,46 @@ const MuseumModel = require('../Models/Museum');
 
 //create museum
 const addMuseum = async (req, res) => {
-	const {name, description, pictures, location, openingHours, ticketPrices, tags, createdBy} = req.body;
-	try {
-		let image = null;
+    const { name, description, pictures, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+
+    try {
+        // Parse `ticketPrices` if it's passed as a JSON string or an improperly formatted object
+        let parsedTicketPrices;
+        if (typeof ticketPrices === 'string') {
+            parsedTicketPrices = JSON.parse(ticketPrices);
+        } else if (typeof ticketPrices === 'object' && !Array.isArray(ticketPrices)) {
+            parsedTicketPrices = ticketPrices;
+        } else {
+            return res.status(400).json({ error: 'Invalid ticketPrices format' });
+        }
+
+        let image = null;
         if (req.file) {
             image = {
                 data: req.file.buffer,
                 contentType: req.file.mimetype
             };
         }
-		const newMuseum = new MuseumModel({
-			name, description, pictures, location, openingHours, ticketPrices, tags,image, createdBy
-		});
-		await newMuseum.save();
-		res.status(201).json(newMuseum);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+
+        const newMuseum = new MuseumModel({
+            name,
+            description,
+            pictures,
+            location,
+            openingHours,
+            ticketPrices: parsedTicketPrices,
+            tags,
+            image,
+            createdBy
+        });
+
+        await newMuseum.save();
+        res.status(201).json(newMuseum);
+    } catch (error) {
+        console.error('Error occurred during museum creation:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Get all  museums
 const getAllMuseums = async (req, res) => {
@@ -56,10 +78,22 @@ const updateMuseum = async (req, res) => {
             pictures,
             location,
             openingHours,
-            ticketPrices,
             tags,
             createdBy
         };
+
+        // Parse `ticketPrices` if it's passed as a string or an improperly formatted object
+        if (ticketPrices) {
+            let parsedTicketPrices;
+            if (typeof ticketPrices === 'string') {
+                parsedTicketPrices = JSON.parse(ticketPrices);
+            } else if (typeof ticketPrices === 'object' && !Array.isArray(ticketPrices)) {
+                parsedTicketPrices = ticketPrices;
+            } else {
+                return res.status(400).json({ error: 'Invalid ticketPrices format' });
+            }
+            updatedFields.ticketPrices = parsedTicketPrices;
+        }
 
         // Update image data if a new file is uploaded
         if (req.file) {
@@ -75,6 +109,7 @@ const updateMuseum = async (req, res) => {
         }
         res.status(200).json(museum);
     } catch (error) {
+        console.error('Error occurred during museum update:', error);
         res.status(500).json({ error: error.message });
     }
 };

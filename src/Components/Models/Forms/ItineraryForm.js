@@ -10,7 +10,7 @@ const ItineraryForm = ({ itinerary }) => {
     const [duration, setDuration] = useState(itinerary?.duration || '');
     const [language, setLanguage] = useState(itinerary?.language || '');
     const [price, setPrice] = useState(itinerary?.price || '');
-    const [availableDates, setAvailableDates] = useState(itinerary?.availableDates?.map(date => new Date(date).toLocaleDateString()).join(', ') || '');
+    const [availableDates, setAvailableDates] = useState(itinerary?.availableDates?.map(date => new Date(date).toISOString().split('T')[0]).join(', ') || '');
     const [accessibility, setAccessibility] = useState(itinerary?.accessibility || '');
     const [pickupLocation, setPickupLocation] = useState(itinerary?.pickupLocation || '');
     const [dropoffLocation, setDropoffLocation] = useState(itinerary?.dropoffLocation || '');
@@ -30,16 +30,28 @@ const ItineraryForm = ({ itinerary }) => {
         formData.append('duration', duration);
         formData.append('language', language);
         formData.append('price', parseFloat(price));
-        formData.append('availableDates', availableDates.split(',').map(date => new Date(date.trim())));
+
+        // Append each date individually
+        availableDates.split(',').forEach(date => {
+            const parsedDate = new Date(date.trim());
+            if (!isNaN(parsedDate)) {
+                formData.append('availableDates', parsedDate.toISOString());
+            } else {
+                console.error('Invalid date format:', date.trim());
+            }
+        });
+
         formData.append('accessibility', accessibility);
         formData.append('pickupLocation', pickupLocation);
         formData.append('dropoffLocation', dropoffLocation);
         formData.append('preferences', preferences);
         formData.append('isBooked', isBooked);
         formData.append('createdBy', sessionStorage.getItem('user id'));
+
         if (image) {
             formData.append('image', image);
         }
+
         return formData;
     };
 
@@ -55,11 +67,12 @@ const ItineraryForm = ({ itinerary }) => {
                     toast.success('Itinerary added successfully');
                     window.dispatchEvent(modelModificationEvent);
                 } else {
+                    console.error('Unexpected response:', data);
                     toast.error('Failed to register itinerary');
                 }
             })
             .catch(error => {
-                console.log(error);
+                console.error('Error occurred:', error);
                 toast.error('Failed to register itinerary');
             });
     };
@@ -76,11 +89,12 @@ const ItineraryForm = ({ itinerary }) => {
                     toast.success('Itinerary updated successfully');
                     window.dispatchEvent(modelModificationEvent);
                 } else {
+                    console.error('Unexpected response:', data);
                     toast.error('Failed to update itinerary');
                 }
             })
             .catch(error => {
-                console.log(error);
+                console.error('Error occurred:', error);
                 toast.error('Failed to update itinerary');
             });
     };
@@ -91,7 +105,7 @@ const ItineraryForm = ({ itinerary }) => {
                 e.preventDefault();
                 !itinerary ? registerItinerary() : updateItinerary();
             }}>
-                <h1 className="text-2xl font-bold mb-4">Register Itinerary</h1>
+                <h1 className="text-2xl font-bold mb-4">{itinerary ? 'Update Itinerary' : 'Register Itinerary'}</h1>
                 <ReusableInput type="text" name="Activities" value={activities} onChange={e => setActivities(e.target.value)} />
                 <ReusableInput type="text" name="Locations" value={locations} onChange={e => setLocations(e.target.value)} />
                 <ReusableInput type="text" name="Timeline" value={timeline} onChange={e => setTimeline(e.target.value)} />
