@@ -26,23 +26,21 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
             });
     };
 
-    const getImageSrc = () => {
-        if (historicalPlace.image && historicalPlace.image.data) {
-            const binaryString = String.fromCharCode.apply(null, new Uint8Array(historicalPlace.image.data.data));
-            return `data:${historicalPlace.image.contentType};base64,${btoa(binaryString)}`;
+    // Safely handle image conversion for the browser
+    let imageBase64 = null;
+    if (historicalPlace.image?.data?.data && historicalPlace.image.contentType) {
+        try {
+            const byteArray = new Uint8Array(historicalPlace.image.data.data);
+            const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            imageBase64 = `data:${historicalPlace.image.contentType};base64,${btoa(binaryString)}`;
+        } catch (error) {
+            console.error('Error converting image data to base64:', error);
         }
-        return null;
-    };
+    }
 
     return (
         <div className="bg-white rounded-xl shadow-md relative">
-            {getImageSrc() && (
-                <img
-                    src={getImageSrc()}
-                    alt="Historical Place"
-                    className="w-full h-48 object-cover rounded-t-xl"
-                />
-            )}
+            {imageBase64 && <img src={imageBase64} alt="Historical Place" className="w-full h-48 object-cover rounded-t-xl" />}
             <div className="p-4">
                 <h3 className="text-xl font-bold">{historicalPlace.name}</h3>
 
@@ -103,7 +101,6 @@ HistoricalPlaceDisplay.propTypes = {
         _id: PropTypes.string.isRequired,
         name: PropTypes.string,
         description: PropTypes.string,
-        pictures: PropTypes.arrayOf(PropTypes.string),
         location: PropTypes.string,
         openingHours: PropTypes.string,
         ticketPrices: PropTypes.arrayOf(PropTypes.string),

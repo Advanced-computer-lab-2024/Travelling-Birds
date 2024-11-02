@@ -26,23 +26,21 @@ const MuseumDisplay = ({ museum }) => {
             });
     };
 
-    const getImageSrc = () => {
-        if (museum.image && museum.image.data) {
-            const binaryString = String.fromCharCode.apply(null, new Uint8Array(museum.image.data.data));
-            return `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
+    // Safely handle image conversion for the browser
+    let imageBase64 = null;
+    if (museum.image?.data?.data && museum.image.contentType) {
+        try {
+            const byteArray = new Uint8Array(museum.image.data.data);
+            const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            imageBase64 = `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
+        } catch (error) {
+            console.error('Error converting image data to base64:', error);
         }
-        return null;
-    };
+    }
 
     return (
         <div className="bg-white rounded-xl shadow-md relative">
-            {getImageSrc() && (
-                <img
-                    src={getImageSrc()}
-                    alt="Museum"
-                    className="w-full h-48 object-cover rounded-t-xl"
-                />
-            )}
+            {imageBase64 && <img src={imageBase64} alt="Museum" className="w-full h-48 object-cover rounded-t-xl" />}
             <div className="p-4">
                 <h3 className="text-xl font-bold">{museum.name}</h3>
 
@@ -103,11 +101,13 @@ MuseumDisplay.propTypes = {
         _id: PropTypes.string,
         name: PropTypes.string,
         description: PropTypes.string,
-        pictures: PropTypes.array,
         location: PropTypes.string,
         openingHours: PropTypes.string,
-        ticketPrices: PropTypes.object,
-        tags: PropTypes.array,
+        ticketPrices: PropTypes.shape({
+            adult: PropTypes.number,
+            child: PropTypes.number,
+        }),
+        tags: PropTypes.arrayOf(PropTypes.string),
         image: PropTypes.shape({
             data: PropTypes.object,
             contentType: PropTypes.string,

@@ -42,24 +42,28 @@ const ItineraryDisplay = ({ itinerary }) => {
         fetchUser().then();
     }, [itinerary.createdBy]);
 
-    const getImageSrc = () => {
-        if (itinerary.image && itinerary.image.data) {
-            const binaryString = String.fromCharCode.apply(null, new Uint8Array(itinerary.image.data.data));
-            return `data:${itinerary.image.contentType};base64,${btoa(binaryString)}`;
+    // Safely handle image conversion for the browser
+    let imageBase64 = null;
+    if (itinerary.image?.data?.data && itinerary.image.contentType) {
+        try {
+            const byteArray = new Uint8Array(itinerary.image.data.data);
+            const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            imageBase64 = `data:${itinerary.image.contentType};base64,${btoa(binaryString)}`;
+        } catch (error) {
+            console.error('Error converting image data to base64:', error);
         }
-        return null;
-    };
+    }
 
     return (
         <div className="bg-white rounded-xl shadow-md relative">
+            {imageBase64 && (
+                <img
+                    src={imageBase64}
+                    alt="Itinerary"
+                    className="w-full h-48 object-cover rounded-t-xl"
+                />
+            )}
             <div className="p-4">
-                {getImageSrc() && (
-                    <img
-                        src={getImageSrc()}
-                        alt="Itinerary"
-                        className="w-full h-48 object-cover mb-4 rounded"
-                    />
-                )}
                 <div className="mb-6">
                     <h3 className="text-xl font-bold">{`Itinerary by ${userName}`}</h3>
                     <div className="text-gray-600 my-2">{`Language: ${itinerary.language}`}</div>
