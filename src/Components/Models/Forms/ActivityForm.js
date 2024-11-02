@@ -39,7 +39,7 @@ const ActivityForm = ({ activity }) => {
         formData.append('bookingOpen', bookingOpen);
         formData.append('createdBy', sessionStorage.getItem('user id'));
         if (image) {
-            formData.append('picture', image);
+            formData.append('image', image);
         }
 
         fetch(`${process.env.REACT_APP_BACKEND}/api/activities`, {
@@ -75,7 +75,7 @@ const ActivityForm = ({ activity }) => {
         formData.append('specialDiscounts', specialDiscounts);
         formData.append('bookingOpen', bookingOpen);
         if (image) {
-            formData.append('picture', image);
+            formData.append('image', image);
         }
 
         fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {

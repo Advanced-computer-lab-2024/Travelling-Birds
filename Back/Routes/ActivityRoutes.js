@@ -17,7 +17,7 @@ const upload = require('../Controllers/middleware/upload');
 const router = express.Router();
 
 // Add an activity
-router.post('/', upload.single('picture'), addActivity);
+router.post('/', upload.single('image'), addActivity);
 
 // Get all activities
 router.get('/', getAllActivities);
@@ -39,7 +39,7 @@ router.get('/sort', sortActivities);
 router.get('/:id', getActivity);
 
 // Update an activity
-router.put('/:id', upload.single('picture'), updateActivity);
+router.put('/:id', upload.single('image'), updateActivity);
 
 // Delete an activity
 router.delete('/:id', deleteActivity);
