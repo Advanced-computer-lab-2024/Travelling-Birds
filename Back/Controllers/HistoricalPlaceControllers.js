@@ -54,12 +54,22 @@ const getHistoricalPlace = async (req, res) => {
 	}
 }
 
-// Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
-    try {
-        const updatedFields = { ...req.body };
+    const { name, description, pictures, location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
-        // Handle image upload
+    try {
+        const updatedFields = {
+            name,
+            description,
+            pictures,
+            location,
+            openingHours,
+            ticketPrices,
+            tags,
+            createdBy
+        };
+
+        // Update image data if a new file is uploaded
         if (req.file) {
             updatedFields.image = {
                 data: req.file.buffer,
