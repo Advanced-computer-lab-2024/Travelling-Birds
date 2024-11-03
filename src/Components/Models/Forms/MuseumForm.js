@@ -7,12 +7,12 @@ const MuseumForm = ({ museum }) => {
     const [name, setName] = useState(museum?.name || '');
     const [description, setDescription] = useState(museum?.description || '');
     const [location, setLocation] = useState(museum?.location || '');
-    const [openingHours, setOpeningHours] = useState(museum?.openingHours || '');
+    const [startTime, setStartTime] = useState(museum?.openingHours?.startTime ? new Date(museum.openingHours.startTime).toISOString().slice(11, 16) : '');
+    const [endTime, setEndTime] = useState(museum?.openingHours?.endTime ? new Date(museum.openingHours.endTime).toISOString().slice(11, 16) : '');
     const [ticketPrices, setTicketPrices] = useState(museum?.ticketPrices ? Object.entries(museum.ticketPrices).map(([key, value]) => `${key}: ${value}`).join(', ') : '');
     const [tags, setTags] = useState(museum?.tags?.join(',') || '');
-    const [image, setImage] = useState(null); // State for the image
+    const [image, setImage] = useState(null);
 
-    // Handle image change
     const handleFileChange = (e) => {
         setImage(e.target.files[0]);
     };
@@ -22,48 +22,48 @@ const MuseumForm = ({ museum }) => {
         formData.append('name', name);
         formData.append('description', description);
         formData.append('location', location);
-        formData.append('openingHours', openingHours);
+    
+        // Construct openingHours object without timezone adjustments
+        const openingHoursObject = {
+            startTime: `${startTime}:00`, // e.g., "08:00:00"
+            endTime: `${endTime}:00` // e.g., "10:00:00"
+        };
+        formData.append('openingHours', JSON.stringify(openingHoursObject));
+    
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
         formData.append('createdBy', sessionStorage.getItem('user id'));
-
+    
         try {
-            // Format ticketPrices as an object or Map
             const ticketPricesObject = ticketPrices.split(',').reduce((acc, price) => {
                 const [key, value] = price.split(':').map(item => item.trim());
                 acc[key] = value === 'null' ? null : parseFloat(value);
                 return acc;
             }, {});
-
-            if (isCreating) {
-                formData.append('ticketPrices', JSON.stringify(ticketPricesObject));
-            } else {
-                Object.keys(ticketPricesObject).forEach(key => {
-                    formData.append(`ticketPrices[${key}]`, ticketPricesObject[key]);
-                });
-            }
+    
+            formData.append('ticketPrices', JSON.stringify(ticketPricesObject));
         } catch (error) {
             console.error('Error processing ticketPrices:', error);
             toast.error('Failed to process ticket prices');
-            return null; // Stop form submission if ticketPrices are malformed
+            return null;
         }
-
+    
         if (image) {
             formData.append('image', image);
         }
-
+    
         return formData;
     };
 
     const registerMuseum = () => {
         const formData = createFormData(true);
-        if (!formData) return; // Prevent request if formData creation failed
+        if (!formData) return;
 
         fetch(`${process.env.REACT_APP_BACKEND}/api/museums`, {
             method: 'POST',
             body: formData
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then(response => response.json())
+            .then(data => {
                 if (data && data._id) {
                     toast.success('Museum added successfully');
                     window.dispatchEvent(modelModificationEvent);
@@ -72,22 +72,22 @@ const MuseumForm = ({ museum }) => {
                     toast.error('Failed to register museum');
                 }
             })
-            .catch((error) => {
-                console.error('Error occurred during museum registration:', error);
+            .catch(error => {
+                console.error('Error during museum registration:', error);
                 toast.error('Failed to register museum');
             });
     };
 
     const updateMuseum = () => {
         const formData = createFormData(false);
-        if (!formData) return; // Prevent request if formData creation failed
+        if (!formData) return;
 
         fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${museum._id}`, {
             method: 'PUT',
             body: formData
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then(response => response.json())
+            .then(data => {
                 if (data && data._id) {
                     toast.success('Museum updated successfully');
                     window.dispatchEvent(modelModificationEvent);
@@ -96,8 +96,8 @@ const MuseumForm = ({ museum }) => {
                     toast.error('Failed to update museum');
                 }
             })
-            .catch((error) => {
-                console.error('Error occurred during museum update:', error);
+            .catch(error => {
+                console.error('Error during museum update:', error);
                 toast.error('Failed to update museum');
             });
     };
@@ -112,7 +112,10 @@ const MuseumForm = ({ museum }) => {
                 <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                 <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
                 <ReusableInput type="text" name="Location" value={location} onChange={e => setLocation(e.target.value)} />
-                <ReusableInput type="text" name="Opening Hours" value={openingHours} onChange={e => setOpeningHours(e.target.value)} />
+                <label className="block text-gray-700 mb-2">Opening Hours Start Time:</label>
+                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full mb-4 border rounded px-2 py-1" />
+                <label className="block text-gray-700 mb-2">Opening Hours End Time:</label>
+                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full mb-4 border rounded px-2 py-1" />
                 <ReusableInput type="text" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
                 <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
                 <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />

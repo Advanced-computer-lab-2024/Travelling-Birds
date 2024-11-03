@@ -6,6 +6,7 @@ import 'reactjs-popup/dist/index.css';
 import { ActivityForm } from "../Forms";
 import { toast } from "react-toastify";
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import { FaStar, FaRegStar } from 'react-icons/fa';
 
 const ActivityDisplay = ({ activity }) => {
     const [showMore, setShowMore] = useState(false);
@@ -39,13 +40,24 @@ const ActivityDisplay = ({ activity }) => {
         }
     }
 
+    // Function to render rating as stars
+    const renderRatingStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                i <= rating ? <FaStar key={i} className="text-yellow-500" /> : <FaRegStar key={i} className="text-yellow-500" />
+            );
+        }
+        return stars;
+    };
+
     return (
         <div className="bg-white rounded-xl shadow-md relative">
             {imageBase64 && <img src={imageBase64} alt="Activity" className="w-full h-48 object-cover rounded-t-xl" />}
             <div className="p-4">
                 <div className="mb-6">
                     <div className="text-gray-600 my-2">{activity.category}</div>
-                    <h3 className="text-xl font-bold">{`Activity on ${activity.date} at ${activity.time}`}</h3>
+                    <h3 className="text-xl font-bold"> {`Activity on ${new Date(activity.date).toLocaleDateString()} at ${activity.time}`}</h3>
                 </div>
                 {activity.specialDiscounts && (
                     <div className="mb-5">{showMore ? activity.specialDiscounts : description}</div>
@@ -68,7 +80,12 @@ const ActivityDisplay = ({ activity }) => {
                         {`Lat: ${activity.location.lat}, Lng: ${activity.location.lng}`}
                     </div>
                 </div>
-                <div className="text-yellow-500 mb-2">{`Rating: ${activity.rating}/5`}</div>
+                <div className="flex items-center text-yellow-500 mb-2">
+                    <span className="mr-2">Rating:</span>
+                    <div className="flex">
+                        {renderRatingStars(activity.rating)}
+                    </div>
+                </div>
                 <div className="text-gray-600 mb-2">
                     {activity.tags?.map((tag) => (
                         <span key={tag} className="bg-gray-200 text-gray-800 rounded-full px-2 py-1 mr-2">{tag}</span>

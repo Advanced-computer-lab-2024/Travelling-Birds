@@ -8,7 +8,8 @@ const HistoricalPlaceForm = ({ historicalPlace }) => {
     const [name, setName] = useState(historicalPlace?.name || '');
     const [description, setDescription] = useState(historicalPlace?.description || '');
     const [location, setLocation] = useState(historicalPlace?.location || '');
-    const [openingHours, setOpeningHours] = useState(historicalPlace?.openingHours || '');
+    const [startTime, setStartTime] = useState(historicalPlace?.openingHours?.startTime ? new Date(historicalPlace.openingHours.startTime).toISOString().slice(11, 16) : '');
+    const [endTime, setEndTime] = useState(historicalPlace?.openingHours?.endTime ? new Date(historicalPlace.openingHours.endTime).toISOString().slice(11, 16) : '');
     const [ticketPrices, setTicketPrices] = useState(historicalPlace?.ticketPrices ? historicalPlace.ticketPrices.join(', ') : '');
     const [tags, setTags] = useState(historicalPlace?.tags?.join(',') || '');
     const [image, setImage] = useState(null); // State for the image
@@ -23,7 +24,16 @@ const HistoricalPlaceForm = ({ historicalPlace }) => {
         formData.append('name', name);
         formData.append('description', description);
         formData.append('location', location);
-        formData.append('openingHours', openingHours);
+        
+        // Construct openingHours object without timezone adjustments
+       // const openingHoursObject = {
+       //     startTime: `${startTime}:00`, // e.g., "08:00:00"
+       //     endTime: `${endTime}:00` // e.g., "10:00:00"
+       // };
+       // formData.append('openingHours', JSON.stringify(openingHoursObject));
+       formData.append('openingHours[startTime]', `${startTime}:00`);
+       formData.append('openingHours[endTime]', `${endTime}:00`);
+       
         formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
         formData.append('createdBy', sessionStorage.getItem('user id'));
@@ -91,7 +101,10 @@ const HistoricalPlaceForm = ({ historicalPlace }) => {
                 <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                 <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
                 <ReusableInput type="text" name="Location" value={location} onChange={e => setLocation(e.target.value)} />
-                <ReusableInput type="text" name="Opening Hours" value={openingHours} onChange={e => setOpeningHours(e.target.value)} />
+                <label className="block text-gray-700 mb-2">Opening Hours Start Time:</label>
+                <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="w-full mb-4 border rounded px-2 py-1" />
+                <label className="block text-gray-700 mb-2">Opening Hours End Time:</label>
+                <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="w-full mb-4 border rounded px-2 py-1" />
                 <ReusableInput type="text" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
                 <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
                 <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />

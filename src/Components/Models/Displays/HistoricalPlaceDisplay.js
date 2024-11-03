@@ -61,10 +61,13 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
                 </div>
 
                 <h3 className="text-indigo-500 mb-2">
-                    {historicalPlace.ticketPrices ? `Tickets: ${historicalPlace.ticketPrices.join(', ')} EGP` : 'Ticket prices not available'}
+                    {historicalPlace.ticketPrices ? `Tickets: $${historicalPlace.ticketPrices}` : 'Ticket prices not available'}
                 </h3>
 
-                <div className="text-gray-600 mb-2">{`Opening Hours: ${historicalPlace.openingHours}`}</div>
+                <div className="text-gray-600 mb-2">
+                    {`Opening Hours: ${historicalPlace.openingHours?.startTime ? new Date(historicalPlace.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
+                    ${historicalPlace.openingHours?.endTime ? new Date(historicalPlace.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`}
+                </div>
                 <div className="text-yellow-500 mb-2">{`Tags: ${historicalPlace.tags.join(', ')}`}</div>
             </div>
 

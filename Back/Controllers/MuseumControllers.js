@@ -1,19 +1,49 @@
 const MuseumModel = require('../Models/Museum');
 
 
+//Parse time to date
+const parseTimeToDate = (timeString) => {
+    // Parse a time string "HH:MM:SS" into a Date object with the local date
+    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, seconds || 0, 0);
+    return date;
+};
+
+
 //create museum
 const addMuseum = async (req, res) => {
     const { name, description, location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
     try {
-        // Parse `ticketPrices` if it's passed as a JSON string or an improperly formatted object
+        if (!openingHours) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        let parsedOpeningHours;
+        try {
+            parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+        } catch (error) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+        }
+
+        if (!parsedOpeningHours.startTime || !parsedOpeningHours.endTime) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        // Convert `startTime` and `endTime` to local Date objects
+        parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+        parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+        if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+            return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+        }
+
         let parsedTicketPrices;
-        if (typeof ticketPrices === 'string') {
-            parsedTicketPrices = JSON.parse(ticketPrices);
-        } else if (typeof ticketPrices === 'object' && !Array.isArray(ticketPrices)) {
-            parsedTicketPrices = ticketPrices;
-        } else {
-            return res.status(400).json({ error: 'Invalid ticketPrices format' });
+        try {
+            parsedTicketPrices = ticketPrices ? (typeof ticketPrices === 'string' ? JSON.parse(ticketPrices) : ticketPrices) : {};
+        } catch (error) {
+            return res.status(400).json({ error: 'Invalid ticketPrices format. Must be a valid JSON object.' });
         }
 
         let image = null;
@@ -28,7 +58,7 @@ const addMuseum = async (req, res) => {
             name,
             description,
             location,
-            openingHours,
+            openingHours: parsedOpeningHours,
             ticketPrices: parsedTicketPrices,
             tags,
             image,
@@ -68,32 +98,45 @@ const getMuseum = async (req, res) => {
 
 // Update Museum
 const updateMuseum = async (req, res) => {
-    const { name, description,location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
     try {
         const updatedFields = {
             name,
             description,
             location,
-            openingHours,
             tags,
             createdBy
         };
 
-        // Parse `ticketPrices` if it's passed as a string or an improperly formatted object
+        if (openingHours) {
+            let parsedOpeningHours;
+            try {
+                parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+            } catch (error) {
+                return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+            }
+
+            parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+            parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+            if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+                return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+            }
+
+            updatedFields.openingHours = parsedOpeningHours;
+        }
+
         if (ticketPrices) {
             let parsedTicketPrices;
-            if (typeof ticketPrices === 'string') {
-                parsedTicketPrices = JSON.parse(ticketPrices);
-            } else if (typeof ticketPrices === 'object' && !Array.isArray(ticketPrices)) {
-                parsedTicketPrices = ticketPrices;
-            } else {
-                return res.status(400).json({ error: 'Invalid ticketPrices format' });
+            try {
+                parsedTicketPrices = typeof ticketPrices === 'string' ? JSON.parse(ticketPrices) : ticketPrices;
+            } catch (error) {
+                return res.status(400).json({ error: 'Invalid ticketPrices format. Must be a valid JSON object.' });
             }
             updatedFields.ticketPrices = parsedTicketPrices;
         }
 
-        // Update image data if a new file is uploaded
         if (req.file) {
             updatedFields.image = {
                 data: req.file.buffer,

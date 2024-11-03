@@ -1,10 +1,44 @@
 const HistoricalPlaceModel = require('../Models/HistoricalPlace');
 
 
+//Parse time to date
+const parseTimeToDate = (timeString) => {
+    // Parse a time string "HH:MM:SS" into a Date object with the local date
+    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, seconds || 0, 0);
+    return date;
+};
+
+
 // Add Historical Place
 const addHistoricalPlace = async (req, res) => {
 	const {name, description,location, openingHours, ticketPrices, tags,createdBy} = req.body;
+
 	try {
+        if (!openingHours) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        let parsedOpeningHours;
+        try {
+            parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+        } catch (error) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+        }
+
+        if (!parsedOpeningHours.startTime || !parsedOpeningHours.endTime) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        // Convert `startTime` and `endTime` to local Date objects
+        parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+        parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+        if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+            return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+        }
+
 		let image = null;
         if (req.file) {
             image = {
@@ -66,6 +100,24 @@ const updateHistoricalPlace = async (req, res) => {
             tags,
             createdBy
         };
+
+        if (openingHours) {
+            let parsedOpeningHours;
+            try {
+                parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+            } catch (error) {
+                return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+            }
+
+            parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+            parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+            if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+                return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+            }
+
+            updatedFields.openingHours = parsedOpeningHours;
+        }
 
         // Update image data if a new file is uploaded
         if (req.file) {

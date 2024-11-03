@@ -5,7 +5,10 @@ const historicalPlaceSchema = new Schema({
     name: {type: String, required: true},
     description: String,
     location: String,
-    openingHours: String,
+    openingHours: {
+        startTime: { type: Date, required: true },
+        endTime: { type: Date, required: true }
+    },
     ticketPrices: [Number],
     tags: [{type: String, ref: 'Tag'}],
     image: { data: Buffer, contentType: String }, // Field to store image data

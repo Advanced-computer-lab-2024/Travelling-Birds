@@ -15,6 +15,7 @@ const ActivityForm = ({ activity }) => {
     const [hiBound, setHiBound] = useState(activity?.priceRange?.hiBound || 0);
     const [category, setCategory] = useState(activity?.category || '');
     const [tags, setTags] = useState(activity?.tags?.join(',') || '');
+    const [rating, setRating] = useState(activity?.rating || 0);
     const [specialDiscounts, setSpecialDiscounts] = useState(activity?.specialDiscounts || '');
     const [bookingOpen, setBookingOpen] = useState(activity?.bookingOpen || false);
     const [image, setImage] = useState(null); // State to hold the image file
@@ -38,6 +39,7 @@ const ActivityForm = ({ activity }) => {
         formData.append('specialDiscounts', specialDiscounts);
         formData.append('bookingOpen', bookingOpen);
         formData.append('createdBy', sessionStorage.getItem('user id'));
+        formData.append('rating', rating);
         if (image) {
             formData.append('image', image);
         }
@@ -74,6 +76,7 @@ const ActivityForm = ({ activity }) => {
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
         formData.append('specialDiscounts', specialDiscounts);
         formData.append('bookingOpen', bookingOpen);
+        formData.append('rating', rating);
         if (image) {
             formData.append('image', image);
         }
@@ -124,6 +127,8 @@ const ActivityForm = ({ activity }) => {
                                onChange={e => setTags(e.target.value)} />
                 <ReusableInput type="text" name="Special Discounts" value={specialDiscounts}
                                onChange={e => setSpecialDiscounts(e.target.value)} />
+                <ReusableInput type="number" name="Rating" value={rating}
+                                 onChange={e => setRating(e.target.value)} />
                 <ReusableInput type="checkbox" name="Booking Open" checked={bookingOpen}
                                onChange={e => setBookingOpen(e.target.checked)} />
                 <ReusableInput type="file" name="Image" onChange={handleFileChange} />

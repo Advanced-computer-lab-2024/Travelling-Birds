@@ -61,10 +61,18 @@ const MuseumDisplay = ({ museum }) => {
                 </div>
 
                 <h3 className="text-indigo-500 mb-2">
-                    {museum.ticketPrices ? `Tickets: ${museum.ticketPrices.adult} EGP For Adults, ${museum.ticketPrices.child} EGP For Children` : 'Ticket prices not available'}
+                    {museum.ticketPrices
+                        ? `Tickets: ${Object.entries(museum.ticketPrices).map(([key, value]) =>
+                            `${value ? `$${value} For ${key.charAt(0).toUpperCase() + key.slice(1)}` : ''}`)
+                            .filter(Boolean)
+                            .join(', ')}`
+                        : 'Ticket prices not available'}
                 </h3>
 
-                <div className="text-gray-600 mb-2">{`Opening Hours: ${museum.openingHours}`}</div>
+                <div className="text-gray-600 mb-2">
+                    {`Opening Hours: ${museum.openingHours?.startTime ? new Date(museum.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
+                    ${museum.openingHours?.endTime ? new Date(museum.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`}
+                </div>
                 <div className="text-yellow-500 mb-2">{`Tags: ${museum.tags.join(', ')}`}</div>
             </div>
 
@@ -102,7 +110,10 @@ MuseumDisplay.propTypes = {
         name: PropTypes.string,
         description: PropTypes.string,
         location: PropTypes.string,
-        openingHours: PropTypes.string,
+        openingHours: PropTypes.shape({
+            startTime: PropTypes.string,
+            endTime: PropTypes.string,
+        }),
         ticketPrices: PropTypes.shape({
             adult: PropTypes.number,
             child: PropTypes.number,
