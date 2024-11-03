@@ -10,10 +10,13 @@ const historicalPlacesRoutes = require('./Routes/HistoricalPlaceRoutes');
 const tagsRoutes = require('./Routes/TagRoutes');
 const productsRoutes = require('./Routes/ProductRoutes');
 const categoriesRoutes = require('./Routes/CategoryRoutes');
+const complaintRoutes = require('./Routes/ComplaintRoutes');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/api/users', usersRoutes);
 app.use('/api/activities', activitiesRoutes);
 app.use('/api/itineraries', itinerariesRoutes);
@@ -22,7 +25,9 @@ app.use('/api/historicalPlaces', historicalPlacesRoutes);
 app.use('/api/tags', tagsRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/categories', categoriesRoutes);
-
+app.use('/api/complaints', complaintRoutes);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
 
