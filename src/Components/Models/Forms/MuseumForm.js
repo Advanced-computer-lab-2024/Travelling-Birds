@@ -6,7 +6,6 @@ import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 const MuseumForm = ({ museum }) => {
     const [name, setName] = useState(museum?.name || '');
     const [description, setDescription] = useState(museum?.description || '');
-    const [pictures, setPictures] = useState(museum?.pictures?.join(',') || '');
     const [location, setLocation] = useState(museum?.location || '');
     const [openingHours, setOpeningHours] = useState(museum?.openingHours || '');
     const [ticketPrices, setTicketPrices] = useState(museum?.ticketPrices ? Object.entries(museum.ticketPrices).map(([key, value]) => `${key}: ${value}`).join(', ') : '');
@@ -22,7 +21,6 @@ const MuseumForm = ({ museum }) => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('description', description);
-        formData.append('pictures', pictures.split(',').map(pic => pic.trim()));
         formData.append('location', location);
         formData.append('openingHours', openingHours);
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
@@ -113,7 +111,6 @@ const MuseumForm = ({ museum }) => {
                 <h1 className="text-2xl font-bold mb-4">{museum ? 'Update Museum' : 'Register Museum'}</h1>
                 <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                 <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                <ReusableInput type="text" name="Pictures" value={pictures} onChange={e => setPictures(e.target.value)} />
                 <ReusableInput type="text" name="Location" value={location} onChange={e => setLocation(e.target.value)} />
                 <ReusableInput type="text" name="Opening Hours" value={openingHours} onChange={e => setOpeningHours(e.target.value)} />
                 <ReusableInput type="text" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />

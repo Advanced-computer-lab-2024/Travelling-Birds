@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 const HistoricalPlaceForm = ({ historicalPlace }) => {
     const [name, setName] = useState(historicalPlace?.name || '');
     const [description, setDescription] = useState(historicalPlace?.description || '');
-    const [pictures, setPictures] = useState(historicalPlace?.pictures?.join(',') || '');
     const [location, setLocation] = useState(historicalPlace?.location || '');
     const [openingHours, setOpeningHours] = useState(historicalPlace?.openingHours || '');
     const [ticketPrices, setTicketPrices] = useState(historicalPlace?.ticketPrices ? historicalPlace.ticketPrices.join(', ') : '');
@@ -23,7 +22,6 @@ const HistoricalPlaceForm = ({ historicalPlace }) => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('description', description);
-        formData.append('pictures', pictures.split(',').map(pic => pic.trim()));
         formData.append('location', location);
         formData.append('openingHours', openingHours);
         formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
@@ -92,7 +90,6 @@ const HistoricalPlaceForm = ({ historicalPlace }) => {
                 <h1 className="text-2xl font-bold mb-4">{historicalPlace ? 'Update Historical Place' : 'Register Historical Place'}</h1>
                 <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                 <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                <ReusableInput type="text" name="Pictures" value={pictures} onChange={e => setPictures(e.target.value)} />
                 <ReusableInput type="text" name="Location" value={location} onChange={e => setLocation(e.target.value)} />
                 <ReusableInput type="text" name="Opening Hours" value={openingHours} onChange={e => setOpeningHours(e.target.value)} />
                 <ReusableInput type="text" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />

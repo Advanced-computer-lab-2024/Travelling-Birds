@@ -3,7 +3,7 @@ const MuseumModel = require('../Models/Museum');
 
 //create museum
 const addMuseum = async (req, res) => {
-    const { name, description, pictures, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
     try {
         // Parse `ticketPrices` if it's passed as a JSON string or an improperly formatted object
@@ -27,7 +27,6 @@ const addMuseum = async (req, res) => {
         const newMuseum = new MuseumModel({
             name,
             description,
-            pictures,
             location,
             openingHours,
             ticketPrices: parsedTicketPrices,
@@ -69,13 +68,12 @@ const getMuseum = async (req, res) => {
 
 // Update Museum
 const updateMuseum = async (req, res) => {
-    const { name, description, pictures, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description,location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
     try {
         const updatedFields = {
             name,
             description,
-            pictures,
             location,
             openingHours,
             tags,

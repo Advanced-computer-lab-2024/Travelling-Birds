@@ -3,7 +3,7 @@ const HistoricalPlaceModel = require('../Models/HistoricalPlace');
 
 // Add Historical Place
 const addHistoricalPlace = async (req, res) => {
-	const {name, description, pictures, location, openingHours, ticketPrices, tags,createdBy} = req.body;
+	const {name, description,location, openingHours, ticketPrices, tags,createdBy} = req.body;
 	try {
 		let image = null;
         if (req.file) {
@@ -16,7 +16,6 @@ const addHistoricalPlace = async (req, res) => {
 			{
 				name,
 				description,
-				pictures,
 				location,
 				openingHours,
 				ticketPrices,
@@ -55,13 +54,12 @@ const getHistoricalPlace = async (req, res) => {
 }
 
 const updateHistoricalPlace = async (req, res) => {
-    const { name, description, pictures, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description,location, openingHours, ticketPrices, tags, createdBy } = req.body;
 
     try {
         const updatedFields = {
             name,
             description,
-            pictures,
             location,
             openingHours,
             ticketPrices,
