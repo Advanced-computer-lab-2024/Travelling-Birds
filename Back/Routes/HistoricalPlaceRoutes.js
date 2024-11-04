@@ -9,7 +9,7 @@ const {
 	filterHistoricalPlaces,
 	getAllCreatedHistoricalPlaces
 } = require('../Controllers/HistoricalPlaceControllers');
-const upload = require('../Controllers/middleware/upload');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 

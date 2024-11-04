@@ -12,7 +12,7 @@ const {
 	getAllCreatedActivities
 
 } = require('../Controllers/ActivityControllers.js');
-const upload = require('../Controllers/middleware/upload');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 
