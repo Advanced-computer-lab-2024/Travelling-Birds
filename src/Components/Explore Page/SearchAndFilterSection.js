@@ -76,7 +76,7 @@ const SearchAndFilterSection = ({ onSearch, onFilter, onSort }) => {
 
     return (
         <div className="relative w-full bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4 text-center">{message}</h2>
+            <h2 className="text-3xl font-bold text-center" style={{ color: '#330577' }}>{message}</h2>
             <div className="mb-4 flex justify-center space-x-4">
                 <button
                     onClick={() => {
