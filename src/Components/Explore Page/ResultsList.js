@@ -32,6 +32,19 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
                     <p>No itineraries found.</p>
                 )}
             </div>
+
+            {/* Historical Places Section */}
+            
+            <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">Historical Places</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {historicalPlaces && historicalPlaces.length > 0 ? (
+                    historicalPlaces.map((place) => (
+                        <HistoricalPlaceDisplay key={place._id} historicalPlace={place} />
+                    ))
+                ) : (
+                    <p>No historical places found.</p>
+                )}
+            </div>
             
             {/* Museums Section */}
             <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">Museums</h2>
@@ -45,18 +58,7 @@ const ResultsList = ({ activities, itineraries, museums, historicalPlaces }) => 
                 )}
             </div>
             
-            {/* Historical Places Section */}
-            
-            <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">Historical Places</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {historicalPlaces && historicalPlaces.length > 0 ? (
-                    historicalPlaces.map((place) => (
-                        <HistoricalPlaceDisplay key={place._id} historicalPlace={place} />
-                    ))
-                ) : (
-                    <p>No historical places found.</p>
-                )}
-            </div>
+            \
         </div>
     );
 };
