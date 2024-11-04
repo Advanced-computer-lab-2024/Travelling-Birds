@@ -149,7 +149,7 @@ const deleteHistoricalPlace = async (req, res) => {
 
 // search for a specific HistoricalPlace by its name or tag
 const SearchForHistoricalPlace = async (req, res) => {
-	try {
+    try {
         const { name, tags } = req.query; // Extract name and tags from query parameters
 
         if (!name && !tags) {
@@ -161,12 +161,13 @@ const SearchForHistoricalPlace = async (req, res) => {
 
         if (name) {
             // Use a case-insensitive regular expression for name search
-            searchQuery.name = name;
+            searchQuery.name = { $regex: new RegExp(name, 'i') }; // 'i' flag makes it case-insensitive
         }
 
         if (tags) {
-            // Use $in to find historical places where any of the provided tags match
-            searchQuery.tags = { $in: tags.split(',') };
+            // Use $in with case-insensitive matching for tags
+            const tagArray = tags.split(',').map(tag => new RegExp(tag.trim(), 'i')); // 'i' flag for case-insensitivity
+            searchQuery.tags = { $in: tagArray };
         }
 
         // Find historical places matching the search criteria
@@ -180,11 +181,7 @@ const SearchForHistoricalPlace = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred while searching for historical places.', error });
     }
-
-
-
 }
-
 //filter historical places by tag
 const filterHistoricalPlaces = async (req, res) => {
     try {
