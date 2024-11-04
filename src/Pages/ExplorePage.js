@@ -6,6 +6,7 @@ import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
 import HistoricalPlaceDisplay from '../Components/Models/Displays/HistoricalPlaceDisplay';
 import MuseumDisplay from '../Components/Models/Displays/MuseumDisplay';
 import Modal from 'react-modal';
+import LoadingPage from './LoadingPage'; 
 
 const ExplorePage = () => {
     const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
@@ -33,6 +34,7 @@ const ExplorePage = () => {
             setLoading(false);
         } catch (error) {
             console.error('Error fetching initial results:', error);
+            setLoading(false);
         }
     };
 
@@ -105,15 +107,15 @@ const ExplorePage = () => {
             } else if (sortParams.type === 'itineraries') {
                 response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/sort?sortBy=${sortParams.criterion}`);
             }
-    
+
             const data = response ? await response.json() : [];
-    
+
             setResults((prevResults) => ({
                 ...prevResults,
                 activities: sortParams.type === 'activities' ? (Array.isArray(data) ? data : []) : prevResults.activities,
                 itineraries: sortParams.type === 'itineraries' ? (Array.isArray(data) ? data : []) : prevResults.itineraries,
             }));
-    
+
             setLoading(false);
         } catch (error) {
             console.error('Error fetching sort results:', error);
@@ -186,7 +188,7 @@ const ExplorePage = () => {
     
             {/* Results section */}
             {loading ? (
-                <p className="mt-6 text-center">Loading...</p>
+                <LoadingPage /> 
             ) : (
                 <div className="mt-6">
                     <ResultsList
