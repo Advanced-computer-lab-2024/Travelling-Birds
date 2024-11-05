@@ -11,7 +11,10 @@ const tagsRoutes = require('./Routes/TagRoutes');
 const productsRoutes = require('./Routes/ProductRoutes');
 const categoriesRoutes = require('./Routes/CategoryRoutes');
 const complaintRoutes = require('./Routes/ComplaintRoutes');
+const flightRoutes = require('./routes/FlightRoutes');
+const flight = require('./Services/amadeusService');
 const bodyParser = require('body-parser');
+
 require('dotenv').config();
 
 app.use(cors());
@@ -26,6 +29,7 @@ app.use('/api/tags', tagsRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/complaints', complaintRoutes);
+app.use('/api/flights', flightRoutes);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -40,3 +44,4 @@ mongoose.connect(process.env.MONGO_URI)
 	.catch((error) => {
 		console.log(error)
 	})
+

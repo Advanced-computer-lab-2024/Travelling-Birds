@@ -2,7 +2,7 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-    const { date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen, createdBy } = req.body;
+    const { title, description, date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen,comments, createdBy,features ,contact} = req.body;
 
     try {
         // Prepare image data if a file is provided
@@ -15,6 +15,8 @@ const addActivity = async (req, res) => {
         }
 
         const newActivity = new ActivityModel({
+	        title,
+	        description,
             date,
             time,
             location,
@@ -25,8 +27,12 @@ const addActivity = async (req, res) => {
             specialDiscount,
             rating,
             bookingOpen,
-            image, // Store image data in the document
-            createdBy
+            image,
+	        comments,
+            createdBy,
+	        features,
+	        contact,
+	        reviewsCount: comments.length
         });
         await newActivity.save();
         res.status(201).json(newActivity);
@@ -60,10 +66,12 @@ const getActivity = async (req, res) => {
 
 // update an existing Activity
 const updateActivity = async (req, res) => {
-    const { date, time, location, price, category, tags, rating, specialDiscount, bookingOpen, createdBy } = req.body;
+    const { title, description, date, time, location, price, category, tags, rating, specialDiscount, bookingOpen, comments, createdBy } = req.body;
 
     try {
         const updatedFields = {
+			title,
+			description,
             date,
             time,
             location,
@@ -73,6 +81,7 @@ const updateActivity = async (req, res) => {
             rating,
             specialDiscount,
             bookingOpen,
+	        comments,
             createdBy
         };
 

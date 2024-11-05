@@ -2,11 +2,17 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const activitySchema = new Schema({
+    title: String,
+    description: String,
     date: { type: Date, required: true },
     time: { type: String, required: true },
     location: {
-        lat: { type: Number, required: true },
-        lng: { type: Number, required: true }
+        city: String,
+        country: String,
+        lat: {type: Number, required: true},
+        lng: {type: Number, required: true},
+        address: String,
+        area: String,
     },
     price: { type: Number },
     priceRange: {
@@ -16,10 +22,19 @@ const activitySchema = new Schema({
     category: { type: String, required: true },
     tags: [{ type: String, ref: 'Tag' }],
     rating: { type: Number, default: 0 },
+    rank: { type: String }, // Example: "#593 of 12,398 Restaurants"
     specialDiscounts: String,
     bookingOpen: { type: Boolean, default: true },
     image: { data: Buffer, contentType: String }, // Field to store image data
-    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+    comments: [{ user: String, text: String, date: { type: Date, default: Date.now, }, stars: { type: Number, default: 0}}],
+    reviewsCount:{ type: Number, default: 0 },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    features: [String], // Example: ["Vegetarian friendly", "Vegan options"]
+    contact: {
+        phone: String,
+        website: String,
+        email: String,
+    }
 });
 
 module.exports = mongoose.model('Activity', activitySchema);
