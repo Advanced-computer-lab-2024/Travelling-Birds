@@ -15,7 +15,6 @@ const ComplaintsPage = () => {
 		const userId = sessionStorage.getItem('user id');
 		axios.get(`${process.env.REACT_APP_BACKEND}/api/complaints`)
 			.then(response => {
-				// Filter complaints to show only those created by the current user
 				const userComplaints = response.data.filter(complaint => complaint.createdBy === userId);
 				setComplaints(userComplaints);
 			})
@@ -43,7 +42,7 @@ const ComplaintsPage = () => {
 	const getStatusColor = (status) => {
 		if (status.toLowerCase() === 'pending') return 'text-red-500';
 		if (status.toLowerCase() === 'resolved') return 'text-green-500';
-		return 'text-gray-600'; // Default color for other statuses
+		return 'text-gray-600';
 	};
 
 	return (
@@ -51,7 +50,6 @@ const ComplaintsPage = () => {
 			<div className="bg-white max-w-4xl mx-auto p-4">
 				<h1 className="text-3xl font-bold text-center mb-4" style={{ color: '#330577' }}>Complaints</h1>
 
-				{/* Complaint Cards */}
 				<div className="space-y-4">
 					{complaints.map((complaint, index) => (
 						<div key={index} className="bg-gray-100 p-4 rounded-lg shadow-md flex justify-between items-center">
@@ -71,7 +69,6 @@ const ComplaintsPage = () => {
 					))}
 				</div>
 
-				{/* Centered "Create a New Complaint" Button */}
 				<div className="flex justify-center mt-6">
 					<button
 						className="px-4 py-2 rounded-md hover:bg-opacity-80"
@@ -82,7 +79,6 @@ const ComplaintsPage = () => {
 					</button>
 				</div>
 
-				{/* Popup for complaint details */}
 				{showDetails && selectedComplaint && (
 					<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
 						<div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -102,7 +98,6 @@ const ComplaintsPage = () => {
 					</div>
 				)}
 
-				{/* Popup for creating a new complaint */}
 				{showCreateForm && (
 					<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
 						<div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -111,14 +106,14 @@ const ComplaintsPage = () => {
 								type="text"
 								placeholder="Title"
 								className="w-full mb-2 p-2 border border-gray-300 rounded-md"
-								style={{ color: '#330577' }}
+								style={{ color: 'black', backgroundColor: 'white' }}
 								value={newComplaint.title}
 								onChange={(e) => setNewComplaint({ ...newComplaint, title: e.target.value })}
 							/>
 							<textarea
 								placeholder="Complaint Details"
 								className="w-full mb-2 p-2 border border-gray-300 rounded-md"
-								style={{ color: '#330577' }}
+								style={{ color: 'black', backgroundColor: 'white' }}
 								value={newComplaint.body}
 								onChange={(e) => setNewComplaint({ ...newComplaint, body: e.target.value })}
 							/>
