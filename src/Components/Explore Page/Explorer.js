@@ -76,7 +76,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
 
     return (
         <div className="relative w-full bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-3xl font-bold text-center mb-6" style={{ color: '#330577' }}>{message}</h2>
+            <h2 className="text-3xl font-bold text-center mb-8" style={{ color: '#330577' }}>{message}</h2>
             <div className="mb-6 flex justify-center space-x-4">
                 <button
                     onClick={() => {
@@ -124,14 +124,14 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                             <input
                                 type="text"
                                 placeholder="Activity Category"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setActivityCategory(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Activity Tag"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setActivityTag(e.target.value)}
                             />
@@ -160,7 +160,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="date"
                                     placeholder="Date"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setActivityDate(e.target.value)}
                                 />
@@ -172,7 +172,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                         <FaStar
                                             key={star}
                                             size={24}
-                                            className={`cursor-pointer ${activityRating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                                            className={`cursor-pointer ${activityRating >= star ? 'text-[#330577]' : 'text-gray-300'}`}
                                             onClick={() => setActivityRating(star)}
                                         />
                                     ))}
@@ -212,14 +212,14 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                             <input
                                 type="text"
                                 placeholder="Itinerary Category"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setItineraryCategory(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Itinerary Tag"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setItineraryTag(e.target.value)}
                             />
@@ -248,7 +248,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="date"
                                     placeholder="Date"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setItineraryDate(e.target.value)}
                                 />
@@ -257,7 +257,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="text"
                                     placeholder="Preferences"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setItineraryPreferences(e.target.value)}
                                 />
@@ -266,7 +266,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="text"
                                     placeholder="Language"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setItineraryLanguage(e.target.value)}
                                 />
@@ -304,14 +304,14 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                             <input
                                 type="text"
                                 placeholder="Historical Place Name"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setHistoricalPlaceName(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Historical Place Tag"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setHistoricalPlaceTag(e.target.value)}
                             />
@@ -328,7 +328,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="text"
                                     placeholder="Tag for Historical Place"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setHistoricalPlaceTag(e.target.value)}
                                 />
@@ -349,14 +349,14 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                             <input
                                 type="text"
                                 placeholder="Museum Name"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setMuseumName(e.target.value)}
                             />
                             <input
                                 type="text"
                                 placeholder="Museum Tag"
-                                className="w-full p-3 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                className="w-full p-3 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                 style={{ borderColor: '#330577' }}
                                 onChange={(e) => setMuseumTag(e.target.value)}
                             />
@@ -373,7 +373,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <input
                                     type="text"
                                     placeholder="Tag for Museum"
-                                    className="w-full p-2 border bg-white rounded-lg focus:outline-none focus:ring-2"
+                                    className="w-full p-2 border bg-white text-black rounded-lg focus:outline-none focus:ring-2"
                                     style={{ borderColor: '#330577' }}
                                     onChange={(e) => setMuseumTag(e.target.value)}
                                 />
