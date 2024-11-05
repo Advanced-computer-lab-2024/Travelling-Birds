@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SearchAndFilterSection from '../Components/Explore Page/SearchAndFilterSection';
+import Explorer from '../Components/Explore Page/Explorer';
 import ResultsList from '../Components/Explore Page/ResultsList';
 import ActivityDisplay from '../Components/Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
@@ -166,7 +166,7 @@ const ExplorePage = () => {
     
             {/* Search and Filter section */}
             <div className="mt-6">
-                <SearchAndFilterSection onSearch={handleSearch} onFilter={handleFilter} onSort={handleSort} />
+                <Explorer onSearch={handleSearch} onFilter={handleFilter} onSort={handleSort} />
             </div>
     
             {/* Modal for displaying item details */}

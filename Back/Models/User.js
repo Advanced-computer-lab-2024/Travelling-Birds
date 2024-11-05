@@ -24,7 +24,8 @@ const user = new Schema({
     companyProfile: String,
     wallet: Number,
     isApproved: Boolean,
-    description: String
+    description: String,
+    profilePicture: { data: Buffer, contentType: String }
 });
 
 module.exports = mongoose.model('User', user);

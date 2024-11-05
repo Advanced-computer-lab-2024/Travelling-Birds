@@ -2,13 +2,13 @@ import { useState } from 'react';
 import Popup from "reactjs-popup";
 import { HistoricalPlaceForm } from "../Forms";
 import { toast } from "react-toastify";
-import { FaMapMarkerAlt } from 'react-icons/fa';
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 import PropTypes from "prop-types";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const HistoricalPlaceDisplay = ({ historicalPlace }) => {
-    const [showMore, setShowMore] = useState(false);
-    const descriptionPreview = historicalPlace.description ? historicalPlace.description.substring(0, 100) : '';
+    const [isHovered, setIsHovered] = useState(false);
+    const navigate = useNavigate(); // Initialize navigate for redirection
 
     const deleteHistoricalPlace = () => {
         fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${historicalPlace._id}`, {
@@ -40,61 +40,55 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
 
     return (
         <div className="bg-white rounded-xl shadow-md relative">
-            {imageBase64 && <img src={imageBase64} alt="Historical Place" className="w-full h-48 object-cover rounded-t-xl" />}
-            <div className="p-4">
-                <h3 className="text-xl font-bold">{historicalPlace.name}</h3>
-
-                <div className="mb-5">{showMore ? historicalPlace.description : descriptionPreview}</div>
-
-                {historicalPlace.description && (
-                    <button
-                        onClick={() => setShowMore(prevState => !prevState)}
-                        className="text-indigo-500 mb-5 hover:text-indigo-600"
-                    >
-                        {showMore ? 'Less' : 'More'}
-                    </button>
-                )}
-
-                <div className="text-orange-700 mb-3">
-                    <FaMapMarkerAlt className="inline mr-1 mb-1" />
-                    {historicalPlace.location}
+            {imageBase64 && (
+                <div className="relative">
+                    <img
+                        src={imageBase64}
+                        alt="Historical Place"
+                        className={`w-full h-64 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                        onClick={() => navigate('/complaints')}
+                    />
+                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
+                        <h3 className="text-2xl font-bold">{historicalPlace.name}</h3>
+                    </div>
                 </div>
-
-                <h3 className="text-indigo-500 mb-2">
-                    {historicalPlace.ticketPrices ? `Tickets: $${historicalPlace.ticketPrices}` : 'Ticket prices not available'}
-                </h3>
-
-                <div className="text-gray-600 mb-2">
+            )}
+            <div className="p-4">
+                <div className="text-[#330577] mb-3">
                     {`Opening Hours: ${historicalPlace.openingHours?.startTime ? new Date(historicalPlace.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
                     ${historicalPlace.openingHours?.endTime ? new Date(historicalPlace.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`}
                 </div>
-                <div className="text-yellow-500 mb-2">{`Tags: ${historicalPlace.tags.join(', ')}`}</div>
+                <div className="flex flex-wrap">
+                    {historicalPlace.tags?.map((tag) => (
+                        <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
+                    ))}
+                </div>
+                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+                    <Popup
+                        trigger={
+                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
+                                Update Historical Place
+                            </button>
+                        }
+                        modal
+                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+                    >
+                        <HistoricalPlaceForm historicalPlace={historicalPlace} />
+                    </Popup>
+                )}
+                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+                    <button onClick={() => {
+                        if (window.confirm('Are you sure you wish to delete this historical place?')) {
+                            deleteHistoricalPlace();
+                        }
+                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
+                        Delete Historical Place
+                    </button>
+                )}
             </div>
-
-            {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                <Popup
-                    trigger={
-                        <button className="bg-indigo-500 text-white py-2 w-full">
-                            Update Historical Place
-                        </button>
-                    }
-                    modal
-                    contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                    overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                >
-                    <HistoricalPlaceForm historicalPlace={historicalPlace} />
-                </Popup>
-            )}
-
-            {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                <button onClick={() => {
-                    if (window.confirm('Are you sure you wish to delete this historical place?')) {
-                        deleteHistoricalPlace();
-                    }
-                }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
-                    Delete Historical Place
-                </button>
-            )}
         </div>
     );
 };
@@ -103,15 +97,15 @@ HistoricalPlaceDisplay.propTypes = {
     historicalPlace: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string,
-        description: PropTypes.string,
-        location: PropTypes.string,
-        openingHours: PropTypes.string,
-        ticketPrices: PropTypes.arrayOf(PropTypes.string),
+        openingHours: PropTypes.shape({
+            startTime: PropTypes.string,
+            endTime: PropTypes.string,
+        }),
         tags: PropTypes.arrayOf(PropTypes.string),
         image: PropTypes.shape({
             data: PropTypes.object,
             contentType: PropTypes.string,
-        })
+        }),
     })
 };
 

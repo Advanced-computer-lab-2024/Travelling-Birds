@@ -1,0 +1,1 @@
+const hotel = require('../services/amadeusService');

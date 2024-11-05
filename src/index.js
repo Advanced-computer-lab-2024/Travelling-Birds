@@ -33,6 +33,8 @@ import MuseumForm from "./Components/Models/Forms/MuseumForm";
 import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
+import DetailsPage from "./Pages/DetailsPage";
+import FlightPage from "./Pages/FlightSearchPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -50,9 +52,11 @@ root.render(
 					<Route path='advertiser' element={<AdvertiserForm/>}/>
 					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='flights' element={<FlightPage/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
+					<Route path=':id' element={<DetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
