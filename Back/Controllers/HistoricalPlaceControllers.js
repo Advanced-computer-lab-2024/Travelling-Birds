@@ -1,19 +1,60 @@
 const HistoricalPlaceModel = require('../Models/HistoricalPlace');
 
 
+//Parse time to date
+const parseTimeToDate = (timeString) => {
+    // Parse a time string "HH:MM:SS" into a Date object with the local date
+    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, seconds || 0, 0);
+    return date;
+};
+
+
 // Add Historical Place
 const addHistoricalPlace = async (req, res) => {
-	const {name, description, pictures, location, openingHours, ticketPrices, tags,createdBy} = req.body;
+	const {name, description,location, openingHours, ticketPrices, tags,createdBy} = req.body;
+
 	try {
+        if (!openingHours) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        let parsedOpeningHours;
+        try {
+            parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+        } catch (error) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+        }
+
+        if (!parsedOpeningHours.startTime || !parsedOpeningHours.endTime) {
+            return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
+        }
+
+        // Convert `startTime` and `endTime` to local Date objects
+        parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+        parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+        if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+            return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+        }
+
+		let image = null;
+        if (req.file) {
+            image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
 		const newHistoricalPlace = new HistoricalPlaceModel(
 			{
 				name,
 				description,
-				pictures,
 				location,
 				openingHours,
 				ticketPrices,
 				tags,
+				image,
 				createdBy
 			});
 		await newHistoricalPlace.save();
@@ -46,15 +87,55 @@ const getHistoricalPlace = async (req, res) => {
 	}
 }
 
-// Update Historical Place
 const updateHistoricalPlace = async (req, res) => {
-		try {
-			const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
-			res.status(200).json(historicalPlace);
-		} catch (error) {
-			res.status(500).json({error: error.message});
-		}
-}
+    const { name, description,location, openingHours, ticketPrices, tags, createdBy } = req.body;
+
+    try {
+        const updatedFields = {
+            name,
+            description,
+            location,
+            openingHours,
+            ticketPrices,
+            tags,
+            createdBy
+        };
+
+        if (openingHours) {
+            let parsedOpeningHours;
+            try {
+                parsedOpeningHours = typeof openingHours === 'string' ? JSON.parse(openingHours) : openingHours;
+            } catch (error) {
+                return res.status(400).json({ error: 'Invalid openingHours format. Must be a valid JSON object.' });
+            }
+
+            parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
+            parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
+
+            if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
+                return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
+            }
+
+            updatedFields.openingHours = parsedOpeningHours;
+        }
+
+        // Update image data if a new file is uploaded
+        if (req.file) {
+            updatedFields.image = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype
+            };
+        }
+
+        const historicalPlace = await HistoricalPlaceModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
+        if (!historicalPlace) {
+            return res.status(404).json({ message: 'Historical place not found' });
+        }
+        res.status(200).json(historicalPlace);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Delete Historical Place
 const deleteHistoricalPlace = async (req, res) => {
@@ -68,7 +149,7 @@ const deleteHistoricalPlace = async (req, res) => {
 
 // search for a specific HistoricalPlace by its name or tag
 const SearchForHistoricalPlace = async (req, res) => {
-	try {
+    try {
         const { name, tags } = req.query; // Extract name and tags from query parameters
 
         if (!name && !tags) {
@@ -80,12 +161,13 @@ const SearchForHistoricalPlace = async (req, res) => {
 
         if (name) {
             // Use a case-insensitive regular expression for name search
-            searchQuery.name = name;
+            searchQuery.name = { $regex: new RegExp(name, 'i') }; // 'i' flag makes it case-insensitive
         }
 
         if (tags) {
-            // Use $in to find historical places where any of the provided tags match
-            searchQuery.tags = { $in: tags.split(',') };
+            // Use $in with case-insensitive matching for tags
+            const tagArray = tags.split(',').map(tag => new RegExp(tag.trim(), 'i')); // 'i' flag for case-insensitivity
+            searchQuery.tags = { $in: tagArray };
         }
 
         // Find historical places matching the search criteria
@@ -99,11 +181,7 @@ const SearchForHistoricalPlace = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'An error occurred while searching for historical places.', error });
     }
-
-
-
 }
-
 //filter historical places by tag
 const filterHistoricalPlaces = async (req, res) => {
     try {

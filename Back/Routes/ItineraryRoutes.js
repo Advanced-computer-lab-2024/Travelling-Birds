@@ -13,9 +13,10 @@ const {
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
+const upload = require('../middleware/upload');
 
 // Add itinerary
-router.post('/', addItinerary);
+router.post('/', upload.single('image'), addItinerary);
 
 // Get all itineraries
 router.get('/', getAllItineraries);
@@ -36,7 +37,7 @@ router.get('/filter', filterItineraries);
 router.get('/:id', getItinerary);
 
 // Update itinerary
-router.put('/:id', updateItinerary);
+router.put('/:id', upload.single('image'), updateItinerary);
 
 // Delete itinerary
 router.delete('/:id', deleteItinerary);

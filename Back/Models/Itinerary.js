@@ -14,6 +14,7 @@ const itinerarySchema = new Schema({
     dropoffLocation: String,
     preferences: String,
     isBooked: Boolean,
+    image: { data: Buffer, contentType: String }, // Field to store image data
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 

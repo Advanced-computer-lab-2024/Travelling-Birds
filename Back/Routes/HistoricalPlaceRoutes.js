@@ -9,11 +9,12 @@ const {
 	filterHistoricalPlaces,
 	getAllCreatedHistoricalPlaces
 } = require('../Controllers/HistoricalPlaceControllers');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 
 // Add historical place
-router.post('/', addHistoricalPlace);
+router.post('/', upload.single('image'), addHistoricalPlace);
 
 // Get all historical places
 router.get('/', getAllHistoricalPlaces);
@@ -28,7 +29,7 @@ router.get('/filter', filterHistoricalPlaces);
 router.get('/:id', getHistoricalPlace);
 
 // Update historical place
-router.put('/:id', updateHistoricalPlace);
+router.put('/:id', upload.single('image'), updateHistoricalPlace);
 
 // Delete historical place
 router.delete('/:id', deleteHistoricalPlace);

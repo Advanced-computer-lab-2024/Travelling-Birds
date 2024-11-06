@@ -30,6 +30,11 @@ import ProductsPage from "./Pages/ProductsPage";
 import MuseumForm from "./Components/Models/Forms/MuseumForm";
 import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
+import ComplaintsPage from "./Pages/ComplaintsPage";
+import DetailsPage from "./Pages/DetailsPage";
+import FlightSearchPage from "./Pages/FlightSearchPage";
+import FlightDetails from "./Pages/FlightDetails";
+
 import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
@@ -60,9 +65,12 @@ root.render(
 					<Route path='advertiser' element={<AdvertiserForm/>}/>
 					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='flights' element={<FlightSearchPage/>}/>
+					<Route path='flights/:flightId' element={<FlightDetails/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
+					<Route path=':id' element={<DetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
@@ -70,6 +78,7 @@ root.render(
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
+					<Route path="complaints" element={<ComplaintsPage/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
@@ -77,7 +86,7 @@ root.render(
 	</React.StrictMode>
 );
 
-function NavBarContainer({children}) {
+function NavBarContainer() {
 	const [role, setRole] = React.useState('');
 	const [user, setUser] = React.useState('');
 	useEffect(() => {

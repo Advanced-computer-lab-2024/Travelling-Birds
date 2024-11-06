@@ -12,11 +12,12 @@ const {
 	getAllCreatedActivities
 
 } = require('../Controllers/ActivityControllers.js');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 
 // Add an activity
-router.post('/', addActivity);
+router.post('/', upload.single('image'), addActivity);
 
 // Get all activities
 router.get('/', getAllActivities);
@@ -38,7 +39,7 @@ router.get('/sort', sortActivities);
 router.get('/:id', getActivity);
 
 // Update an activity
-router.put('/:id', updateActivity);
+router.put('/:id', upload.single('image'), updateActivity);
 
 // Delete an activity
 router.delete('/:id', deleteActivity);
