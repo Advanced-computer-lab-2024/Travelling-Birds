@@ -1,10 +1,27 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import NavBar from "./NavBar";
 import { useEffect, useState } from "react";
+import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
 
 const TouristNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
+	const [currency, setCurrency] = useState('EGP');
+	const [isPopupVisible, setIsPopupVisible] = useState(false);
+	const [dropdownVisible, setDropdownVisible] = useState(false);
+	const navigate = useNavigate();
+
+	const handleLogOut = () => {
+		sessionStorage.removeItem('user id');
+		sessionStorage.removeItem('role');
+		window.dispatchEvent(sessionStorageEvent);
+		navigate('/', { replace: true });
+	};
+
+	const handleCurrencyChange = (newCurrency) => {
+		setCurrency(newCurrency);
+		setIsPopupVisible(false); // Close the popup when a currency is selected
+	};
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -41,28 +58,138 @@ const TouristNavBar = () => {
 		}
 	}
 
+	const toggleDropdown = () => {
+		setDropdownVisible(!dropdownVisible);
+	};
+
 	return (
 		<NavBar>
-			{imageBase64 ? (
-				<NavLink to='/profile' className="flex items-center">
-					<img
-						src={imageBase64}
-						alt="User Profile"
-						className="w-12 h-12 rounded-full border border-white hover:opacity-70 transition duration-200"
-					/>
-				</NavLink>
-			) : (
-				<NavLink to='/profile' className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
-					Profile
-				</NavLink>
-			)}
-			<NavLink to='/products' className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Products</NavLink>
-			<NavLink to='/places' className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Places</NavLink>
-			<NavLink to='/itineraries' className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Itineraries</NavLink>
-			<NavLink to='/explore' replace={true} className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Explore</NavLink>
-			<NavLink to='/complaints' className="text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">Complaints</NavLink>
-		</NavBar>
-	);
+			<div className="flex items-center justify-between w-full px-4">
+				{/* Left: Logo */}
+				<div className="mr-72">
+					<NavLink to='/explore' replace={true}
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Logo
+					</NavLink>
+				</div>
+
+				{/* Center: Navigation buttons */}
+				<div className="flex-grow flex justify-center space-x-4 mr-72">
+					<NavLink to='/products'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Discover
+					</NavLink>
+					<NavLink to='/places'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Trips
+					</NavLink>
+					<NavLink to='/itineraries'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Review
+					</NavLink>
+					<NavLink to='/more'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						More
+					</NavLink>
+				</div>
+
+				{/* Right: Profile picture and EGP button */}
+				<div className="flex items-center space-x-6">
+					<button
+						onClick={() => setIsPopupVisible(true)}
+						className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						{currency}
+					</button>
+
+					{/* Currency Popup */}
+					{isPopupVisible && (
+						<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
+							<div className="bg-white rounded-lg p-6 shadow-lg w-96">
+								<div className="flex justify-between items-center mb-10">
+									<h2 className="text-2xl font-semibold" style={{ color: '#330577' }}>Choose a currency</h2>
+									<button
+										onClick={() => setIsPopupVisible(false)}
+										className="text-gray-500 hover:text-gray-800 font-bold text-3xl"
+									>
+										&times;
+									</button>
+								</div>
+								<div className="grid grid-cols-3 gap-4">
+									<button
+										onClick={() => handleCurrencyChange('EGP')}
+										className={`w-full px-4 py-2 rounded-lg text-center font-semibold ${currency === 'EGP' ? 'bg-[#330577] text-white' : 'bg-white text-black'} hover:bg-[#330577] hover:text-white hover:bg-opacity-85`}
+									>
+										Egyptian Pound <span className="block">EGP</span>
+									</button>
+									<button
+										onClick={() => handleCurrencyChange('USD')}
+										className={`w-full px-4 py-2 rounded-lg text-center font-semibold ${currency === 'USD' ? 'bg-[#330577] text-white' : 'bg-white text-black'} hover:bg-[#330577] hover:text-white hover:bg-opacity-85`}
+									>
+										US Dollar <span className="block">USD</span>
+									</button>
+									<button
+										onClick={() => handleCurrencyChange('EUR')}
+										className={`w-full px-4 py-2 rounded-lg text-center font-semibold ${currency === 'EUR' ? 'bg-[#330577] text-white' : 'bg-white text-black'} hover:bg-[#330577] hover:text-white hover:bg-opacity-85`}
+									>
+										Euro <span className="block">EUR</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					)}
+					<div className="relative">
+						<button onClick={toggleDropdown} className="flex items-center focus:outline-none">
+							<div
+								className="w-12 h-12 rounded-full border border-white transition duration-200 hover:bg-[#330577] flex items-center justify-center">
+								<img
+									src={imageBase64}
+									alt="User Profile"
+									className="w-full h-full rounded-full hover:opacity-70 transition duration-200"
+								/>
+							</div>
+						</button>
+					{dropdownVisible && (
+						<div
+							className="absolute right-0 mt-4 w-56 bg-white rounded-lg z-10 shadow-[0px_4px_12px_rgba(0,0,0,0.6)]">
+							<ul className="py-2 mt-2">
+								<li>
+									<NavLink
+										to='/profile'
+										className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+										onClick={() => setDropdownVisible(false)}
+									>
+										Profile
+									</NavLink>
+								</li>
+								<li>
+									<NavLink
+										to='/complaints'
+										className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+										onClick={() => setDropdownVisible(false)}
+									>
+										Complaints
+									</NavLink>
+								</li>
+								<li>
+									<button
+										onClick={() => {
+											setDropdownVisible(false);
+											handleLogOut();
+										}}
+										className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+									>
+										Log Out
+									</button>
+								</li>
+							</ul>
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+</NavBar>
+)
+	;
 };
 
 export default TouristNavBar;
