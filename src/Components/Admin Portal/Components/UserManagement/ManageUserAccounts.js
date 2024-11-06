@@ -70,6 +70,7 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
+						<th className='w-8'>Delete</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
@@ -77,12 +78,15 @@ const ManageUserAccounts = () => {
 						<th>Nationality</th>
 						<th>Date of Birth</th>
 						<th>Job</th>
-						<th>Delete</th>
 					</tr>
 					</thead>
 					<tbody>
 					{tourists.map((user) => (
 						<tr key={user._id}>
+							<td>
+								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
+								</button>
+							</td>
 							<td>{user.firstName + " " + user.lastName}</td>
 							<td>{user.username}</td>
 							<td>{user.email}</td>
@@ -90,10 +94,6 @@ const ManageUserAccounts = () => {
 							<td>{user.nationality}</td>
 							<td>{user.dob}</td>
 							<td>{user.job}</td>
-							<td>
-								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
-								</button>
-							</td>
 						</tr>
 					))}
 					</tbody>
@@ -106,29 +106,29 @@ const ManageUserAccounts = () => {
 		<div className="mb-8">
 			<h3 className="text-xl font-bold mb-2">Tour Guides</h3>
 			<div className="overflow-x-auto">
-				<table className="table w-full column-widths">
+				<table className="table w-full">
 					<thead>
 					<tr>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
-						<th>Years of Experience</th>
-						<th>Previous Work</th>
-						<th>Delete</th>
+						<th className='w-8'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[12.5%]'>Years of Experience</th>
+						<th className='w-[12.5%]'>Previous Work</th>
 					</tr>
 					</thead>
 					<tbody>
 					{tourGuides.map((user) => (
 						<tr key={user._id}>
+							<td>
+								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
+								</button>
+							</td>
 							<td>{user.firstName + " " + user.lastName}</td>
 							<td>{user.username}</td>
 							<td>{user.email}</td>
 							<td>{user.yearsOfExperience}</td>
 							<td>{user.previousWork}</td>
-							<td>
-								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
-								</button>
-							</td>
 						</tr>
 					))}
 					</tbody>
@@ -144,28 +144,28 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
+						<th className='w-8'>Delete</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
 						<th>Website</th>
 						<th>Hotline</th>
 						<th>Company</th>
-						<th>Delete</th>
 					</tr>
 					</thead>
 					<tbody>
 					{advertisers.map((user) => (
 						<tr key={user._id}>
+							<td>
+								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
+								</button>
+							</td>
 							<td>{user.firstName + " " + user.lastName}</td>
 							<td>{user.username}</td>
 							<td>{user.email}</td>
 							<td>{user.website}</td>
 							<td>{user.hotline}</td>
 							<td>{user.companyProfile}</td>
-							<td>
-								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
-								</button>
-							</td>
 						</tr>
 					))}
 					</tbody>
@@ -181,24 +181,24 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
+						<th className='w-8'>Delete</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
 						<th>Description</th>
-						<th>Delete</th>
 					</tr>
 					</thead>
 					<tbody>
 					{sellers.map((user) => (
 						<tr key={user._id}>
-							<td>{user.firstName + " " + user.lastName}</td>
-							<td>{user.username}</td>
-							<td>{user.email}</td>
-							<td>{user.description}</td>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
 								</button>
 							</td>
+							<td>{user.firstName + " " + user.lastName}</td>
+							<td>{user.username}</td>
+							<td>{user.email}</td>
+							<td>{user.description}</td>
 						</tr>
 					))}
 					</tbody>
@@ -214,22 +214,22 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
+						<th className='w-8'>Delete</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
-						<th>Delete</th>
 					</tr>
 					</thead>
 					<tbody>
 					{admins.map((user) => (
 						<tr key={user._id}>
-							<td>{user.firstName + " " + user.lastName}</td>
-							<td>{user.username}</td>
-							<td>{user.email}</td>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
 								</button>
 							</td>
+							<td>{user.firstName + " " + user.lastName}</td>
+							<td>{user.username}</td>
+							<td>{user.email}</td>
 						</tr>
 					))}
 					</tbody>
@@ -245,22 +245,22 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
+						<th className='w-8'>Delete</th>
 						<th>Name</th>
 						<th>Username</th>
 						<th>Email</th>
-						<th>Delete</th>
 					</tr>
 					</thead>
 					<tbody>
 					{tourismGovernors.map((user) => (
 						<tr key={user._id}>
-							<td>{user.firstName + " " + user.lastName}</td>
-							<td>{user.username}</td>
-							<td>{user.email}</td>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
 								</button>
 							</td>
+							<td>{user.firstName + " " + user.lastName}</td>
+							<td>{user.username}</td>
+							<td>{user.email}</td>
 						</tr>
 					))}
 					</tbody>
