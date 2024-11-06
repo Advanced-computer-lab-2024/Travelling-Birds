@@ -51,7 +51,7 @@ function FlightDetails() {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
-					flightOffer: flight,
+					flightOffer: flightId,
 					travelerDetails: [
 						{
 							id: "1",
