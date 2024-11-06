@@ -124,7 +124,7 @@ const updateUser = async (req, res) => {
 			lastName,
 			username,
 			email,
-			password,
+			password: hashedPassword,
 			role,
 			mobileNumber,
 			nationality,
@@ -586,12 +586,12 @@ const getUnapprovedUsers = async (req, res) => {
 }
 const getApprovedUsers = async (req, res) => {
 	try {
-		const tour_guides = await User.find({role:'tour_guide', isApproved: true});
-		const advertisers = await User.find({role:'advertiser', isApproved: true});
-		const sellers = await User.find({role:'seller', isApproved: true});
-		const admins = await User.find({role:'admin'});
-		const tourism_governors = await User.find({role:'tourism_governor'});
-		const tourists = await User.find({role:'tourist'});
+		const tour_guides = await User.find({role:'tour_guide', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
+		const advertisers = await User.find({role:'advertiser', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
+		const sellers = await User.find({role:'seller', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
+		const admins = await User.find({role:'admin'}).select('-profilePicture -password -role -isApproved -termsFlag');
+		const tourism_governors = await User.find({role:'tourism_governor'}).select('-profilePicture -password -role -isApproved -termsFlag');
+		const tourists = await User.find({role:'tourist'}).select('-profilePicture -password -role -isApproved -termsFlag');
 		res.status(200).json({tour_guides, advertisers, sellers, admins, tourism_governors, tourists});
 	} catch (error) {
 		res.status(500).json({error: error.message});

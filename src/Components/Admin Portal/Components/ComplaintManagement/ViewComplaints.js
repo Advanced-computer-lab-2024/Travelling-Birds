@@ -5,16 +5,6 @@ const ViewComplaints = () => {
 	const [userMap, setUserMap] = useState({});
 	const [loading, setLoading] = useState(true);
 
-	const getUser = async (userId) => {
-		let name = '';
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`)
-			.then((response) => response.json())
-			.then(user => {
-				name = user.firstName + ' ' + user.lastName;
-			});
-		return name;
-	}
-
 	useEffect(() => {
 		const getComplaints = () => {
 			fetch(`${process.env.REACT_APP_BACKEND}/api/complaints`)
@@ -52,7 +42,7 @@ const ViewComplaints = () => {
 								<td>{complaint.body}</td>
 								<td>{complaint.status}</td>
 								<td>{complaint.reply || 'N/A'}</td>
-								<td>{userMap[complaint.createdBy]}</td>
+								<td>{userMap[complaint.createdByName]}</td>
 							</tr>
 						))}
 						</tbody>

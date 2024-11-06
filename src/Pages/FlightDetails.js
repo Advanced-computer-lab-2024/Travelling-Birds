@@ -3,7 +3,8 @@ import {useParams} from 'react-router-dom';
 
 function FlightDetails() {
 	const {flightId} = useParams();
-	const [flight, setFlight] = useState(null);
+	const {origin, destination, departureDate} = useParams();
+	const [flightDetails, setFlightDetails] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [showBookingForm, setShowBookingForm] = useState(false);
@@ -27,12 +28,15 @@ function FlightDetails() {
 	useEffect(() => {
 		async function fetchFlight() {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}`, {
+					method: 'GET',
+					headers: {'Content-Type': 'application/json'}
+				});
 				if (!response.ok) {
 					throw new Error('Failed to fetch flight details');
 				}
 				const data = await response.json();
-				setFlight(data.flightOffers[0]);
+				setFlightDetails(data.flightOffers[0]);
 			} catch (error) {
 				console.error('Error fetching flight details:', error);
 				setError(error.message);
@@ -51,7 +55,7 @@ function FlightDetails() {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
-					flightOffer: flightId,
+					flightDetails,
 					travelerDetails: [
 						{
 							id: "1",
@@ -95,7 +99,7 @@ function FlightDetails() {
 				console.error('Booking Error:', bookingData);
 			}
 		} catch (error) {
-			console.error('Error booking flight:', error);
+			console.error('Error booking flightDetails:', error);
 			alert('Booking failed. Please try again.');
 		}
 	};
@@ -104,6 +108,7 @@ function FlightDetails() {
 	const handleChange = (e) => {
 		const {name, value} = e.target;
 		setTravelerInfo((prevInfo) => ({...prevInfo, [name]: value}));
+		console.log(travelerInfo);
 	};
 
 	if (loading) return <p>Loading...</p>;
@@ -118,42 +123,42 @@ function FlightDetails() {
 			{/* Flight Information Card */}
 			<div className="bg-white shadow rounded-lg p-6 mb-6 card">
 				<h3 className="text-xl font-bold mb-4 text-primary">
-					{flight.itineraries[0].segments[0].carrierCode} Flight {flight.itineraries[0].segments[0].number}
+					{flightDetails.itineraries[0].segments[0].carrierCode} Flight {flightDetails.itineraries[0].segments[0].number}
 				</h3>
 				<div className="grid grid-cols-2 gap-4">
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">From</span>
 						<span
-							className="badge badge-outline badge-primary">{flight.itineraries[0].segments[0].departure.iataCode}</span>
+							className="badge badge-outline badge-primary">{flightDetails.itineraries[0].segments[0].departure.iataCode}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">To</span>
 						<span
-							className="badge badge-outline badge-secondary">{flight.itineraries[0].segments[0].arrival.iataCode}</span>
+							className="badge badge-outline badge-secondary">{flightDetails.itineraries[0].segments[0].arrival.iataCode}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Departure</span>
-						<span>{new Date(flight.itineraries[0].segments[0].departure.at).toLocaleString()}</span>
+						<span>{new Date(flightDetails.itineraries[0].segments[0].departure.at).toLocaleString()}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Arrival</span>
-						<span>{new Date(flight.itineraries[0].segments[0].arrival.at).toLocaleString()}</span>
+						<span>{new Date(flightDetails.itineraries[0].segments[0].arrival.at).toLocaleString()}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Duration</span>
-						<span>{flight.itineraries[0].segments[0].duration}</span>
+						<span>{flightDetails.itineraries[0].segments[0].duration}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Price</span>
-						<span>{flight.price.grandTotal} {flight.price.currency}</span>
+						<span>{flightDetails.price.grandTotal} {flightDetails.price.currency}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Last Ticketing Date</span>
-						<span>{flight.lastTicketingDate}</span>
+						<span>{flightDetails.lastTicketingDate}</span>
 					</div>
 					<div className="flex flex-col gap-1">
 						<span className="text-sm font-medium text-gray-500">Validating Airline</span>
-						<span>{flight.validatingAirlineCodes.join(', ')}</span>
+						<span>{flightDetails.validatingAirlineCodes.join(', ')}</span>
 					</div>
 				</div>
 			</div>
@@ -162,7 +167,7 @@ function FlightDetails() {
 			<div className="bg-white shadow rounded-lg p-6 card">
 				<h3 className="text-xl font-bold mb-4 text-primary">Segments</h3>
 				<div className="space-y-4">
-					{flight.itineraries[0].segments.map((segment, index) => (
+					{flightDetails.itineraries[0].segments.map((segment, index) => (
 						<div key={index} className="border rounded-lg p-4 bg-gray-50 shadow-sm">
 							<h4 className="font-semibold mb-2 text-secondary">Segment {index + 1}</h4>
 							<div className="grid grid-cols-2 gap-4">
