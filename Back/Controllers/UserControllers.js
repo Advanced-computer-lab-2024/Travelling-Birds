@@ -574,6 +574,30 @@ const login = async (req, res) => {
 	}
 }
 
+const getUnapprovedUsers = async (req, res) => {
+	try {
+		const tour_guides = await User.find({role:'tour_guide', isApproved: false});
+		const advertisers = await User.find({role:'advertiser', isApproved: false});
+		const sellers = await User.find({role:'seller', isApproved: false});
+		res.status(200).json({tour_guides, advertisers, sellers});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+const getApprovedUsers = async (req, res) => {
+	try {
+		const tour_guides = await User.find({role:'tour_guide', isApproved: true});
+		const advertisers = await User.find({role:'advertiser', isApproved: true});
+		const sellers = await User.find({role:'seller', isApproved: true});
+		const admins = await User.find({role:'admin'});
+		const tourism_governors = await User.find({role:'tourism_governor'});
+		const tourists = await User.find({role:'tourist'});
+		res.status(200).json({tour_guides, advertisers, sellers, admins, tourism_governors, tourists});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -590,5 +614,7 @@ module.exports = {
 	// deleteUserByAdmin,
 	// addTourismGovernor,
 	// addAdmin,
-	login
+	login,
+	getUnapprovedUsers,
+	getApprovedUsers
 };

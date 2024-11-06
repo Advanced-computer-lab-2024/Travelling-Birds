@@ -17,7 +17,9 @@ const {
 	// addAdmin,
 	// addTourismGovernor,
 	// deleteUserByAdmin,
-	login
+	login,
+	getUnapprovedUsers,
+	getApprovedUsers
 } = require('../Controllers/UserControllers');
 
 // Add user
@@ -25,6 +27,12 @@ router.post('/',upload.single('profilePicture'), addUser);
 
 // Get all users
 router.get('/', getUsers);
+
+// Get Unapproved Users
+router.get('/unapproved', getUnapprovedUsers);
+
+// Get Approved Users
+router.get('/approved', getApprovedUsers);
 
 // Get specific user
 router.get('/:id', getUser);

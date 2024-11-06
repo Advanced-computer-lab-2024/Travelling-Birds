@@ -153,7 +153,7 @@ const ExplorePage = () => {
             {/* Video section */}
             <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-lg mb-10">
                 <video className="w-full h-full object-cover" autoPlay muted loop>
-                    <source src={require('../assets/video.mp4')} type="video/mp4" />
+                    <source src={require('../Assets/video.mp4')} type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-6">
                     <div className="text-center space-y-4">

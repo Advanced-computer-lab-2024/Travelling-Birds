@@ -5,7 +5,7 @@ const LoadingPage = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="text-center">
                 <img 
-                    src={require('../assets/bird.gif')} 
+                    src={require('../Assets/bird.gif')}
                     alt="Loading..." 
                     className="w-32 h-32 mx-auto mb-4" 
                 />
