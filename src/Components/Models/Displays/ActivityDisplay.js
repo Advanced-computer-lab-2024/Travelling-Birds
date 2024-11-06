@@ -65,7 +65,7 @@ const ActivityDisplay = ({ activity }) => {
                     />
                 )}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
-                    <h3 className="text-3xl font-bold">{activity.category}</h3>
+                    <h3 className="text-2xl font-bold">{activity.title}</h3>
                 </div>
             </div>
             <div className="p-4">
