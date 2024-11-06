@@ -145,7 +145,7 @@ function FlightSearchPage() {
 								<div className="flex items-center">
 									<img
 										//src={`https://content.airhex.com/content/logos/airlines_${flight.itineraries[0].segments[0].carrierCode}_s.svg?md5apikey=${generateHash(flight.itineraries[0].segments[0].carrierCode)}`}
-										src={`../src/utils/Square/${flight.itineraries[0].segments[0].carrierCode}.png`}
+										src={require(`../Assets/Square/${flight.itineraries[0].segments[0].carrierCode}.png`)}
 										className="w-12 h-12 mr-4"
 										alt={`${flight.itineraries[0].segments[0].carrierCode} logo`}
 									/>

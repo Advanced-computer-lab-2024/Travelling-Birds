@@ -1,14 +1,13 @@
 const Complaint = require('../models/Complaint');
-const ActivityModel = require("../Models/Activity");
-
+const UserModel = require("../Models/User");
 
 
 // Create Complaint
 const addComplaint = async (req, res) => {
 	const currentDate = new Date();
-	const {title,body,createdBy} = req.body;
+	const {title, body, createdBy} = req.body;
 	try {
-		const newComplaint = new Complaint({title,date: currentDate,body,status : 'pending', reply :'',createdBy});
+		const newComplaint = new Complaint({title, date: currentDate, body, status: 'pending', reply: '', createdBy});
 		await newComplaint.save();
 		res.status(201).json(newComplaint);
 	} catch (error) {
@@ -20,7 +19,22 @@ const addComplaint = async (req, res) => {
 const getAllComplaints = async (req, res) => {
 	try {
 		const Complaints = await Complaint.find();
+		await Complaints.forEach(async (complaint) => {
+			const user = await UserModel.findById(complaint.createdBy).select('firstName lastName');
+			complaint.createdByName = user.firstName + ' ' + user.lastName;
+			console.log(complaint.createdByName);
+		});
 		res.status(200).json(Complaints)
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get Complaint by ID
+const getComplaintById = async (req, res) => {
+	try {
+		const complaint = await Complaint.findById(req.params.id);
+		res.status(200).json(complaint);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -29,7 +43,7 @@ const getAllComplaints = async (req, res) => {
 
 // Update Complaint
 const updateComplaint = async (req, res) => {
-	const {reply,status} = req.body;
+	const {reply, status} = req.body;
 	try {
 		const complaint = await Complaint.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
 		res.status(201).json(complaint);
@@ -70,10 +84,10 @@ const filterComplaint = async (req, res) => {
 
 const sortComplaint = async (req, res) => {
 	try {
-		const Complaints = await Complaint.find().sort({ date: 1 });
+		const Complaints = await Complaint.find().sort({date: 1});
 		res.status(200).json(Complaints);
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		res.status(500).json({error: error.message});
 	}
 }
 
@@ -90,6 +104,7 @@ const getAllCreatedComplaints = async (req, res) => {
 module.exports = {
 	addComplaint,
 	getAllComplaints,
+	getComplaintById,
 	updateComplaint,
 	deleteComplaint,
 	filterComplaint,
