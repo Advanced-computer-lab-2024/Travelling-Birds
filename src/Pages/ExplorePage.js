@@ -151,21 +151,21 @@ const ExplorePage = () => {
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             {/* Video section */}
-            <div className="relative w-full h-48 rounded-lg overflow-hidden shadow-lg mb-6">
+            <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-lg mb-10">
                 <video className="w-full h-full object-cover" autoPlay muted loop>
                     <source src={require('../assets/video.mp4')} type="video/mp4" />
                 </video>
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-4">
-                    <div className="text-center space-y-2">
-                        <p className="text-2xl font-semibold">"Explore over 2 million places around the world"</p>
-                        <p className="text-lg">Join 5 million users who trust us for their travel plans</p>
-                        <p className="text-lg">Covering 200+ destinations globally</p>
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-6">
+                    <div className="text-center space-y-4">
+                        <p className="text-4xl font-bold">"Explore over 2 million places around the world"</p>
+                        <p className="text-2xl">Join 5 million users who trust us for their travel plans</p>
+                        <p className="text-2xl">Covering 200+ destinations globally</p>
                     </div>
                 </div>
             </div>
     
             {/* Search and Filter section */}
-            <div className="mt-6">
+            <div className="mt-10">
                 <Explorer onSearch={handleSearch} onFilter={handleFilter} onSort={handleSort} />
             </div>
     
@@ -190,7 +190,7 @@ const ExplorePage = () => {
             {loading ? (
                 <LoadingPage /> 
             ) : (
-                <div className="mt-6">
+                <div className="mt-10">
                     <ResultsList
                         activities={results.activities}
                         itineraries={results.itineraries}
