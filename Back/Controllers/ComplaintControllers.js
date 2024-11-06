@@ -19,7 +19,7 @@ const addComplaint = async (req, res) => {
 const getAllComplaints = async (req, res) => {
 	try {
 		const Complaints = await Complaint.find();
-		await Complaints.forEach(async (complaint) => {
+		Complaints.forEach(async (complaint) => {
 			const user = await UserModel.findById(complaint.createdBy).select('firstName lastName');
 			complaint.createdByName = user.firstName + ' ' + user.lastName;
 			console.log(complaint.createdByName);
