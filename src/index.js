@@ -4,7 +4,6 @@ import './index.css';
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {
-	AdminNavBar,
 	AdvertiserNavBar,
 	SellerNavBar,
 	TourGuideNavBar,
@@ -14,7 +13,6 @@ import {
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import {
-	AdminForm,
 	AdvertiserForm,
 	SellerForm,
 	TourGuideForm,
@@ -32,7 +30,12 @@ import ProductsPage from "./Pages/ProductsPage";
 import MuseumForm from "./Components/Models/Forms/MuseumForm";
 import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
-
+import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
+import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
+import AdminLayout from "./Components/Admin Portal/AdminLayout";
+import ApproveRegistrants from "./Components/Admin Portal/Components/UserManagement/ApproveRegistrants";
+import ManageUserAccounts from "./Components/Admin Portal/Components/UserManagement/ManageUserAccounts";
+import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -42,10 +45,18 @@ root.render(
 			<Routes>
 				<Route path='/' element={<NavBarContainer/>}>
 					<Route index element={<RegisterPage/>}/>
+					<Route path="admin">
+						<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
+						<Route path='approve-users' element={<ApproveRegistrants/>}/>
+						<Route path='manage-users' element={<ManageUserAccounts/>}/>
+						<Route path='guides' element={<AdminNavBar/>}/>
+						<Route path='hotspots' element={<AdminNavBar/>}/>
+						<Route path='checklists' element={<AdminNavBar/>}/>
+						<Route path='manage-complaints' element={<ViewComplaints/>}/>
+					</Route>
 					<Route path='tourist' element={<TouristForm/>}/>
 					<Route path='tour-guide' element={<TourGuideForm/>}/>
 					<Route path='seller' element={<SellerForm/>}/>
-					<Route path='admin' element={<AdminForm/>}/>
 					<Route path='advertiser' element={<AdvertiserForm/>}/>
 					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
@@ -66,7 +77,7 @@ root.render(
 	</React.StrictMode>
 );
 
-function NavBarContainer() {
+function NavBarContainer({children}) {
 	const [role, setRole] = React.useState('');
 	const [user, setUser] = React.useState('');
 	useEffect(() => {
@@ -85,12 +96,12 @@ function NavBarContainer() {
 		<>
 			{/*role: {role}, id: {user}*/}
 			{role === 'tourist' && <TouristNavBar/>}
-			{role === 'admin' && <AdminNavBar/>}
+			{role === 'admin' && <AdminLayout/>}
 			{role === 'tour_guide' && <TourGuideNavBar/>}
 			{role === 'seller' && <SellerNavBar/>}
 			{role === 'advertiser' && <AdvertiserNavBar/>}
 			{role === 'tourism_governor' && <TourismGovernorNavBar/>}
-			<Outlet/>
+			{role !== 'admin' && <Outlet/>}
 		</>
 	);
 }

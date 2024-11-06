@@ -12,7 +12,7 @@ const LogOut = () => {
 		navigate('/', {replace: true});
 	}
 	return (
-		<button onClick={handleLogOut} className="bg-red-500 text-white py-2 px-4 rounded">Log out</button>
+		<button onClick={handleLogOut} className="bg-red-500 text-white py-2 px-4 rounded justify-center">Log out</button>
 	)
 }
 
