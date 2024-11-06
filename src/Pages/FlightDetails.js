@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom';
 
 function FlightDetails() {
 	const {flightId} = useParams();
+	const {origin, destination, departureDate} = useParams();
 	const [flight, setFlight] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -27,7 +28,10 @@ function FlightDetails() {
 	useEffect(() => {
 		async function fetchFlight() {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}`, {
+					method: 'GET',
+					headers: {'Content-Type': 'application/json'}
+				});
 				if (!response.ok) {
 					throw new Error('Failed to fetch flight details');
 				}
@@ -51,7 +55,7 @@ function FlightDetails() {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
-					flightOffer: flightId,
+					flightOffer: flight,
 					travelerDetails: [
 						{
 							id: "1",

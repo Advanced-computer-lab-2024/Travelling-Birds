@@ -26,12 +26,13 @@ exports.searchFlights = async (req, res) => {
 // Get Flight Details Controller
 exports.getFlightDetails = async (req, res) => {
 	const { flightId } = req.params;
+	const { origin, destination, departureDate } = req.params;
 
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
-			originLocationCode: originGlobal,
-			destinationLocationCode: destinationGlobal,
-			departureDate: departureDateGlobal,
+			originLocationCode: origin,
+			destinationLocationCode: destination,
+			departureDate: departureDate,
 			adults: "1",
 			currencyCode: "EGP",
 		});
@@ -59,17 +60,17 @@ exports.getFlightDetails = async (req, res) => {
 
 // Book Flight Controller
 exports.bookFlight = async (req, res) => {
-	const { flightId, travelerDetails } = req.body;
+	const { flight, travelerDetails } = req.body;
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
-			originLocationCode: originGlobal,
-			destinationLocationCode: destinationGlobal,
-			departureDate: departureDateGlobal,
+			originLocationCode: flight[0]?.itineraries[0].segments[0].departureIataCode,
+			destinationLocationCode: flight[0]?.itineraries[0].segments[flight[0]?.itineraries[0].segments.length-1].arrivalIataCode,
+			departureDate: flight.itineraries[0].segments[0].departureTime.split('T')[0],
 			adults: "1",
 			currencyCode: "EGP",
 		});
 
-		const selectedFlight = flightOffersResponse.data.find(flight => flight.id === flightId);
+		const selectedFlight = flightOffersResponse.data.find(flight => flight.id === flight.id);
 		if (!selectedFlight) {
 			return res.status(404).json({ message: "Flight not found." });
 		}

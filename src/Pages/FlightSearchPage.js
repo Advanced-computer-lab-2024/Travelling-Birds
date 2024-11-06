@@ -170,7 +170,7 @@ function FlightSearchPage() {
 									<p className="text-xl font-bold text-gray-800 flex items-center">
 										<FaRegMoneyBillAlt className="mr-1" /> {flight.price} {flight.currency}
 									</p>
-									<button onClick={() => navigate(`/flights/${flight.id}`)}
+									<button onClick={() => navigate(`/flights/${flight.id}/${origin}/${destination}/${departureDate}`)}
 										className="mt-2 bg-[#FFC107] text-white px-3 py-1 rounded-lg">View Deal</button>
 								</div>
 							</div>
