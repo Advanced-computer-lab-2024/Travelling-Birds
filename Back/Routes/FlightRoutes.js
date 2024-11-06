@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {searchFlights} = require('../Controllers/FlightControllers');
+const {searchFlights, getFlightDetails} = require('../Controllers/FlightControllers');
 
-router.get('/f', searchFlights);
+router.post('/f', searchFlights);
+router.get('/:flightId', getFlightDetails);
 
 module.exports = router;
