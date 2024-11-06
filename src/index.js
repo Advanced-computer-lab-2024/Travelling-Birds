@@ -8,7 +8,8 @@ import {
 	SellerNavBar,
 	TourGuideNavBar,
 	TourismGovernorNavBar,
-	TouristNavBar
+	TouristNavBar,
+	GeneralNavBar
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
@@ -49,7 +50,7 @@ root.render(
 		<BrowserRouter>
 			<Routes>
 				<Route path='/' element={<NavBarContainer/>}>
-					<Route index element={<RegisterPage/>}/>
+					<Route index element={<ExplorePage/>}/>
 					<Route path="admin">
 						<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
 						<Route path='approve-users' element={<ApproveRegistrants/>}/>
@@ -79,6 +80,7 @@ root.render(
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="register" element={<RegisterPage/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
@@ -101,16 +103,27 @@ function NavBarContainer() {
 			window.removeEventListener('sessionStorageUpdated', updateRoleAndUser);
 		};
 	}, []);
+
+	// Render GeneralNavBar if no user id is found in session storage
+	if (!user) {
+		return (
+			<>
+				<GeneralNavBar />
+				<Outlet />
+			</>
+		);
+	}
+
 	return (
 		<>
-			{/*role: {role}, id: {user}*/}
-			{role === 'tourist' && <TouristNavBar/>}
-			{role === 'admin' && <AdminLayout/>}
-			{role === 'tour_guide' && <TourGuideNavBar/>}
-			{role === 'seller' && <SellerNavBar/>}
-			{role === 'advertiser' && <AdvertiserNavBar/>}
-			{role === 'tourism_governor' && <TourismGovernorNavBar/>}
-			{role !== 'admin' && <Outlet/>}
+			{/* role: {role}, id: {user} */}
+			{role === 'tourist' && <TouristNavBar />}
+			{role === 'admin' && <AdminLayout />}
+			{role === 'tour_guide' && <TourGuideNavBar />}
+			{role === 'seller' && <SellerNavBar />}
+			{role === 'advertiser' && <AdvertiserNavBar />}
+			{role === 'tourism_governor' && <TourismGovernorNavBar />}
+			{role !== 'admin' && <Outlet />}
 		</>
 	);
 }
