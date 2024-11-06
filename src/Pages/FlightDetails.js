@@ -47,11 +47,11 @@ function FlightDetails() {
 	// Handle booking submission
 	const handleBookingSubmit = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/book`, {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/book`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
-					flightOffer: flight,
+					flightOffer: flightId,
 					travelerDetails: [
 						{
 							id: "1",
