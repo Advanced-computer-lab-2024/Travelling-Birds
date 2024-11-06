@@ -81,7 +81,7 @@ const ManageUserAccounts = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{tourists.map((user) => (
+					{tourists?.map((user) => (
 						<tr key={user._id}>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
@@ -92,7 +92,7 @@ const ManageUserAccounts = () => {
 							<td>{user.email}</td>
 							<td>{user.mobileNumber}</td>
 							<td>{user.nationality}</td>
-							<td>{user.dob.split('T')[0]}</td>
+							<td>{user.dob?.split('T')[0]}</td>
 							<td>{user.job}</td>
 						</tr>
 					))}
@@ -157,7 +157,7 @@ const ManageUserAccounts = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{advertisers.map((user) => (
+					{advertisers?.map((user) => (
 						<tr key={user._id}>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
@@ -192,7 +192,7 @@ const ManageUserAccounts = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{sellers.map((user) => (
+					{sellers?.map((user) => (
 						<tr key={user._id}>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
@@ -228,7 +228,7 @@ const ManageUserAccounts = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{admins.map((user) => (
+					{admins?.map((user) => (
 						<tr key={user._id}>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
@@ -263,7 +263,7 @@ const ManageUserAccounts = () => {
 					</tr>
 					</thead>
 					<tbody>
-					{tourismGovernors.map((user) => (
+					{tourismGovernors?.map((user) => (
 						<tr key={user._id}>
 							<td>
 								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
