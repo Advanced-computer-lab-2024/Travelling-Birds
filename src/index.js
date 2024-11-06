@@ -82,6 +82,8 @@ root.render(
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="historical-places/:id" element={<HistoricalPlaceDetail/>}/>
+					<Route path="museums/:id" element={<MuseumDetail/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
