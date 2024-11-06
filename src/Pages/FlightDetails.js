@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
+import {toast} from "react-toastify";
 
 function FlightDetails() {
 	const {flightId} = useParams();
@@ -25,6 +26,25 @@ function FlightDetails() {
 		nationality: ''
 	});
 
+	const setTest = () => {
+		setTravelerInfo({
+			firstName: "PAUL",
+			lastName: "SMITH",
+			dateOfBirth: "2024-11-20",
+			gender: "MALE",
+			emailAddress: "PAULSMITH@OUTLOOK.COM",
+			phone: "1234567890",
+			passportNumber: "1234567890",
+			passportExpiry: "2026-11-21",
+			birthPlace: "FRANCE",
+			issuanceLocation: "FRANCE",
+			issuanceDate: "2024-11-22",
+			issuanceCountry: "FR",
+			validityCountry: "FR",
+			nationality: "FR"
+		});
+	}
+
 	useEffect(() => {
 		async function fetchFlight() {
 			try {
@@ -48,7 +68,7 @@ function FlightDetails() {
 		fetchFlight().then(r => r);
 	}, [flightId]);
 
-	// Handle booking submission
+// Handle booking submission
 	const handleBookingSubmit = async () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/book`, {
@@ -92,10 +112,10 @@ function FlightDetails() {
 			});
 			const bookingData = await response.json();
 			if (response.ok) {
-				alert('Booking confirmed!');
+				toast.success('Booking confirmed!');
 				console.log('Booking Data:', bookingData);
 			} else {
-				alert('Booking failed. Please try again.');
+				toast.error('Booking failed. Please try again.');
 				console.error('Booking Error:', bookingData);
 			}
 		} catch (error) {
@@ -104,7 +124,7 @@ function FlightDetails() {
 		}
 	};
 
-	// Update traveler info on form change
+// Update traveler info on form change
 	const handleChange = (e) => {
 		const {name, value} = e.target;
 		setTravelerInfo((prevInfo) => ({...prevInfo, [name]: value}));
@@ -339,6 +359,9 @@ function FlightDetails() {
 							onClick={() => setShowBookingForm(false)}
 						>
 							Cancel
+						</button>
+						<button className='mt-4 bg-[#330577] text-white px-4 py-2 rounded ml-4' onClick={setTest}>
+							Set Test
 						</button>
 					</div>
 				) : (

@@ -1,9 +1,16 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 const ViewComplaints = () => {
 	const [complaints, setComplaints] = useState([]);
-	const [userMap, setUserMap] = useState({});
 	const [loading, setLoading] = useState(true);
+	const [replying, setReplying] = useState(false);
+	
+	const toggleReply = (complaintId) => {
+		setReplying(true);
+		// open reply modal
+
+
+	}
 
 	useEffect(() => {
 		const getComplaints = () => {
@@ -13,7 +20,6 @@ const ViewComplaints = () => {
 					setComplaints(complaints);
 					setLoading(false);
 				});
-			console.log(userMap);
 		}
 		getComplaints();
 	}, []);
@@ -41,8 +47,9 @@ const ViewComplaints = () => {
 								<td>{new Date(complaint.date).toLocaleDateString()}</td>
 								<td>{complaint.body}</td>
 								<td>{complaint.status}</td>
-								<td>{complaint.reply || 'N/A'}</td>
-								<td>{userMap[complaint.createdByName]}</td>
+								<td>{complaint.reply || <button className="btn btn-primary btn-sm">Reply
+								</button>}</td>
+								<td>{complaint.createdByName}</td>
 							</tr>
 						))}
 						</tbody>
