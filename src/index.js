@@ -34,6 +34,8 @@ import ComplaintsPage from "./Pages/ComplaintsPage";
 import DetailsPage from "./Pages/DetailsPage";
 import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
+import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
+import MuseumDetail from './Pages/MuseumDetailsPage';
 
 import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
@@ -79,6 +81,8 @@ root.render(
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="/historicalplace/:id" element={<HistoricalPlaceDetail/>}/>
+					<Route path="/museum/:id" element={<MuseumDetail/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
