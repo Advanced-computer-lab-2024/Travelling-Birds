@@ -70,14 +70,14 @@ const ManageUserAccounts = () => {
 				<table className="table w-full column-widths">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
-						<th>Mobile Number</th>
-						<th>Nationality</th>
-						<th>Date of Birth</th>
-						<th>Job</th>
+						<th className='w-[4%]'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[12.5%]'>Mobile Number</th>
+						<th className='w-[12.5%]'>Nationality</th>
+						<th className='w-[12.5%]'>Date of Birth</th>
+						<th className='w-[12.5%]'>Job</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -92,7 +92,7 @@ const ManageUserAccounts = () => {
 							<td>{user.email}</td>
 							<td>{user.mobileNumber}</td>
 							<td>{user.nationality}</td>
-							<td>{user.dob}</td>
+							<td>{user.dob.split('T')[0]}</td>
 							<td>{user.job}</td>
 						</tr>
 					))}
@@ -109,12 +109,14 @@ const ManageUserAccounts = () => {
 				<table className="table w-full">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
+						<th className='w-[4%]'>Delete</th>
 						<th className='w-[12.5%]'>Name</th>
 						<th className='w-[12.5%]'>Username</th>
 						<th className='w-[12.5%]'>Email</th>
 						<th className='w-[12.5%]'>Years of Experience</th>
 						<th className='w-[12.5%]'>Previous Work</th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
 					</tr>
 					</thead>
 					<tbody>
@@ -141,16 +143,17 @@ const ManageUserAccounts = () => {
 		<div className="mb-8">
 			<h3 className="text-xl font-bold mb-2">Advertisers</h3>
 			<div className="overflow-x-auto">
-				<table className="table w-full column-widths">
+				<table className="table w-full">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
-						<th>Website</th>
-						<th>Hotline</th>
-						<th>Company</th>
+						<th className='w-[4%]'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[12.5%]'>Website</th>
+						<th className='w-[12.5%]'>Hotline</th>
+						<th className='w-[12.5%]'>Company</th>
+						<th className='w-[12.5%]'></th>
 					</tr>
 					</thead>
 					<tbody>
@@ -178,14 +181,14 @@ const ManageUserAccounts = () => {
 		<div className="mb-8">
 			<h3 className="text-xl font-bold mb-2">Sellers</h3>
 			<div className="overflow-x-auto">
-				<table className="table w-full column-widths">
+				<table className="table w-full">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
-						<th>Description</th>
+						<th className='w-[4%]'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[50%]'>Description</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -211,13 +214,17 @@ const ManageUserAccounts = () => {
 		<div className="mb-8">
 			<h3 className="text-xl font-bold mb-2">Admins</h3>
 			<div className="overflow-x-auto">
-				<table className="table w-full column-widths">
+				<table className="table w-full">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
+						<th className='w-[4%]'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
 					</tr>
 					</thead>
 					<tbody>
@@ -242,13 +249,17 @@ const ManageUserAccounts = () => {
 		<div className="mb-8">
 			<h3 className="text-xl font-bold mb-2">Tourism Governors</h3>
 			<div className="overflow-x-auto">
-				<table className="table w-full column-widths">
+				<table className="table w-full">
 					<thead>
 					<tr>
-						<th className='w-8'>Delete</th>
-						<th>Name</th>
-						<th>Username</th>
-						<th>Email</th>
+						<th className='w-[4%]'>Delete</th>
+						<th className='w-[12.5%]'>Name</th>
+						<th className='w-[12.5%]'>Username</th>
+						<th className='w-[12.5%]'>Email</th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
+						<th className='w-[12.5%]'></th>
 					</tr>
 					</thead>
 					<tbody>
