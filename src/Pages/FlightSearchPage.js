@@ -1,48 +1,84 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaPlaneDeparture, FaPlaneArrival, FaRegClock, FaRegMoneyBillAlt } from 'react-icons/fa';
-
+import {useNavigate} from "react-router-dom";
+import md5 from "md5";
 function FlightSearchPage() {
 	const [origin, setOrigin] = useState("");
 	const [destination, setDestination] = useState("");
 	const [departureDate, setDepartureDate] = useState("");
 	const [flights, setFlights] = useState([]);
-		const fetchFlights = async () => {
-			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/flights/f`;
-			try {
-				const res = await fetch(apiUrl);
-				const flightsData = await res.json();
-				setFlights(extractFlightInfo(flightsData)); // parse flights immediately after fetching
-			} catch (err) {
-				console.log('Error fetching flights', err);
-			}
+	const navigate = useNavigate();
+	const generateHash = (airlineCode) => {
+		const url = airlineCode + "_s_" + process.env.REACT_APP_AIRHEX_API_KEY;
+		console.log(url);
+		return md5(url);
+	}
+	const fetchFlights = async () => {
+		const apiUrl = `${process.env.REACT_APP_BACKEND}/api/flights/f`;
+		try {
+			const res = await fetch(apiUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ origin, destination, departureDate })
+			});
+			const flightsData = await res.json();
+			setFlights(extractFlightInfo(flightsData));
+			console.log('Flights:', flights);
+		} catch (err) {
+			console.log('Error fetching flights', err);
 		}
+	};
+
 	const handleSearch = async () => {
-		const flights = await fetchFlights(origin, destination , departureDate);
-		setFlights(flights);
+		await fetchFlights();
 	};
 
 	// Function to parse and extract necessary flight information
-	function extractFlightInfo(flightData) {
-		return flightData.map(flight => ({
+	function extractFlightInfo(flightOffers) {
+		return flightOffers.map(flight => ({
 			id: flight.id,
-			originDestinationId: flight.originDestinationId,
-			duration: flight.duration,
-			segments: flight.segments.map(segment => ({
-				departureIataCode: segment.departure.iataCode,
-				departureTime: segment.departure.at,
-				arrivalIataCode: segment.arrival.iataCode,
-				arrivalTime: segment.arrival.at,
-				carrierCode: segment.carrierCode,
-				flightNumber: segment.number,
-				numberOfStops: segment.numberOfStops,
-				aircraftCode: segment.aircraft.code,
-				availabilityClasses: segment.availabilityClasses.map(availClass => ({
-					class: availClass.class,
-					numberOfBookableSeats: availClass.numberOfBookableSeats
+			price: flight.price.grandTotal,
+			currency: flight.price.currency,
+			numberOfBookableSeats: flight.numberOfBookableSeats,
+			lastTicketingDate: flight.lastTicketingDate,
+			itineraries: flight.itineraries.map(itinerary => ({
+				duration: itinerary.duration,
+				segments: itinerary.segments.map(segment => ({
+					departureIataCode: segment.departure.iataCode,
+					departureTerminal: segment.departure.terminal,
+					departureTime: segment.departure.at,
+					arrivalIataCode: segment.arrival.iataCode,
+					arrivalTerminal: segment.arrival.terminal,
+					arrivalTime: segment.arrival.at,
+					carrierCode: segment.carrierCode,
+					flightNumber: segment.number,
+					numberOfStops: segment.numberOfStops,
+					duration: segment.duration,
+					aircraftCode: segment.aircraft.code,
+					blacklistedInEU: segment.blacklistedInEU
 				}))
 			})),
+			travelerPricings: flight.travelerPricings.map(traveler => ({
+				travelerType: traveler.travelerType,
+				price: {
+					total: traveler.price.total,
+					base: traveler.price.base,
+					currency: traveler.price.currency
+				},
+				fareDetailsBySegment: traveler.fareDetailsBySegment.map(fareDetail => ({
+					segmentId: fareDetail.segmentId,
+					cabin: fareDetail.cabin,
+					brandedFare: fareDetail.brandedFare,
+					brandedFareLabel: fareDetail.brandedFareLabel,
+					class: fareDetail.class,
+					includedCheckedBags: fareDetail.includedCheckedBags?.quantity
+				}))
+			}))
 		}));
 	}
+
 	function formatDuration(duration) {
 		const match = duration.match(/PT(\d+H)?(\d+M)?/);
 		const hours = match[1] ? match[1].replace('H', '') : '0';
@@ -51,11 +87,12 @@ function FlightSearchPage() {
 	}
 
 	return (
-		<div className="bg-gray-100 min-h-screen w-full">
-
+		<div className="bg-gray-100 min-h-screen w-full p-8">
+			{process.env.REACT_APP_AIRHEX_API_KEY}
+			{generateHash("SU")}
 			{/* Search Bar */}
-			<div className="flex space-x-4 items-center bg-white p-4 rounded-lg shadow-md mb-6">
-				<h1 className="text-2xl font-bold mb-6">Search Flights</h1>
+			<div className="flex space-x-4 items-center bg-white p-6 rounded-lg shadow-md mb-8">
+				<h1 className="text-2xl font-bold">Search Flights</h1>
 				<div className="flex flex-col">
 					<label className="text-gray-600">From</label>
 					<input
@@ -81,10 +118,9 @@ function FlightSearchPage() {
 				<div className="flex flex-col">
 					<label className="text-gray-600">On</label>
 					<input
-						type="text"
-						placeholder="Departure Date"
+						type="date"
 						value={departureDate}
-						onChange={(e) =>setDepartureDate(e.target.value)}
+						onChange={(e) => setDepartureDate(e.target.value)}
 						className="border-b-2 focus:border-blue-500 p-2 outline-none"
 					/>
 				</div>
@@ -97,81 +133,50 @@ function FlightSearchPage() {
 			</div>
 
 			<section className="container mx-auto px-4 py-10 flex">
-				{/* Sidebar Filters */}
-				<aside className="w-1/4 pr-4">
-					<h2 className="text-lg font-semibold text-[#330577] mb-4">Filters</h2>
-					<div className="mb-4">
-						<label className="block text-gray-600 mb-2">Price Range</label>
-						<input type="range" min="50" max="500" className="w-full" />
-					</div>
-					<div className="mb-4">
-						<label className="block text-gray-600 mb-2">Airlines</label>
-						<select className="w-full border rounded p-2">
-							<option>Any Airline</option>
-							{/* Add specific airline options here */}
-						</select>
-					</div>
-				</aside>
-
 				{/* Main Content for Flight Listings */}
-				<main className="w-3/4 bg-white p-6 rounded-lg shadow">
-					{/* Header Controls */}
-					<div className="flex justify-between items-center mb-6">
-						<div>
-							<h1 className="text-2xl font-bold text-[#330577]">Flights from Cairo to Rome</h1>
-							<p className="text-gray-600">1847 flights</p>
-						</div>
-						<button className="bg-[#330577] text-white px-4 py-2 rounded-lg">Search</button>
-					</div>
-
-					{/* Sort Options */}
-					<div className="flex items-center mb-4">
-						<label className="text-gray-600 mr-2">Sort by:</label>
-						<select className="border rounded px-3 py-1">
-							<option>Best Value</option>
-							<option>Lowest Price</option>
-							<option>Shortest Duration</option>
-						</select>
-					</div>
-
-					{/* Flight Listings */}
-					{flights.length > 0 ? (
-						flights.map((flight, index) => (
+				<main className="w-full bg-white p-6 rounded-lg shadow">
+					<h2 className="text-2xl font-bold text-[#330577] mb-6">Flight From {flights[0]?.itineraries[0].segments[0].departureIataCode} to {flights[0]?.itineraries[0].segments[flights[0]?.itineraries[0].segments.length-1].arrivalIataCode}</h2>
+					{flights?.length > 0 ? (
+						flights.map((flight) => (
 							<div
-								key={index}
-								className="flex items-center justify-between p-4 mb-4 border rounded-lg shadow-md bg-white hover:bg-gray-50 transition"
+								key={flight.id}
+								className="flex flex-col md:flex-row items-center justify-between p-4 mb-4 border rounded-lg shadow-md bg-white hover:bg-gray-50 transition"
 							>
 								<div className="flex items-center">
 									<img
-										src={`airline-logos/${flight.segments[0].carrierCode?.toLowerCase()}.png`}
+										//src={`https://content.airhex.com/content/logos/airlines_${flight.itineraries[0].segments[0].carrierCode}_s.svg?md5apikey=${generateHash(flight.itineraries[0].segments[0].carrierCode)}`}
+										src={`../src/utils/Square/${flight.itineraries[0].segments[0].carrierCode}.png`}
 										className="w-12 h-12 mr-4"
-										alt={`${flight.segments[0].carrierCode} logo`}
+										alt={`${flight.itineraries[0].segments[0].carrierCode} logo`}
 									/>
 									<div>
 										<h3 className="font-semibold text-[#330577] flex items-center">
-											<FaPlaneDeparture className="mr-2" /> {new Date(flight.segments[0].departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+											<FaPlaneDeparture className="mr-2" />
+
+											{new Date(flight.itineraries[0].segments[0].departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
 											<span className="mx-2">-</span>
-											<FaPlaneArrival className="mr-2" /> {new Date(flight.segments[0].arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+											<FaPlaneArrival className="mr-2" />
+											{new Date(flight.itineraries[0].segments[0].arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
 										</h3>
 										<p className="text-gray-600 flex items-center mt-1">
-											<p className="text-gray-600 flex items-center mt-1">
-												<FaRegClock className="mr-2" /> {formatDuration(flight.duration)} • {flight.segments[0].numberOfStops} stops
-											</p>
-
+											<FaRegClock className="mr-2" /> {formatDuration(flight.itineraries[0].segments[0].duration)} • {flight.itineraries[0].segments[0].numberOfStops} stops
+										</p>
+										<p className="text-sm text-gray-500 mt-1">
+											CO₂ Emissions: {flight.itineraries[0].segments[0].co2Emissions} {flight.itineraries[0].segments[0].co2Unit}
 										</p>
 									</div>
 								</div>
-								<div className="text-right">
+								<div className="text-right mt-4 md:mt-0">
 									<p className="text-xl font-bold text-gray-800 flex items-center">
-										<FaRegMoneyBillAlt className="mr-1" /> {flight.price}
+										<FaRegMoneyBillAlt className="mr-1" /> {flight.price} {flight.currency}
 									</p>
-									<p className="text-sm text-gray-500">{flight.deals}</p>
-									<button className="mt-2 bg-[#FFC107] text-white px-3 py-1 rounded-lg">View Deal</button>
+									<button onClick={() => navigate(`/flights/${flight.id}`)}
+										className="mt-2 bg-[#FFC107] text-white px-3 py-1 rounded-lg">View Deal</button>
 								</div>
 							</div>
 						))
 					) : (
-						<p>Loading flights...</p>
+						<p className="text-center text-gray-600">Loading flights...</p>
 					)}
 				</main>
 			</section>

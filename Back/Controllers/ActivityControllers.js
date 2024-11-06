@@ -2,7 +2,7 @@ const ActivityModel = require('../Models/Activity.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-    const { title, description, date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen,comments, createdBy,features ,contact} = req.body;
+    const { title, description, date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen,comments=[], createdBy,features ,contact} = req.body;
 
     try {
         // Prepare image data if a file is provided
@@ -66,7 +66,7 @@ const getActivity = async (req, res) => {
 
 // update an existing Activity
 const updateActivity = async (req, res) => {
-    const { title, description, date, time, location, price, category, tags, rating, specialDiscount, bookingOpen, comments, createdBy } = req.body;
+    const { title, description, date, time, location, price, priceRange , category, tags, rating, specialDiscount, bookingOpen, comments, createdBy , features , contact } = req.body;
 
     try {
         const updatedFields = {
@@ -76,13 +76,16 @@ const updateActivity = async (req, res) => {
             time,
             location,
             price,
+			priceRange,
             category,
             tags,
             rating,
             specialDiscount,
             bookingOpen,
 	        comments,
-            createdBy
+            createdBy,
+            features,
+			contact,
         };
 
         // Update image data if a new file is uploaded
