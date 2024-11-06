@@ -5,21 +5,35 @@ exports.searchFlights = async (req, res) => {
 	const { origin, destination, departureDate } = req.body;
 	try {
 		const flightOffersResponse= await flight.shopping.flightOffersSearch.get({
-			originLocationCode: "MAD",
-			destinationLocationCode: "ATH",
-			departureDate: "2025-07-01",
+			originLocationCode: origin,
+			destinationLocationCode: destination,
+			departureDate: departureDate,
 			adults: "1",
+			currencyCode: "EGP",
+		});
+		res.json(flightOffersResponse.data);
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({ message: error.description });
+	}
+};
+// returns specific flight details based on the flight id
+exports.getFlightDetails = async (req, res) => {
+	const { flightId } = req.params;
+	try {
+		const flightDetails = await flight.shopping.flightOffersSearch.get({
+			id: flightId,
 		});
 		const response = await flight.shopping.flightOffers.pricing.post(
 			{
 				data: {
 					type: "flight-offers-pricing",
-					flightOffers: [flightOffersResponse.data[0]],
+					flightOffers: [flightDetails.data[0]],
 				},
 			},
 			{ include: "credit-card-fees,detailed-fare-rules" }
 		);
-		res.json(response.data);
+		response.json(flightDetails.data);
 	} catch (error) {
 		console.log(error)
 		res.status(500).json({ message: error.description });
