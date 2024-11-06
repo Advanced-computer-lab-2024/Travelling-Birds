@@ -66,7 +66,7 @@ root.render(
 					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path='flights' element={<FlightSearchPage/>}/>
-					<Route path='flights/:flightId' element={<FlightDetails/>}/>
+					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
