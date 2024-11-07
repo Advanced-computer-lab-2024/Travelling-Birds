@@ -158,7 +158,7 @@ const PlacesPage = () => {
 						<h3 className="text-2xl font-semibold text-[#330577] mb-4">
 							Historical Places
 						</h3>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div className="grid grid-cols-1 gap-6">
 							{!loading ? (
 								historicalPlaces.map((historicalPlace) => (
 									<MyHistoricalPlaceDisplay key={historicalPlace._id} historicalPlace={historicalPlace} />
@@ -173,7 +173,7 @@ const PlacesPage = () => {
 						<h3 className="text-2xl font-semibold text-[#330577] mb-4">
 							Museums
 						</h3>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+						<div className="grid grid-cols-1 gap-6">
 							{!loading ? (
 								museums.map((museum) => (
 									<MyMuseumDisplay key={museum._id} museum={museum} />
