@@ -76,7 +76,7 @@ const ApproveRegistrants = () => {
 								</tr>
 								</thead>
 								<tbody>
-								{tourGuides.map((user) => (
+								{tourGuides?.map((user) => (
 									<tr key={user._id}>
 										<td>{user.firstName + " " + user.lastName}</td>
 										<td>{user.username}</td>
@@ -106,7 +106,7 @@ const ApproveRegistrants = () => {
 								</tr>
 								</thead>
 								<tbody>
-								{advertisers.map((user) => (
+								{advertisers?.map((user) => (
 									<tr key={user._id}>
 										<td>{user.firstName + " " + user.lastName}</td>
 										<td>{user.username}</td>
@@ -136,7 +136,7 @@ const ApproveRegistrants = () => {
 								</tr>
 								</thead>
 								<tbody>
-								{sellers.map((user) => (
+								{sellers?.map((user) => (
 									<tr key={user._id}>
 										<td>{user.firstName + " " + user.lastName}</td>
 										<td>{user.username}</td>

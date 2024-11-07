@@ -25,13 +25,13 @@ const addUser = async (req, res) => {
 		description
 	} = req.body;
 	try {
-		let profilePicture = null;
+		let profilePicture;
 		if (req.file) {
 			profilePicture = {
 				data: req.file.buffer,
 				contentType: req.file.mimetype
 			};
-		}else {
+		} else {
 			// Use the imported base64 string and convert it to a buffer
 			const imageBuffer = Buffer.from(defaultProfilePicture, 'base64');
 			profilePicture = {
@@ -576,27 +576,79 @@ const login = async (req, res) => {
 
 const getUnapprovedUsers = async (req, res) => {
 	try {
-		const tour_guides = await User.find({role:'tour_guide', isApproved: false});
-		const advertisers = await User.find({role:'advertiser', isApproved: false});
-		const sellers = await User.find({role:'seller', isApproved: false});
-		res.status(200).json({tour_guides, advertisers, sellers});
+		const query = [
+			{
+				$match: {
+					role: {'$in': ['tour_guide', 'advertiser', 'seller']},
+					isApproved: false
+				}
+			},
+			{
+				$group: {
+					_id: "$role",
+					items: {$push: "$$ROOT"}
+				}
+			},
+			{
+				$project: {
+					"items.profilePicture": 0,
+					"items.password": 0,
+					"items.role": 0,
+					"items.isApproved": 0,
+					"items.termsFlag": 0
+				}
+			}
+		];
+		const result = await User.aggregate(query);
+		const users = {};
+		result.forEach(item => {
+			users[item._id + "s"] = item.items;
+		});
+
+		res.status(200).json(users);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
 const getApprovedUsers = async (req, res) => {
 	try {
-		const tour_guides = await User.find({role:'tour_guide', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
-		const advertisers = await User.find({role:'advertiser', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
-		const sellers = await User.find({role:'seller', isApproved: true}).select('-profilePicture -password -role -isApproved -termsFlag');
-		const admins = await User.find({role:'admin'}).select('-profilePicture -password -role -isApproved -termsFlag');
-		const tourism_governors = await User.find({role:'tourism_governor'}).select('-profilePicture -password -role -isApproved -termsFlag');
-		const tourists = await User.find({role:'tourist'}).select('-profilePicture -password -role -isApproved -termsFlag');
-		res.status(200).json({tour_guides, advertisers, sellers, admins, tourism_governors, tourists});
+		const query = [
+			{
+				$match: {
+					$or: [
+						{isApproved: true},
+						{isApproved: {$exists: false}}
+					]
+				}
+			},
+			{
+				$group: {
+					_id: "$role",
+					items: {$push: "$$ROOT"}
+				}
+			},
+			{
+				$project: {
+					"items.profilePicture": 0,
+					"items.password": 0,
+					"items.role": 0,
+					"items.isApproved": 0,
+					"items.termsFlag": 0
+				}
+			}
+		];
+		const result = await User.aggregate(query);
+		const users = {};
+		result.forEach(item => {
+			users[item._id + "s"] = item.items;
+		});
+
+		res.status(200).json(users);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
+
 
 module.exports = {
 	addUser,

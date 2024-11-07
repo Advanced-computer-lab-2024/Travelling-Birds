@@ -40,8 +40,8 @@ const ComplaintsPage = () => {
 	};
 
 	const getStatusColor = (status) => {
-		if (status.toLowerCase() === 'pending') return 'text-red-500';
-		if (status.toLowerCase() === 'resolved') return 'text-green-500';
+		if (status.toLowerCase() === 'Pending') return 'text-red-500';
+		if (status.toLowerCase() === 'Resolved') return 'text-green-500';
 		return 'text-gray-600';
 	};
 
