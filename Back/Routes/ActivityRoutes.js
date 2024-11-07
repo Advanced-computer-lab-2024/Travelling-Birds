@@ -9,7 +9,8 @@ const {
 	getUpcomingActivities,
 	filterUpcomingActivities,
 	sortActivities,
-	getAllCreatedActivities
+	getAllCreatedActivities,
+	getActivitiesAdmin
 
 } = require('../Controllers/ActivityControllers.js');
 const upload = require('../Middleware/upload');
@@ -22,6 +23,8 @@ router.post('/', upload.single('image'), addActivity);
 // Get all activities
 router.get('/', getAllActivities);
 
+// Get all activities for admin
+router.get('/admin', getActivitiesAdmin);
 
 // Get upcoming activities
 router.get('/upcoming', getUpcomingActivities);

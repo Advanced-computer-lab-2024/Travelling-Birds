@@ -1,4 +1,5 @@
 const ActivityModel = require('../Models/Activity.js');
+const User = require('../Models/User');
 
 // Add Activity
 const addActivity = async (req, res) => {
@@ -275,6 +276,20 @@ const getAllCreatedActivities = async (req, res) => {
 	}
 }
 
+const getActivitiesAdmin = async (req, res) => {
+	try {
+		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy');
+		const updatedActivities = await Promise.all(activities.map(async (activity) => {
+			const user = await User.findById(activity.createdBy).select('firstName lastName');
+			activity._doc.createdByName = user? `${user.firstName} ${user.lastName}` : 'N/A';
+			return activity;
+		}));
+		res.status(200).json(updatedActivities);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 module.exports = {
 	addActivity,
 	getAllActivities,
@@ -285,6 +300,7 @@ module.exports = {
 	getUpcomingActivities,
 	filterUpcomingActivities,
 	sortActivities,
-	getAllCreatedActivities
+	getAllCreatedActivities,
+	getActivitiesAdmin
 }
 

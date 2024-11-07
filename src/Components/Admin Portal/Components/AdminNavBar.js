@@ -43,22 +43,36 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Content</li>
 				<li>
-					<Link to='/admin/guides'>
-						<i className="fa-solid fa-book fa-fw"></i>
+					<Link to='/admin/activities'>
+						<i className="fa-solid fa-hiking fa-fw"></i>
 						{/**/}
-						Guides
+						Activities
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/hotspots'>
-						<i className="fa-solid fa-map-marker-alt fa-fw"></i>
+					<Link to='/admin/itineraries'>
+						<i className="fa-solid fa-route fa-fw"></i>
 						{/**/}
-						Hotspots
+						Itineraries
+					</Link>
+				</li>
+				<li>
+					<Link to='/admin/historical-places'>
+						<i className="fa-solid fa-landmark fa-fw"></i>
+						{/**/}
+						Historical Places
+					</Link>
+				</li>
+				<li>
+					<Link to='/admin/Musuems'>
+						<i className="fa-solid fa-landmark fa-fw"></i>
+						{/**/}
+						Museums
 					</Link>
 				</li>
 				<li>
 					<Link to='/admin/tags-categories'>
-						<i className="fa-solid fa-tasks fa-fw"></i>
+						<i className="fa-solid fa-tags fa-fw"></i>
 						{/**/}
 						Tags and Categories
 					</Link>

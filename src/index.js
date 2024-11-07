@@ -40,7 +40,6 @@ import MuseumDetail from './Pages/MuseumDetailsPage';
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
 
-import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
 import ApproveRegistrants from "./Components/Admin Portal/Components/UserManagement/ApproveRegistrants";
@@ -49,6 +48,10 @@ import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManage
 import UsersToDelete from "./Components/Admin Portal/Components/UserManagement/UsersToDelete";
 import ManageCategoriesTags from "./Components/Admin Portal/Components/ContentManagement/ManageCategoriesTags";
 import ManageProducts from "./Components/Admin Portal/Components/ProductManagement/ManageProducts";
+import ManageActivities from "./Components/Admin Portal/Components/ContentManagement/ManageActivities";
+import ManageItineraries from "./Components/Admin Portal/Components/ContentManagement/ManageItineraries";
+import ManageMuseums from "./Components/Admin Portal/Components/ContentManagement/ManageMuseums";
+import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -63,8 +66,10 @@ root.render(
 						<Route path='approve-users' element={<ApproveRegistrants/>}/>
 						<Route path='manage-users' element={<ManageUserAccounts/>}/>
 						<Route path='users-to-delete' element={<UsersToDelete/>}/>
-						<Route path='guides' element={<AdminNavBar/>}/>
-						<Route path='hotspots' element={<AdminNavBar/>}/>
+						<Route path='activities' element={<ManageActivities/>}/>
+						<Route path='itineraries' element={<ManageItineraries/>}/>
+						<Route path='musuems' element={<ManageMuseums/>}/>
+						<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
 						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
 						<Route path='manage-products' element={<ManageProducts/>}/>
 						<Route path='manage-complaints' element={<ViewComplaints/>}/>
