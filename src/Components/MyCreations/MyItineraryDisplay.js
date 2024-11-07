@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
 import { FaCalendarAlt } from 'react-icons/fa';
-import Popup from "reactjs-popup";
-import { ItineraryForm } from "../Models/Forms";
-import { toast } from "react-toastify";
-import { modelModificationEvent } from "../../utils/modelModificationEvent";
-import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const MyItineraryDisplay = ({ itinerary }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [userName, setUserName] = useState('');
     const navigate = useNavigate();
-
-    
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -42,13 +36,13 @@ const MyItineraryDisplay = ({ itinerary }) => {
     const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
 
     return (
-        <div className="bg-white rounded-xl shadow-md relative">
+        <div className="bg-white rounded-xl shadow-md relative flex">
             {imageBase64 && (
-                <div className="relative">
+                <div className="w-1/4 relative">
                     <img
                         src={imageBase64}
                         alt="Itinerary"
-                        className={`w-full h-64 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        className={`w-full h-full object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         onClick={() => navigate(`/update-itinerary/${itinerary._id}`)}
@@ -58,38 +52,40 @@ const MyItineraryDisplay = ({ itinerary }) => {
                     </div>
                 </div>
             )}
-            <div className="p-4 space-y-4">
-                <div className="text-[#330577]">
-                    <FaCalendarAlt className='inline mr-1 mb-1' />
-                    {`Available on: ${availableDatesPreview}`}
+            <div className="w-3/4 flex flex-wrap p-4">
+                <div className="w-full lg:w-1/3 p-2 space-y-2">
+                    <div className="text-[#330577] mb-2">
+                        <FaCalendarAlt className='inline mr-1 mb-1' />
+                        {`Available on: ${availableDatesPreview}`}
+                    </div>
+                    <p className="text-gray-700">Timeline: {itinerary.timeline || 'N/A'}</p>
+                    <p className="text-gray-700">Duration: {itinerary.duration || 'N/A'}</p>
+                    <p className="text-gray-700">Language: {itinerary.language || 'N/A'}</p>
                 </div>
-                <p className="text-gray-700">Timeline: {itinerary.timeline || 'N/A'}</p>
-                <p className="text-gray-700">Duration: {itinerary.duration || 'N/A'}</p>
-                <p className="text-gray-700">Language: {itinerary.language || 'N/A'}</p>
-                <p className="text-gray-700">Price: ${itinerary.price || 'N/A'}</p>
-                <p className="text-gray-700">Accessibility: {itinerary.accessibility || 'N/A'}</p>
-                <p className="text-gray-700">Preferences: {itinerary.preferences || 'N/A'}</p>
-                <p className="text-gray-700">Booking Status: {itinerary.isBooked ? 'Booked' : 'Available'}</p>
-
-                <div className="flex flex-wrap gap-2">
-                    <span className="inline-block bg-gray-300 text-gray-900 rounded-full px-3 py-1 text-sm">
+                <div className="w-full lg:w-1/3 p-2 space-y-2">
+                    <p className="text-gray-700">Price: ${itinerary.price || 'N/A'}</p>
+                    <p className="text-gray-700">Accessibility: {itinerary.accessibility || 'N/A'}</p>
+                    <p className="text-gray-700">Preferences: {itinerary.preferences || 'N/A'}</p>
+                    <p className="text-gray-700">Booking Status: {itinerary.isBooked ? 'Booked' : 'Available'}</p>
+                </div>
+                <div className="w-full lg:w-1/3 p-2 space-y-2">
+                    <span className="block bg-gray-300 text-gray-900 rounded-full px-3 py-1 text-sm mb-2">
                         Pickup Location: {itinerary.pickupLocation || 'N/A'}
                     </span>
-                    <span className="inline-block bg-gray-300 text-gray-900 rounded-full px-3 py-1 text-sm">
+                    <span className="block bg-gray-300 text-gray-900 rounded-full px-3 py-1 text-sm mb-2">
                         Dropoff Location: {itinerary.dropoffLocation || 'N/A'}
                     </span>
+                    {itinerary.locations && itinerary.locations.length > 0 && (
+                        <div className="space-y-2">
+                            <p className="text-gray-700">Locations:</p>
+                            <ul className="list-disc pl-5">
+                                {itinerary.locations.map((location, index) => (
+                                    <li key={index} className="text-gray-700">{location}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
-                
-                {itinerary.locations && itinerary.locations.length > 0 && (
-                    <div className="space-y-2">
-                        <p className="text-gray-700">Locations:</p>
-                        <ul className="list-disc pl-5">
-                            {itinerary.locations.map((location, index) => (
-                                <li key={index} className="text-gray-700">{location}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -97,7 +93,7 @@ const MyItineraryDisplay = ({ itinerary }) => {
 
 MyItineraryDisplay.propTypes = {
     itinerary: PropTypes.shape({
-        activities: PropTypes.arrayOf(PropTypes.string), // Assumes populated activity ids
+        activities: PropTypes.arrayOf(PropTypes.string),
         locations: PropTypes.arrayOf(PropTypes.string),
         timeline: PropTypes.string,
         duration: PropTypes.string,
