@@ -22,7 +22,7 @@ const addUser = async (req, res) => {
 		companyProfile,
 		wallet,
 		isApproved,
-		description
+		description,
 	} = req.body;
 	try {
 		let profilePicture;
@@ -61,6 +61,7 @@ const addUser = async (req, res) => {
 			description,
 			profilePicture,
 			termsFlag:false,
+			loyaltyPoints: 0,
 			requestToDelete: false
 		});
 		await newUser.save();
@@ -116,6 +117,7 @@ const updateUser = async (req, res) => {
 		isApproved,
 		description,
 		termsFlag,
+		loyaltyPoints,
 		requestToDelete
 	} = req.body;
 	try {
@@ -143,9 +145,9 @@ const updateUser = async (req, res) => {
 			isApproved,
 			description,
 			termsFlag,
+			loyaltyPoints,
 			requestToDelete
 		};
-
 		// Update image data if a new file is uploaded
 		if (req.file) {
 			updatedFields.profilePicture = {
