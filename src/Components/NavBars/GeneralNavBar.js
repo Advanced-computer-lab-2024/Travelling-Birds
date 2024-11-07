@@ -18,11 +18,11 @@ const GeneralNavBar = () => {
 
 	return (
 		<NavBar>
-			<div className="flex items-center justify-between w-full px-4">
+			<div className="flex items-center justify-between w-full px-16 py-3">
 				{/* Left: Logo */}
 				<div className="mr-72">
 					<NavLink to='/explore' replace={true}
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-xl">
 						Logo
 					</NavLink>
 				</div>
