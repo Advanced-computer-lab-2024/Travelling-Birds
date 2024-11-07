@@ -12,7 +12,7 @@ const productsRoutes = require('./Routes/ProductRoutes');
 const categoriesRoutes = require('./Routes/CategoryRoutes');
 const complaintRoutes = require('./Routes/ComplaintRoutes');
 const flightRoutes = require('./routes/FlightRoutes');
-const flight = require('./Services/amadeusService');
+const hotelRouter = require('./Routes/HotelRoutes');
 const bodyParser = require('body-parser');
 
 require('dotenv').config();
@@ -30,6 +30,7 @@ app.use('/api/products', productsRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/flights', flightRoutes);
+app.use('/api/hotels', hotelRouter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
