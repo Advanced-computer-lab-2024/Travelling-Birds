@@ -48,6 +48,7 @@ import ManageUserAccounts from "./Components/Admin Portal/Components/UserManagem
 import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
 import UsersToDelete from "./Components/Admin Portal/Components/UserManagement/UsersToDelete";
 import ManageCategoriesTags from "./Components/Admin Portal/Components/ContentManagement/ManageCategoriesTags";
+import ManageProducts from "./Components/Admin Portal/Components/ProductManagement/ManageProducts";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -65,6 +66,7 @@ root.render(
 						<Route path='guides' element={<AdminNavBar/>}/>
 						<Route path='hotspots' element={<AdminNavBar/>}/>
 						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
+						<Route path='manage-products' element={<ManageProducts/>}/>
 						<Route path='manage-complaints' element={<ViewComplaints/>}/>
 					</Route>
 					<Route path='tourist' element={<TouristForm/>}/>

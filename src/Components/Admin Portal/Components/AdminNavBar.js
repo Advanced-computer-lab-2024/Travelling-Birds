@@ -66,7 +66,7 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Products</li>
 				<li>
-					<Link to='/admin/product-management'>
+					<Link to='/admin/manage-products'>
 						<i className="fa-solid fa-box-open fa-fw"></i>
 						{/**/}
 						Manage Products
