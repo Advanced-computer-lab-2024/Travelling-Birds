@@ -17,6 +17,14 @@ exports.searchHotels = async (req, res) => {
 			adults: adults,
 			currencyCode: "EGP"
 		});
+		console.log(hotelIds[0]);
+		const rating = await hotel.eReputation.hotelSentiments.get({
+			hotelIds: hotelIds.slice(0,3).join(','),
+		});
+		console.log(rating);
+		//find hotel with rating by hotelId
+		//const hotelOffers = hotelOffersResponse.data.find(hotel => hotel.hotel.rating === rating.data.overallRating);
+
 		res.json(hotelOffersResponse.data);
 	} catch (error) {
 		console.log(error);
