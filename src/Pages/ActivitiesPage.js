@@ -91,7 +91,7 @@ const ActivityPage = () => {
             <section className="bg-white px-4 py-10">
                 <div className="container-xl lg:container m-auto">
                     <h2 className="text-3xl font-bold text-[#330577] mb-6 text-center">
-                        My Activities
+                        Activities
                     </h2>
                     {
                         ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
