@@ -57,10 +57,10 @@ const AdminNavBar = () => {
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/checklists'>
+					<Link to='/admin/tags-categories'>
 						<i className="fa-solid fa-tasks fa-fw"></i>
 						{/**/}
-						Checklists
+						Tags and Categories
 					</Link>
 				</li>
 
