@@ -37,8 +37,8 @@ import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
-//import HotelSearchPage from "./Pages/HotelSearchPage";
-//import HotelDetails from "./Pages/HotelDetails";
+import HotelSearchPage from "./Pages/HotelSearchPage";
+import HotelDetails from "./Pages/HotelDetails";
 
 import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
@@ -75,7 +75,8 @@ root.render(
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path='flights' element={<FlightSearchPage/>}/>
 					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
-					
+					<Route path='hotels' element={<HotelSearchPage/>}/>
+					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
