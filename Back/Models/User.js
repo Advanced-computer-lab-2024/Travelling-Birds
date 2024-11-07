@@ -28,6 +28,9 @@ const user = new Schema({
     termsFlag:  Boolean,
     loyaltyPoints: Number,
 	requestToDelete: Boolean,
+    identityCard:{name: { type: String }, file: {data: Buffer, contentType: String}},
+    certificates: [{name: { type: String }, file: {data: Buffer, contentType: String}}],
+    taxRegCard: {name: { type: String }, file: {data: Buffer, contentType: String}},
     activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
     itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }]
 });

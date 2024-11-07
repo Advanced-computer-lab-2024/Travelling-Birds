@@ -1,8 +1,6 @@
-import AdminForm from "./AdminForm";
-import AdvertiserForm from "./AdvertiserForm";
-import SellerForm from "./SellerForm";
-import TourismGovernorForm from "./TourismGovernorForm";
-import TourGuideForm from "./TourGuideForm";
-import TouristForm from "./TouristForm";
+import AdvertiserRegisterForm from "./AdvertiserForm";
+import SellerRegisterForm from "./SellerForm";
+import TourGuideRegisterForm from "./TourGuideForm";
+import TouristRegisterForm from "./TouristForm";
 
-export {AdminForm, AdvertiserForm, SellerForm, TourismGovernorForm, TourGuideForm, TouristForm};
+export { AdvertiserRegisterForm, SellerRegisterForm, TourGuideRegisterForm, TouristRegisterForm};

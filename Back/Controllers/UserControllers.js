@@ -27,19 +27,12 @@ const addUser = async (req, res) => {
 	} = req.body;
 	try {
 		let profilePicture;
-		if (req.file) {
-			profilePicture = {
-				data: req.file.buffer,
-				contentType: req.file.mimetype
-			};
-		} else {
 			// Use the imported base64 string and convert it to a buffer
 			const imageBuffer = Buffer.from(defaultProfilePicture, 'base64');
 			profilePicture = {
 				data: imageBuffer,
 				contentType: 'image/webp'
 			};
-		}
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
 			firstName,
@@ -65,6 +58,40 @@ const addUser = async (req, res) => {
 			loyaltyPoints: 0,
 			requestToDelete: false
 		});
+
+		// Handle identity card upload if provided
+		if (req.files && req.files.identityCard) {
+			newUser.identityCard = {
+				name: req.files.identityCard[0].originalname,
+				file: {
+					data: req.files.identityCard[0].buffer,
+					contentType: req.files.identityCard[0].mimetype,
+				},
+			};
+		}
+
+		// Handle certificates upload if provided
+		if (req.files && req.files.certificates) {
+			newUser.certificates = req.files.certificates.map((file) => ({
+				name: file.originalname,
+				file: {
+					data: file.buffer,
+					contentType: file.mimetype,
+				},
+			}));
+		}
+
+		// Handle tax registration card upload if provided
+		if (req.files && req.files.taxRegCard) {
+			newUser.taxRegCard = {
+				name: req.files.taxRegCard[0].originalname,
+				file: {
+					data: req.files.taxRegCard[0].buffer,
+					contentType: req.files.taxRegCard[0].mimetype,
+				},
+			};
+		}
+
 		await newUser.save();
 		// res.status(200).json({});
 		res.status(201).json({message: 'User added successfully', data: newUser});
@@ -89,6 +116,18 @@ const getUser = async (req, res) => {
 		const user = await User.findById(req.params.id);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
+		}
+		return res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+const getUsername = async (req, res) => {
+	const { username } = req.query;
+	try {
+		const user = await User.findOne({ username });
+		if (!user) {
+			return res.status(201).json({message: 'User not found'});
 		}
 		return res.status(200).json(user);
 	} catch (error) {
@@ -743,6 +782,7 @@ module.exports = {
 	getUnapprovedUsers,
 	getApprovedUsers,
 	getUsersToDelete,
+	getUsername,
 	addActivityBooking,
 	getActivityBookings
 };

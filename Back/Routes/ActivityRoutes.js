@@ -14,7 +14,7 @@ const {
 	getComments
 
 } = require('../Controllers/ActivityControllers.js');
-const upload = require('../Middleware/upload');
+const {upload} = require('../Middleware/upload');
 
 const router = express.Router();
 

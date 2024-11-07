@@ -13,13 +13,6 @@ import {
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
-import {
-	AdvertiserForm,
-	SellerForm,
-	TourGuideForm,
-	TourismGovernorForm,
-	TouristForm
-} from "./Components/Registration Forms";
 import ProfilePage from "./Pages/ProfilePage";
 import ActivityPage from "./Pages/ActivitiesPage";
 import ActivityForm from "./Components/Models/Forms/ActivityForm";
@@ -37,6 +30,9 @@ import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
+import LoginPage  from "./Pages/LoginPage";
+import WaitPage  from "./Pages/WaitPage";
+
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
 import BookingPage from "./Pages/MyBookingsPage";
@@ -70,12 +66,8 @@ root.render(
 						<Route path='manage-products' element={<ManageProducts/>}/>
 						<Route path='manage-complaints' element={<ViewComplaints/>}/>
 					</Route>
-					<Route path='tourist' element={<TouristForm/>}/>
-					<Route path='tour-guide' element={<TourGuideForm/>}/>
-					<Route path='seller' element={<SellerForm/>}/>
-					<Route path='advertiser' element={<AdvertiserForm/>}/>
-					<Route path='tourism-governor' element={<TourismGovernorForm/>}/>
 					<Route path='profile' element={<ProfilePage/>}/>
+					<Route path='wait' element={<WaitPage/>}/>
 					<Route path='flights' element={<FlightSearchPage/>}/>
 					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
 					<Route path='hotels' element={<HotelSearchPage/>}/>
@@ -96,6 +88,7 @@ root.render(
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="login" element={<LoginPage/>}/>
 					<Route path="register" element={<RegisterPage/>}/>
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>

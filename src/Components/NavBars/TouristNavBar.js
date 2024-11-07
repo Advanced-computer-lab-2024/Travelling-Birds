@@ -5,6 +5,7 @@ import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
 import Badge1 from '../../Assets/Badge/Badge1.png';
 import Badge2 from '../../Assets/Badge/Badge2.png';
 import Badge3 from '../../Assets/Badge/Badge3.png';
+import {toast} from "react-toastify";
 
 const TouristNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
@@ -20,7 +21,8 @@ const TouristNavBar = () => {
 		sessionStorage.removeItem('user id');
 		sessionStorage.removeItem('role');
 		window.dispatchEvent(sessionStorageEvent);
-		navigate('/', { replace: true });
+		toast.success('Logged out successfully');
+		navigate('/login', { replace: true });
 	};
 
 	const handleCurrencyChange = (newCurrency) => {
@@ -140,7 +142,7 @@ const TouristNavBar = () => {
 
 					{/* Currency Popup */}
 					{isPopupVisible && (
-						<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
+						<div className="fixed inset-0  bg-black bg-opacity-30 flex items-center justify-center z-20">
 							<dialog open id="currency_modal" className="modal modal-bottom sm:modal-middle">
 								<div className="modal-box">
 									<div className="flex justify-between items-center mb-4">

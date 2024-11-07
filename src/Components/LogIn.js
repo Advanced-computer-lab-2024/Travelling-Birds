@@ -84,7 +84,7 @@ const LogIn = () => {
 				               onChange={e => setUsername(e.target.value)}/>
 				<ReusableInput type="password" name="Password" value={password}
 				               onChange={e => setPassword(e.target.value)}/>
-				<button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">Log in</button>
+				<button type="submit" className="w-full bg-[#330577] text-white py-2 rounded mt-4">Log in</button>
 			</form>
 			{showTermsModal && (
 				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
