@@ -19,12 +19,13 @@ const addComplaint = async (req, res) => {
 const getAllComplaints = async (req, res) => {
 	try {
 		const Complaints = await Complaint.find();
-		Complaints.forEach(async (complaint) => {
+		const updatedComplaints = await Promise.all(Complaints.map(async (complaint) => {
 			const user = await UserModel.findById(complaint.createdBy).select('firstName lastName');
-			complaint.createdByName = user.firstName + ' ' + user.lastName;
-			console.log(complaint.createdByName);
-		});
-		res.status(200).json(Complaints)
+			complaint._doc.createdByName = user? `${user.firstName} ${user.lastName}` : 'N/A';
+			return complaint;
+		}));
+		console.log(updatedComplaints);
+		res.status(200).json(updatedComplaints);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
