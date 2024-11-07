@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import ReusableInput from "../../ReusableInput";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom"; // Import useParams
+import { useNavigate, useParams } from "react-router-dom";
 import PropTypes, { string } from "prop-types";
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 
 const ActivityForm = ({ activity: initialActivity }) => {
-    const { id } = useParams(); // Get the ID from the URL
+    const { id } = useParams();
     const [activity, setActivity] = useState(initialActivity);
     const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState('');
@@ -57,7 +57,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
                     const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${id}`);
                     const data = await res.json();
                     setActivity(data);
-                    setFormFields(data); // Populate form fields
+                    setFormFields(data);
                 } catch (error) {
                     console.error('Error fetching activity:', error);
                     toast.error('Failed to load activity data');
@@ -202,7 +202,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
     return (
         <div className="max-w-6xl mx-auto p-8 bg-white shadow rounded">
             <h1 className="text-3xl font-bold text-[#330577] mb-6 text-center">{activity ? 'Update Activity' : 'Register Activity'}</h1>
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => {
+            <form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={(e) => {
                 e.preventDefault();
                 !activity ? registerActivity() : updateActivity();
             }}>
@@ -229,7 +229,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
                 <ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} />
                 <ReusableInput type="checkbox" name="Booking Open" checked={bookingOpen} onChange={e => setBookingOpen(e.target.checked)} />
                 <ReusableInput type="file" name="Image" onChange={handleFileChange} />
-                <div className="col-span-1 md:col-span-2 flex justify-between items-center mt-6">
+                <div className="col-span-1 md:col-span-3 flex justify-between items-center mt-6">
                     <button type="submit" className="bg-[#330577] text-white py-2 px-4 rounded">
                         {activity ? 'Update' : 'Register'}
                     </button>

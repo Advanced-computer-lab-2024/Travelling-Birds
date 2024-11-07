@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import PropTypes from "prop-types";
-import Popup from 'reactjs-popup';
-import 'reactjs-popup/dist/index.css';
-import { ActivityForm } from "../Models/Forms";
-import { toast } from "react-toastify";
-import { modelModificationEvent } from "../../utils/modelModificationEvent";
 import { useNavigate } from 'react-router-dom';
 
 const MyActivityDisplay = ({ activity }) => {
@@ -34,62 +29,66 @@ const MyActivityDisplay = ({ activity }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-md relative">
-            <div className="relative">
+        <div className="bg-white rounded-xl shadow-md relative flex flex-row p-4">
+            <div className="relative flex-shrink-0">
                 {imageBase64 && (
                     <img
                         src={imageBase64}
                         alt="Activity"
-                        className={`w-full h-48 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        className={`w-48 h-48 object-cover rounded transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         onClick={() => navigate(`/update-activity/${activity._id}`)}
                     />
                 )}
-                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
-                    <h3 className="text-2xl font-bold">{activity.title}</h3>
-                    <p className="text-sm">{activity.category}</p>
-                </div>
             </div>
-            <div className="p-4 space-y-4">
-                <p className="text-gray-700">Description: {activity.description}</p>
-                <p className="text-gray-700">Date: {new Date(activity.date).toLocaleDateString()}</p>
-                <p className="text-gray-700">Time: {activity.time}</p>
-                <p className="text-gray-700">Location: {`${activity.location?.city || ''}, ${activity.location?.country || ''}`}</p>
-                <p className="text-gray-700">Address: {activity.location?.address || 'N/A'}</p>
-                {activity.price !== undefined && <p className="text-gray-700">Price: ${activity.price}</p>}
-                {activity.priceRange && (
-                    <p className="text-gray-700">Price Range: ${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}</p>
-                )}
-                <div className="space-y-2">
-                    <p className="text-gray-700">Tags:</p>
-                    <div className="flex flex-wrap gap-2">
-                        {activity.tags?.map((tag) => (
-                            <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1">{tag}</span>
-                        ))}
-                    </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <p className="text-gray-700">Rating:</p>
-                    <div className="flex items-center text-yellow-500">
-                        {renderRatingStars(activity.rating)}
-                    </div>
-                </div>
-                <p className="text-gray-700">Special Discounts: {activity.specialDiscounts || 'N/A'}</p>
-                <p className="text-gray-700">Reviews Count: {activity.reviewsCount}</p>
-                <p className="text-gray-700">Booking Open: {activity.bookingOpen ? 'Yes' : 'No'}</p>
-                {activity.features && activity.features.length > 0 && (
-                    <p className="text-gray-700">Features: {activity.features.join(', ')}</p>
-                )}
-                {activity.contact && (
+            <div className="ml-4 flex-1">
+                <h3 className="text-2xl font-bold text-[#330577] mb-1">{activity.title}</h3>
+                <p className="text-lg text-gray-600 mb-4 font-semibold">{activity.category}</p>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <p className="text-gray-700">Contact:</p>
-                        {activity.contact.phone && <p className="text-gray-700">Phone: {activity.contact.phone}</p>}
-                        {activity.contact.website && <p className="text-gray-700">Website: {activity.contact.website}</p>}
-                        {activity.contact.email && <p className="text-gray-700">Email: {activity.contact.email}</p>}
+                        <p className="text-gray-700 mb-2">Date: {new Date(activity.date).toLocaleDateString()}</p>
+                        <p className="text-gray-700 mb-2">Time: {activity.time}</p>
+                        <p className="text-gray-700 mb-2">Location: {`${activity.location?.city || ''}, ${activity.location?.country || ''}`}</p>
+                        <p className="text-gray-700 mb-2">Address: {activity.location?.address || 'N/A'}</p>
                     </div>
-                )}
-                
+                    <div>
+                        {activity.price !== undefined && <p className="text-gray-700 mb-2">Price: ${activity.price}</p>}
+                        {activity.priceRange && (
+                            <p className="text-gray-700 mb-2">Price Range: ${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}</p>
+                        )}
+                        <p className="text-gray-700 mb-2">Special Discounts: {activity.specialDiscounts || 'N/A'}</p>
+                        <p className="text-gray-700 mb-2">Reviews Count: {activity.reviewsCount}</p>
+                    </div>
+                    <div>
+                        <p className="text-gray-700 mb-2">Booking Open: {activity.bookingOpen ? 'Yes' : 'No'}</p>
+                        {activity.features && activity.features.length > 0 && (
+                            <p className="text-gray-700 mb-2">Features: {activity.features.join(', ')}</p>
+                        )}
+                        <div className="flex items-center space-x-2 mb-2">
+                            <p className="text-gray-700">Rating:</p>
+                            <div className="flex items-center text-yellow-500">
+                                {renderRatingStars(activity.rating)}
+                            </div>
+                        </div>
+                        <p className="text-gray-700 mb-2">Tags:</p>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {activity.tags?.map((tag) => (
+                                <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1">{tag}</span>
+                            ))}
+                        </div>
+                    </div>
+                    <div>
+                        {activity.contact && (
+                            <div className="mb-2">
+                                <p className="text-gray-700">Contact:</p>
+                                {activity.contact.phone && <p className="text-gray-700">Phone: {activity.contact.phone}</p>}
+                                {activity.contact.website && <p className="text-gray-700">Website: {activity.contact.website}</p>}
+                                {activity.contact.email && <p className="text-gray-700">Email: {activity.contact.email}</p>}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -99,7 +98,6 @@ MyActivityDisplay.propTypes = {
     activity: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         title: PropTypes.string,
-        description: PropTypes.string,
         date: PropTypes.string.isRequired,
         time: PropTypes.string.isRequired,
         location: PropTypes.shape({

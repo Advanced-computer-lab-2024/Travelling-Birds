@@ -158,7 +158,7 @@ const ActivityPage = () => {
                         </Popup>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-6"> {/* Changed to display activities one under another */}
                         {!loading ? (
                             activities.map((activity) => (
                                 <MyActivityDisplay key={activity._id} activity={activity} />
