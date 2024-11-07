@@ -1,35 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReusableInput from "../../ReusableInput";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // Import useParams
 import PropTypes, { string } from "prop-types";
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 
-const ActivityForm = ({ activity }) => {
-    const [title, setTitle] = useState(activity?.title || '');
-    const [description, setDescription] = useState(activity?.description || '');
-    const [date, setDate] = useState(activity?.date || '');
-    const [time, setTime] = useState(activity?.time || '');
-    const [lat, setLat] = useState(activity?.location?.lat || 0);
-    const [lng, setLng] = useState(activity?.location?.lng || 0);
-    const [city, setCity] = useState(activity?.location?.city || '');
-    const [country, setCountry] = useState(activity?.location?.country || '');
-    const [address, setAddress] = useState(activity?.location?.address || '');
-    const [area, setArea] = useState(activity?.location?.area || '');
-    const [price, setPrice] = useState(activity?.price || 0);
-    const [lwBound, setLwBound] = useState(activity?.priceRange?.lwBound || 0);
-    const [hiBound, setHiBound] = useState(activity?.priceRange?.hiBound || 0);
-    const [category, setCategory] = useState(activity?.category || '');
-    const [tags, setTags] = useState(activity?.tags?.join(',') || '');
-    const [rating, setRating] = useState(activity?.rating || 0);
-    const [specialDiscounts, setSpecialDiscounts] = useState(activity?.specialDiscounts || '');
-    const [bookingOpen, setBookingOpen] = useState(activity?.bookingOpen || false);
-    const [features, setFeatures] = useState(activity?.features?.join(',') || '');
-    const [phone, setPhone] = useState(activity?.contact?.phone || '');
-    const [website, setWebsite] = useState(activity?.contact?.website || '');
-    const [email, setEmail] = useState(activity?.contact?.email || '');
-    const [image, setImage] = useState(null); // State to hold the image file
+const ActivityForm = ({ activity: initialActivity }) => {
+    const { id } = useParams(); // Get the ID from the URL
+    const [activity, setActivity] = useState(initialActivity);
+    const [loading, setLoading] = useState(true);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+    const [lat, setLat] = useState(0);
+    const [lng, setLng] = useState(0);
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const [address, setAddress] = useState('');
+    const [area, setArea] = useState('');
+    const [price, setPrice] = useState(0);
+    const [lwBound, setLwBound] = useState(0);
+    const [hiBound, setHiBound] = useState(0);
+    const [category, setCategory] = useState('');
+    const [tags, setTags] = useState('');
+    const [rating, setRating] = useState(0);
+    const [specialDiscounts, setSpecialDiscounts] = useState('');
+    const [bookingOpen, setBookingOpen] = useState(false);
+    const [features, setFeatures] = useState('');
+    const [phone, setPhone] = useState('');
+    const [website, setWebsite] = useState('');
+    const [email, setEmail] = useState('');
+    const [image, setImage] = useState(null);
     const navigate = useNavigate();
+
+    const deleteActivity = () => {
+        fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
+            method: 'DELETE',
+        }).then((response) => response.json())
+            .then((data) => {
+                if (data?.message === 'activity deleted successfully') {
+                    toast.success('Activity deleted successfully');
+                    window.dispatchEvent(modelModificationEvent);
+                } else {
+                    toast.error('Failed to delete activity');
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        if (!initialActivity && id) {
+            const fetchActivity = async () => {
+                try {
+                    const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${id}`);
+                    const data = await res.json();
+                    setActivity(data);
+                    setFormFields(data); // Populate form fields
+                } catch (error) {
+                    console.error('Error fetching activity:', error);
+                    toast.error('Failed to load activity data');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchActivity();
+        } else {
+            setFormFields(initialActivity);
+            setLoading(false);
+        }
+    }, [initialActivity, id]);
+
+    const setFormFields = (activityData) => {
+        if (activityData) {
+            setTitle(activityData.title || '');
+            setDescription(activityData.description || '');
+            setDate(activityData.date || '');
+            setTime(activityData.time || '');
+            setLat(activityData.location?.lat || 0);
+            setLng(activityData.location?.lng || 0);
+            setCity(activityData.location?.city || '');
+            setCountry(activityData.location?.country || '');
+            setAddress(activityData.location?.address || '');
+            setArea(activityData.location?.area || '');
+            setPrice(activityData.price || 0);
+            setLwBound(activityData.priceRange?.lwBound || 0);
+            setHiBound(activityData.priceRange?.hiBound || 0);
+            setCategory(activityData.category || '');
+            setTags(activityData.tags?.join(',') || '');
+            setRating(activityData.rating || 0);
+            setSpecialDiscounts(activityData.specialDiscounts || '');
+            setBookingOpen(activityData.bookingOpen || false);
+            setFeatures(activityData.features?.join(',') || '');
+            setPhone(activityData.contact?.phone || '');
+            setWebsite(activityData.contact?.website || '');
+            setEmail(activityData.contact?.email || '');
+        }
+    };
 
     const handleFileChange = (e) => {
         setImage(e.target.files[0]);
@@ -120,6 +188,7 @@ const ActivityForm = ({ activity }) => {
                 if (data?._id) {
                     toast.success('Activity updated successfully');
                     window.dispatchEvent(modelModificationEvent);
+                    navigate('/activities', { replace: true });
                 } else {
                     toast.error('Failed to update activity');
                 }
@@ -131,12 +200,12 @@ const ActivityForm = ({ activity }) => {
     };
 
     return (
-        <div>
-            <form className="w-full max-w-sm mx-auto" onSubmit={(e) => {
+        <div className="max-w-6xl mx-auto p-8 bg-white shadow rounded">
+            <h1 className="text-3xl font-bold text-[#330577] mb-6 text-center">{activity ? 'Update Activity' : 'Register Activity'}</h1>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => {
                 e.preventDefault();
                 !activity ? registerActivity() : updateActivity();
             }}>
-                <h1 className="text-2xl font-bold mb-4">{activity ? 'Update Activity' : 'Register Activity'}</h1>
                 <ReusableInput type="text" name="Title" value={title} onChange={e => setTitle(e.target.value)} />
                 <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
                 <ReusableInput type="date" name="Date" value={date} onChange={e => setDate(e.target.value)} />
@@ -160,9 +229,23 @@ const ActivityForm = ({ activity }) => {
                 <ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} />
                 <ReusableInput type="checkbox" name="Booking Open" checked={bookingOpen} onChange={e => setBookingOpen(e.target.checked)} />
                 <ReusableInput type="file" name="Image" onChange={handleFileChange} />
-                <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded mt-4">
-                    {activity ? 'Update' : 'Register'}
-                </button>
+                <div className="col-span-1 md:col-span-2 flex justify-between items-center mt-6">
+                    <button type="submit" className="bg-[#330577] text-white py-2 px-4 rounded">
+                        {activity ? 'Update' : 'Register'}
+                    </button>
+                    {activity && (
+                        <button
+                            onClick={() => {
+                                if (window.confirm('Are you sure you wish to delete this item?')) {
+                                    deleteActivity();
+                                }
+                            }}
+                            className="bg-[#330577] hover:bg-red-700 text-white py-2 px-4 rounded"
+                        >
+                            Delete Activity
+                        </button>
+                    )}
+                </div>
             </form>
         </div>
     );

@@ -12,22 +12,6 @@ const MyActivityDisplay = ({ activity }) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
-    const deleteActivity = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.message === 'activity deleted successfully') {
-                    toast.success('Activity deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete activity');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
-
     let imageBase64 = null;
     if (activity.image?.data?.data && activity.image.contentType) {
         try {
@@ -59,7 +43,7 @@ const MyActivityDisplay = ({ activity }) => {
                         className={`w-full h-48 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
-                        onClick={() => navigate(`/${activity._id}`)}
+                        onClick={() => navigate(`/update-activity/${activity._id}`)}
                     />
                 )}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
@@ -105,30 +89,7 @@ const MyActivityDisplay = ({ activity }) => {
                         {activity.contact.email && <p className="text-gray-700">Email: {activity.contact.email}</p>}
                     </div>
                 )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        className="h-fit overflow-y-scroll"
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full">
-                                Update Activity
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <ActivityForm className="overflow-y-scroll" activity={activity} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this item?')) {
-                            deleteActivity();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full rounded-b-xl">
-                        Delete Activity
-                    </button>
-                )}
+                
             </div>
         </div>
     );
