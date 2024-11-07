@@ -39,6 +39,7 @@ import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
+import BookingPage from "./Pages/MyBookingsPage";
 
 import AdminNavBar from "./Components/Admin Portal/Components/AdminNavBar";
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
@@ -98,6 +99,7 @@ root.render(
 					<Route path="register" element={<RegisterPage/>}/>
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>
+					<Route path="bookings" element={<BookingPage/>}/>
 
 				</Route>
 			</Routes>

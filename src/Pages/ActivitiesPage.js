@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import MyActivityDisplay from "../Components/MyCreations/MyActivityDisplay";
+import MyActivityDisplay from "../Components/MyBookings/MyActivityDisplay";
 import { CategoryDisplay, TagDisplay } from "../Components/Models/Displays";
 import { useNavigate } from "react-router-dom";
 import Popup from "reactjs-popup";
@@ -11,6 +11,7 @@ const ActivityPage = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const userRole = sessionStorage.getItem('role');
 
     useEffect(() => {
         const fetchActivities = async () => {
@@ -91,10 +92,10 @@ const ActivityPage = () => {
             <section className="bg-white px-4 py-10">
                 <div className="container-xl lg:container m-auto">
                     <h2 className="text-3xl font-bold text-[#330577] mb-6 text-center">
-                        Activities
+                        My Activities
                     </h2>
                     {
-                        ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+                        ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) && (
                             <button
                                 onClick={handleCreateActivity}
                                 className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6 mr-4"
@@ -104,7 +105,7 @@ const ActivityPage = () => {
                         )
                     }
                     {
-                        ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+                        ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) && (
                             <button
                                 onClick={handleViewMyActivities}
                                 className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6"
@@ -113,52 +114,55 @@ const ActivityPage = () => {
                             </button>
                         )
                     }
-                    <div className="flex flex-row gap-6 py-4">
-                        {!loading ? (
-                            tags.map((tag) => (
-                                <TagDisplay className='py-4' key={tag._id} tag={tag} />
-                            ))) : (
-                            <p className="text-[#330577]">Loading tags...</p>
-                        )}
-                        {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                            <Popup
-                                className="h-fit overflow-y-scroll"
-                                trigger={
-                                    <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
-                                        New Tag
-                                    </button>
-                                }
-                                modal
-                                contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                                overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                            >
-                                <TagForm className="overflow-y-scroll" />
-                            </Popup>
-                        )}
-                    </div>
-                    <div className="flex flex-row gap-6 py-4">
-                        {!loading ? (
-                            categories.map((category) => (
-                                <CategoryDisplay className='py-4' key={category._id} category={category} />
-                            ))) : (
-                            <p className="text-[#330577]">Loading categories...</p>
-                        )}
-                        <Popup
-                            className="h-fit overflow-y-scroll"
-                            trigger={
-                                <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
-                                    New Category
-                                </button>
-                            }
-                            modal
-                            contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                            overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                        >
-                            <CategoryForm className="overflow-y-scroll" />
-                        </Popup>
-                    </div>
-
-                    <div className="space-y-6"> {/* Changed to display activities one under another */}
+                    {userRole !== 'tourist' && (
+                        <>
+                            <div className="flex flex-row gap-6 py-4">
+                                {!loading ? (
+                                    tags.map((tag) => (
+                                        <TagDisplay className='py-4' key={tag._id} tag={tag} />
+                                    ))) : (
+                                    <p className="text-[#330577]">Loading tags...</p>
+                                )}
+                                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) && (
+                                    <Popup
+                                        className="h-fit overflow-y-scroll"
+                                        trigger={
+                                            <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
+                                                New Tag
+                                            </button>
+                                        }
+                                        modal
+                                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+                                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+                                    >
+                                        <TagForm className="overflow-y-scroll" />
+                                    </Popup>
+                                )}
+                            </div>
+                            <div className="flex flex-row gap-6 py-4">
+                                {!loading ? (
+                                    categories.map((category) => (
+                                        <CategoryDisplay className='py-4' key={category._id} category={category} />
+                                    ))) : (
+                                    <p className="text-[#330577]">Loading categories...</p>
+                                )}
+                                <Popup
+                                    className="h-fit overflow-y-scroll"
+                                    trigger={
+                                        <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
+                                            New Category
+                                        </button>
+                                    }
+                                    modal
+                                    contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
+                                    overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
+                                >
+                                    <CategoryForm className="overflow-y-scroll" />
+                                </Popup>
+                            </div>
+                        </>
+                    )}
+                    <div className="space-y-6">
                         {!loading ? (
                             activities.map((activity) => (
                                 <MyActivityDisplay key={activity._id} activity={activity} />

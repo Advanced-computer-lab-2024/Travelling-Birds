@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import MyHistoricalPlaceDisplay from "../Components/MyCreations/MyHistoricalPlaceDisplay";
-import MyMuseumDisplay from "../Components/MyCreations/MyMuseumDisplay";
+import MyHistoricalPlaceDisplay from "../Components/MyBookings/MyHistoricalPlaceDisplay";
+import MyMuseumDisplay from "../Components/MyBookings/MyMuseumDisplay";
 import { useNavigate } from "react-router-dom";
 import { TagDisplay } from "../Components/Models/Displays";
 import Popup from "reactjs-popup";
@@ -12,6 +12,7 @@ const PlacesPage = () => {
 	const [tags, setTags] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
+	const userRole = sessionStorage.getItem('role');
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -50,7 +51,7 @@ const PlacesPage = () => {
 			} finally {
 				setLoading(false);
 			}
-		}
+		};
 
 		fetchData().then();
 		fetchTags().then();
@@ -109,7 +110,7 @@ const PlacesPage = () => {
 						My Museums and Historical Places
 					</h2>
 
-					{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
+					{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) && (
 						<div className="mb-6">
 							<button
 								onClick={handleCreateMuseum}
@@ -131,28 +132,30 @@ const PlacesPage = () => {
 							</button>
 						</div>
 					)}
-					<div className="flex flex-row gap-6 py-4">
-						{!loading ? (
-							tags.map((tag) => (
-								<TagDisplay className='py-4' key={tag._id} tag={tag} />
-							))) : (
-							<p className="text-[#330577]">Loading tags...</p>
-						)}
-						{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) &&
-						<Popup
-							className="h-fit overflow-y-scroll"
-							trigger={
-								<button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
-									New Tag
-								</button>
-							}
-							modal
-							contentStyle={{maxHeight: '80vh', overflowY: 'auto'}}
-							overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}}
-						>
-							<TagForm className="overflow-y-scroll" />
-						</Popup>}
-					</div>
+					{userRole !== 'tourist' && (
+						<div className="flex flex-row gap-6 py-4">
+							{!loading ? (
+								tags.map((tag) => (
+									<TagDisplay className='py-4' key={tag._id} tag={tag} />
+								))) : (
+								<p className="text-[#330577]">Loading tags...</p>
+							)}
+							{['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) &&
+							<Popup
+								className="h-fit overflow-y-scroll"
+								trigger={
+									<button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
+										New Tag
+									</button>
+								}
+								modal
+								contentStyle={{maxHeight: '80vh', overflowY: 'auto'}}
+								overlayStyle={{background: 'rgba(0, 0, 0, 0.5)'}}
+							>
+								<TagForm className="overflow-y-scroll" />
+							</Popup>}
+						</div>
+					)}
 
 					<div className="mb-10">
 						<h3 className="text-2xl font-semibold text-[#330577] mb-4">
