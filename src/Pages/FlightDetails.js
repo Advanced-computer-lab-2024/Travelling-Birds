@@ -76,7 +76,7 @@ function FlightDetails() {
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					flightDetails,
-					travelerDetails: [
+					travelerInfo : [
 						{
 							id: "1",
 							dateOfBirth: travelerInfo.dateOfBirth,
@@ -110,6 +110,7 @@ function FlightDetails() {
 					]
 				})
 			});
+			console.log(travelerInfo);
 			const bookingData = await response.json();
 			if (response.ok) {
 				toast.success('Booking confirmed!');
@@ -235,118 +236,32 @@ function FlightDetails() {
 					<div className="my-4 p-4 bg-white rounded">
 						<h4 className="font-semibold text-xl text-[#330577]  mb-4">Enter Traveler Information</h4>
 						<div className="grid grid-cols-2 gap-4">
-							<input
-								type="text"
-								name="firstName"
-								placeholder="First Name"
-								value={travelerInfo.firstName}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="lastName"
-								placeholder="Last Name"
-								value={travelerInfo.lastName}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="date"
-								name="dateOfBirth"
-								placeholder="Date of Birth"
-								value={travelerInfo.dateOfBirth}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="gender"
-								placeholder="gender"
-								value={travelerInfo.gender}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="email"
-								name="emailAddress"
-								placeholder="Email Address"
-								value={travelerInfo.emailAddress}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="phone"
-								placeholder="Phone Number"
-								value={travelerInfo.phone}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="passportNumber"
-								placeholder="Passport Number"
-								value={travelerInfo.passportNumber}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="date"
-								name="passportExpiry"
-								placeholder="Passport Expiry"
-								value={travelerInfo.passportExpiry}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="birthPlace"
-								placeholder="Birth Place"
-								value={travelerInfo.birthPlace}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="issuanceLocation"
-								placeholder="Issuance Location"
-								value={travelerInfo.issuanceLocation}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="date"
-								name="issuanceDate"
-								placeholder="Issuance Date"
-								value={travelerInfo.issuanceDate}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="issuanceCountry"
-								placeholder="Issuance Country"
-								value={travelerInfo.issuanceCountry}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="validityCountry"
-								placeholder="Validity Country"
-								value={travelerInfo.validityCountry}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
-							<input
-								type="text"
-								name="nationality"
-								placeholder="Nationality"
-								value={travelerInfo.nationality}
-								onChange={handleChange}
-								className="p-2 rounded border"
-							/>
+							{[
+								{ label: 'First Name', name: 'firstName', type: 'text' },
+								{ label: 'Last Name', name: 'lastName', type: 'text' },
+								{ label: 'Date of Birth', name: 'dateOfBirth', type: 'date' },
+								{ label: 'Gender', name: 'gender', type: 'text' },
+								{ label: 'Email Address', name: 'emailAddress', type: 'email' },
+								{ label: 'Phone Number', name: 'phone', type: 'text' },
+								{ label: 'Passport Number', name: 'passportNumber', type: 'text' },
+								{ label: 'Passport Expiry', name: 'passportExpiry', type: 'date' },
+								{ label: 'Birth Place', name: 'birthPlace', type: 'text' },
+								{ label: 'Issuance Location', name: 'issuanceLocation', type: 'text' },
+								{ label: 'Issuance Date', name: 'issuanceDate', type: 'date' },
+								{ label: 'Issuance Country', name: 'issuanceCountry', type: 'text' },
+								{ label: 'Validity Country', name: 'validityCountry', type: 'text' },
+								{ label: 'Nationality', name: 'nationality', type: 'text' }
+							].map((input) => (
+								<input
+									key={input.name}
+									type={input.type}
+									name={input.name}
+									placeholder={input.label}
+									value={travelerInfo[input.name]}
+									onChange={handleChange}
+									className="p-2 rounded border"
+								/>
+							))}
 						</div>
 						<button
 							className="mt-4 bg-[#330577] text-white px-4 py-2 rounded"

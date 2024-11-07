@@ -27,7 +27,7 @@ function HotelDetails() {
 		await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/book`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ hotelId, travelerDetails }),
+			body: JSON.stringify({ hotelId,travelerDetails , checkInDate, checkOutDate}),
 		});
 	};
 
@@ -149,7 +149,7 @@ function HotelDetails() {
 							<input
 								type="text"
 								name="creditCard.cvc"
-								placeholder="CVC"
+								placeholder="Holder Name"
 								className="border rounded-lg p-2 focus:ring-2 focus:ring-[#330577] w-full"
 								value={travelerDetails.creditCard.cvc}
 								onChange={handleChange}
