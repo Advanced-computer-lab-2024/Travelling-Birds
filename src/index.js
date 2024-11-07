@@ -91,6 +91,7 @@ root.render(
 					<Route path='create-museum' element={<MuseumForm/>}/>
 					<Route path='update-museum/:id' element={<MuseumForm/>}/>
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
+					<Route path='update-historical-place/:id' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
