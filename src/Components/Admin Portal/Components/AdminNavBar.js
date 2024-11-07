@@ -33,6 +33,13 @@ const AdminNavBar = () => {
 						Manage Users
 					</Link>
 				</li>
+				<li>
+					<Link to='/admin/users-to-delete'>
+						<i className="fa-solid fa-user-times fa-fw"></i>
+						{/**/}
+						Users to Delete
+					</Link>
+				</li>
 
 				<li className="menu-title">Content</li>
 				<li>

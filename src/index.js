@@ -46,6 +46,7 @@ import AdminLayout from "./Components/Admin Portal/AdminLayout";
 import ApproveRegistrants from "./Components/Admin Portal/Components/UserManagement/ApproveRegistrants";
 import ManageUserAccounts from "./Components/Admin Portal/Components/UserManagement/ManageUserAccounts";
 import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
+import UsersToDelete from "./Components/Admin Portal/Components/UserManagement/UsersToDelete";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -59,6 +60,7 @@ root.render(
 						<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
 						<Route path='approve-users' element={<ApproveRegistrants/>}/>
 						<Route path='manage-users' element={<ManageUserAccounts/>}/>
+						<Route path='users-to-delete' element={<UsersToDelete/>}/>
 						<Route path='guides' element={<AdminNavBar/>}/>
 						<Route path='hotspots' element={<AdminNavBar/>}/>
 						<Route path='checklists' element={<AdminNavBar/>}/>
