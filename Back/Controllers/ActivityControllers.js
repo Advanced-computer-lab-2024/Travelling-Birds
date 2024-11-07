@@ -283,6 +283,7 @@ const getComments = async (req, res) => {
 		if (!activity) {
 			return res.status(404).json({message: 'Activity not found'});
 		}
+		console.log(activity.comments);
 		const comments = await CommentModel.find({_id: {$in: activity.comments}});
 		res.status(200).json(comments);
 	} catch (error) {
@@ -295,10 +296,8 @@ const addComment = async (req, res) => {
 	try {
 		const newComment = new CommentModel({user, text, stars, date: new Date()});
 		await newComment.save();
-		const actvity = await ActivityModel.findById(req.params.id);
-		actvity.comments.push(newComment._id);
-		actvity.reviewsCount = actvity.comments.length;
-		res.status(201).json(actvity);
+		const activity = await ActivityModel.findByIdAndUpdate(req.params.id, {$push: {comments: newComment._id}, $inc: {reviewsCount: 1}}, {new: true})
+		res.status(201).json(activity);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

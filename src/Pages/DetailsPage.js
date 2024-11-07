@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import {FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt} from 'react-icons/fa';
+import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import Header from "../Components/Header";
 import LocationContact from "../Components/Location";
+
 const ActivityDetail = () => {
 	const [loading, setLoading] = useState(true);
 	const [activity, setActivity] = useState(null);
+	const [commentText, setCommentText] = useState("");
+	const [commentRating, setCommentRating] = useState(0);
 	const activityId = useParams().id;
 
 	useEffect(() => {
@@ -21,6 +24,17 @@ const ActivityDetail = () => {
 			}
 		};
 		fetchActivity();
+		const fetchComments = async () => {
+			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`;
+			try {
+				const res = await fetch(apiUrl);
+				const comments = await res.json();
+				setActivity((prev) => ({ ...prev, comments }));
+			} catch (err) {
+				console.log('Error fetching comments', err);
+			}
+		}
+		fetchComments();
 	}, [activityId]);
 
 	// Convert image to base64 if exists
@@ -50,6 +64,43 @@ const ActivityDetail = () => {
 		);
 	};
 
+	// Handle submitting a new comment
+	const handleAddComment = async () => {
+		if (!commentText || commentRating === 0) {
+			alert("Please provide a comment and a rating.");
+			return;
+		}
+		const newComment = {
+			user: sessionStorage.getItem('user id'),
+			text: commentText,
+			date: new Date().toISOString(),
+			stars: commentRating
+		};
+
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(newComment)
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to add comment');
+			}
+
+			// Update local state with new comment
+			setActivity((prev) => ({
+				...prev,
+				comments: [newComment, ...(prev.comments || [])]
+			}));
+			setCommentText("");
+			setCommentRating(0);
+		} catch (err) {
+			console.error("Error adding comment:", err);
+			alert("Failed to add comment. Please try again.");
+		}
+	};
+
 	return (
 		<div>
 			<section className="px-4 py-10 bg-gray-100">
@@ -74,7 +125,7 @@ const ActivityDetail = () => {
 										<p className="text-gray-800">{review.user}</p>
 										<p className="text-gray-600">{review.text}</p>
 										<p className="text-gray-400 text-sm">{new Date(review.date).toLocaleDateString()}</p>
-										<p renderStars={review.stars} />
+										<span className="flex">{renderStars(review.stars)}</span>
 									</div>
 								))}
 							</div>
@@ -90,7 +141,7 @@ const ActivityDetail = () => {
 						</div>
 
 						{/* Location & Contact */}
-					<LocationContact activity={activity} />
+						<LocationContact activity={activity} />
 					</div>
 
 					{/* Comments Section */}
@@ -103,15 +154,42 @@ const ActivityDetail = () => {
 									<p className="text-gray-600">{comment.text}</p>
 									<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
 									<div className="flex items-center mt-2">
-								<span className="flex items-center text-2xl">
-									{renderStars(comment.stars)}
-								</span>
+                                        <span className="flex items-center text-2xl">
+                                            {renderStars(comment.stars)}
+                                        </span>
 									</div>
 								</div>
 							))
 						) : (
 							<p className="text-gray-500">No reviews yet.</p>
 						)}
+					</div>
+
+					{/* Add Comment Form */}
+					<div className="mt-8 bg-white shadow-md rounded-lg p-6">
+						<h2 className="font-semibold text-lg text-[#330577] mb-4">Add a Review</h2>
+						<textarea
+							placeholder="Write your review here..."
+							value={commentText}
+							onChange={(e) => setCommentText(e.target.value)}
+							className="w-full border rounded-lg p-2 mb-4"
+						></textarea>
+						<div className="flex items-center mb-4">
+							<span className="mr-2">Rating:</span>
+							{[1, 2, 3, 4, 5].map((star) => (
+								<FaStar
+									key={star}
+									className={`cursor-pointer ${commentRating >= star ? 'text-yellow-500' : 'text-gray-400'}`}
+									onClick={() => setCommentRating(star)}
+								/>
+							))}
+						</div>
+						<button
+							onClick={handleAddComment}
+							className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
+						>
+							Submit Review
+						</button>
 					</div>
 				</div>
 			</section>
