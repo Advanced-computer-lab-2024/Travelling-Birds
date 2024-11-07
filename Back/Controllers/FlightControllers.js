@@ -23,7 +23,6 @@ exports.searchFlights = async (req, res) => {
 	}
 };
 
-// Get Flight Details Controller
 exports.getFlightDetails = async (req, res) => {
 	const { flightId } = req.params;
 	const { origin, destination, departureDate } = req.params;

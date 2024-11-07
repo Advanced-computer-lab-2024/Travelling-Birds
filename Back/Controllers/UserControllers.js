@@ -59,7 +59,8 @@ const addUser = async (req, res) => {
 			wallet,
 			isApproved,
 			description,
-			profilePicture
+			profilePicture,
+			termsFlag:false
 		});
 		await newUser.save();
 		// res.status(200).json({});
@@ -112,7 +113,8 @@ const updateUser = async (req, res) => {
 		companyProfile,
 		wallet,
 		isApproved,
-		description
+		description,
+		termsFlag
 	} = req.body;
 	try {
 		let hashedPassword = password;
@@ -137,9 +139,9 @@ const updateUser = async (req, res) => {
 			companyProfile,
 			wallet,
 			isApproved,
-			description
+			description,
+			termsFlag
 		};
-
 		// Update image data if a new file is uploaded
 		if (req.file) {
 			updatedFields.profilePicture = {
