@@ -60,6 +60,7 @@ const addUser = async (req, res) => {
 			isApproved,
 			description,
 			profilePicture,
+			termsFlag:false,
 			requestToDelete: false
 		});
 		await newUser.save();
@@ -114,6 +115,7 @@ const updateUser = async (req, res) => {
 		wallet,
 		isApproved,
 		description,
+		termsFlag,
 		requestToDelete
 	} = req.body;
 	try {
@@ -140,6 +142,7 @@ const updateUser = async (req, res) => {
 			wallet,
 			isApproved,
 			description,
+			termsFlag,
 			requestToDelete
 		};
 

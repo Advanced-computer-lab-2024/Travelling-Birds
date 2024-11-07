@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-//I think they need to input their first n last name dk if other functions should be changed cause of my change
 const user = new Schema({
 	firstName: {type: String, required: true},
 	lastName: {type: String, required: true},
@@ -26,6 +25,7 @@ const user = new Schema({
 	isApproved: Boolean,
 	description: String,
 	profilePicture: { data: Buffer, contentType: String },
+    termsFlag:  Boolean,
 	requestToDelete: Boolean
 });
 
