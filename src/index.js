@@ -81,6 +81,7 @@ root.render(
 					<Route path='create-activity' element={<ActivityForm />} />
                     <Route path='update-activity/:id' element={<ActivityForm />} /> 
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
+					<Route path='update-itinerary/:id' element={<ItineraryForm/>}/>
 					<Route path='create-museum' element={<MuseumForm/>}/>
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
