@@ -59,14 +59,13 @@ exports.getFlightDetails = async (req, res) => {
 
 // Book Flight Controller
 exports.bookFlight = async (req, res) => {
-	const { flightDetails, travelerDetails } = req.body;
+	const { flightDetails, travelerInfo} = req.body;
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
 			originLocationCode: flightDetails?.itineraries[0].segments[0].departure.iataCode,
 			destinationLocationCode: flightDetails?.itineraries[0].segments[flightDetails?.itineraries[0].segments.length-1].arrival.iataCode,
 			departureDate: flightDetails?.itineraries[0].segments[0].departure.at.split('T')[0],
 			adults: "1",
-			currencyCode: "EGP",
 		});
 
 		const selectedFlight = flightOffersResponse.data.find(flight => flight.id === flightDetails.id);
@@ -80,42 +79,44 @@ exports.bookFlight = async (req, res) => {
 				flightOffers: [selectedFlight],
 			},
 		});
-
 		const bookingResponse = await flight.booking.flightOrders.post({
 			data: {
 				type: "flight-order",
-				flightOffers: pricingResponse.data.flightOffers,
-				travelers: travelerDetails.map((traveler, index) => ({
-					id: (index + 1).toString(),
-					dateOfBirth: traveler.dateOfBirth,
-					name: {
-						firstName: traveler.firstName,
-						lastName: traveler.lastName,
-					},
-					gender: traveler.gender,
-					contact: {
-						emailAddress: traveler.emailAddress,
-						phones: [
-							{
-								deviceType: "MOBILE",
-								countryCallingCode: "20",  // Replace with the actual country calling code
-								number: traveler.phone,
-							},
-						],
-					},
-					documents: [
-						{
-							documentType: "PASSPORT",
-							number: traveler.passportNumber,
-							expiryDate: traveler.passportExpiry,
-							issuanceCountry: traveler.issuanceCountry,
-							nationality: traveler.nationality,
+				flightOffers:[pricingResponse.data.flightOffers[0]],
+				travelers: [
+					{
+						id: "1",
+						dateOfBirth: travelerInfo.dateOfBirth,
+						name: {firstName: travelerInfo.firstName, lastName: travelerInfo.lastName},
+						gender: travelerInfo.gender,
+						contact: {
+							emailAddress: travelerInfo.emailAddress,
+							phones: [
+								{
+									deviceType: "MOBILE",
+									countryCallingCode: "1",
+									number: travelerInfo.phone
+								}
+							]
 						},
-					],
-				})),
+						documents: [
+							{
+								documentType: "PASSPORT",
+								birthPlace: travelerInfo.birthPlace,
+								issuanceLocation: travelerInfo.issuanceLocation,
+								issuanceDate: travelerInfo.issuanceDate,
+								number: travelerInfo.passportNumber,
+								expiryDate: travelerInfo.passportExpiry,
+								issuanceCountry: travelerInfo.issuanceCountry,
+								validityCountry: travelerInfo.validityCountry,
+								nationality: travelerInfo.nationality,
+								holder: true
+							}
+						]
+					}
+				]
 			},
 		});
-
 		res.status(200).json({
 			message: "Booking confirmed!",
 			bookingDetails: bookingResponse.data,

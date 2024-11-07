@@ -8,7 +8,7 @@ const GeneralNavBar = () => {
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 
 	const handleSignInClick = () => {
-		navigate('/register');
+		navigate('/login');
 	};
 
 	const handleCurrencyChange = (newCurrency) => {

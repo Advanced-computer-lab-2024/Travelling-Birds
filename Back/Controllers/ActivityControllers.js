@@ -1,5 +1,6 @@
 const ActivityModel = require('../Models/Activity.js');
-const User = require('../Models/User');
+const UserModel = require('../Models/User.js');
+const CommentModel = require('../Models/Comments.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
@@ -275,12 +276,39 @@ const getAllCreatedActivities = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// get comments of a specific activity
+const getComments = async (req, res) => {
+	try {
+		const activity = await ActivityModel.findById(req.params.id);
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
+		const comments = await CommentModel.find({_id: {$in: activity.comments}});
+		res.status(200).json(comments);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+// create a comment for a specific activity
+const addComment = async (req, res) => {
+	const {user, text, stars} = req.body;
+	try {
+		const newComment = new CommentModel({user, text, stars, date: new Date()});
+		await newComment.save();
+		const actvity = await ActivityModel.findById(req.params.id);
+		actvity.comments.push(newComment._id);
+		actvity.reviewsCount = actvity.comments.length;
+		res.status(201).json(actvity);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 
 const getActivitiesAdmin = async (req, res) => {
 	try {
 		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy');
 		const updatedActivities = await Promise.all(activities.map(async (activity) => {
-			const user = await User.findById(activity.createdBy).select('firstName lastName');
+			const user = await UserModel.findById(activity.createdBy).select('firstName lastName');
 			activity._doc.createdByName = user? `${user.firstName} ${user.lastName}` : 'N/A';
 			return activity;
 		}));
@@ -301,6 +329,8 @@ module.exports = {
 	filterUpcomingActivities,
 	sortActivities,
 	getAllCreatedActivities,
+	getComments,
+	addComment,
 	getActivitiesAdmin
 }
 

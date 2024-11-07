@@ -13,7 +13,7 @@ const {
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
-const upload = require('../Middleware/upload');
+const {upload} = require('../Middleware/upload');
 
 // Add itinerary
 router.post('/', upload.single('image'), addItinerary);

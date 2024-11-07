@@ -10,22 +10,6 @@ const MyMuseumDisplay = ({ museum }) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
-    const deleteMuseum = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${museum._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.msg === 'Museum deleted successfully') {
-                    toast.success('Museum deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete museum');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
-
     let imageBase64 = null;
     if (museum.image?.data?.data && museum.image.contentType) {
         try {
@@ -52,7 +36,7 @@ const MyMuseumDisplay = ({ museum }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-md flex flex-col md:flex-row p-4 md:space-x-4">
+        <div className="bg-white rounded-xl shadow-md relative flex md:flex-row flex-col md:space-x-8 p-4"> {/* Increased md:space-x-4 to md:space-x-8 */}
             {imageBase64 && (
                 <div className="md:w-1/4 w-full">
                     <img
@@ -65,7 +49,7 @@ const MyMuseumDisplay = ({ museum }) => {
                     />
                 </div>
             )}
-            <div className="md:w-1/2 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
+            <div className="md:w-1/3 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
                 <h3 className="text-2xl font-bold">{museum.name}</h3>
                 <p className="text-gray-700">{museum.description || 'N/A'}</p>
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -74,7 +58,7 @@ const MyMuseumDisplay = ({ museum }) => {
                     ))}
                 </div>
             </div>
-            <div className="md:w-1/4 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
+            <div className="md:w-1/3 w-full space-y-4 mt-4 md:mt-0">
                 <p className="text-gray-700">Location: {museum.location || 'N/A'}</p>
                 <div className="text-[#330577]">
                     {`Opening Hours: ${museum.openingHours?.startTime ? new Date(museum.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
@@ -83,31 +67,8 @@ const MyMuseumDisplay = ({ museum }) => {
                 <div className="text-gray-700">
                     Ticket Prices: {renderTicketPrices(museum?.ticketPrices)}
                 </div>
-            </div>
-            <div className="md:w-full mt-4">
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
-                                Update Museum
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <MuseumForm museum={museum} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this museum?')) {
-                            deleteMuseum();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
-                        Delete Museum
-                    </button>
-                )}
+                <div className="flex flex-col mt-4">
+                </div>
             </div>
         </div>
     );

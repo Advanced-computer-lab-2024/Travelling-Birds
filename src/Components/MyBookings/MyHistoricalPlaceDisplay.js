@@ -10,22 +10,6 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
-    const deleteHistoricalPlace = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${historicalPlace._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.msg === 'Historical Place deleted successfully') {
-                    toast.success('Historical place deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete historical place');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
-
     let imageBase64 = null;
     if (historicalPlace.image?.data?.data && historicalPlace.image.contentType) {
         try {
@@ -77,29 +61,7 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
                         'N/A'
                     )}
                 </div>
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
-                                Update Historical Place
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <HistoricalPlaceForm historicalPlace={historicalPlace} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this historical place?')) {
-                            deleteHistoricalPlace();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
-                        Delete Historical Place
-                    </button>
-                )}
+               
             </div>
         </div>
     );

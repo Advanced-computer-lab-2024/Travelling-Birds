@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import NavBar from "./NavBar";
 import { useEffect, useState, useRef } from "react";
 import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
+import {toast} from "react-toastify";
 
 const TourismGovernorNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
@@ -16,7 +17,8 @@ const TourismGovernorNavBar = () => {
 		sessionStorage.removeItem('user id');
 		sessionStorage.removeItem('role');
 		window.dispatchEvent(sessionStorageEvent);
-		navigate('/', { replace: true });
+		toast.success('Logged out successfully');
+		navigate('/login', { replace: true });
 	};
 
 	const handleCurrencyChange = (newCurrency) => {

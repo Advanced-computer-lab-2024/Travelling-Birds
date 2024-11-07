@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../Models/User');
+const Activity = require('../Models/Activity');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
 
 // Add user
@@ -26,19 +27,12 @@ const addUser = async (req, res) => {
 	} = req.body;
 	try {
 		let profilePicture;
-		if (req.file) {
-			profilePicture = {
-				data: req.file.buffer,
-				contentType: req.file.mimetype
-			};
-		} else {
 			// Use the imported base64 string and convert it to a buffer
 			const imageBuffer = Buffer.from(defaultProfilePicture, 'base64');
 			profilePicture = {
 				data: imageBuffer,
 				contentType: 'image/webp'
 			};
-		}
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new User({
 			firstName,
@@ -64,6 +58,40 @@ const addUser = async (req, res) => {
 			loyaltyPoints: 0,
 			requestToDelete: false
 		});
+
+		// Handle identity card upload if provided
+		if (req.files && req.files.identityCard) {
+			newUser.identityCard = {
+				name: req.files.identityCard[0].originalname,
+				file: {
+					data: req.files.identityCard[0].buffer,
+					contentType: req.files.identityCard[0].mimetype,
+				},
+			};
+		}
+
+		// Handle certificates upload if provided
+		if (req.files && req.files.certificates) {
+			newUser.certificates = req.files.certificates.map((file) => ({
+				name: file.originalname,
+				file: {
+					data: file.buffer,
+					contentType: file.mimetype,
+				},
+			}));
+		}
+
+		// Handle tax registration card upload if provided
+		if (req.files && req.files.taxRegCard) {
+			newUser.taxRegCard = {
+				name: req.files.taxRegCard[0].originalname,
+				file: {
+					data: req.files.taxRegCard[0].buffer,
+					contentType: req.files.taxRegCard[0].mimetype,
+				},
+			};
+		}
+
 		await newUser.save();
 		// res.status(200).json({});
 		res.status(201).json({message: 'User added successfully', data: newUser});
@@ -88,6 +116,18 @@ const getUser = async (req, res) => {
 		const user = await User.findById(req.params.id);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
+		}
+		return res.status(200).json(user);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+const getUsername = async (req, res) => {
+	const { username } = req.query;
+	try {
+		const user = await User.findOne({ username });
+		if (!user) {
+			return res.status(201).json({message: 'User not found'});
 		}
 		return res.status(200).json(user);
 	} catch (error) {
@@ -691,8 +731,37 @@ const getUsersToDelete = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// add activity booking to user
+const addActivityBooking = async (req, res) => {
+	const userId = req.params.id;
+	const activityId = req.body.activityId;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		user.activityBookings.push(activityId);
+		await user.save();
+		res.status(200).json({message: 'Activity booking added successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 
-
+// get activity bookings of a user from database
+const getActivityBookings = async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		const activityBookings = await Activity.find({_id: {$in: user.activityBookings}});
+		res.status(200).json(activityBookings);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -712,5 +781,8 @@ module.exports = {
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
-	getUsersToDelete
+	getUsersToDelete,
+	getUsername,
+	addActivityBooking,
+	getActivityBookings
 };

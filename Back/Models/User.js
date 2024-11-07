@@ -27,7 +27,12 @@ const user = new Schema({
     profilePicture: { data: Buffer, contentType: String },
     termsFlag:  Boolean,
     loyaltyPoints: Number,
-	requestToDelete: Boolean
+	requestToDelete: Boolean,
+    identityCard:{name: { type: String }, file: {data: Buffer, contentType: String}},
+    certificates: [{name: { type: String }, file: {data: Buffer, contentType: String}}],
+    taxRegCard: {name: { type: String }, file: {data: Buffer, contentType: String}},
+    activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
+    itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }]
 });
 
 module.exports = mongoose.model('User', user);

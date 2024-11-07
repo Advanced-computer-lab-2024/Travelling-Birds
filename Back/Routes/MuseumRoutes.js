@@ -11,7 +11,7 @@ const {
 	filterMuseums,
 	getAllCreatedMuseums
 } = require('../Controllers/MuseumControllers.js');
-const upload = require('../Middleware/upload');
+const {upload} = require('../Middleware/upload');
 
 // Add museum
 router.post('/', upload.single('image'), addMuseum);

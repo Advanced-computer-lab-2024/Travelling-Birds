@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../Middleware/upload');
 
 const {
 	addUser,
@@ -20,14 +19,20 @@ const {
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
-	getUsersToDelete
+	getUsersToDelete,
+	getUsername,
+	addActivityBooking,
+	getActivityBookings
 } = require('../Controllers/UserControllers');
+const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
 // Add user
-router.post('/',upload.single('profilePicture'), addUser);
+router.post('/',multipleFieldsUpload, addUser);
 
 // Get all users
 router.get('/', getUsers);
+// Get specific username
+router.get('/username', getUsername);
 
 // Get Unapproved Users
 router.get('/unapproved', getUnapprovedUsers);
@@ -46,6 +51,13 @@ router.put('/:id',upload.single('profilePicture'), updateUser);
 
 // Delete user
 router.delete('/:id', deleteUser);
+
+// Add Activity Booking
+router.post('/activity-booking/:id', addActivityBooking);
+
+
+// Get Activity Bookings
+router.get('/activity-bookings/:id', getActivityBookings);
 
 // // Register tourist
 // router.post('/register-tourist',upload.single('profilePicture'), registerTourist);

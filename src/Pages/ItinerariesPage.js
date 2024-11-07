@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MyItineraryDisplay from "../Components/MyCreations/MyItineraryDisplay";
+import MyItineraryDisplay from "../Components/MyBookings/MyItineraryDisplay";
 import { ItineraryDisplay } from "../Components/Models/Displays";
 import { useNavigate } from "react-router-dom";
 
