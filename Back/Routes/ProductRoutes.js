@@ -9,7 +9,9 @@ const {
 	sortProductsByRating,
 	getProduct,
 	updateProduct,
-	deleteProduct
+	deleteProduct,
+	getProductPicture,
+	getProductsAdmin
 } = require('../Controllers/ProductControllers.js');
 
 // Add product
@@ -17,6 +19,12 @@ router.post('/', addProduct);
 
 // Get all products
 router.get('/', getAllProducts);
+
+// Get all products for admin
+router.get('/admin', getProductsAdmin);
+
+// Get product picture
+router.get('/picture/:id', getProductPicture);
 
 // search for products
 router.get('/search',searchProducts);

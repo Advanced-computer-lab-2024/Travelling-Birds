@@ -1,4 +1,5 @@
 const Product = require('../Models/Product');
+const UserModel = require("../Models/User");
 
 // Add product
 const addProduct = async (req, res) => {
@@ -8,7 +9,9 @@ const addProduct = async (req, res) => {
 			name, description, price, availableQuantity, picture, seller, ratings, reviews
 		});
 		await newProduct.save();
-		res.status(201).json({message: 'Product added successfully'});
+		const user = await UserModel.findById(newProduct.seller).select('firstName lastName');
+		newProduct._doc.sellerName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
+		res.status(201).json(newProduct);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -47,7 +50,7 @@ const updateProduct = async (req, res) => {
 		if (!product)
 			return res.status(404).json({message: 'Product not found'});
 
-		res.status(200).json({message: 'Product updated successfully'});
+		res.status(200).json(product);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -66,7 +69,7 @@ const deleteProduct = async (req, res) => {
 const searchProducts = async (req, res) => {
 	const {name} = req.query;
 	try {
-		const products = await Product.find({ name: { $regex: new RegExp(name, 'i') } });
+		const products = await Product.find({name: {$regex: new RegExp(name, 'i')}});
 
 		if (!products) {
 			return res.status(404).json({message: "No Products Found With This Name"});
@@ -108,12 +111,12 @@ const sortProductsByRating = async (req, res) => {
 			// Step 1: Calculate the average rating for each product
 			{
 				$addFields: {
-					avgRating: { $avg: "$ratings" }
+					avgRating: {$avg: "$ratings"}
 				}
 			},
 			// Step 2: Sort the products by the calculated average rating
 			{
-				$sort: { avgRating: sortOrder }
+				$sort: {avgRating: sortOrder}
 			}
 		]);
 		if (!products) {
@@ -127,6 +130,32 @@ const sortProductsByRating = async (req, res) => {
 
 }
 
+const getProductsAdmin = async (req, res) => {
+	try {
+		const Products = await Product.find();
+		const updatedProducts = await Promise.all(Products.map(async (product) => {
+			const user = await UserModel.findById(product.seller).select('firstName lastName');
+			product._doc.sellerName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
+			return product;
+		}));
+		res.status(200).json(updatedProducts);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+const getProductPicture = async (req, res) => {
+	try {
+		const product = await Product.findById(req.params.id).select('picture');
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
+		}
+		res.status(200).json(product);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 module.exports = {
 	addProduct,
 	getAllProducts,
@@ -135,6 +164,8 @@ module.exports = {
 	deleteProduct,
 	sortProductsByRating,
 	filterProducts,
-	searchProducts
+	searchProducts,
+	getProductsAdmin,
+	getProductPicture
 };
 
