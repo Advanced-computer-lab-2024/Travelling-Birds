@@ -27,7 +27,7 @@ const ViewComplaints = () => {
 					toast.success('Reply sent successfully');
 					setComplaints(complaints.map(complaint => {
 						if (complaint._id === selectedComplaint._id) {
-							return {...complaint, reply, status: 'resolved'};
+							return {...complaint, reply, status: 'Resolved'};
 						}
 						return complaint;
 					}));
@@ -64,8 +64,8 @@ const ViewComplaints = () => {
 				<select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
 				        className="select select-bordered">
 					<option value="">All</option>
-					<option value="pending">Pending</option>
-					<option value="resolved">Resolved</option>
+					<option value="Pending">Pending</option>
+					<option value="Resolved">Resolved</option>
 				</select>
 				<label className="ml-4 mr-2">Sort by Date:</label>
 				<select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}
@@ -79,12 +79,12 @@ const ViewComplaints = () => {
 					<table className="table w-full">
 						<thead>
 						<tr>
-							<th>Title</th>
-							<th>Date</th>
+							<th className='w-[7%]'>Title</th>
+							<th className='w-[7%]'>Date</th>
+							<th className='w-[7%]'>Status</th>
+							<th className='w-[7%]'>Created By</th>
 							<th>Body</th>
-							<th>Status</th>
 							<th>Reply</th>
-							<th>Created By</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -92,15 +92,16 @@ const ViewComplaints = () => {
 							<tr key={complaint._id}>
 								<td>{complaint.title}</td>
 								<td>{new Date(complaint.date).toLocaleDateString()}</td>
+								{/*Surround status with color based on 'Pending' or 'Resolved'*/}
+								<td className={complaint.status === 'Pending' ? 'text-yellow-500' : 'text-green-500'}>{complaint.status}</td>
+								<td>{complaint.createdByName}</td>
 								<td>{complaint.body}</td>
-								<td>{complaint.status}</td>
 								<td>{complaint.reply || <button className="btn btn-primary btn-sm"
 								                                onClick={() => {
 									                                document.getElementById('my_modal_5').showModal();
 									                                setSelectedComplaint(complaint)
 								                                }}>Reply
 								</button>}</td>
-								<td>{complaint.createdByName}</td>
 							</tr>
 						))}
 						</tbody>
