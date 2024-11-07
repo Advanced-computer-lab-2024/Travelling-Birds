@@ -20,7 +20,9 @@ const {
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
-	getUsersToDelete
+	getUsersToDelete,
+	addActivityBooking,
+	getActivityBookings
 } = require('../Controllers/UserControllers');
 
 // Add user
@@ -46,6 +48,13 @@ router.put('/:id',upload.single('profilePicture'), updateUser);
 
 // Delete user
 router.delete('/:id', deleteUser);
+
+// Add Activity Booking
+router.post('/activity-booking/:id', addActivityBooking);
+
+
+// Get Activity Bookings
+router.get('/activity-bookings/:id', getActivityBookings);
 
 // // Register tourist
 // router.post('/register-tourist',upload.single('profilePicture'), registerTourist);

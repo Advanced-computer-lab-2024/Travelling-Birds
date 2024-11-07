@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const User = require('../Models/User');
+const Activity = require('../Models/Activity');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
 
 // Add user
@@ -691,8 +692,37 @@ const getUsersToDelete = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// add activity booking to user
+const addActivityBooking = async (req, res) => {
+	const userId = req.params.id;
+	const activityId = req.body.activityId;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		user.activityBookings.push(activityId);
+		await user.save();
+		res.status(200).json({message: 'Activity booking added successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 
-
+// get activity bookings of a user from database
+const getActivityBookings = async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		const activityBookings = await Activity.find({_id: {$in: user.activityBookings}});
+		res.status(200).json(activityBookings);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -712,5 +742,7 @@ module.exports = {
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
-	getUsersToDelete
+	getUsersToDelete,
+	addActivityBooking,
+	getActivityBookings
 };

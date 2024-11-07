@@ -27,7 +27,9 @@ const user = new Schema({
     profilePicture: { data: Buffer, contentType: String },
     termsFlag:  Boolean,
     loyaltyPoints: Number,
-	requestToDelete: Boolean
+	requestToDelete: Boolean,
+    activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
+    itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }]
 });
 
 module.exports = mongoose.model('User', user);

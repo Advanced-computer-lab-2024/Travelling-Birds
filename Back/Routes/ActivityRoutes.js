@@ -9,7 +9,9 @@ const {
 	getUpcomingActivities,
 	filterUpcomingActivities,
 	sortActivities,
-	getAllCreatedActivities
+	getAllCreatedActivities,
+	addComment,
+	getComments
 
 } = require('../Controllers/ActivityControllers.js');
 const upload = require('../Middleware/upload');
@@ -46,5 +48,11 @@ router.delete('/:id', deleteActivity);
 
 // Get all created activities
 router.get('/user/:id', getAllCreatedActivities);
+
+// Get comments of a specific activity
+router.get('/:id/comments', getComments);
+
+// Create a comment for a specific activity
+router.post('/:id/comments', addComment);
 
 module.exports = router;
