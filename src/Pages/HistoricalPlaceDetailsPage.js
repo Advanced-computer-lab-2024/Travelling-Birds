@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import LoadingPage from './LoadingPage'; 
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ const HistoricalPlaceDetail = () => {
     imageBase64 = `data:${place.image.contentType};base64,${btoa(binaryString)}`;
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingPage /> ;
 
   return (
     <div>

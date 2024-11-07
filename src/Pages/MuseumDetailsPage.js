@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import LoadingPage from './LoadingPage'; 
 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,7 @@ const MuseumDetail = () => {
     imageBase64 = `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
   }
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingPage/>;
 
   // Helper function to render ticket prices from object (not directly from Map)
 const renderTicketPrices = (ticketPrices) => {
