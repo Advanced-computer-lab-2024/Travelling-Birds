@@ -36,40 +36,45 @@ const MyMuseumDisplay = ({ museum }) => {
             console.error('Error converting image data to base64:', error);
         }
     }
-    
+
     const renderTicketPrices = (ticketPrices) => {
         if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p>No ticket prices available.</p>;
-      
+
         return (
-          <ul className="list-disc ml-6">
-            {Object.entries(ticketPrices).map(([category, price], index) => (
-              <li key={index}>
-                {category}: ${price.toFixed(2)}
-              </li>
-            ))}
-          </ul>
+            <ul className="list-disc ml-6">
+                {Object.entries(ticketPrices).map(([category, price], index) => (
+                    <li key={index}>
+                        {category}: ${price.toFixed(2)}
+                    </li>
+                ))}
+            </ul>
         );
-      };
+    };
 
     return (
-        <div className="bg-white rounded-xl shadow-md relative">
+        <div className="bg-white rounded-xl shadow-md flex flex-col md:flex-row p-4 md:space-x-4">
             {imageBase64 && (
-                <div className="relative">
+                <div className="md:w-1/4 w-full">
                     <img
                         src={imageBase64}
                         alt="Museum"
-                        className={`w-full h-64 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        className={`w-full h-48 object-cover rounded-lg transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         onClick={() => navigate(`/museum/${museum._id}`)}
                     />
-                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
-                        <h3 className="text-2xl font-bold">{museum.name}</h3>
-                    </div>
                 </div>
             )}
-            <div className="p-4 space-y-4">
-                <p className="text-gray-700">Description: {museum.description || 'N/A'}</p>
+            <div className="md:w-1/2 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
+                <h3 className="text-2xl font-bold">{museum.name}</h3>
+                <p className="text-gray-700">{museum.description || 'N/A'}</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {museum.tags?.map((tag) => (
+                        <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
+                    ))}
+                </div>
+            </div>
+            <div className="md:w-1/4 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
                 <p className="text-gray-700">Location: {museum.location || 'N/A'}</p>
                 <div className="text-[#330577]">
                     {`Opening Hours: ${museum.openingHours?.startTime ? new Date(museum.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
@@ -78,11 +83,8 @@ const MyMuseumDisplay = ({ museum }) => {
                 <div className="text-gray-700">
                     Ticket Prices: {renderTicketPrices(museum?.ticketPrices)}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    {museum.tags?.map((tag) => (
-                        <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
-                    ))}
-                </div>
+            </div>
+            <div className="md:w-full mt-4">
                 {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
                     <Popup
                         trigger={

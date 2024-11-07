@@ -38,24 +38,29 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
     }
 
     return (
-        <div className="bg-white rounded-xl shadow-md relative">
+        <div className="bg-white rounded-xl shadow-md relative flex md:flex-row flex-col md:space-x-4 p-4">
             {imageBase64 && (
-                <div className="relative">
+                <div className="md:w-1/4 w-full">
                     <img
                         src={imageBase64}
                         alt="Historical Place"
-                        className={`w-full h-64 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        className={`w-full h-48 object-cover rounded-lg transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         onClick={() => navigate(`/historicalplaces/${historicalPlace._id}`)}
                     />
-                    <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
-                        <h3 className="text-2xl font-bold">{historicalPlace.name}</h3>
-                    </div>
                 </div>
             )}
-            <div className="p-4 space-y-4">
-                <p className="text-gray-700">Description: {historicalPlace.description || 'N/A'}</p>
+            <div className="md:w-1/3 w-full flex flex-col justify-start space-y-2 mt-2 md:mt-0">
+                <h3 className="text-2xl font-bold">{historicalPlace.name}</h3>
+                <p className="text-gray-700">{historicalPlace.description || 'No description available'}</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                    {historicalPlace.tags?.map((tag) => (
+                        <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
+                    ))}
+                </div>
+            </div>
+            <div className="md:w-1/3 w-full space-y-4 mt-4 md:mt-0">
                 <p className="text-gray-700">Location: {historicalPlace.location || 'N/A'}</p>
                 <div className="text-[#330577]">
                     {`Opening Hours: ${historicalPlace.openingHours?.startTime ? new Date(historicalPlace.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
@@ -71,11 +76,6 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
                     ) : (
                         'N/A'
                     )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    {historicalPlace.tags?.map((tag) => (
-                        <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
-                    ))}
                 </div>
                 {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
                     <Popup
