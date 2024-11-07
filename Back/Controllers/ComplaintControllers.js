@@ -24,7 +24,6 @@ const getAllComplaints = async (req, res) => {
 			complaint._doc.createdByName = user? `${user.firstName} ${user.lastName}` : 'N/A';
 			return complaint;
 		}));
-		console.log(updatedComplaints);
 		res.status(200).json(updatedComplaints);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -44,7 +43,6 @@ const getComplaintById = async (req, res) => {
 
 // Update Complaint
 const updateComplaint = async (req, res) => {
-	const {reply, status} = req.body;
 	try {
 		const complaint = await Complaint.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
 		res.status(201).json(complaint);

@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {userDeletionEvent} from "../../../../utils/userDeletionEvent";
 import {toast} from "react-toastify";
-// import './ManageUserAccounts.css'; // Import the CSS file
 
-const ManageUserAccounts = () => {
+const UsersToDelete = () => {
 	const [tourists, setTourists] = useState([]);
 	const [tourGuides, setTourGuides] = useState([]);
 	const [advertisers, setAdvertisers] = useState([]);
@@ -48,7 +47,7 @@ const ManageUserAccounts = () => {
 
 	useEffect(() => {
 		const updateUsers = () => {
-			fetch(`${process.env.REACT_APP_BACKEND}/api/users/approved`)
+			fetch(`${process.env.REACT_APP_BACKEND}/api/users/toDelete`)
 				.then((response) => response.json())
 				.then(data => {
 					setTourists(data.tourists);
@@ -297,4 +296,4 @@ const ManageUserAccounts = () => {
 	);
 }
 
-export default ManageUserAccounts;
+export default UsersToDelete;

@@ -25,7 +25,8 @@ const user = new Schema({
 	wallet: Number,
 	isApproved: Boolean,
 	description: String,
-	profilePicture: { data: Buffer, contentType: String }
+	profilePicture: { data: Buffer, contentType: String },
+	requestToDelete: Boolean
 });
 
 module.exports = mongoose.model('User', user);

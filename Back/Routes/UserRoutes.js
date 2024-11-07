@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../middleware/upload');
+const upload = require('../Middleware/upload');
 
 const {
 	addUser,
@@ -19,7 +19,8 @@ const {
 	// deleteUserByAdmin,
 	login,
 	getUnapprovedUsers,
-	getApprovedUsers
+	getApprovedUsers,
+	getUsersToDelete
 } = require('../Controllers/UserControllers');
 
 // Add user
@@ -33,6 +34,9 @@ router.get('/unapproved', getUnapprovedUsers);
 
 // Get Approved Users
 router.get('/approved', getApprovedUsers);
+
+// Get Users to Delete
+router.get('/toDelete', getUsersToDelete);
 
 // Get specific user
 router.get('/:id', getUser);

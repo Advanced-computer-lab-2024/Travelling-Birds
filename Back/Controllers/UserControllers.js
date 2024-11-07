@@ -59,7 +59,8 @@ const addUser = async (req, res) => {
 			wallet,
 			isApproved,
 			description,
-			profilePicture
+			profilePicture,
+			requestToDelete: false
 		});
 		await newUser.save();
 		// res.status(200).json({});
@@ -112,7 +113,8 @@ const updateUser = async (req, res) => {
 		companyProfile,
 		wallet,
 		isApproved,
-		description
+		description,
+		requestToDelete
 	} = req.body;
 	try {
 		let hashedPassword = password;
@@ -137,7 +139,8 @@ const updateUser = async (req, res) => {
 			companyProfile,
 			wallet,
 			isApproved,
-			description
+			description,
+			requestToDelete
 		};
 
 		// Update image data if a new file is uploaded
@@ -649,6 +652,41 @@ const getApprovedUsers = async (req, res) => {
 	}
 }
 
+const getUsersToDelete = async (req, res) => {
+	try {
+		const query = [
+			{
+				$match: {
+					requestToDelete: true
+				}
+			},
+			{
+				$group: {
+					_id: "$role",
+					items: {$push: "$$ROOT"}
+				}
+			},
+			{
+				$project: {
+					"items.profilePicture": 0,
+					"items.password": 0,
+					"items.role": 0,
+					"items.isApproved": 0,
+					"items.termsFlag": 0
+				}
+			}
+		];
+		const result = await User.aggregate(query);
+		const users = {};
+		result.forEach(item => {
+			users[item._id + "s"] = item.items;
+		});
+		res.status(200).json(users);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 
 module.exports = {
 	addUser,
@@ -668,5 +706,6 @@ module.exports = {
 	// addAdmin,
 	login,
 	getUnapprovedUsers,
-	getApprovedUsers
+	getApprovedUsers,
+	getUsersToDelete
 };
