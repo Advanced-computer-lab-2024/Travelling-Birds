@@ -9,7 +9,9 @@ const productSchema = new Schema({
     picture: String,
     seller: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     ratings: [Number],
-    reviews: [String]
+    reviews: [String],
+    userPurchased: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    isArchived: {type: Boolean, default: false},
 });
 
 

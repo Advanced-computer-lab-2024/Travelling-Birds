@@ -48,6 +48,7 @@ import ManageUserAccounts from "./Components/Admin Portal/Components/UserManagem
 import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
 import UsersToDelete from "./Components/Admin Portal/Components/UserManagement/UsersToDelete";
 import ManageCategoriesTags from "./Components/Admin Portal/Components/ContentManagement/ManageCategoriesTags";
+import ManageProducts from "./Components/Admin Portal/Components/ProductManagement/ManageProducts";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -65,6 +66,7 @@ root.render(
 						<Route path='guides' element={<AdminNavBar/>}/>
 						<Route path='hotspots' element={<AdminNavBar/>}/>
 						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
+						<Route path='manage-products' element={<ManageProducts/>}/>
 						<Route path='manage-complaints' element={<ViewComplaints/>}/>
 					</Route>
 					<Route path='tourist' element={<TouristForm/>}/>
@@ -87,7 +89,9 @@ root.render(
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path='update-itinerary/:id' element={<ItineraryForm/>}/>
 					<Route path='create-museum' element={<MuseumForm/>}/>
+					<Route path='update-museum/:id' element={<MuseumForm/>}/>
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
+					<Route path='update-historical-place/:id' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
