@@ -88,16 +88,16 @@ const ActivityPage = () => {
 
     return (
         <div>
-            <section className="bg-blue-50 px-4 py-10">
+            <section className="bg-white px-4 py-10">
                 <div className="container-xl lg:container m-auto">
-                    <h2 className="text-3xl font-bold text-indigo-500 mb-6 text-center">
-                        All Activities
+                    <h2 className="text-3xl font-bold text-[#330577] mb-6 text-center">
+                        My Activities
                     </h2>
                     {
                         ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
                             <button
                                 onClick={handleCreateActivity}
-                                className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6 mr-4"
+                                className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6 mr-4"
                             >
                                 Create New Activity
                             </button>
@@ -107,7 +107,7 @@ const ActivityPage = () => {
                         ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
                             <button
                                 onClick={handleViewMyActivities}
-                                className="bg-indigo-500 text-white px-4 py-2 rounded-md mb-6"
+                                className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6"
                             >
                                 View My Created Activities
                             </button>
@@ -118,13 +118,13 @@ const ActivityPage = () => {
                             tags.map((tag) => (
                                 <TagDisplay className='py-4' key={tag._id} tag={tag} />
                             ))) : (
-                            <p>Loading tags...</p>
+                            <p className="text-[#330577]">Loading tags...</p>
                         )}
                         {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
                             <Popup
                                 className="h-fit overflow-y-scroll"
                                 trigger={
-                                    <button className="bg-indigo-500 text-white px-4 py-2 rounded-lg mr-4">
+                                    <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
                                         New Tag
                                     </button>
                                 }
@@ -141,12 +141,12 @@ const ActivityPage = () => {
                             categories.map((category) => (
                                 <CategoryDisplay className='py-4' key={category._id} category={category} />
                             ))) : (
-                            <p>Loading categories...</p>
+                            <p className="text-[#330577]">Loading categories...</p>
                         )}
                         <Popup
                             className="h-fit overflow-y-scroll"
                             trigger={
-                                <button className="bg-indigo-500 text-white px-4 py-2 rounded-lg mr-4">
+                                <button className="bg-[#330577] text-white px-4 py-2 rounded-lg mr-4">
                                     New Category
                                 </button>
                             }
@@ -164,7 +164,7 @@ const ActivityPage = () => {
                                 <MyActivityDisplay key={activity._id} activity={activity} />
                             ))
                         ) : (
-                            <p>Loading activities...</p>
+                            <p className="text-[#330577]">Loading activities...</p>
                         )}
                     </div>
                 </div>
