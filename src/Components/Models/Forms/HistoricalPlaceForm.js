@@ -120,7 +120,7 @@ const HistoricalPlaceForm = () => {
             if (data && data._id) {
                 toast.success(`Historical place ${id ? 'updated' : 'added'} successfully`);
                 window.dispatchEvent(modelModificationEvent);
-                navigate('/places');
+                //navigate('/places');
             } else {
                 toast.error(`Failed to ${id ? 'update' : 'register'} historical place`);
             }

@@ -135,7 +135,7 @@ const MuseumForm = () => {
             if (data && data._id) {
                 toast.success(`Museum ${id ? 'updated' : 'added'} successfully`);
                 window.dispatchEvent(modelModificationEvent);
-                navigate('/places');
+                //navigate('/places');
             } else {
                 toast.error(`Failed to ${id ? 'update' : 'register'} museum`);
             }

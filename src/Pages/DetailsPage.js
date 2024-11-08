@@ -49,6 +49,7 @@ const ActivityDetail = () => {
 
 	// Helper function to render stars based on rating
 	// Helper function to render stars based on rating
+// Helper function to render stars based on rating
 const renderStars = (rating) => {
     if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
         rating = 0; // Default to 0 stars if rating is invalid
@@ -61,11 +62,11 @@ const renderStars = (rating) => {
     return (
         <>
             {[...Array(fullStars)].map((_, i) => (
-                <FaStar key={i} className="text-yellow-500" />
+                <FaStar key={i} style={{ color: '#330577' }} />
             ))}
-            {halfStars && <FaStarHalfAlt className="text-yellow-500" />}
+            {halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
             {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-                <FaRegStar key={i + fullStars} className="text-yellow-500" />
+                <FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
             ))}
         </>
     );
@@ -184,12 +185,13 @@ const renderStars = (rating) => {
 						<div className="flex items-center mb-4">
 							<span className="mr-2">Rating:</span>
 							{[1, 2, 3, 4, 5].map((star) => (
-								<FaStar
-									key={star}
-									className={`cursor-pointer ${commentRating >= star ? 'text-yellow-500' : 'text-gray-400'}`}
-									onClick={() => setCommentRating(star)}
-								/>
-							))}
+                                              <FaStar
+                                               key={star}
+                                               className="cursor-pointer"
+                                               style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
+                                               onClick={() => setCommentRating(star)}
+                                              />
+                             ))}
 						</div>
 						<button
 							onClick={handleAddComment}

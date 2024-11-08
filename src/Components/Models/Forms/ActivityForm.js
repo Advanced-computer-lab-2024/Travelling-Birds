@@ -140,7 +140,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
             .then((data) => {
                 if (data?._id) {
                     toast.success('Activity added successfully');
-                    navigate('/activities', { replace: true });
+                    //navigate('/activities', { replace: true });
                 } else {
                     toast.error('Failed to register activity');
                 }
@@ -188,7 +188,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
                 if (data?._id) {
                     toast.success('Activity updated successfully');
                     window.dispatchEvent(modelModificationEvent);
-                    navigate('/activities', { replace: true });
+                    //navigate('/activities', { replace: true });
                 } else {
                     toast.error('Failed to update activity');
                 }

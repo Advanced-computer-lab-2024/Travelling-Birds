@@ -104,7 +104,7 @@ const ItineraryForm = ({ itinerary: initialItinerary }) => {
                 if (data?._id) {
                     toast.success('Itinerary added successfully');
                     window.dispatchEvent(modelModificationEvent);
-                    navigate('/itineraries', { replace: true });
+                    //navigate('/itineraries', { replace: true });
                 } else {
                     toast.error('Failed to register itinerary');
                 }
@@ -126,7 +126,7 @@ const ItineraryForm = ({ itinerary: initialItinerary }) => {
                 if (data?._id) {
                     toast.success('Itinerary updated successfully');
                     window.dispatchEvent(modelModificationEvent);
-                    navigate('/itineraries', { replace: true });
+                    //navigate('/itineraries', { replace: true });
                 } else {
                     toast.error('Failed to update itinerary');
                 }
