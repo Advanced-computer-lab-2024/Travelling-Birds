@@ -33,6 +33,17 @@ const MyItineraryDisplay = ({ itinerary }) => {
         }
     }
 
+    const formatPriceRange = (price) => {
+		const currency = sessionStorage.getItem('currency') || 'USD';
+		if (currency === 'EGP') {
+			return `${(price * 49.3).toFixed(2)} EGP`;
+		} else if (currency === 'EUR') {
+			return `€${(price * 0.93).toFixed(2)}`;
+		} else {
+			return `$${price.toFixed(2)}`; // Default to USD
+		}
+	};
+
     const availableDatesPreview = itinerary.availableDates.slice(0, 3).map(date => new Date(date).toLocaleDateString()).join(', ');
 
     return (
@@ -63,7 +74,7 @@ const MyItineraryDisplay = ({ itinerary }) => {
                     <p className="text-gray-700">Language: {itinerary.language || 'N/A'}</p>
                 </div>
                 <div className="w-full lg:w-1/3 p-2 space-y-2">
-                    <p className="text-gray-700">Price: ${itinerary.price || 'N/A'}</p>
+                    <p className="text-gray-700">Price: {formatPriceRange(itinerary.price) || 'N/A'}</p>
                     <p className="text-gray-700">Accessibility: {itinerary.accessibility || 'N/A'}</p>
                     <p className="text-gray-700">Preferences: {itinerary.preferences || 'N/A'}</p>
                     <p className="text-gray-700">Booking Status: {itinerary.isBooked ? 'Booked' : 'Available'}</p>

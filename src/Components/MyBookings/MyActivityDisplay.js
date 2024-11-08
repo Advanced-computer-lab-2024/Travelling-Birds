@@ -17,6 +17,16 @@ const MyActivityDisplay = ({ activity }) => {
             console.error('Error converting image data to base64:', error);
         }
     }
+    const formatPriceRange = (price) => {
+		const currency = sessionStorage.getItem('currency') || 'USD';
+		if (currency === 'EGP') {
+			return `${(price * 49.3).toFixed(2)} EGP`;
+		} else if (currency === 'EUR') {
+			return `€${(price * 0.93).toFixed(2)}`;
+		} else {
+			return `$${price.toFixed(2)}`; // Default to USD
+		}
+	};
 
     const renderRatingStars = (rating) => {
         const stars = [];
@@ -53,9 +63,9 @@ const MyActivityDisplay = ({ activity }) => {
                         <p className="text-gray-700 mb-2">Address: {activity.location?.address || 'N/A'}</p>
                     </div>
                     <div>
-                        {activity.price !== undefined && <p className="text-gray-700 mb-2">Price: ${activity.price}</p>}
+                        {activity.price !== undefined && <p className="text-gray-700 mb-2">Price: {formatPriceRange(activity.price)}</p>}
                         {activity.priceRange && (
-                            <p className="text-gray-700 mb-2">Price Range: ${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}</p>
+                            <p className="text-gray-700 mb-2">Price Range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)} - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
                         )}
                         <p className="text-gray-700 mb-2">Special Discounts: {activity.specialDiscounts || 'N/A'}</p>
                         <p className="text-gray-700 mb-2">Reviews Count: {activity.reviewsCount}</p>

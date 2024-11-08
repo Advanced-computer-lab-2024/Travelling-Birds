@@ -16,20 +16,35 @@ const MyMuseumDisplay = ({ museum }) => {
             console.error('Error converting image data to base64:', error);
         }
     }
-
     const renderTicketPrices = (ticketPrices) => {
-        if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p>No ticket prices available.</p>;
-
+        if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
+          return <p className="text-gray-700">No ticket prices available.</p>;
+        }
+    
+        const currency = sessionStorage.getItem('currency');
+        const convertPrice = (price) => {
+          if (currency === 'EGP') {
+           
+            return `${(price * 49.30).toFixed(2)} EGP`;
+          } else if (currency === 'EUR') {
+         
+            return `€${(price * 0.93).toFixed(2)}`;
+          } else {
+           
+            return `$${price.toFixed(2)}`;
+          }
+        };
+    
         return (
-            <ul className="list-disc ml-6">
-                {Object.entries(ticketPrices).map(([category, price], index) => (
-                    <li key={index}>
-                        {category}: ${price.toFixed(2)}
-                    </li>
-                ))}
+            <ul className="list-disc ml-6 text-gray-700">
+              {Object.entries(ticketPrices).map(([category, price], index) => (
+                  <li key={index}>
+                    {category}: {convertPrice(price)}
+                  </li>
+              ))}
             </ul>
         );
-    };
+      };
 
     return (
         <div className="bg-white rounded-xl shadow-md relative flex md:flex-row flex-col md:space-x-8 p-4"> {/* Increased md:space-x-4 to md:space-x-8 */}

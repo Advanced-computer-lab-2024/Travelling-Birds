@@ -53,13 +53,13 @@ const MuseumDetail = () => {
     const currency = sessionStorage.getItem('currency');
     const convertPrice = (price) => {
       if (currency === 'EGP') {
-        console.log('aaaaaaaa');
+       
         return `${(price * 49.30).toFixed(2)} EGP`;
       } else if (currency === 'EUR') {
-        console.log('abbbbbbbbbaaa');
+     
         return `€${(price * 0.93).toFixed(2)}`;
       } else {
-        console.log('ccccccccca');
+       
         return `$${price.toFixed(2)}`;
       }
     };
