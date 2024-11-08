@@ -10,7 +10,7 @@ import {toast} from "react-toastify";
 const TouristNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
-	const [currency, setCurrency] = useState('EGP');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const [badgeDropdownVisible, setBadgeDropdownVisible] = useState(false);
@@ -29,6 +29,7 @@ const TouristNavBar = () => {
 		setCurrency(newCurrency);
 		setIsPopupVisible(false);
 		sessionStorage.setItem('currency', newCurrency);
+		window.location.reload();
 	};
 
 	useEffect(() => {

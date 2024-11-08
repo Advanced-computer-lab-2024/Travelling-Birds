@@ -7,7 +7,7 @@ import {toast} from "react-toastify";
 const AdminNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
-	const [currency, setCurrency] = useState('EGP');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const navigate = useNavigate();
@@ -25,6 +25,7 @@ const AdminNavBar = () => {
 		setCurrency(newCurrency);
 		setIsPopupVisible(false);
 		sessionStorage.setItem('currency', newCurrency);
+		window.location.reload();
 	};
 
 	useEffect(() => {

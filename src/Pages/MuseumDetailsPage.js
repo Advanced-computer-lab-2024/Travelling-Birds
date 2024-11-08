@@ -46,16 +46,32 @@ const MuseumDetail = () => {
 
   // Helper function to render ticket prices from object (not directly from Map)
   const renderTicketPrices = (ticketPrices) => {
-    if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p className="text-gray-700">No ticket prices available.</p>;
-  
+    if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
+      return <p className="text-gray-700">No ticket prices available.</p>;
+    }
+
+    const currency = sessionStorage.getItem('currency');
+    const convertPrice = (price) => {
+      if (currency === 'EGP') {
+        console.log('aaaaaaaa');
+        return `${(price * 49.30).toFixed(2)} EGP`;
+      } else if (currency === 'EUR') {
+        console.log('abbbbbbbbbaaa');
+        return `€${(price * 0.93).toFixed(2)}`;
+      } else {
+        console.log('ccccccccca');
+        return `$${price.toFixed(2)}`;
+      }
+    };
+
     return (
-      <ul className="list-disc ml-6 text-gray-700">
-        {Object.entries(ticketPrices).map(([category, price], index) => (
-          <li key={index}>
-            {category}: ${price.toFixed(2)}
-          </li>
-        ))}
-      </ul>
+        <ul className="list-disc ml-6 text-gray-700">
+          {Object.entries(ticketPrices).map(([category, price], index) => (
+              <li key={index}>
+                {category}: {convertPrice(price)}
+              </li>
+          ))}
+        </ul>
     );
   };
 

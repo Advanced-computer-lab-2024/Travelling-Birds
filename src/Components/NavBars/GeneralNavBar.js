@@ -4,7 +4,7 @@ import {useState} from "react";
 
 const GeneralNavBar = () => {
 	const navigate = useNavigate();
-	const [currency, setCurrency] = useState('EGP');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 
 	const handleSignInClick = () => {
@@ -13,7 +13,9 @@ const GeneralNavBar = () => {
 
 	const handleCurrencyChange = (newCurrency) => {
 		setCurrency(newCurrency);
-		setIsPopupVisible(false); // Close the popup when a currency is selected
+		setIsPopupVisible(false);
+		sessionStorage.setItem('currency', newCurrency);
+		window.location.reload();
 	};
 
 	return (

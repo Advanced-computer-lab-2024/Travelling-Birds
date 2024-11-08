@@ -149,7 +149,7 @@ const ExplorePage = () => {
     }, []);
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6 min-h-screen bg-[#fcfcfc]">
             {/* Video section */}
             <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-lg mb-10">
                 <video className="w-full h-full object-cover" autoPlay muted loop>
