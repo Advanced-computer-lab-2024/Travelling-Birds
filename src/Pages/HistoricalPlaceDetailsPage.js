@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
-import LoadingPage from './LoadingPage'; 
+import { FaClock } from 'react-icons/fa';
+import LoadingPage from './LoadingPage';
+import LocationContact from "../Components/HPLocation"; // Import the LocationContact component
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -18,12 +19,13 @@ const HistoricalPlaceDetail = () => {
         setLoading(false);
       } catch (err) {
         console.log('Error fetching place data', err);
+        setLoading(false);
       }
     };
     fetchPlace();
   }, [placeId]);
 
-  // Convert image to base64 if exists
+  // Convert image to base64 if it exists
   let imageBase64 = null;
   if (place?.image?.data?.data && place.image.contentType) {
     const byteArray = new Uint8Array(place.image.data.data);
@@ -31,7 +33,7 @@ const HistoricalPlaceDetail = () => {
     imageBase64 = `data:${place.image.contentType};base64,${btoa(binaryString)}`;
   }
 
-  if (loading) return <LoadingPage /> ;
+  if (loading) return <LoadingPage />;
 
   return (
     <div>
@@ -44,19 +46,21 @@ const HistoricalPlaceDetail = () => {
           {/* Image Display */}
           {imageBase64 && (
             <div className="mt-8">
-              <img src={imageBase64} alt={place?.name} className="w-full h-96 object-cover rounded-lg shadow-md" />
+              <img src={imageBase64} alt="Historical Place" className="w-full h-96 object-cover rounded-lg shadow-md" />
             </div>
           )}
 
-          {/* Location and Opening Hours */}
+          {/* Location and Contact */}
+          {place?.location && <LocationContact historicalPlace={place} />} {/* Pass the historicalPlace prop */}
+
+          {/* Opening Hours */}
           <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
             <h2 className="font-semibold text-lg text-[#330577]">Details</h2>
             <p className="flex items-center mt-2">
-              <FaMapMarkerAlt className="mr-2 text-gray-700" /> {place?.location}
-            </p>
-            <p className="flex items-center mt-2">
-              <FaClock className="mr-2 text-gray-700" /> Opening Hours: {new Date(place?.openingHours?.startTime).toLocaleTimeString()} -{' '}
-              {new Date(place?.openingHours?.endTime).toLocaleTimeString()}
+              <FaClock className="mr-2 text-gray-700" /> 
+              Opening Hours: 
+              {place?.openingHours?.startTime ? ` ${new Date(place.openingHours.startTime).toLocaleTimeString()}` : ' N/A'} - 
+              {place?.openingHours?.endTime ? ` ${new Date(place.openingHours.endTime).toLocaleTimeString()}` : ' N/A'}
             </p>
           </div>
 

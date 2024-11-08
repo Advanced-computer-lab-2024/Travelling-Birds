@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import ReusableInput from "../../ReusableInput";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom"; // Import useParams for fetching historical place by ID
+import { useNavigate, useParams } from "react-router-dom";
 import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 import PropTypes from "prop-types";
 
@@ -11,9 +11,14 @@ const HistoricalPlaceForm = () => {
     const [historicalPlace, setHistoricalPlace] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [location, setLocation] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [lat, setLat] = useState('');
+    const [lng, setLng] = useState('');
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const [address, setAddress] = useState('');
+    const [area, setArea] = useState('');
     const [ticketPrices, setTicketPrices] = useState('');
     const [tags, setTags] = useState('');
     const [image, setImage] = useState(null);
@@ -61,10 +66,15 @@ const HistoricalPlaceForm = () => {
         if (placeData) {
             setName(placeData.name || '');
             setDescription(placeData.description || '');
-            setLocation(placeData.location || '');
             setStartTime(placeData.openingHours?.startTime ? new Date(placeData.openingHours.startTime).toISOString().slice(11, 16) : '');
             setEndTime(placeData.openingHours?.endTime ? new Date(placeData.openingHours.endTime).toISOString().slice(11, 16) : '');
-            setTicketPrices(placeData.ticketPrices?.[0] || '');
+            setLat(placeData.location?.lat || '');
+            setLng(placeData.location?.lng || '');
+            setCity(placeData.location?.city || '');
+            setCountry(placeData.location?.country || '');
+            setAddress(placeData.location?.address || '');
+            setArea(placeData.location?.area || '');
+            setTicketPrices(placeData.ticketPrices?.join(',') || '');
             setTags(placeData.tags?.join(',') || '');
         }
     };
@@ -77,12 +87,15 @@ const HistoricalPlaceForm = () => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('description', description);
-        formData.append('location', location);
-
         formData.append('openingHours[startTime]', `${startTime}:00`);
         formData.append('openingHours[endTime]', `${endTime}:00`);
-
-        formData.append('ticketPrices', ticketPrices);
+        formData.append('location[lat]', lat);
+        formData.append('location[lng]', lng);
+        formData.append('location[city]', city);
+        formData.append('location[country]', country);
+        formData.append('location[address]', address);
+        formData.append('location[area]', area);
+        formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
         formData.append('createdBy', sessionStorage.getItem('user id'));
 
@@ -129,30 +142,17 @@ const HistoricalPlaceForm = () => {
                     <div className="flex flex-col space-y-4">
                         <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                         <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                        <ReusableInput type="text" name="Location" value={location} onChange={e => setLocation(e.target.value)} />
-                        <div>
-                            <label className="block text-gray-700 mb-2">Opening Hours Start Time:</label>
-                            <input
-                                type="time"
-                                value={startTime}
-                                onChange={e => setStartTime(e.target.value)}
-                                className="w-full mb-4 border rounded px-2 py-1"
-                            />
-                        </div>
+                        <ReusableInput type="text" name="City" value={city} onChange={e => setCity(e.target.value)} />
+                        <ReusableInput type="text" name="Country" value={country} onChange={e => setCountry(e.target.value)} />
+                        <ReusableInput type="text" name="Address" value={address} onChange={e => setAddress(e.target.value)} />
                     </div>
 
                     {/* Right Column */}
                     <div className="flex flex-col space-y-4">
-                        <div>
-                            <label className="block text-gray-700 mb-2">Opening Hours End Time:</label>
-                            <input
-                                type="time"
-                                value={endTime}
-                                onChange={e => setEndTime(e.target.value)}
-                                className="w-full mb-4 border rounded px-2 py-1"
-                            />
-                        </div>
-                        <ReusableInput type="number" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
+                        <ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)} />
+                        <ReusableInput type="number" step="any" name="Latitude" value={lat} onChange={e => setLat(e.target.value)} />
+                        <ReusableInput type="number" step="any" name="Longitude" value={lng} onChange={e => setLng(e.target.value)} />
+                        <ReusableInput type="text" name="Ticket Prices (Comma-separated)" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
                         <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
                         <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />
                     </div>
@@ -192,7 +192,14 @@ HistoricalPlaceForm.propTypes = {
         _id: PropTypes.string.isRequired,
         name: PropTypes.string,
         description: PropTypes.string,
-        location: PropTypes.string,
+        location: PropTypes.shape({
+            city: PropTypes.string,
+            country: PropTypes.string,
+            lat: PropTypes.number,
+            lng: PropTypes.number,
+            address: PropTypes.string,
+            area: PropTypes.string,
+        }),
         openingHours: PropTypes.shape({
             startTime: PropTypes.string,
             endTime: PropTypes.string,

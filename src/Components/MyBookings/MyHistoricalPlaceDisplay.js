@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import Popup from "reactjs-popup";
-import { HistoricalPlaceForm } from "../Models/Forms";
-import { toast } from "react-toastify";
-import { modelModificationEvent } from "../../utils/modelModificationEvent";
-import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
+import PropTypes from "prop-types";
 
 const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -45,7 +41,6 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
                 </div>
             </div>
             <div className="md:w-1/3 w-full space-y-4 mt-4 md:mt-0">
-                <p className="text-gray-700">Location: {historicalPlace.location || 'N/A'}</p>
                 <div className="text-[#330577]">
                     {`Opening Hours: ${historicalPlace.openingHours?.startTime ? new Date(historicalPlace.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
                     ${historicalPlace.openingHours?.endTime ? new Date(historicalPlace.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`}
@@ -61,7 +56,6 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
                         'N/A'
                     )}
                 </div>
-               
             </div>
         </div>
     );
@@ -72,7 +66,6 @@ MyHistoricalPlaceDisplay.propTypes = {
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         description: PropTypes.string,
-        location: PropTypes.string,
         openingHours: PropTypes.shape({
             startTime: PropTypes.string,
             endTime: PropTypes.string,

@@ -13,9 +13,9 @@ const parseTimeToDate = (timeString) => {
 
 // Add Historical Place
 const addHistoricalPlace = async (req, res) => {
-	const {name, description,location, openingHours, ticketPrices, tags,createdBy} = req.body;
+    const { name, description, openingHours, location, ticketPrices, tags, createdBy } = req.body;
 
-	try {
+    try {
         if (!openingHours) {
             return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
         }
@@ -31,38 +31,34 @@ const addHistoricalPlace = async (req, res) => {
             return res.status(400).json({ error: 'Invalid openingHours format. Must include startTime and endTime.' });
         }
 
-        // Convert `startTime` and `endTime` to local Date objects
         parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
         parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
 
-        if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
-            return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
-        }
-
-		let image = null;
+        let image = null;
         if (req.file) {
             image = {
                 data: req.file.buffer,
-                contentType: req.file.mimetype
+                contentType: req.file.mimetype,
             };
         }
-		const newHistoricalPlace = new HistoricalPlaceModel(
-			{
-				name,
-				description,
-				location,
-				openingHours,
-				ticketPrices,
-				tags,
-				image,
-				createdBy
-			});
-		await newHistoricalPlace.save();
-		res.status(201).json(newHistoricalPlace);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+
+        const newHistoricalPlace = new HistoricalPlaceModel({
+            name,
+            description,
+            openingHours: parsedOpeningHours,
+            location,
+            ticketPrices,
+            tags,
+            image,
+            createdBy,
+        });
+
+        await newHistoricalPlace.save();
+        res.status(201).json(newHistoricalPlace);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Get all historical places
 const getAllHistoricalPlaces = async (req, res) => {
@@ -88,17 +84,17 @@ const getHistoricalPlace = async (req, res) => {
 }
 
 const updateHistoricalPlace = async (req, res) => {
-    const { name, description,location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours, location, ticketPrices, tags, createdBy } = req.body;
 
     try {
         const updatedFields = {
             name,
             description,
-            location,
             openingHours,
+            location,
             ticketPrices,
             tags,
-            createdBy
+            createdBy,
         };
 
         if (openingHours) {
@@ -112,18 +108,13 @@ const updateHistoricalPlace = async (req, res) => {
             parsedOpeningHours.startTime = parseTimeToDate(parsedOpeningHours.startTime);
             parsedOpeningHours.endTime = parseTimeToDate(parsedOpeningHours.endTime);
 
-            if (isNaN(parsedOpeningHours.startTime) || isNaN(parsedOpeningHours.endTime)) {
-                return res.status(400).json({ error: 'Invalid date format for startTime or endTime.' });
-            }
-
             updatedFields.openingHours = parsedOpeningHours;
         }
 
-        // Update image data if a new file is uploaded
         if (req.file) {
             updatedFields.image = {
                 data: req.file.buffer,
-                contentType: req.file.mimetype
+                contentType: req.file.mimetype,
             };
         }
 
