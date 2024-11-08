@@ -1,18 +1,17 @@
 import React from 'react';
 import LogIn from '../Components/LogIn';
+import Logo from '../Assets/Logo.png';
 
 const LoginPage = () => {
 	return (
 		<div className="flex items-center justify-center h-[calc(100vh-80px)] bg-[#fcfcfc] px-4">
-			<div className="flex w-full max-w-6xl gap-96">
+			
 				{/* Left Side - Logo Placeholder */}
-				<div className="flex-1 flex items-center justify-center">
-					<div className="text-4xl font-bold text-gray-600">
-						Logo should be here
-					</div>
+				<div className="flex-1 flex items-center justify-center h-max max-w-[50%] mr-96">
+					<img src={Logo} alt="logo" className="w-[600px] h-[600px] object-cover" />
 				</div>
 				{/* Right Side - Card */}
-				<div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-sm">
+				<div className="bg-white shadow-2xl rounded-xl p-8 h-max max-w-[50%]">
 					<h1 className="text-3xl font-bold text-center text-[#330577] mb-8">For Travel Lovers</h1>
 					<div className="mb-6">
 						<LogIn />
@@ -27,7 +26,7 @@ const LoginPage = () => {
 					</div>
 				</div>
 			</div>
-		</div>
+		
 	);
 };
 
