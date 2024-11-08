@@ -4,7 +4,7 @@ import Logo from '../Assets/Logo.png';
 
 const LoginPage = () => {
 	return (
-		<div className="flex items-center justify-center h-[calc(100vh-80px)] bg-[#fcfcfc] px-4">
+		<div className="flex items-center justify-center h-[calc(100vh-80px)] bg-[#fcfcfc]">
 			
 				{/* Left Side - Logo Placeholder */}
 			<div className="flex-1 flex items-center justify-center h-[calc(100vh-80px)] w-[50%]">
