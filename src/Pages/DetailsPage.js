@@ -50,14 +50,13 @@ const ActivityDetail = () => {
 
 	// Helper function to render stars based on rating
 	const renderStars = (rating) => {
-		// Ensure the rating is a valid number and is between 0 and 5
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
-			rating = 0; // Default to 0 stars if the rating is invalid
+			rating = 0;
 		}
 		const totalStars = 5;
-		const fullStars = Math.min(Math.floor(rating), totalStars); // Ensure fullStars doesn't exceed totalStars
-		const halfStars = rating % 1 !== 0 && fullStars < totalStars; // Only render half a star if it fits
-	
+		const fullStars = Math.min(Math.floor(rating), totalStars);
+		const halfStars = rating % 1 !== 0 && fullStars < totalStars;
+
 		return (
 			<>
 				{[...Array(fullStars)].map((_, i) => (
@@ -69,6 +68,18 @@ const ActivityDetail = () => {
 				))}
 			</>
 		);
+	};
+
+	// Helper function to format price range based on currency
+	const formatPriceRange = (price) => {
+		const currency = sessionStorage.getItem('currency') || 'USD';
+		if (currency === 'EGP') {
+			return `${(price * 49.3).toFixed(2)} EGP`;
+		} else if (currency === 'EUR') {
+			return `€${(price * 0.93).toFixed(2)}`;
+		} else {
+			return `$${price.toFixed(2)}`; // Default to USD
+		}
 	};
 
 	// Handle copying the link to clipboard
@@ -102,12 +113,10 @@ const ActivityDetail = () => {
 							<p className="text-gray-700 mt-4 leading-relaxed">{activity?.description}</p>
 						</div>
 						<div className="flex flex-col items-center space-y-4">
-							{/* Save Button */}
 							<button className="p-2 px-4 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center space-x-2">
 								<AiOutlineHeart className="text-lg" />
 								<span>Save</span>
 							</button>
-							{/* Share Button */}
 							<div className="relative">
 								<button
 									onClick={() => setIsShareOpen(!isShareOpen)}
@@ -166,14 +175,14 @@ const ActivityDetail = () => {
 						{/* Details Section */}
 						<div className="bg-white p-4 rounded-lg shadow-md">
 							<h2 className="font-semibold text-lg text-[#330577]">Details</h2>
-							<p className="text-gray-700 mt-2">Price range: ${activity?.priceRange?.lwBound} - ${activity?.priceRange?.hiBound}</p>
+							<p className="text-gray-700 mt-2">Price range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)} - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
 							<p className="text-gray-700">Category: {activity?.category}</p>
 							<p className="text-gray-700">Special discounts: {activity?.specialDiscounts}</p>
 							<p className="text-gray-700">Features: {activity?.features?.join(', ')}</p>
 						</div>
 
 						{/* Location & Contact */}
-						 <LocationContact activity={activity} />
+						<LocationContact activity={activity} />
 					</div>
 
 					{/* Comments Section */}
