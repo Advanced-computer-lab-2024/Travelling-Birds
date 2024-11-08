@@ -91,6 +91,43 @@ const ActivityDetail = () => {
 		});
 	};
 
+	// Handle submitting a new comment
+	const handleAddComment = async () => {
+		if (!commentText || commentRating === 0) {
+			alert("Please provide a comment and a rating.");
+			return;
+		}
+		const newComment = {
+			user: sessionStorage.getItem('user id'),
+			text: commentText,
+			date: new Date().toISOString(),
+			stars: commentRating
+		};
+
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(newComment)
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to add comment');
+			}
+
+			// Update local state with new comment
+			setActivity((prev) => ({
+				...prev,
+				comments: [newComment, ...(prev.comments || [])]
+			}));
+			setCommentText("");
+			setCommentRating(0);
+		} catch (err) {
+			console.error("Error adding comment:", err);
+			alert("Failed to add comment. Please try again.");
+		}
+	};
+
 	return (
 		<div>
 			<section className="px-4 py-10 bg-gray-100">
@@ -227,7 +264,7 @@ const ActivityDetail = () => {
 							))}
 						</div>
 						<button
-							onClick={handleCopyLink}
+							onClick={handleAddComment}
 							className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
 						>
 							Submit Review
