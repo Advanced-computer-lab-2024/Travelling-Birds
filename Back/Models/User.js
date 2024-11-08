@@ -27,6 +27,7 @@ const user = new Schema({
     profilePicture: { data: Buffer, contentType: String },
     termsFlag:  Boolean,
     loyaltyPoints: Number,
+    redeemablePoints: Number,
 	requestToDelete: Boolean,
     identityCard:{name: { type: String }, file: {data: Buffer, contentType: String}},
     certificates: [{name: { type: String }, file: {data: Buffer, contentType: String}}],

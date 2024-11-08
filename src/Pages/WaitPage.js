@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Logo from '../Assets/Logo.png';
 
 const WaitPage = () => {
 	const navigate = useNavigate();
@@ -10,7 +11,8 @@ const WaitPage = () => {
 
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-			<h1 className="text-5xl font-bold mb-40">Logo Should be here</h1> {/* Adjusted mb-6 for 15px gap */}
+			 	
+					<img src={Logo} alt="logo" className="w-[600px] h-[600px] object-cover"/>
 			<p className="text-2xl mb-8 text-center">
 				Please wait until your account gets approved. Meanwhile you can:
 			</p>

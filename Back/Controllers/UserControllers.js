@@ -56,6 +56,7 @@ const addUser = async (req, res) => {
 			profilePicture,
 			termsFlag:false,
 			loyaltyPoints: 0,
+			redeemablePoints: 0,
 			requestToDelete: false
 		});
 
@@ -158,6 +159,7 @@ const updateUser = async (req, res) => {
 		description,
 		termsFlag,
 		loyaltyPoints,
+		redeemablePoints,
 		requestToDelete
 	} = req.body;
 	try {
@@ -186,6 +188,7 @@ const updateUser = async (req, res) => {
 			description,
 			termsFlag,
 			loyaltyPoints,
+			redeemablePoints,	
 			requestToDelete
 		};
 		// Update image data if a new file is uploaded

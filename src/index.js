@@ -25,7 +25,7 @@ import MuseumForm from "./Components/Models/Forms/MuseumForm";
 import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
-import DetailsPage from "./Pages/DetailsPage";
+import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
 import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
@@ -80,7 +80,7 @@ root.render(
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
-					<Route path='activities/:id' element={<DetailsPage/>}/>
+					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm />} />
                     <Route path='update-activity/:id' element={<ActivityForm />} /> 
