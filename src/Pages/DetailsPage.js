@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import Header from "../Components/Header";
-import LocationContact from "../Components/Location";
+import LocationContact from "../Components/Locations/Location";
 
 const ActivityDetail = () => {
 	const [loading, setLoading] = useState(true);

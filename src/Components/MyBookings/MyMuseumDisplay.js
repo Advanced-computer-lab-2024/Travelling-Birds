@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import Popup from "reactjs-popup";
-import { MuseumForm } from "../Models/Forms";
-import { toast } from "react-toastify";
-import { modelModificationEvent } from "../../utils/modelModificationEvent";
-import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const MyMuseumDisplay = ({ museum }) => {
     const [isHovered, setIsHovered] = useState(false);
@@ -59,7 +55,6 @@ const MyMuseumDisplay = ({ museum }) => {
                 </div>
             </div>
             <div className="md:w-1/3 w-full space-y-4 mt-4 md:mt-0">
-                <p className="text-gray-700">Location: {museum.location || 'N/A'}</p>
                 <div className="text-[#330577]">
                     {`Opening Hours: ${museum.openingHours?.startTime ? new Date(museum.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'} - 
                     ${museum.openingHours?.endTime ? new Date(museum.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}`}
@@ -79,7 +74,6 @@ MyMuseumDisplay.propTypes = {
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         description: PropTypes.string,
-        location: PropTypes.string,
         openingHours: PropTypes.shape({
             startTime: PropTypes.string,
             endTime: PropTypes.string,

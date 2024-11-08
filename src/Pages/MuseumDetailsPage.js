@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaMapMarkerAlt, FaClock } from 'react-icons/fa';
+import { FaClock } from 'react-icons/fa';
 import LoadingPage from './LoadingPage'; 
+import LocationContact from "../Components/Locations/MuseumLocation"; // Import the LocationContact component
 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ const MuseumDetail = () => {
   if (loading) return <LoadingPage/>;
 
   // Helper function to render ticket prices from object (not directly from Map)
-const renderTicketPrices = (ticketPrices) => {
+  const renderTicketPrices = (ticketPrices) => {
     if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p>No ticket prices available.</p>;
   
     return (
@@ -59,19 +60,21 @@ const renderTicketPrices = (ticketPrices) => {
           {/* Image Display */}
           {imageBase64 && (
             <div className="mt-8">
-              <img src={imageBase64} alt={museum?.name} className="w-full h-96 object-cover rounded-lg shadow-md" />
+              <img src={imageBase64} alt="Museum" className="w-full h-96 object-cover rounded-lg shadow-md" />
             </div>
           )}
 
-          {/* Location and Opening Hours */}
+          {/* Location and Contact */}
+          {museum?.location && <LocationContact museum={museum} />} {/* Pass the museum prop */}
+
+          {/* Opening Hours */}
           <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
             <h2 className="font-semibold text-lg text-[#330577]">Details</h2>
             <p className="flex items-center mt-2">
-              <FaMapMarkerAlt className="mr-2 text-gray-700" /> {museum?.location}
-            </p>
-            <p className="flex items-center mt-2">
-              <FaClock className="mr-2 text-gray-700" /> Opening Hours: {new Date(museum?.openingHours?.startTime).toLocaleTimeString()} -{' '}
-              {new Date(museum?.openingHours?.endTime).toLocaleTimeString()}
+              <FaClock className="mr-2 text-gray-700" /> 
+              Opening Hours: 
+              {museum?.openingHours?.startTime ? ` ${new Date(museum.openingHours.startTime).toLocaleTimeString()}` : ' N/A'} - 
+              {museum?.openingHours?.endTime ? ` ${new Date(museum.openingHours.endTime).toLocaleTimeString()}` : ' N/A'}
             </p>
           </div>
 

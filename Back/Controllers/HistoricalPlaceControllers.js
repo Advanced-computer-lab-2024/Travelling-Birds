@@ -90,7 +90,6 @@ const updateHistoricalPlace = async (req, res) => {
         const updatedFields = {
             name,
             description,
-            openingHours,
             location,
             ticketPrices,
             tags,

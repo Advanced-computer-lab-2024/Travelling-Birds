@@ -13,7 +13,7 @@ const parseTimeToDate = (timeString) => {
 
 //create museum
 const addMuseum = async (req, res) => {
-    const { name, description, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours,location ,ticketPrices, tags, createdBy } = req.body;
 
     try {
         if (!openingHours) {
@@ -57,8 +57,8 @@ const addMuseum = async (req, res) => {
         const newMuseum = new MuseumModel({
             name,
             description,
-            location,
             openingHours: parsedOpeningHours,
+            location,
             ticketPrices: parsedTicketPrices,
             tags,
             image,
@@ -98,7 +98,7 @@ const getMuseum = async (req, res) => {
 
 // Update Museum
 const updateMuseum = async (req, res) => {
-    const { name, description, location, openingHours, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours,location, ticketPrices, tags, createdBy } = req.body;
 
     try {
         const updatedFields = {

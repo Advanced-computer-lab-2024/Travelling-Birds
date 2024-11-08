@@ -4,10 +4,17 @@ const Schema = mongoose.Schema;
 const museumSchema = new Schema({
     name: { type: String, required: true },
     description: String,
-    location: String,
     openingHours: {
         startTime: { type: Date, required: true },
         endTime: { type: Date, required: true }
+    },
+    location: {
+        city: String,
+        country: String,
+        lat: {type: Number, required: true},
+        lng: {type: Number, required: true},
+        address: String,
+        area: String,
     },
     ticketPrices: {
         type: Map,

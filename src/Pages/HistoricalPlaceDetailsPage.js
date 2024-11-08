@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock } from 'react-icons/fa';
 import LoadingPage from './LoadingPage';
-import LocationContact from "../Components/HPLocation"; // Import the LocationContact component
+import LocationContact from "../Components/Locations/HistoricalPlaceLocation"; // Import the LocationContact component
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);
