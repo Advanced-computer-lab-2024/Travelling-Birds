@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt } from 'react-icons/fa';
-import Header from "../Components/Header";
+import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt } from 'react-icons/fa';
+import { AiOutlineHeart } from "react-icons/ai";
 import LocationContact from "../Components/Locations/Location";
 
 const ActivityDetail = () => {
@@ -9,6 +9,7 @@ const ActivityDetail = () => {
 	const [activity, setActivity] = useState(null);
 	const [commentText, setCommentText] = useState("");
 	const [commentRating, setCommentRating] = useState(0);
+	const [isShareOpen, setIsShareOpen] = useState(false); // State to control share dropdown visibility
 	const activityId = useParams().id;
 
 	useEffect(() => {
@@ -33,7 +34,7 @@ const ActivityDetail = () => {
 			} catch (err) {
 				console.log('Error fetching comments', err);
 			}
-		}
+		};
 		fetchComments();
 	}, [activityId]);
 
@@ -48,73 +49,96 @@ const ActivityDetail = () => {
 	if (loading) return <p>Loading...</p>;
 
 	// Helper function to render stars based on rating
-	// Helper function to render stars based on rating
-// Helper function to render stars based on rating
-const renderStars = (rating) => {
-    if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
-        rating = 0; // Default to 0 stars if rating is invalid
-    }
-
-    const fullStars = Math.floor(rating);
-    const halfStars = rating % 1 !== 0;
-    const totalStars = 5;
-
-    return (
-        <>
-            {[...Array(fullStars)].map((_, i) => (
-                <FaStar key={i} style={{ color: '#330577' }} />
-            ))}
-            {halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
-            {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-                <FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
-            ))}
-        </>
-    );
-};
-
-	// Handle submitting a new comment
-	const handleAddComment = async () => {
-		if (!commentText || commentRating === 0) {
-			alert("Please provide a comment and a rating.");
-			return;
+	const renderStars = (rating) => {
+		// Ensure the rating is a valid number and is between 0 and 5
+		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
+			rating = 0; // Default to 0 stars if the rating is invalid
 		}
-		const newComment = {
-			user: sessionStorage.getItem('user id'),
-			text: commentText,
-			date: new Date().toISOString(),
-			stars: commentRating
-		};
+		const totalStars = 5;
+		const fullStars = Math.min(Math.floor(rating), totalStars); // Ensure fullStars doesn't exceed totalStars
+		const halfStars = rating % 1 !== 0 && fullStars < totalStars; // Only render half a star if it fits
+	
+		return (
+			<>
+				{[...Array(fullStars)].map((_, i) => (
+					<FaStar key={i} style={{ color: '#330577' }} />
+				))}
+				{halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
+				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
+					<FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
+				))}
+			</>
+		);
+	};
 
-		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(newComment)
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to add comment');
-			}
-
-			// Update local state with new comment
-			setActivity((prev) => ({
-				...prev,
-				comments: [newComment, ...(prev.comments || [])]
-			}));
-			setCommentText("");
-			setCommentRating(0);
-		} catch (err) {
-			console.error("Error adding comment:", err);
-			alert("Failed to add comment. Please try again.");
-		}
+	// Handle copying the link to clipboard
+	const handleCopyLink = () => {
+		const link = `http://localhost:3000/activities/${activityId}`;
+		navigator.clipboard.writeText(link).then(() => {
+			alert('Link copied to clipboard!');
+			setIsShareOpen(false); // Close the dropdown menu after copying
+		});
 	};
 
 	return (
 		<div>
 			<section className="px-4 py-10 bg-gray-100">
 				<div className="container-xl lg:container m-auto">
-					{/* Header Section */}
-					<Header activity={activity} />
+					{/* Title, Description, and Buttons */}
+					<div className="flex items-center justify-between bg-white p-6 shadow-lg rounded-lg mb-4">
+						<div className="flex flex-col">
+							<h1 className="text-4xl font-bold text-gray-800 mb-1">{activity?.title}</h1>
+							<p className="text-gray-500 text-lg">{activity?.rank}</p>
+							<div className="flex items-center mt-2 space-x-3">
+								<span className="flex items-center text-2xl text-yellow-500">
+									{renderStars(activity?.rating)}
+								</span>
+								<p className="text-gray-600 text-sm">({activity?.reviewsCount} reviews)</p>
+							</div>
+							<div className="flex items-center mt-3 text-gray-600 space-x-1">
+								<FaMapMarkerAlt className="text-gray-500" />
+								<span>{activity?.location?.address}</span>
+							</div>
+							<p className="text-gray-700 mt-4 leading-relaxed">{activity?.description}</p>
+						</div>
+						<div className="flex flex-col items-center space-y-4">
+							{/* Save Button */}
+							<button className="p-2 px-4 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center space-x-2">
+								<AiOutlineHeart className="text-lg" />
+								<span>Save</span>
+							</button>
+							{/* Share Button */}
+							<div className="relative">
+								<button
+									onClick={() => setIsShareOpen(!isShareOpen)}
+									className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#472393] flex items-center"
+								>
+									<FaShareAlt className="mr-2" /> Share
+								</button>
+								{isShareOpen && (
+									<div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
+										<p className="mb-2 font-semibold text-gray-700">Share this link:</p>
+										<div className="flex items-center space-x-2">
+											<input
+												type="text"
+												value={`http://localhost:3000/activities/${activityId}`}
+												readOnly
+												className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+												onClick={(e) => e.target.select()} // Select text on click
+											/>
+											<button
+												onClick={handleCopyLink}
+												className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+											>
+												Copy
+											</button>
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
+
 					{/* Image Gallery */}
 					<div className="mt-8">
 						<img src={imageBase64} alt="Activity" className="w-full h-96 object-cover rounded-lg shadow-md" />
@@ -149,7 +173,7 @@ const renderStars = (rating) => {
 						</div>
 
 						{/* Location & Contact */}
-						<LocationContact activity={activity} />
+						 <LocationContact activity={activity} />
 					</div>
 
 					{/* Comments Section */}
@@ -162,9 +186,9 @@ const renderStars = (rating) => {
 									<p className="text-gray-600">{comment.text}</p>
 									<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
 									<div className="flex items-center mt-2">
-                                        <span className="flex items-center text-2xl">
-                                            {renderStars(comment.stars)}
-                                        </span>
+										<span className="flex items-center text-2xl">
+											{renderStars(comment.stars)}
+										</span>
 									</div>
 								</div>
 							))
@@ -185,16 +209,16 @@ const renderStars = (rating) => {
 						<div className="flex items-center mb-4">
 							<span className="mr-2">Rating:</span>
 							{[1, 2, 3, 4, 5].map((star) => (
-                                              <FaStar
-                                               key={star}
-                                               className="cursor-pointer"
-                                               style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
-                                               onClick={() => setCommentRating(star)}
-                                              />
-                             ))}
+								<FaStar
+									key={star}
+									className="cursor-pointer"
+									style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
+									onClick={() => setCommentRating(star)}
+								/>
+							))}
 						</div>
 						<button
-							onClick={handleAddComment}
+							onClick={handleCopyLink}
 							className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
 						>
 							Submit Review

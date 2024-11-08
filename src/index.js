@@ -80,7 +80,7 @@ root.render(
 					<Route path='users' element={<UsersPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
 					<Route path='activities' element={<ActivityPage/>}/>
-					<Route path=':id' element={<DetailsPage/>}/>
+					<Route path='activities/:id' element={<DetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='create-activity' element={<ActivityForm />} />
                     <Route path='update-activity/:id' element={<ActivityForm />} /> 

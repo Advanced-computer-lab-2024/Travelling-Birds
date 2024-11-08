@@ -61,7 +61,7 @@ const ActivityDisplay = ({ activity }) => {
                         className={`w-full h-48 object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
-                        onClick={() => navigate(`/${activity._id}`)}
+                        onClick={() => navigate(`/activities/${activity._id}`)}
                     />
                 )}
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
