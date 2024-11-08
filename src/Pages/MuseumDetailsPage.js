@@ -36,10 +36,10 @@ const MuseumDetail = () => {
 
   // Helper function to render ticket prices from object (not directly from Map)
   const renderTicketPrices = (ticketPrices) => {
-    if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p>No ticket prices available.</p>;
+    if (!ticketPrices || Object.keys(ticketPrices).length === 0) return <p className="text-gray-700">No ticket prices available.</p>;
   
     return (
-      <ul className="list-disc ml-6">
+      <ul className="list-disc ml-6 text-gray-700">
         {Object.entries(ticketPrices).map(([category, price], index) => (
           <li key={index}>
             {category}: ${price.toFixed(2)}
@@ -53,9 +53,11 @@ const MuseumDetail = () => {
     <div>
       <section className="px-4 py-10 bg-gray-100">
         <div className="container-xl lg:container m-auto">
-          {/* Title and Description */}
-          <h1 className="text-3xl font-bold text-[#330577]">{museum?.name}</h1>
-          <p className="text-gray-700 mt-2">{museum?.description}</p>
+          {/* Title and Description Card */}
+          <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h1 className="text-4xl font-bold text-[#330577]">{museum?.name}</h1>
+            <p className="text-gray-700 mt-4 text-lg">{museum?.description}</p>
+          </div>
 
           {/* Image Display */}
           {imageBase64 && (
@@ -64,30 +66,35 @@ const MuseumDetail = () => {
             </div>
           )}
 
-          {/* Location and Contact */}
-          {museum?.location && <LocationContact museum={museum} />} {/* Pass the museum prop */}
+          {/* Flexbox layout for Location and Details */}
+          <div className="mt-10 flex flex-col md:flex-row gap-8">
+            {/* Location */}
+            {museum?.location && (
+              <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+                <LocationContact museum={museum} /> {/* Pass the museum prop */}
+              </div>
+            )}
 
-          {/* Opening Hours */}
-          <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="font-semibold text-lg text-[#330577]">Details</h2>
-            <p className="flex items-center mt-2">
-              <FaClock className="mr-2 text-gray-700" /> 
-              Opening Hours: 
-              {museum?.openingHours?.startTime ? ` ${new Date(museum.openingHours.startTime).toLocaleTimeString()}` : ' N/A'} - 
-              {museum?.openingHours?.endTime ? ` ${new Date(museum.openingHours.endTime).toLocaleTimeString()}` : ' N/A'}
-            </p>
-          </div>
+            {/* Details Section */}
+            <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
+              <h2 className="font-semibold text-2xl text-[#330577] mb-4">Details</h2>
 
-          {/* Ticket Prices */}
-          <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="font-semibold text-lg text-[#330577]">Ticket Prices</h2>
-            {renderTicketPrices(museum?.ticketPrices)}
-          </div>
+              {/* Opening Hours */}
+              <div className="mb-6">
+                <h3 className="text-xl font-medium text-[#330577] mb-2">Opening Hours</h3>
+                <p className="flex items-center text-gray-800">
+                  <FaClock className="mr-2 text-gray-700" />
+                  {museum?.openingHours?.startTime ? ` ${new Date(museum.openingHours.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'N/A'} - 
+                  {museum?.openingHours?.endTime ? ` ${new Date(museum.openingHours.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'N/A'}
+                </p>
+              </div>
 
-          {/* Tags */}
-          <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="font-semibold text-lg text-[#330577]">Tags</h2>
-            <p>{museum?.tags?.join(', ') || 'No tags available'}</p>
+              {/* Ticket Prices */}
+              <div>
+                <h3 className="text-xl font-medium text-[#330577] mb-2">Ticket Prices</h3>
+                {renderTicketPrices(museum?.ticketPrices)}
+              </div>
+            </div>
           </div>
         </div>
       </section>
