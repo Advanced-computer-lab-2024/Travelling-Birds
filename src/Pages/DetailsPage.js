@@ -48,21 +48,28 @@ const ActivityDetail = () => {
 	if (loading) return <p>Loading...</p>;
 
 	// Helper function to render stars based on rating
-	const renderStars = (rating) => {
-		const fullStars = Math.floor(rating);
-		const halfStars = rating % 1 !== 0;
-		return (
-			<>
-				{[...Array(fullStars)].map((_, i) => (
-					<FaStar key={i} className="text-yellow-500" />
-				))}
-				{halfStars && <FaStarHalfAlt className="text-yellow-500" />}
-				{[...Array(5 - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-					<FaRegStar key={i + fullStars} className="text-yellow-500" />
-				))}
-			</>
-		);
-	};
+	// Helper function to render stars based on rating
+const renderStars = (rating) => {
+    if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
+        rating = 0; // Default to 0 stars if rating is invalid
+    }
+
+    const fullStars = Math.floor(rating);
+    const halfStars = rating % 1 !== 0;
+    const totalStars = 5;
+
+    return (
+        <>
+            {[...Array(fullStars)].map((_, i) => (
+                <FaStar key={i} className="text-yellow-500" />
+            ))}
+            {halfStars && <FaStarHalfAlt className="text-yellow-500" />}
+            {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
+                <FaRegStar key={i + fullStars} className="text-yellow-500" />
+            ))}
+        </>
+    );
+};
 
 	// Handle submitting a new comment
 	const handleAddComment = async () => {
