@@ -45,7 +45,7 @@ const MyActivityDisplay = ({ activity }) => {
                     <img
                         src={imageBase64}
                         alt="Activity"
-                        className={`w-48 h-48 object-cover rounded transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
+                        className={`w-72 h-64 object-cover rounded transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                         onClick={() => navigate(`/activities/${activity._id}`)}
