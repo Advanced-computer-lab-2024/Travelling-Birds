@@ -4,43 +4,60 @@ const CommentModel = require('../Models/Comments.js');
 
 // Add Activity
 const addActivity = async (req, res) => {
-    const { title, description, date, time, location, price, priceRange, category, tags, specialDiscount, rating, bookingOpen,comments=[], createdBy,features ,contact} = req.body;
+	const {
+		title,
+		description,
+		date,
+		time,
+		location,
+		price,
+		priceRange,
+		category,
+		tags,
+		specialDiscount,
+		rating,
+		bookingOpen,
+		comments = [],
+		createdBy,
+		features,
+		contact
+	} = req.body;
 
-    try {
-        // Prepare image data if a file is provided
-        let image = null;
-        if (req.file) {
-            image = {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            };
-        }
+	try {
+		// Prepare image data if a file is provided
+		let image = null;
+		if (req.file) {
+			image = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
 
-        const newActivity = new ActivityModel({
-	        title,
-	        description,
-            date,
-            time,
-            location,
-            price,
-            priceRange,
-            category,
-            tags,
-            specialDiscount,
-            bookingOpen,
-            image,
-	        comments,
-            createdBy,
-	        features,
-	        contact,
-	        reviewsCount: comments.length,
-	        rating: comments.stars / comments.length
-        });
-        await newActivity.save();
-        res.status(201).json(newActivity);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+		const newActivity = new ActivityModel({
+			title,
+			description,
+			date,
+			time,
+			location,
+			price,
+			priceRange,
+			category,
+			tags,
+			specialDiscount,
+			bookingOpen,
+			image,
+			comments,
+			createdBy,
+			features,
+			contact,
+			reviewsCount: comments.length,
+			rating: comments.stars / comments.length
+		});
+		await newActivity.save();
+		res.status(201).json(newActivity);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 };
 
 // Get all activities
@@ -68,45 +85,62 @@ const getActivity = async (req, res) => {
 
 // update an existing Activity
 const updateActivity = async (req, res) => {
-    const { title, description, date, time, location, price, priceRange , category, tags, rating, specialDiscount, bookingOpen, comments, createdBy , features , contact } = req.body;
+	const {
+		title,
+		description,
+		date,
+		time,
+		location,
+		price,
+		priceRange,
+		category,
+		tags,
+		rating,
+		specialDiscount,
+		bookingOpen,
+		comments,
+		createdBy,
+		features,
+		contact
+	} = req.body;
 
-    try {
-        const updatedFields = {
+	try {
+		const updatedFields = {
 			title,
 			description,
-            date,
-            time,
-            location,
-            price,
+			date,
+			time,
+			location,
+			price,
 			priceRange,
-            category,
-            tags,
-            rating,
-            specialDiscount,
-            bookingOpen,
-	        comments,
-            createdBy,
-            features,
+			category,
+			tags,
+			rating,
+			specialDiscount,
+			bookingOpen,
+			comments,
+			createdBy,
+			features,
 			contact,
-        };
+		};
 
-        // Update image data if a new file is uploaded
-        if (req.file) {
-            updatedFields.image = {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            };
-        }
+		// Update image data if a new file is uploaded
+		if (req.file) {
+			updatedFields.image = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
 
-        const activity = await ActivityModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
+		const activity = await ActivityModel.findByIdAndUpdate(req.params.id, updatedFields, {new: true});
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
 
-        res.status(200).json(activity);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+		res.status(200).json(activity);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 };
 
 // delete an existing activity
@@ -161,8 +195,8 @@ const SearchForActivity = async (req, res) => {
 const getUpcomingActivities = async (req, res) => {
 	try {
 		// Get the current date and time
-	    const currentDate = new Date();
-		
+		const currentDate = new Date();
+
 		// Find activities with a date greater than or equal to the current date
 		const upcomingActivities = await ActivityModel.find({date: {$gte: currentDate}});
 
@@ -171,7 +205,7 @@ const getUpcomingActivities = async (req, res) => {
 			return res.status(404).json({message: 'No upcoming activities found'});
 		}
 
-		
+
 		res.status(200).json(upcomingActivities);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
@@ -197,7 +231,7 @@ const filterUpcomingActivities = async (req, res) => {
 		if (budget) {
 			query.price = {$lte: Number(budget)}; // Only activities with price <= budget
 		}
-		
+
 
 		// Filter by category (case-insensitive partial match)
 		if (category) {
@@ -233,12 +267,9 @@ const sortActivities = async (req, res) => {
 		// Extract the sort parameter from the query string (price or rating)
 		const {sortBy} = req.query;
 
-		
 
 		// Build the base query to find only upcoming activities
-		let query = {
-		
-		};
+		let query = {};
 
 		// Determine the sort criteria based on the sortBy parameter
 		let sortCriteria = {};
@@ -248,7 +279,7 @@ const sortActivities = async (req, res) => {
 			sortCriteria.price = 1; // 1 for ascending order (cheapest first)
 		} else if (sortBy === 'rating') {
 			sortCriteria.rating = -1; // -1 for descending order (highest rated first)
-		} 
+		}
 
 		// Fetch the upcoming activities from the database and apply the sort criteria
 		const sortedActivities = await ActivityModel.find(query).sort(sortCriteria);
@@ -292,16 +323,16 @@ const getComments = async (req, res) => {
 }
 // create a comment for a specific activity
 const addComment = async (req, res) => {
-	const { user, text, stars } = req.body;
+	const {user, text, stars} = req.body;
 	try {
 		const user2 = await UserModel.findById(user);
 		if (!user2) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({message: 'User not found'});
 		}
 
 		const activity = await ActivityModel.findById(req.params.id);
 		if (!activity) {
-			return res.status(404).json({ message: 'Activity not found' });
+			return res.status(404).json({message: 'Activity not found'});
 		}
 		//check user completed activity before commenting
 		if (!((user2.activityBookings.includes(req.params.id)) && (activity.date < new Date()))) {
@@ -316,11 +347,11 @@ const addComment = async (req, res) => {
 		const activityWithComment = await ActivityModel.findByIdAndUpdate(
 			req.params.id,
 			{
-				$push: { comments: newComment._id },
-				$inc: { reviewsCount: 1 },
-				$set: { rating: newRating }
+				$push: {comments: newComment._id},
+				$inc: {reviewsCount: 1},
+				$set: {rating: newRating}
 			},
-			{ new: true }
+			{new: true}
 		).populate('comments');
 		res.status(201).json(activityWithComment);
 	} catch (error) {
@@ -333,7 +364,7 @@ const getActivitiesBrief = async (req, res) => {
 		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy');
 		const updatedActivities = await Promise.all(activities.map(async (activity) => {
 			const user = await UserModel.findById(activity.createdBy).select('firstName lastName');
-			activity._doc.createdByName = user? `${user.firstName} ${user.lastName}` : 'N/A';
+			activity._doc.createdByName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
 			return activity;
 		}));
 		res.status(200).json(updatedActivities);

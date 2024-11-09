@@ -283,7 +283,7 @@ const getUnapprovedUsers = async (req, res) => {
 const getUserDocuments = async (req, res) => {
 	const userId = req.params.id;
 	try {
-		const user = await User.findById(userId);
+		const user = await User.findById(userId).select('identityCard certificates taxRegCard');
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -321,7 +321,11 @@ const getApprovedUsers = async (req, res) => {
 					"items.password": 0,
 					"items.role": 0,
 					"items.isApproved": 0,
-					"items.termsFlag": 0
+					"items.termsFlag": 0,
+					"items.requestToDelete": 0,
+					"items.identityCard": 0,
+					"items.certificates": 0,
+					"items.taxRegCard": 0
 				}
 			}
 		];

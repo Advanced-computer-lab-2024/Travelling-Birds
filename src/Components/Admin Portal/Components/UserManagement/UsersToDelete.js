@@ -281,7 +281,7 @@ const UsersToDelete = () => {
 
 	return (
 		<div className="p-4">
-			<h2 className="text-2xl font-bold mb-4">Manage User Accounts</h2>
+			<h2 className="text-2xl font-bold mb-4">Users To Be Deleted</h2>
 			{!loading && (
 				<>
 					{renderTouristTable()}
