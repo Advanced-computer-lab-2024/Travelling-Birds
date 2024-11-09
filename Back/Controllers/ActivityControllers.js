@@ -304,8 +304,8 @@ const addComment = async (req, res) => {
 			return res.status(404).json({ message: 'Activity not found' });
 		}
 		//check user completed activity before commenting
-		if (!((user2.activityBookings.includes(req.params.id)) &&(activity.date < new Date()))) {
-			res.status(400).json({message: 'User must complete the activity before commenting'});
+		if (!((user2.activityBookings.includes(req.params.id)) && (activity.date < new Date()))) {
+			return res.status(400).json({message: 'User must complete the activity before commenting'});
 		}
 		const newComment = new CommentModel({user, text, stars, date: new Date()});
 		await newComment.save();
@@ -322,7 +322,6 @@ const addComment = async (req, res) => {
 			},
 			{ new: true }
 		).populate('comments');
-
 		res.status(201).json(activityWithComment);
 	} catch (error) {
 		res.status(500).json({error: error.message});

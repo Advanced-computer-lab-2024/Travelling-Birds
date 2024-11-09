@@ -48,14 +48,14 @@ const ActivityDetail = () => {
 				    throw new Error('Failed to fetch user bookings');
 			    }
 			    const userBookings = await res.json();
-			    const isBooked = userBookings.some((booking) => booking._id === activityId);
+			    const isBooked = userBookings.some((booking) => booking._id === activityId && booking.date < new Date());
 			    setHasBooked(isBooked);
 		    } catch (err) {
 			    console.error('Error checking user bookings:', err);
 		    }
 	    };
 	    if (userId) {
-		    checkUserBooking(); // Only check bookings if userId exists
+		    checkUserBooking();
 	    }
         fetchComments();
 
@@ -169,10 +169,6 @@ const handleBookActivity = async () => {
 
 	// Handle submitting a new comment
     const handleAddComment = async () => {
-        if (!commentText || commentRating === 0) {
-            alert("Please provide a comment and a rating.");
-            return;
-        }
         const newComment = {
             user: sessionStorage.getItem('user id'),
             text: commentText,
@@ -203,9 +199,6 @@ const handleBookActivity = async () => {
             setCommentRating(0);
         } catch (err) {
             console.error("Error adding comment:", err);
-	        if (err.message === "User must complete the activity before commenting") {
-		        toast.error("User must complete the activity before commenting");
-	        }
             toast.error("Failed to add comment. Please try again.");
         }
     };
