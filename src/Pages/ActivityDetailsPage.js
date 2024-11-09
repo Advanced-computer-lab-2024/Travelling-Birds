@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+      import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt } from 'react-icons/fa';
 import { AiOutlineHeart } from "react-icons/ai";
@@ -149,7 +149,7 @@ const handleBookActivity = async () => {
         setIsShareOpen(false); // Close the dropdown
     };
 
-    // Handle submitting a new comment
+	// Handle submitting a new comment
     const handleAddComment = async () => {
         if (!commentText || commentRating === 0) {
             alert("Please provide a comment and a rating.");
@@ -171,9 +171,12 @@ const handleBookActivity = async () => {
 
             if (!response.ok) {
                 throw new Error('Failed to add comment');
+            }else {
+	            toast.success("Comment added successfully");
             }
 
-            // Update local state with new comment
+
+	        // Update local state with new comment
             setActivity((prev) => ({
                 ...prev,
                 comments: [newComment, ...(prev.comments || [])]
@@ -182,11 +185,15 @@ const handleBookActivity = async () => {
             setCommentRating(0);
         } catch (err) {
             console.error("Error adding comment:", err);
-            alert("Failed to add comment. Please try again.");
+			if(err.message() ==="User must complete the activity before commenting"){
+				toast.error("User must complete the activity before commenting");
+			}
+            toast.error("Failed to add comment. Please try again.");
         }
     };
 
-    return (
+
+	return (
 		<div>
 			<section className="px-4 py-10 bg-gray-100">
 				<div className="container-xl lg:container m-auto">
@@ -267,12 +274,12 @@ const handleBookActivity = async () => {
 							</div>
 						</div>
 					</div>
-	
+
 					{/* Image Gallery */}
 					<div className="mt-8">
 						<img src={imageBase64} alt="Activity" className="w-full h-96 object-cover rounded-lg shadow-md" />
 					</div>
-	
+
 					{/* Ratings, Details, and Location Sections */}
 					<div className="grid grid-cols-3 gap-8 mt-8">
 						{/* Ratings & Reviews */}
@@ -291,7 +298,7 @@ const handleBookActivity = async () => {
 								))}
 							</div>
 						</div>
-	
+
 						{/* Details Section */}
 						<div className="bg-white p-4 rounded-lg shadow-md">
 							<h2 className="font-semibold text-lg text-[#330577]">Details</h2>
@@ -300,11 +307,11 @@ const handleBookActivity = async () => {
 							<p className="text-gray-700">Special discounts: {activity?.specialDiscounts}</p>
 							<p className="text-gray-700">Features: {activity?.features?.join(', ')}</p>
 						</div>
-	
+
 						{/* Location & Contact */}
 						<LocationContact activity={activity} />
 					</div>
-	
+
 					{/* Comments Section */}
 					<div className="mt-8 bg-white shadow-md rounded-lg p-6">
 						<h2 className="font-semibold text-lg mb-4 text-[#330577]">All Reviews</h2>
@@ -325,7 +332,7 @@ const handleBookActivity = async () => {
 							<p className="text-gray-500">No reviews yet.</p>
 						)}
 					</div>
-	
+
 					{/* Add Comment Form */}
 					<div className="mt-8 bg-white shadow-md rounded-lg p-6">
 						<h2 className="font-semibold text-lg text-[#330577] mb-4">Add a Review</h2>
