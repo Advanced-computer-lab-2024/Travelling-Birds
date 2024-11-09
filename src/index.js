@@ -27,6 +27,7 @@ import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
+import ItineraryDetail from "./Pages/IntenartiesDetailPage";
 import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
@@ -50,6 +51,7 @@ import ManageActivities from "./Components/Admin Portal/Components/ContentManage
 import ManageItineraries from "./Components/Admin Portal/Components/ContentManagement/ManageItineraries";
 import ManageMuseums from "./Components/Admin Portal/Components/ContentManagement/ManageMuseums";
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -87,6 +89,7 @@ root.render(
 					<Route path='update-activity/:id' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path='update-itinerary/:id' element={<ItineraryForm/>}/>
+					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
 					<Route path='create-museum' element={<MuseumForm/>}/>
 					<Route path='update-museum/:id' element={<MuseumForm/>}/>
 					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
