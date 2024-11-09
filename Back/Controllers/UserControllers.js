@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const User = require('../Models/User');
 const Activity = require('../Models/Activity');
+const Itinerary = require('../Models/Itinerary');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
 
 // Add user
@@ -123,8 +124,6 @@ const getUser = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
-
-// Get specific username
 const getUsername = async (req, res) => {
 	const { username } = req.query;
 	try {
@@ -435,6 +434,36 @@ const removeActivityBooking = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// add intinerary booking to user
+const addItineraryBooking = async (req, res) => {
+	const userId = req.params.id;
+	const itineraryId = req.body.itineraryId;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		user.itineraryBookings.push(itineraryId);
+		await user.save();
+		res.status(200).json({message: 'Itinerary booking added successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+// get itinerary bookings of a user from database
+const getItineraryBookings = async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		const itineraryBookings = await Itinerary.find({_id: {$in: user.itineraryBookings}});
+		res.status(200).json(itineraryBookings);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -449,5 +478,7 @@ module.exports = {
 	getUsername,
 	addActivityBooking,
 	getActivityBookings,
+	addItineraryBooking,
+	getItineraryBookings,
 	removeActivityBooking
 };
