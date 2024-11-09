@@ -4,12 +4,13 @@ import './index.css';
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {
+	AdminNavBar,
 	AdvertiserNavBar,
+	GeneralNavBar,
 	SellerNavBar,
 	TourGuideNavBar,
 	TourismGovernorNavBar,
-	TouristNavBar,
-	GeneralNavBar
+	TouristNavBar
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
@@ -30,8 +31,8 @@ import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
-import LoginPage  from "./Pages/LoginPage";
-import WaitPage  from "./Pages/WaitPage";
+import LoginPage from "./Pages/LoginPage";
+import WaitPage from "./Pages/WaitPage";
 
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
@@ -58,7 +59,7 @@ root.render(
 			<Routes>
 				<Route path='/' element={<NavBarContainer/>}>
 					<Route index element={<ExplorePage/>}/>
-					<Route path="admin">
+					<Route path="admin" element={<AdminLayout/>}>
 						<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
 						<Route path='approve-users' element={<ApproveRegistrants/>}/>
 						<Route path='manage-users' element={<ManageUserAccounts/>}/>
@@ -82,8 +83,8 @@ root.render(
 					<Route path='activities' element={<ActivityPage/>}/>
 					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
-					<Route path='create-activity' element={<ActivityForm />} />
-                    <Route path='update-activity/:id' element={<ActivityForm />} /> 
+					<Route path='create-activity' element={<ActivityForm/>}/>
+					<Route path='update-activity/:id' element={<ActivityForm/>}/>
 					<Route path='create-itinerary' element={<ItineraryForm/>}/>
 					<Route path='update-itinerary/:id' element={<ItineraryForm/>}/>
 					<Route path='create-museum' element={<MuseumForm/>}/>
@@ -126,8 +127,8 @@ function NavBarContainer() {
 	if (!user) {
 		return (
 			<>
-				<GeneralNavBar />
-				<Outlet />
+				<GeneralNavBar/>
+				<Outlet/>
 			</>
 		);
 	}
@@ -135,13 +136,13 @@ function NavBarContainer() {
 	return (
 		<>
 			{/* role: {role}, id: {user} */}
-			{role === 'tourist' && <TouristNavBar />}
-			{role === 'admin' && <AdminLayout />}
-			{role === 'tour_guide' && <TourGuideNavBar />}
-			{role === 'seller' && <SellerNavBar />}
-			{role === 'advertiser' && <AdvertiserNavBar />}
-			{role === 'tourism_governor' && <TourismGovernorNavBar />}
-			{role !== 'admin' && <Outlet />}
+			{role === 'tourist' && <TouristNavBar/>}
+			{role === 'admin' && <AdminNavBar/>}
+			{role === 'tour_guide' && <TourGuideNavBar/>}
+			{role === 'seller' && <SellerNavBar/>}
+			{role === 'advertiser' && <AdvertiserNavBar/>}
+			{role === 'tourism_governor' && <TourismGovernorNavBar/>}
+			<Outlet/>
 		</>
 	);
 }

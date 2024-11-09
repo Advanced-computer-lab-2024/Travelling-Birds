@@ -13,6 +13,7 @@ const AdminNavBar = () => {
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
+	const [adminUrl, setAdminUrl] = useState(window.location.pathname.includes('/admin'));
 
 	const handleLogOut = () => {
 		sessionStorage.removeItem('user id');
@@ -28,6 +29,10 @@ const AdminNavBar = () => {
 		sessionStorage.setItem('currency', newCurrency);
 		window.location.reload();
 	};
+
+	useEffect(() => {
+		setAdminUrl(window.location.pathname.includes('/admin'));
+	}, [window.location.pathname]);
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -82,7 +87,7 @@ const AdminNavBar = () => {
 	};
 
 	return (
-		<NavBar>
+		!adminUrl && <NavBar>
 			<div className="flex items-center justify-between w-full px-16 py-3">
 				{/* Left: Logo */}
 				<div className="flex items-center mr-72">
@@ -115,6 +120,10 @@ const AdminNavBar = () => {
 					<NavLink to='/users'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Users
+					</NavLink>
+					<NavLink to='/admin'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Admin
 					</NavLink>
 				</div>
 

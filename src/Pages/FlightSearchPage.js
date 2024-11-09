@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { FaPlaneDeparture, FaPlaneArrival, FaRegClock, FaRegMoneyBillAlt } from 'react-icons/fa';
-import { useNavigate } from "react-router-dom";
-import md5 from "md5";
+import React, {useState} from 'react';
+import {FaPlaneArrival, FaPlaneDeparture, FaRegClock, FaRegMoneyBillAlt} from 'react-icons/fa';
+import {useNavigate} from "react-router-dom";
 
 function FlightSearchPage() {
 	const [origin, setOrigin] = useState("");
@@ -9,11 +8,6 @@ function FlightSearchPage() {
 	const [departureDate, setDepartureDate] = useState("");
 	const [flights, setFlights] = useState([]);
 	const navigate = useNavigate();
-
-	const generateHash = (airlineCode) => {
-		const url = airlineCode + "_s_" + process.env.REACT_APP_AIRHEX_API_KEY;
-		return md5(url);
-	};
 
 	const fetchFlights = async () => {
 		const apiUrl = `${process.env.REACT_APP_BACKEND}/api/flights/f`;
@@ -23,7 +17,7 @@ function FlightSearchPage() {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ origin, destination, departureDate })
+				body: JSON.stringify({origin, destination, departureDate})
 			});
 			const flightsData = await res.json();
 			setFlights(extractFlightInfo(flightsData));
@@ -101,7 +95,7 @@ function FlightSearchPage() {
 						className="border-b-2 focus:border-[#330577] p-2 outline-none transition"
 					/>
 				</div>
-				<FaPlaneDeparture className="text-gray-500 hidden md:inline-block mx-2" size={24} />
+				<FaPlaneDeparture className="text-gray-500 hidden md:inline-block mx-2" size={24}/>
 				<div className="flex flex-col mb-4 md:mb-0 md:mr-4">
 					<label className="text-gray-600">To</label>
 					<input
@@ -112,7 +106,7 @@ function FlightSearchPage() {
 						className="border-b-2 focus:border-[#330577] p-2 outline-none transition"
 					/>
 				</div>
-				<FaPlaneArrival className="text-gray-500 hidden md:inline-block mx-2" size={24} />
+				<FaPlaneArrival className="text-gray-500 hidden md:inline-block mx-2" size={24}/>
 				<div className="flex flex-col mb-4 md:mb-0 md:mr-4">
 					<label className="text-gray-600">On</label>
 					<input
@@ -147,8 +141,6 @@ function FlightSearchPage() {
 							>
 								<div className="flex items-center mb-4 md:mb-0">
 									<img
-										// Uncomment and replace with your API key or images path if available
-										// src={`https://content.airhex.com/content/logos/airlines_${flight.itineraries[0].segments[0].carrierCode}_s.svg?md5apikey=${generateHash(flight.itineraries[0].segments[0].carrierCode)}`}
 										src={require(`../Assets/Square/${flight.itineraries[0].segments[0].carrierCode}.png`)}
 										className="w-12 h-12 mr-4"
 										alt={`${flight.itineraries[0].segments[0].carrierCode} logo`}
@@ -158,14 +150,14 @@ function FlightSearchPage() {
 											{flight.itineraries[0].segments[0].departureIataCode} - {flight.itineraries[0].segments[0].arrivalIataCode}
 										</h3>
 										<p className="text-gray-600 mt-1 flex items-center">
-											<FaRegClock className="mr-2" />
+											<FaRegClock className="mr-2"/>
 											{formatDuration(flight.itineraries[0].segments[0].duration)} • {flight.itineraries[0].segments[0].numberOfStops} stop(s)
 										</p>
 									</div>
 								</div>
 								<div className="text-right">
 									<p className="text-xl font-bold text-gray-800 flex items-center justify-end">
-										<FaRegMoneyBillAlt className="mr-1" /> {flight.price} {flight.currency}
+										<FaRegMoneyBillAlt className="mr-1"/> {flight.price} {flight.currency}
 									</p>
 									<button
 										onClick={() => navigate(`/flights/${flight.id}/${origin}/${destination}/${departureDate}`)}

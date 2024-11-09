@@ -19,6 +19,7 @@ const historicalPlaceSchema = new Schema({
     ticketPrices: [Number],
     tags: [{type: String, ref: 'Tag'}],
     image: { data: Buffer, contentType: String }, // Field to store image data
+    activities: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
     createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true}
 });
 

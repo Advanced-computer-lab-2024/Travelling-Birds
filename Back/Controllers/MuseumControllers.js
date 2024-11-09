@@ -13,7 +13,7 @@ const parseTimeToDate = (timeString) => {
 
 //create museum
 const addMuseum = async (req, res) => {
-    const { name, description, openingHours,location ,ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours,location ,ticketPrices, tags, activities, createdBy } = req.body;
 
     try {
         if (!openingHours) {
@@ -62,6 +62,7 @@ const addMuseum = async (req, res) => {
             ticketPrices: parsedTicketPrices,
             tags,
             image,
+            activities,
             createdBy
         });
 
@@ -86,7 +87,7 @@ const getAllMuseums = async (req, res) => {
 // Get specific museum
 const getMuseum = async (req, res) => {
 	try {
-		const museum = await MuseumModel.findById(req.params.id);
+		const museum = await MuseumModel.findById(req.params.id).populate('activities');
 		if (!museum) {
 			return res.status(404).json({message: 'Museum not found'});
 		}
@@ -98,7 +99,7 @@ const getMuseum = async (req, res) => {
 
 // Update Museum
 const updateMuseum = async (req, res) => {
-    const { name, description, openingHours,location, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours,location, ticketPrices, tags, activities, createdBy } = req.body;
 
     try {
         const updatedFields = {
@@ -106,6 +107,7 @@ const updateMuseum = async (req, res) => {
             description,
             location,
             tags,
+            activities,
             createdBy
         };
 

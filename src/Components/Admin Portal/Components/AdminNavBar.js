@@ -4,10 +4,11 @@ import {Link} from "react-router-dom";
 const AdminNavBar = () => {
 	return (
 		<aside className="h-screen sticky top-0 overflow-y-auto w-60 py-6 px-4 bg-base-200">
-			<Link to="/admin" className="btn btn-ghost">
-				<img alt="Logo" src="/logo.svg" className="w-6"/>
+			<Link to="/" className="btn btn-ghost">
+				<i className="fa-solid fa-backward fa-fw"></i>
+				<i className="fa-solid fa-dove fa-fw"></i>
 				{/**/}
-				Company Name
+				Traveling Birds
 			</Link>
 
 			<ul className="menu px-0">

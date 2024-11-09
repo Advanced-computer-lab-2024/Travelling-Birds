@@ -32,6 +32,7 @@ const museumSchema = new Schema({
     },
     tags: [{ type: String, ref: 'Tag' }],
     image: { data: Buffer, contentType: String },
+    activities: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 

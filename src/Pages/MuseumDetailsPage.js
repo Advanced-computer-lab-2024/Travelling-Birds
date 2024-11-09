@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
 import LoadingPage from './LoadingPage'; 
-import LocationContact from "../Components/Locations/MuseumLocation"; // Import the LocationContact component
+import LocationContact from "../Components/Locations/MuseumLocation";
+import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay"; // Assuming this is used to display activities for a museum
 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);
   const [museum, setMuseum] = useState(null);
-  const [isShareOpen, setIsShareOpen] = useState(false); // State for share dropdown
+  const [activities, setActivities] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [email, setEmail] = useState(''); // State for email input
   const { id: museumId } = useParams();
 
   useEffect(() => {
@@ -17,15 +20,21 @@ const MuseumDetail = () => {
         const res = await fetch(apiUrl);
         const museumData = await res.json();
         setMuseum(museumData);
+
+        // Fetch related activities if any
+        if (museumData.activities && museumData.activities.length > 0) {
+          setActivities(museumData.activities);
+        }
+
         setLoading(false);
       } catch (err) {
         console.log('Error fetching museum data', err);
+        setLoading(false);
       }
     };
     fetchMuseum();
   }, [museumId]);
 
-  // Convert image to base64 if exists
   let imageBase64 = null;
   if (museum?.image?.data?.data && museum.image.contentType) {
     const byteArray = new Uint8Array(museum.image.data.data);
@@ -33,18 +42,26 @@ const MuseumDetail = () => {
     imageBase64 = `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
   }
 
-  // Handle copying the link to clipboard
   const handleCopyLink = () => {
     const link = `http://localhost:3000/museum/${museumId}`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Link copied to clipboard!');
-      setIsShareOpen(false); // Close the dropdown menu after copying
+      setIsShareOpen(false);
     });
   };
 
-  if (loading) return <LoadingPage/>;
+  const handleSendEmail = () => {
+    if (!email) {
+      alert('Please enter a valid email address.');
+      return;
+    }
 
-  // Helper function to render ticket prices from object (not directly from Map)
+    const link = `http://localhost:3000/museum/${museumId}`;
+    window.open(`mailto:${email}?subject=Check out this museum&body=Here's a link to an interesting museum: ${link}`, '_blank');
+    setEmail('');
+    setIsShareOpen(false);
+  };
+
   const renderTicketPrices = (ticketPrices) => {
     if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
       return <p className="text-gray-700">No ticket prices available.</p>;
@@ -53,27 +70,26 @@ const MuseumDetail = () => {
     const currency = sessionStorage.getItem('currency');
     const convertPrice = (price) => {
       if (currency === 'EGP') {
-       
         return `${(price * 49.30).toFixed(2)} EGP`;
       } else if (currency === 'EUR') {
-     
         return `€${(price * 0.93).toFixed(2)}`;
       } else {
-       
         return `$${price.toFixed(2)}`;
       }
     };
 
     return (
-        <ul className="list-disc ml-6 text-gray-700">
-          {Object.entries(ticketPrices).map(([category, price], index) => (
-              <li key={index}>
-                {category}: {convertPrice(price)}
-              </li>
-          ))}
-        </ul>
+      <ul className="list-disc ml-6 text-gray-700">
+        {Object.entries(ticketPrices).map(([category, price], index) => (
+          <li key={index}>
+            {category}: {convertPrice(price)}
+          </li>
+        ))}
+      </ul>
     );
   };
+
+  if (loading) return <LoadingPage />;
 
   return (
     <div>
@@ -86,7 +102,6 @@ const MuseumDetail = () => {
               <p className="text-gray-700 mt-4 text-lg">{museum?.description}</p>
             </div>
             <div className="flex flex-col items-center space-y-4">
-          
               {/* Share Button */}
               <div className="relative">
                 <button
@@ -98,19 +113,36 @@ const MuseumDetail = () => {
                 {isShareOpen && (
                   <div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
                     <p className="mb-2 font-semibold text-gray-700">Share this link:</p>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-4">
                       <input
                         type="text"
                         value={`http://localhost:3000/museum/${museumId}`}
                         readOnly
                         className="w-full px-2 py-1 border rounded-lg focus:outline-none"
-                        onClick={(e) => e.target.select()} // Select text on click
+                        onClick={(e) => e.target.select()}
                       />
                       <button
                         onClick={handleCopyLink}
                         className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                       >
                         Copy
+                      </button>
+                    </div>
+                    {/* Email Sharing */}
+                    <p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="email"
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+                      />
+                      <button
+                        onClick={handleSendEmail}
+                        className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+                      >
+                        Send
                       </button>
                     </div>
                   </div>
@@ -131,7 +163,7 @@ const MuseumDetail = () => {
             {/* Location */}
             {museum?.location && (
               <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
-                <LocationContact museum={museum} /> {/* Pass the museum prop */}
+                <LocationContact museum={museum} />
               </div>
             )}
 
@@ -156,6 +188,18 @@ const MuseumDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Related Activities Section */}
+          {activities.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-3xl font-semibold text-[#330577] mb-6">Related Activities</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activities.map(activity => (
+                  <ActivityDisplay key={activity._id} activity={activity} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

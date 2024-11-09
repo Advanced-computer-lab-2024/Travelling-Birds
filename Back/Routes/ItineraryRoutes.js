@@ -9,7 +9,9 @@ const {
 	getUpcomingItineraries,
 	sortItineraries,
 	filterItineraries,
-	getAllCreatedItineraries
+	getAllCreatedItineraries,
+	getComments,
+	addComment,
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
@@ -46,5 +48,10 @@ router.delete('/:id', deleteItinerary);
 // Get all created itineraries by a specific user
 router.get('/user/:id', getAllCreatedItineraries);
 
+// Get all comments for a specific itinerary
+router.get('/:id/comments', getComments);
+
+// Add a comment to a specific itinerary
+router.post('/:id/comments', addComment);
 
 module.exports = router;
