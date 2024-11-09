@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import ActivityForm from '../../../Models/Forms/ActivityForm';
+import {ActivityForm} from '../Components/Models/Forms';
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
-const ManageActivities = () => {
+const AdvertiserActivities = () => {
 	const [activities, setActivities] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedActivity, setSelectedActivity] = useState(null);
@@ -13,7 +13,7 @@ const ManageActivities = () => {
 	useEffect(() => {
 		const fetchActivities = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/brief`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/brief/${sessionStorage.getItem('user id')}`);
 				const data = await response.json();
 				data.forEach(activity => {
 					activity.displayPrice = activity.price ? activity.price : `${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}`;
@@ -130,7 +130,7 @@ const ManageActivities = () => {
 								<td>{activity.rating}</td>
 								<td>{activity.bookingOpen ? 'Yes' : 'No'}</td>
 								<td>{activity.createdByName}</td>
-								<td>{activity.flaggedInappropriate? 'Yes' : 'No'}</td>
+								<td>{activity.flaggedInappropriate ? 'Yes' : 'No'}</td>
 								<td>
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewClick(activity)}>
@@ -174,4 +174,4 @@ const ManageActivities = () => {
 	);
 };
 
-export default ManageActivities;
+export default AdvertiserActivities;

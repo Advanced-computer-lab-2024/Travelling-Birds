@@ -34,7 +34,8 @@ const activitySchema = new Schema({
         phone: String,
         website: String,
         email: String,
-    }
+    },
+    flaggedInappropriate: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model('Activity', activitySchema);
