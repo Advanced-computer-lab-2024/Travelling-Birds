@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import {useState} from "react";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 import ReusableInput from "./ReusableInput";
-import { sessionStorageEvent } from "../utils/sessionStorageEvent";
+import {sessionStorageEvent} from "../utils/sessionStorageEvent";
 
 const LogIn = () => {
 	const [username, setUsername] = useState('');
@@ -30,16 +30,12 @@ const LogIn = () => {
 					sessionStorage.setItem('user id', data.user._id);
 					sessionStorage.setItem('role', data.user.role);
 					if (data.user.termsFlag === false && (data.user.role === "tour_guide" || data.user.role === "advertiser" || data.user.role === "seller")) {
-						console.log(data.user.termsFlag);
-						console.log(showTermsModal);
 						setuserId(data.user._id);
 						setShowTermsModal(true);
-						console.log(showTermsModal);
-						window.dispatchEvent(sessionStorageEvent);
 					} else {
 						window.dispatchEvent(sessionStorageEvent);
 						toast.success('Logged in successfully');
-						navigate('/explore', { replace: true });
+						navigate('/explore', {replace: true});
 					}
 				} else if (data?.message === 'Profile not approved yet. Please wait for admin approval.') {
 					toast.error('Profile not approved yet. Please wait for admin approval.');
@@ -60,18 +56,19 @@ const LogIn = () => {
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ termsFlag: true })
+				body: JSON.stringify({termsFlag: true})
 			});
 		} catch (error) {
 			console.log(error);
 		}
 		setShowTermsModal(false);
 		toast.success('Terms accepted');
-		navigate('/explore', { replace: true });
+		window.dispatchEvent(sessionStorageEvent);
+		navigate('/explore', {replace: true});
 	};
 
 	const handleScroll = (e) => {
-		const { scrollTop, scrollHeight, clientHeight } = e.target;
+		const {scrollTop, scrollHeight, clientHeight} = e.target;
 		if (scrollTop + clientHeight >= scrollHeight - 5) { // Add a small buffer
 			setShowAcceptButton(true);
 		}
@@ -85,9 +82,9 @@ const LogIn = () => {
 			}}>
 				<h1 className="text-2xl font-bold mb-4">Log in</h1>
 				<ReusableInput type="text" name="Username" value={username}
-				               onChange={e => setUsername(e.target.value)} />
+				               onChange={e => setUsername(e.target.value)}/>
 				<ReusableInput type="password" name="Password" value={password}
-				               onChange={e => setPassword(e.target.value)} />
+				               onChange={e => setPassword(e.target.value)}/>
 				<button type="submit" className="w-full bg-[#330577] text-white py-2 rounded mt-4">Log in</button>
 			</form>
 			{showTermsModal && (
@@ -96,7 +93,7 @@ const LogIn = () => {
 						<h2 className="text-2xl font-bold mb-4">Terms and Conditions</h2>
 						<div
 							className="overflow-y-auto"
-							style={{ maxHeight: '70vh' }}
+							style={{maxHeight: '70vh'}}
 							onScroll={handleScroll}
 						>
 							<p>
@@ -445,7 +442,7 @@ const LogIn = () => {
 							>
 								Accept
 							</button>
-							)}
+						)}
 					</div>
 				</div>
 			)}
