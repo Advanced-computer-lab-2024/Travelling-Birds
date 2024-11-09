@@ -27,14 +27,14 @@ const addActivity = async (req, res) => {
             category,
             tags,
             specialDiscount,
-            rating,
             bookingOpen,
             image,
 	        comments,
             createdBy,
 	        features,
 	        contact,
-	        reviewsCount: comments.length
+	        reviewsCount: comments.length,
+	        rating: comments.stars / comments.length
         });
         await newActivity.save();
         res.status(201).json(newActivity);
@@ -292,12 +292,38 @@ const getComments = async (req, res) => {
 }
 // create a comment for a specific activity
 const addComment = async (req, res) => {
-	const {user, text, stars} = req.body;
+	const { user, text, stars } = req.body;
 	try {
+		const user2 = await UserModel.findById(user);
+		if (!user2) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		const activity = await ActivityModel.findById(req.params.id);
+		if (!activity) {
+			return res.status(404).json({ message: 'Activity not found' });
+		}
+		//check user completed activity before commenting
+		if (!((user2.activityBookings.includes(req.params.id)) &&(activity.date < new Date()))) {
+			res.status(400).json({message: 'User must complete the activity before commenting'});
+		}
 		const newComment = new CommentModel({user, text, stars, date: new Date()});
 		await newComment.save();
-		const activity = await ActivityModel.findByIdAndUpdate(req.params.id, {$push: {comments: newComment._id}, $inc: {reviewsCount: 1}}, {new: true})
-		res.status(201).json(activity);
+		const totalRating = activity.reviewsCount * activity.rating + stars;
+		const updatedReviewsCount = activity.reviewsCount + 1;
+		const newRating = (totalRating / updatedReviewsCount).toFixed(1);
+
+		const activityWithComment = await ActivityModel.findByIdAndUpdate(
+			req.params.id,
+			{
+				$push: { comments: newComment._id },
+				$inc: { reviewsCount: 1 },
+				$set: { rating: newRating }
+			},
+			{ new: true }
+		).populate('comments');
+
+		res.status(201).json(activityWithComment);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}

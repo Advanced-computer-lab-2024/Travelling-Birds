@@ -13,7 +13,7 @@ const parseTimeToDate = (timeString) => {
 
 // Add Historical Place
 const addHistoricalPlace = async (req, res) => {
-    const { name, description, openingHours, location, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours, location, ticketPrices, tags,activities, createdBy } = req.body;
 
     try {
         if (!openingHours) {
@@ -50,6 +50,7 @@ const addHistoricalPlace = async (req, res) => {
             ticketPrices,
             tags,
             image,
+            activities,
             createdBy,
         });
 
@@ -72,19 +73,21 @@ const getAllHistoricalPlaces = async (req, res) => {
 
 // Get specific historical place
 const getHistoricalPlace = async (req, res) => {
-	try {
-		const historicalPlace = await HistoricalPlaceModel.findById(req.params.id);
-		if (!historicalPlace) {
-			return res.status(404).json({message: 'Historical Place not found'});
-		}
-		res.status(200).json(historicalPlace);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+    try {
+        const { id } = req.params;
+        // Fetch the historical place and populate its activities
+        const place = await HistoricalPlaceModel.findById(id).populate('activities');
+        if (!place) {
+            return res.status(404).json({ message: 'Historical place not found' });
+        }
+        res.status(200).json(place);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching historical place', error });
+    }
+};
 
 const updateHistoricalPlace = async (req, res) => {
-    const { name, description, openingHours, location, ticketPrices, tags, createdBy } = req.body;
+    const { name, description, openingHours, location, ticketPrices, tags,activities, createdBy } = req.body;
 
     try {
         const updatedFields = {
@@ -93,6 +96,7 @@ const updateHistoricalPlace = async (req, res) => {
             location,
             ticketPrices,
             tags,
+            activities,
             createdBy,
         };
 

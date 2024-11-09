@@ -5,21 +5,31 @@ import { useNavigate } from "react-router-dom";
 import { TagDisplay } from "../Components/Models/Displays";
 import Popup from "reactjs-popup";
 import { TagForm } from "../Components/Models/Forms";
+import { toast } from 'react-toastify';
 
 const PlacesPage = () => {
 	const [museums, setMuseums] = useState([]);
 	const [historicalPlaces, setHistoricalPlaces] = useState([]);
 	const [tags, setTags] = useState([]);
+	const [bookedActivities, setBookedActivities] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 	const userRole = sessionStorage.getItem('role');
+	const userId = sessionStorage.getItem('user id');
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const museumsApiUrl = `${process.env.REACT_APP_BACKEND}/api/museums`;
 			const historicalPlacesApiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces`;
+			const userBookingsApiUrl = `${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`;
 
 			try {
+				// Fetch user bookings
+				const userBookingsRes = await fetch(userBookingsApiUrl);
+				const userBookingsData = await userBookingsRes.json();
+				setBookedActivities(userBookingsData.map(activity => activity._id));
+
+				// Fetch museums and historical places
 				const [museumsRes, historicalPlacesRes] = await Promise.all([
 					fetch(museumsApiUrl),
 					fetch(historicalPlacesApiUrl),
@@ -28,17 +38,27 @@ const PlacesPage = () => {
 				const museumsData = await museumsRes.json();
 				const historicalPlacesData = await historicalPlacesRes.json();
 
-				setMuseums(museumsData);
-				setHistoricalPlaces(historicalPlacesData);
+				// Filter out only those museums and historical places that have booked activities
+				const filteredMuseums = museumsData.filter(museum =>
+					museum.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
+				);
 
-				console.log("Museums:", museumsData);
-				console.log("Historical Places:", historicalPlacesData);
+				const filteredHistoricalPlaces = historicalPlacesData.filter(historicalPlace =>
+					historicalPlace.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
+				);
+
+				setMuseums(filteredMuseums);
+				setHistoricalPlaces(filteredHistoricalPlaces);
+
+				console.log("Museums:", filteredMuseums);
+				console.log("Historical Places:", filteredHistoricalPlaces);
 			} catch (err) {
 				console.log("Error fetching data", err);
 			} finally {
 				setLoading(false);
 			}
 		};
+
 		const fetchTags = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/tags`;
 			setLoading(true);
@@ -53,8 +73,8 @@ const PlacesPage = () => {
 			}
 		};
 
-		fetchData().then();
-		fetchTags().then();
+		fetchData();
+		fetchTags();
 
 		window.addEventListener("modelModified", fetchData);
 		window.addEventListener("tagModified", fetchTags);
@@ -63,7 +83,7 @@ const PlacesPage = () => {
 			window.removeEventListener("modelModified", fetchData);
 			window.removeEventListener("tagModified", fetchTags);
 		};
-	}, []);
+	}, [userId]);
 
 	const handleCreateMuseum = () => {
 		navigate("/create-museum");
@@ -99,7 +119,7 @@ const PlacesPage = () => {
 			}
 		};
 
-		fetchData().then();
+		fetchData();
 	}
 
 	return (

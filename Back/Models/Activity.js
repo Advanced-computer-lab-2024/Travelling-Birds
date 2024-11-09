@@ -26,7 +26,7 @@ const activitySchema = new Schema({
     specialDiscounts: String,
     bookingOpen: { type: Boolean, default: true },
     image: { data: Buffer, contentType: String }, // Field to store image data
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comments' }],
+    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     reviewsCount:{ type: Number, default: 0 },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     features: [String], // Example: ["Vegetarian friendly", "Vegan options"]

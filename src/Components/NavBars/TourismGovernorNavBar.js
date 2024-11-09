@@ -3,11 +3,12 @@ import NavBar from "./NavBar";
 import { useEffect, useState, useRef } from "react";
 import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
 import {toast} from "react-toastify";
+import Logo from "../../Assets/Logo2.png";
 
 const TourismGovernorNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
-	const [currency, setCurrency] = useState('EGP');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const navigate = useNavigate();
@@ -25,6 +26,7 @@ const TourismGovernorNavBar = () => {
 		setCurrency(newCurrency);
 		setIsPopupVisible(false);
 		sessionStorage.setItem('currency', newCurrency);
+		window.location.reload();
 	};
 
 	useEffect(() => {
@@ -83,12 +85,14 @@ const TourismGovernorNavBar = () => {
 		<NavBar>
 			<div className="flex items-center justify-between w-full px-16 py-3">
 				{/* Left: Logo */}
-				<div className="mr-72">
-					<NavLink to='/explore' replace={true}
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-xl">
-						Logo
-					</NavLink>
-				</div>
+				<div className="flex items-center mr-72">
+    				 <NavLink to='/explore' replace={true} className="flex items-center space-x-2 group">
+        				<div className="flex items-center space-x-2 group-hover:brightness-150 transition duration-200">
+            				<img src={Logo} alt="Logo" className="w-16 h-16" />
+            				<span className="text-2xl font-bold text-[#330577]">Travelling Birds</span>
+        				</div>
+   					 </NavLink>
+					</div>
 
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-4 mr-72">

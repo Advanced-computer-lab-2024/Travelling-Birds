@@ -17,6 +17,18 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
         }
     }
 
+    const renderTicketPrice = (price) => {
+        const currency = sessionStorage.getItem('currency') || 'USD';
+        if (currency === 'EGP') {
+          return `${(price * 49.3).toFixed(2)} EGP`;
+        } else if (currency === 'EUR') {
+          return `€${(price * 0.93).toFixed(2)}`;
+        } else {
+          // Default is USD
+          return `$${price.toFixed(2)}`;
+        }
+      };
+
     return (
         <div className="bg-white rounded-xl shadow-md relative flex md:flex-row flex-col md:space-x-4 p-4">
             {imageBase64 && (
@@ -49,7 +61,7 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
                     Ticket Prices: {historicalPlace.ticketPrices && historicalPlace.ticketPrices.length > 0 ? (
                         <ul className="list-disc pl-5">
                             {historicalPlace.ticketPrices.map((price, index) => (
-                                <li key={index}>${price}</li>
+                                <li key={index} className="text-base">{renderTicketPrice(price)}</li>
                             ))}
                         </ul>
                     ) : (

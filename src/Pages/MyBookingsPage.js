@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ActivityPage from './ActivitiesPage'; // Import the existing page
 import ItinerariesPage from './ItinerariesPage'; // Import the existing page
 import PlacesPage from './PlacesPage'; // Import the existing page
 
 const BookingPage = () => {
-    const [selectedPage, setSelectedPage] = useState('Activities'); // Default to Activities page
+    // Retrieve the last selected page from localStorage, or default to 'Activities'
+    const [selectedPage, setSelectedPage] = useState(() => {
+        return localStorage.getItem('lastSelectedPage') || 'Activities';
+    });
+
+    useEffect(() => {
+        // Store the selected page in localStorage whenever it changes
+        localStorage.setItem('lastSelectedPage', selectedPage);
+    }, [selectedPage]);
 
     const renderContent = () => {
         switch (selectedPage) {

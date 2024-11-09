@@ -21,6 +21,7 @@ const HistoricalPlaceForm = () => {
     const [area, setArea] = useState('');
     const [ticketPrices, setTicketPrices] = useState('');
     const [tags, setTags] = useState('');
+    const [activities, setActivities] = useState('');
     const [image, setImage] = useState(null);
     const navigate = useNavigate();
 
@@ -76,6 +77,7 @@ const HistoricalPlaceForm = () => {
             setArea(placeData.location?.area || '');
             setTicketPrices(placeData.ticketPrices?.join(',') || '');
             setTags(placeData.tags?.join(',') || '');
+            setActivities(placeData.activities?.join(',') || '');
         }
     };
 
@@ -97,6 +99,7 @@ const HistoricalPlaceForm = () => {
         formData.append('location[area]', area);
         formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
         formData.append('tags', tags.split(',').map(tag => tag.trim()));
+        formData.append('activities', activities.split(',').map(id => id.trim()));
         formData.append('createdBy', sessionStorage.getItem('user id'));
 
         if (image) {
@@ -133,12 +136,12 @@ const HistoricalPlaceForm = () => {
     return (
         <div className="bg-white p-6 rounded-lg shadow-md">
             {!loading ? (
-                <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
-                    <h1 className="col-span-1 md:col-span-2 text-3xl font-bold text-[#330577] mb-4 text-center">
+                <form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
+                    <h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
                         {id ? 'Update Historical Place' : 'Register Historical Place'}
                     </h1>
 
-                    {/* Left Column */}
+                    {/* Column 1 */}
                     <div className="flex flex-col space-y-4">
                         <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
                         <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
@@ -147,18 +150,25 @@ const HistoricalPlaceForm = () => {
                         <ReusableInput type="text" name="Address" value={address} onChange={e => setAddress(e.target.value)} />
                     </div>
 
-                    {/* Right Column */}
+                    {/* Column 2 */}
                     <div className="flex flex-col space-y-4">
                         <ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)} />
                         <ReusableInput type="number" step="any" name="Latitude" value={lat} onChange={e => setLat(e.target.value)} />
                         <ReusableInput type="number" step="any" name="Longitude" value={lng} onChange={e => setLng(e.target.value)} />
                         <ReusableInput type="text" name="Ticket Prices (Comma-separated)" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
                         <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
+                    </div>
+
+                    {/* Column 3 */}
+                    <div className="flex flex-col space-y-4">
+                        <ReusableInput type="text" name="Activities (Comma-separated IDs)" value={activities} onChange={e => setActivities(e.target.value)} />
+                        <ReusableInput type="time" name="Opening Hours Start Time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+                        <ReusableInput type="time" name="Opening Hours End Time" value={endTime} onChange={e => setEndTime(e.target.value)} />
                         <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />
                     </div>
 
                     {/* Buttons Row */}
-                    <div className="col-span-1 md:col-span-2 flex justify-between mt-4">
+                    <div className="col-span-1 md:col-span-3 flex justify-between mt-4">
                         <button
                             type="submit"
                             className="bg-[#330577] hover:bg-[#4a1c96] text-white py-2 px-6 rounded text-base"
@@ -206,6 +216,7 @@ HistoricalPlaceForm.propTypes = {
         }),
         ticketPrices: PropTypes.arrayOf(PropTypes.number),
         tags: PropTypes.arrayOf(PropTypes.string),
+        activities: PropTypes.arrayOf(PropTypes.string),
         image: PropTypes.shape({
             data: PropTypes.object,
             contentType: PropTypes.string,

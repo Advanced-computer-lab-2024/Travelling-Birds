@@ -1,57 +1,6 @@
-// import React, { useState } from 'react';
-// import {
-// 	AdvertiserRegisterForm,
-// 	SellerRegisterForm,
-// 	TourGuideRegisterForm,
-// 	TouristRegisterForm,
-// } from '../Components/Registration Forms/index.js';
-//
-// const RegisterPage = () => {
-// 	const [selectedRole, setSelectedRole] = useState(null);
-//
-// 	const handleButtonClick = (role) => {
-// 		setSelectedRole((prevRole) => (prevRole === role ? null : role));
-// 	};
-//
-// 	const isSelected = (role) => selectedRole === role;
-//
-// 	const getButtonStyle = (role) => {
-// 		let baseStyle =
-// 			'w-full py-4 px-6 bg-[#330577] text-white rounded transition-transform transform hover:bg-[#4a1a99] focus:outline-none mb-10 ml-64';
-// 		if (isSelected(role)) {
-// 			baseStyle += ' -translate-x-24 bg-[#220446]';
-// 		}
-// 		return baseStyle;
-// 	};
-//
-// 	return (
-// 		<div className="flex h-screen">
-// 			{/* Left Side - Buttons */}
-// 			<div className="flex flex-col justify-center items-start  p-8">
-// 				{['Tourist', 'Tour Guide', 'Advertiser', 'Seller'].map((role) => (
-// 					<button
-// 						key={role}
-// 						className={getButtonStyle(role)}
-// 						onClick={() => handleButtonClick(role)}
-// 					>
-// 						{role}
-// 					</button>
-// 				))}
-// 			</div>
-// 			{/* Right Side - Form Display */}
-// 			<div className="flex-1 flex items-center justify-center p-8 ml-96">
-// 				{selectedRole === 'Advertiser' && <AdvertiserRegisterForm />}
-// 				{selectedRole === 'Seller' && <SellerRegisterForm />}
-// 				{selectedRole === 'Tour Guide' && <TourGuideRegisterForm />}
-// 				{selectedRole === 'Tourist' && <TouristRegisterForm />}
-// 			</div>
-// 		</div>
-// 	);
-// };
-//
-// export default RegisterPage;
 
 import React, {useState} from 'react';
+import Logo from '../Assets/Logo.png';
 import {
 	AdvertiserRegisterForm,
 	SellerRegisterForm,
@@ -78,16 +27,18 @@ const RegisterPage = () => {
 
 
 	return (
-		<div className="flex h-[calc(100vh-80px)]">
+		<div className="flex h-[calc(100vh-80px)] bg-[#fcfcfc]">
 			{/* Left Side - Logo Text */}
-			<div className="flex flex-1 items-center justify-center p-8">
-				<div className="text-4xl font-bold text-gray-600">
-					Logo should be here
+			<div className="flex-1 flex items-center justify-center h-[calc(100vh-80px)] w-[50%]">
+				<div className="flex-1 flex items-center justify-center h-max w-max">
+					<img src={Logo} alt="logo" className="w-[600px] h-[600px] object-cover"/>
 				</div>
 			</div>
 			{/* Right Side - Tourist Register Form */}
-			<div className="flex-1 flex items-center justify-center p-8">
-				{renderForm()}
+			<div className="flex-1 flex items-center justify-center h-[calc(100vh-80px)] w-[50%]">
+				<div className="flex-1 flex items-center justify-center p-8">
+					{renderForm()}
+				</div>
 			</div>
 		</div>
 	);
