@@ -6,7 +6,6 @@ const itinerarySchema = new Schema({
     description: String,
     activities: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
     locations: [String],
-    timeline: String,
     duration: String,
     language: String,
     price: Number,

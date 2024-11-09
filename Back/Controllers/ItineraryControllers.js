@@ -10,7 +10,6 @@ const addItinerary = async (req, res) => {
 		description,
 		activities,
 		locations,
-		timeline,
 		duration,
 		language,
 		price,
@@ -33,7 +32,6 @@ const addItinerary = async (req, res) => {
 			description,
 			activities,
 			locations,
-			timeline,
 			duration,
 			language,
 			price,
@@ -81,7 +79,6 @@ const updateItinerary = async (req, res) => {
 	    description,
         activities,
         locations,
-        timeline,
         duration,
         language,
         price,
@@ -98,7 +95,6 @@ const updateItinerary = async (req, res) => {
 	        description,
             activities,
             locations,
-            timeline,
             duration,
             language,
             price,
@@ -373,7 +369,19 @@ const addComment = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
-
+// get all activities for a specific itinerary
+const getActivities = async (req, res) => {
+	try {
+		const itinerary = await ItineraryModel.findById(req.params.id);
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+		const activities = await ActivityModel.find({_id: {$in: itinerary.activities}});
+		res.status(200).json(activities);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 
 module.exports = {
 	addItinerary,
@@ -387,5 +395,6 @@ module.exports = {
 	filterItineraries,
 	getAllCreatedItineraries,
 	getComments,
-	addComment
+	addComment,
+	getActivities
 };

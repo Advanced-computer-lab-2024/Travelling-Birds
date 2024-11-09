@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 
 const TouristRegisterForm = ({ onChangeRole }) => {
 	const [username, setUsername] = useState('');
@@ -43,6 +44,37 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 		return Object.keys(newErrors).length === 0;
 	};
 
+	const handleLogIn = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/login`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				username,
+				password
+			})
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data?.user) {
+					sessionStorage.setItem('user id', data.user._id);
+					sessionStorage.setItem('role', data.user.role);
+					window.dispatchEvent(sessionStorageEvent);
+					toast.success('Logged in successfully');
+					navigate('/explore', {replace: true});
+				} else if (data?.message === 'Profile not approved yet. Please wait for admin approval.') {
+					toast.error('Profile not approved yet. Please wait for admin approval.');
+				} else {
+					toast.error('Invalid credentials');
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('Failed to log in');
+			});
+	}
+
 	const handleRegister = async () => {
 		if (!validateForm()) return;
 
@@ -67,7 +99,7 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 			});
 
 			if (registerResponse.status === 201) {
-				navigate('/wait');
+				handleLogIn();
 			} else {
 				throw new Error('Failed to register');
 			}
