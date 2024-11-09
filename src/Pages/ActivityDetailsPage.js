@@ -13,6 +13,7 @@ const ActivityDetail = () => {
     const [commentRating, setCommentRating] = useState(0);
     const [isShareOpen, setIsShareOpen] = useState(false); // State to control share dropdown visibility
     const [email, setEmail] = useState(''); // State to store email input
+	const [hasBooked, setHasBooked] = useState(false); // State to check if user has booked the activity
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
@@ -40,8 +41,25 @@ const ActivityDetail = () => {
                 console.log('Error fetching comments', err);
             }
         };
+	    const checkUserBooking = async () => {
+		    try {
+			    const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
+			    if (!res.ok) {
+				    throw new Error('Failed to fetch user bookings');
+			    }
+			    const userBookings = await res.json();
+			    const isBooked = userBookings.some((booking) => booking._id === activityId);
+			    setHasBooked(isBooked);
+		    } catch (err) {
+			    console.error('Error checking user bookings:', err);
+		    }
+	    };
+	    if (userId) {
+		    checkUserBooking(); // Only check bookings if userId exists
+	    }
         fetchComments();
-    }, [activityId]);
+
+    }, [activityId, userId]);
 
     // Convert image to base64 if exists
     let imageBase64 = null;
@@ -185,14 +203,12 @@ const handleBookActivity = async () => {
             setCommentRating(0);
         } catch (err) {
             console.error("Error adding comment:", err);
-			if(err.message() ==="User must complete the activity before commenting"){
-				toast.error("User must complete the activity before commenting");
-			}
+	        if (err.message === "User must complete the activity before commenting") {
+		        toast.error("User must complete the activity before commenting");
+	        }
             toast.error("Failed to add comment. Please try again.");
         }
     };
-
-
 	return (
 		<div>
 			<section className="px-4 py-10 bg-gray-100">
@@ -334,32 +350,34 @@ const handleBookActivity = async () => {
 					</div>
 
 					{/* Add Comment Form */}
-					<div className="mt-8 bg-white shadow-md rounded-lg p-6">
-						<h2 className="font-semibold text-lg text-[#330577] mb-4">Add a Review</h2>
-						<textarea
-							placeholder="Write your review here..."
-							value={commentText}
-							onChange={(e) => setCommentText(e.target.value)}
-							className="w-full border rounded-lg p-2 mb-4"
-						></textarea>
-						<div className="flex items-center mb-4">
-							<span className="mr-2">Rating:</span>
-							{[1, 2, 3, 4, 5].map((star) => (
-								<FaStar
-									key={star}
-									className="cursor-pointer"
-									style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
-									onClick={() => setCommentRating(star)}
-								/>
-							))}
+					{hasBooked && (
+						<div className="mt-8 bg-white shadow-md rounded-lg p-6">
+							<h2 className="font-semibold text-lg text-[#330577] mb-4">Add a Review</h2>
+							<textarea
+								placeholder="Write your review here..."
+								value={commentText}
+								onChange={(e) => setCommentText(e.target.value)}
+								className="w-full border rounded-lg p-2 mb-4"
+							></textarea>
+							<div className="flex items-center mb-4">
+								<span className="mr-2">Rating:</span>
+								{[1, 2, 3, 4, 5].map((star) => (
+									<FaStar
+										key={star}
+										className="cursor-pointer"
+										style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
+										onClick={() => setCommentRating(star)}
+									/>
+								))}
+							</div>
+							<button
+								onClick={handleAddComment}
+								className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
+							>
+								Submit Review
+							</button>
 						</div>
-						<button
-							onClick={handleAddComment}
-							className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
-						>
-							Submit Review
-						</button>
-					</div>
+					)}
 				</div>
 			</section>
 		</div>
