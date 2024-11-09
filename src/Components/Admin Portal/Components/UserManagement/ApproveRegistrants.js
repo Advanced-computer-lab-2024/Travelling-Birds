@@ -72,7 +72,7 @@ const ApproveRegistrants = () => {
 									<th>Name</th>
 									<th>Username</th>
 									<th>Email</th>
-									<th>Approve</th>
+									<th>Actions</th>
 								</tr>
 								</thead>
 								<tbody>
@@ -82,9 +82,16 @@ const ApproveRegistrants = () => {
 										<td>{user.username}</td>
 										<td>{user.email}</td>
 										<td>
-											<button className="btn btn-primary btn-sm" onClick={() => {
+											<button className="btn btn-primary btn-xs">
+												<i className="fas fa-eye"></i>
+											</button>
+											<button className="btn btn-secondary btn-xs" onClick={() => {
 												approveUser(user._id);
-											}}>Approve
+											}}>
+												<i className="fas fa-check"></i>
+											</button>
+											<button className="btn btn-danger btn-xs">
+												<i className="fas fa-times"></i>
 											</button>
 										</td>
 									</tr>
@@ -130,8 +137,8 @@ const ApproveRegistrants = () => {
 								<thead>
 								<tr>
 									<th>Name</th>
-									<th>Email</th>
 									<th>Username</th>
+									<th>Email</th>
 									<th>Approve</th>
 								</tr>
 								</thead>
