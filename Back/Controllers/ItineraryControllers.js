@@ -1,8 +1,13 @@
 const ItineraryModel = require('../Models/Itinerary.js');
+const ActivityModel = require('../Models/Activity.js');
+const UserModel = require('../Models/User.js');
+const CommentModel = require('../Models/Comments.js');
 
 // Add itinerary
 const addItinerary = async (req, res) => {
 	const {
+		title,
+		description,
 		activities,
 		locations,
 		timeline,
@@ -24,6 +29,8 @@ const addItinerary = async (req, res) => {
             };
         }
 		const itinerary = new ItineraryModel({
+			title,
+			description,
 			activities,
 			locations,
 			timeline,
@@ -70,6 +77,8 @@ const getItinerary = async (req, res) => {
 // Update itinerary
 const updateItinerary = async (req, res) => {
     const {
+		title,
+	    description,
         activities,
         locations,
         timeline,
@@ -85,6 +94,8 @@ const updateItinerary = async (req, res) => {
 
     try {
         const updatedFields = {
+			title,
+	        description,
             activities,
             locations,
             timeline,
@@ -320,6 +331,50 @@ const getAllCreatedItineraries = async (req, res) => {
 	}
 }
 
+const getComments = async (req, res) => {
+	try {
+		const itinerary = await ItineraryModel.findById(req.params.id);
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+		const comments = await CommentModel.find({_id: {$in: itinerary.comments}});
+		res.status(200).json(comments);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+// create a comment for a specific itinerary
+const addComment = async (req, res) => {
+	const {user, text, stars} = req.body;
+	try {
+		const user2 = await UserModel.findById(user);
+		if (!user2) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		const itinerary = await ItineraryModel.findById(req.params.id);
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+		//check user completed itinerary before commenting
+		if (!((user2.itineraryBookings.includes(req.params.id)) && (itinerary.date < new Date()))) {
+			return res.status(400).json({message: 'User must complete the itinerary before commenting'});
+		}
+		const newComment = new CommentModel({user, text, stars, date: new Date()});
+		await newComment.save();
+		const itineraryWithComment = await ItineraryModel.findByIdAndUpdate(
+			req.params.id,
+			{
+				$push: {comments: newComment._id}
+			},
+			{new: true}
+		).populate('comments');
+		res.status(201).json(itineraryWithComment);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+
 module.exports = {
 	addItinerary,
 	getAllItineraries,
@@ -330,5 +385,7 @@ module.exports = {
 	getUpcomingItineraries,
 	sortItineraries,
 	filterItineraries,
-	getAllCreatedItineraries
+	getAllCreatedItineraries,
+	getComments,
+	addComment
 };
