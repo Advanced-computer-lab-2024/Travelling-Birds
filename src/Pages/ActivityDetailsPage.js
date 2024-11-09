@@ -14,6 +14,8 @@ const ActivityDetail = () => {
     const [isShareOpen, setIsShareOpen] = useState(false); // State to control share dropdown visibility
     const [email, setEmail] = useState(''); // State to store email input
     const [hasBooked, setHasBooked] = useState(false); // State to check if user has booked the activity
+    const [canCancel, setCanCancel] = useState(false); // State to check if user can cancel booking
+    const [canComment, setCanComment] = useState(false); // State to check if user can comment
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
@@ -52,8 +54,16 @@ const ActivityDetail = () => {
                     throw new Error('Failed to fetch user bookings');
                 }
                 const userBookings = await res.json();
-                const isBooked = userBookings.some((booking) => booking._id === activityId && new Date(booking.date) < new Date());
-                setHasBooked(isBooked);
+                const booking = userBookings.find((booking) => booking._id === activityId);
+
+                if (booking) {
+                    setHasBooked(true);
+                    const activityDate = new Date(booking.date);
+                    const currentDate = new Date();
+                    const hoursDifference = (activityDate - currentDate) / (1000 * 60 * 60);
+                    setCanCancel(hoursDifference >= 48); // Allow cancelation if more than 48 hours away
+                    setCanComment(activityDate < currentDate); // Allow commenting if the activity date has passed
+                }
             } catch (err) {
                 console.error('Error checking user bookings:', err);
             }
@@ -114,28 +124,27 @@ const ActivityDetail = () => {
         }
     };
 
-    if (loading) return <p>Loading...</p>;
+    // Function to handle canceling the booking
+    const handleCancelBooking = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activityId })
+            });
 
-    // Helper function to render stars based on rating
-    const renderStars = (rating) => {
-        if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
-            rating = 0;
+            if (!response.ok) {
+                throw new Error('Failed to cancel the booking');
+            }
+
+            toast.success('Booking canceled successfully');
+            setHasBooked(false); // Update state to reflect cancellation
+            setCanCancel(false);
+            setCanComment(false);
+        } catch (error) {
+            console.error('Error canceling booking:', error);
+            toast.error('Failed to cancel the booking. Please try again.');
         }
-        const totalStars = 5;
-        const fullStars = Math.min(Math.floor(rating), totalStars);
-        const halfStars = rating % 1 !== 0 && fullStars < totalStars;
-
-        return (
-            <>
-                {[...Array(fullStars)].map((_, i) => (
-                    <FaStar key={i} style={{ color: '#330577' }} />
-                ))}
-                {halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
-                {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-                    <FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
-                ))}
-            </>
-        );
     };
 
     // Handle submitting a new comment
@@ -177,43 +186,63 @@ const ActivityDetail = () => {
         }
     };
 
-	
-   // Handle copying the link to clipboard
-   const handleCopyLink = () => {
-	const link = `http://localhost:3000/activities/${activityId}`;
-	navigator.clipboard.writeText(link).then(() => {
-		alert('Link copied to clipboard!');
-		setIsShareOpen(false); // Close the dropdown menu after copying
-	});
-};
+    // Helper function to render stars based on rating
+    const renderStars = (rating) => {
+        if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
+            rating = 0;
+        }
+        const totalStars = 5;
+        const fullStars = Math.min(Math.floor(rating), totalStars);
+        const halfStars = rating % 1 !== 0 && fullStars < totalStars;
 
-// Handle sending the link via email
-    const handleSendEmail = () => {
-	    if (!email) {
-		    alert('Please enter a valid email address.');
-		    return;
-	}
-
-	    const link = `http://localhost:3000/activities/${activityId}`;
-	    window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: ${link}`, '_blank');
-	    setEmail(''); // Clear email input
-	    setIsShareOpen(false); // Close the dropdown
+        return (
+            <>
+                {[...Array(fullStars)].map((_, i) => (
+                    <FaStar key={i} style={{ color: '#330577' }} />
+                ))}
+                {halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
+                {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
+                    <FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
+                ))}
+            </>
+        );
     };
 
+    // Helper function to copy link to clipboard
+    const handleCopyLink = () => {
+        const link = `http://localhost:3000/activities/${activityId}`;
+        navigator.clipboard.writeText(link).then(() => {
+            alert('Link copied to clipboard!');
+            setIsShareOpen(false); // Close the dropdown menu after copying
+        });
+    };
 
-// Helper function to format price range based on currency
+    // Handle sending the link via email
+    const handleSendEmail = () => {
+        if (!email) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        const link = `http://localhost:3000/activities/${activityId}`;
+        window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: ${link}`, '_blank');
+        setEmail(''); // Clear email input
+        setIsShareOpen(false); // Close the dropdown
+    };
+
+    // Helper function to format price range based on currency
     const formatPriceRange = (price) => {
-	    const currency = sessionStorage.getItem('currency') || 'USD';
-	        if (currency === 'EGP') {
-		        return `${(price * 49.3).toFixed(2)} EGP`;
-	        } else if (currency === 'EUR') {
-		        return `€${(price * 0.93).toFixed(2)}`;
-	        } else {
-		        return `$${price.toFixed(2)}`; // Default to USD
-	        }
-        };
+        const currency = sessionStorage.getItem('currency') || 'USD';
+        if (currency === 'EGP') {
+            return `${(price * 49.3).toFixed(2)} EGP`;
+        } else if (currency === 'EUR') {
+            return `€${(price * 0.93).toFixed(2)}`;
+        } else {
+            return `$${price.toFixed(2)}`; // Default to USD
+        }
+    };
 
-
+    if (loading) return <p>Loading...</p>;
 
     return (
         <div>
@@ -314,7 +343,7 @@ const ActivityDetail = () => {
                                     <div key={index} className="border-b border-gray-200 pb-2">
                                         <p className="text-gray-800">{review.user}</p>
                                         <p className="text-gray-600">{review.text}</p>
-                                        <p className="text-gray-400 text-sm">{new Date(review.date).toLocaleDateString()}</p>
+                                        <p className="text-sm text-gray-400">{new Date(review.date).toLocaleDateString()}</p>
                                         <span className="flex">{renderStars(review.stars)}</span>
                                     </div>
                                 ))}
@@ -356,7 +385,7 @@ const ActivityDetail = () => {
                     </div>
 
                     {/* Add Comment Form */}
-                    {userRole === 'tourist' && hasBooked && (
+                    {userRole === 'tourist' && hasBooked && canComment && (
                         <div className="mt-8 bg-white shadow-md rounded-lg p-6">
                             <h2 className="font-semibold text-lg text-[#330577] mb-4">Add a Review</h2>
                             <textarea
@@ -381,6 +410,18 @@ const ActivityDetail = () => {
                                 className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
                             >
                                 Submit Review
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Cancel Booking Button */}
+                    {userRole === 'tourist' && hasBooked && canCancel && (
+                        <div className="mt-8">
+                            <button
+                                onClick={handleCancelBooking}
+                                className="bg-red-600 text-white px-6 py-3 rounded-lg shadow hover:bg-red-700 flex items-center justify-center w-full"
+                            >
+                                Cancel Booking
                             </button>
                         </div>
                     )}

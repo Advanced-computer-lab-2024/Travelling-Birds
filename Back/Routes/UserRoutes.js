@@ -14,7 +14,9 @@ const {
 	getUsersToDelete,
 	getUsername,
 	addActivityBooking,
-	getActivityBookings
+	getActivityBookings,
+	removeActivityBooking
+
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -53,6 +55,11 @@ router.post('/activity-booking/:id', addActivityBooking);
 
 // Get Activity Bookings
 router.get('/activity-bookings/:id', getActivityBookings);
+
+// Remove Activity Booking
+router.delete('/activity-booking/:id', removeActivityBooking);
+
+
 
 // Login
 router.post('/login', login);
