@@ -7,7 +7,7 @@ const ManageActivities = () => {
 	useEffect(() => {
 		const fetchActivities = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/admin`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/brief`);
 				const data = await response.json();
 				data.forEach(activity => {
 					activity.price = activity.price ? activity.price : `${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}`;

@@ -10,7 +10,7 @@ const {
 	filterUpcomingActivities,
 	sortActivities,
 	getAllCreatedActivities,
-	getActivitiesAdmin,
+	getActivitiesBrief,
 	addComment,
 	getComments
 
@@ -26,7 +26,7 @@ router.post('/', upload.single('image'), addActivity);
 router.get('/', getAllActivities);
 
 // Get all activities for admin
-router.get('/admin', getActivitiesAdmin);
+router.get('/brief', getActivitiesBrief);
 
 // Get upcoming activities
 router.get('/upcoming', getUpcomingActivities);

@@ -328,7 +328,7 @@ const addComment = async (req, res) => {
 	}
 }
 
-const getActivitiesAdmin = async (req, res) => {
+const getActivitiesBrief = async (req, res) => {
 	try {
 		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy');
 		const updatedActivities = await Promise.all(activities.map(async (activity) => {
@@ -355,6 +355,6 @@ module.exports = {
 	getAllCreatedActivities,
 	getComments,
 	addComment,
-	getActivitiesAdmin
+	getActivitiesBrief
 }
 

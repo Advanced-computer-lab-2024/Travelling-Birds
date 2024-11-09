@@ -123,6 +123,8 @@ const getUser = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
+// Get specific username
 const getUsername = async (req, res) => {
 	const { username } = req.query;
 	try {
@@ -257,13 +259,12 @@ const getUnapprovedUsers = async (req, res) => {
 			},
 			{
 				$project: {
-					"items.profilePicture": 0,
-					"items.password": 0,
-					"items.role": 0,
-					"items.isApproved": 0,
-					"items.termsFlag": 0,
-					"items.identityCard": 0,
-					"items.certificates": 0,
+					"items.firstName": 1,
+					"items.lastName": 1,
+					"items.username": 1,
+					"items.email": 1,
+					"items._id": 1,
+					"items.role": 1
 				}
 			}
 		];
@@ -278,6 +279,25 @@ const getUnapprovedUsers = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
+const getUserDocuments = async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		const documents = {
+			identityCard: user.identityCard,
+			certificates: user.certificates,
+			taxRegCard: user.taxRegCard
+		}
+		res.status(200).json(documents);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
 const getApprovedUsers = async (req, res) => {
 	try {
 		const query = [
@@ -351,6 +371,7 @@ const getUsersToDelete = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // add activity booking to user
 const addActivityBooking = async (req, res) => {
 	const userId = req.params.id;
@@ -382,6 +403,7 @@ const getActivityBookings = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -390,6 +412,7 @@ module.exports = {
 	deleteUser,
 	login,
 	getUnapprovedUsers,
+	getUserDocuments,
 	getApprovedUsers,
 	getUsersToDelete,
 	getUsername,

@@ -7,18 +7,10 @@ const {
 	getUser,
 	updateUser,
 	deleteUser,
-	// registerTourist,
-	// registerGeneric,
-	// readTourGuideProfile,
-	// updateTourGuideProfile,
-	// updateTouristProfile,
-	// updateSellerProfile,
-	// addAdmin,
-	// addTourismGovernor,
-	// deleteUserByAdmin,
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
+	getUserDocuments,
 	getUsersToDelete,
 	getUsername,
 	addActivityBooking,
@@ -37,6 +29,9 @@ router.get('/username', getUsername);
 
 // Get Unapproved Users
 router.get('/unapproved', getUnapprovedUsers);
+
+// Get User Documents
+router.get('/documents/:id', getUserDocuments);
 
 // Get Approved Users
 router.get('/approved', getApprovedUsers);
