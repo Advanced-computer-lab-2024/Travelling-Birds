@@ -11,8 +11,9 @@ const {
 	sortActivities,
 	getAllCreatedActivities,
 	getActivitiesBrief,
+	getActivitiesBriefForUser,
 	addComment,
-	getComments
+	getComments,
 
 } = require('../Controllers/ActivityControllers.js');
 const {upload} = require('../Middleware/upload');
@@ -27,6 +28,9 @@ router.get('/', getAllActivities);
 
 // Get all activities for admin
 router.get('/brief', getActivitiesBrief);
+
+// Get all activities for a specific user
+router.get('/brief/:id', getActivitiesBriefForUser);
 
 // Get upcoming activities
 router.get('/upcoming', getUpcomingActivities);

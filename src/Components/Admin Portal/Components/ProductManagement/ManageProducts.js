@@ -137,7 +137,7 @@ const ManageProducts = () => {
 								<td>{product.userPurchased.length}</td>
 								<td>{product.sellerName}</td>
 								<td>{average(product.ratings)}</td>
-								<td>{product.reviews.join(', ')}</td>
+								<td>{product.reviews?.join(', ')}</td>
 								<td>
 									<button className="btn btn-primary btn-sm mr-2"
 									        onClick={() => handleUpdate(product)}>Edit

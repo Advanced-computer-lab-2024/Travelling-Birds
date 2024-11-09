@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {userDeletionEvent} from "../../../../utils/userDeletionEvent";
 import {toast} from "react-toastify";
 // import './ManageUserAccounts.css'; // Import the CSS file
 
@@ -18,9 +17,10 @@ const ManageUserAccounts = () => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
-					window.dispatchEvent(userDeletionEvent);
+					console.log(user);
 					if (user.role === 'tourist') {
 						setTourists(tourists.filter(tourist => tourist._id !== user._id));
+						console.log(tourists);
 					}
 					if (user.role === 'tour_guide') {
 						setTourGuides(tourGuides.filter(tourGuide => tourGuide._id !== user._id));

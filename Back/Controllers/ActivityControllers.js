@@ -101,7 +101,8 @@ const updateActivity = async (req, res) => {
 		comments,
 		createdBy,
 		features,
-		contact
+		contact,
+		flaggedInappropriate
 	} = req.body;
 
 	try {
@@ -122,6 +123,7 @@ const updateActivity = async (req, res) => {
 			createdBy,
 			features,
 			contact,
+			flaggedInappropriate
 		};
 
 		// Update image data if a new file is uploaded
@@ -361,7 +363,22 @@ const addComment = async (req, res) => {
 
 const getActivitiesBrief = async (req, res) => {
 	try {
-		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy');
+		const activities = await ActivityModel.find().select('title date location price priceRange rating bookingOpen createdBy flaggedInappropriate');
+		const updatedActivities = await Promise.all(activities.map(async (activity) => {
+			const user = await UserModel.findById(activity.createdBy).select('firstName lastName');
+			activity._doc.createdByName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
+			return activity;
+		}));
+		res.status(200).json(updatedActivities);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+const getActivitiesBriefForUser = async (req, res) => {
+	const {id} = req.params;
+	try {
+		const activities = await ActivityModel.find({createdBy: id}).select('title date location price priceRange rating bookingOpen createdBy flaggedInappropriate');
 		const updatedActivities = await Promise.all(activities.map(async (activity) => {
 			const user = await UserModel.findById(activity.createdBy).select('firstName lastName');
 			activity._doc.createdByName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
@@ -386,6 +403,7 @@ module.exports = {
 	getAllCreatedActivities,
 	getComments,
 	addComment,
-	getActivitiesBrief
+	getActivitiesBrief,
+	getActivitiesBriefForUser
 }
 
