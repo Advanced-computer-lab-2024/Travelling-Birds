@@ -3,36 +3,36 @@ import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
 import LoadingPage from './LoadingPage';
 import LocationContact from "../Components/Locations/HistoricalPlaceLocation";
-import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay"; // Import the ActivityDisplay component
+import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay";
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);
   const [place, setPlace] = useState(null);
-  const [activities, setActivities] = useState([]); // State to store related activities
-  const [isShareOpen, setIsShareOpen] = useState(false); 
+  const [activities, setActivities] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [email, setEmail] = useState(''); // State for email input
   const { id: placeId } = useParams();
 
   useEffect(() => {
     const fetchPlace = async () => {
-        const apiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${placeId}`;
-        try {
-            const res = await fetch(apiUrl);
-            const placeData = await res.json();
-            setPlace(placeData);
+      const apiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${placeId}`;
+      try {
+        const res = await fetch(apiUrl);
+        const placeData = await res.json();
+        setPlace(placeData);
 
-            // Activities are already populated in `placeData.activities`
-            if (placeData.activities && placeData.activities.length > 0) {
-                setActivities(placeData.activities);
-            }
-
-            setLoading(false);
-        } catch (err) {
-            console.log('Error fetching place data', err);
-            setLoading(false);
+        if (placeData.activities && placeData.activities.length > 0) {
+          setActivities(placeData.activities);
         }
+
+        setLoading(false);
+      } catch (err) {
+        console.log('Error fetching place data', err);
+        setLoading(false);
+      }
     };
     fetchPlace();
-}, [placeId]);
+  }, [placeId]);
 
   let imageBase64 = null;
   if (place?.image?.data?.data && place.image.contentType) {
@@ -45,8 +45,20 @@ const HistoricalPlaceDetail = () => {
     const link = `http://localhost:3000/historicalPlaces/${placeId}`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Link copied to clipboard!');
-      setIsShareOpen(false); 
+      setIsShareOpen(false);
     });
+  };
+
+  const handleSendEmail = () => {
+    if (!email) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    const link = `http://localhost:3000/historicalPlaces/${placeId}`;
+    window.open(`mailto:${email}?subject=Check out this historical place&body=Here's a link to an interesting historical place: ${link}`, '_blank');
+    setEmail('');
+    setIsShareOpen(false);
   };
 
   const renderTicketPrice = (price) => {
@@ -82,7 +94,7 @@ const HistoricalPlaceDetail = () => {
                 {isShareOpen && (
                   <div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
                     <p className="mb-2 font-semibold text-gray-700">Share this link:</p>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-4">
                       <input
                         type="text"
                         value={`http://localhost:3000/historicalPlaces/${placeId}`}
@@ -95,6 +107,23 @@ const HistoricalPlaceDetail = () => {
                         className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                       >
                         Copy
+                      </button>
+                    </div>
+                    {/* Email Sharing */}
+                    <p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="email"
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+                      />
+                      <button
+                        onClick={handleSendEmail}
+                        className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+                      >
+                        Send
                       </button>
                     </div>
                   </div>

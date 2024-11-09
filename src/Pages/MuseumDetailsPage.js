@@ -8,8 +8,9 @@ import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay"; // 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);
   const [museum, setMuseum] = useState(null);
-  const [activities, setActivities] = useState([]); // State for related activities
-  const [isShareOpen, setIsShareOpen] = useState(false); 
+  const [activities, setActivities] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [email, setEmail] = useState(''); // State for email input
   const { id: museumId } = useParams();
 
   useEffect(() => {
@@ -22,7 +23,7 @@ const MuseumDetail = () => {
 
         // Fetch related activities if any
         if (museumData.activities && museumData.activities.length > 0) {
-          setActivities(museumData.activities); // Assuming activities are already populated
+          setActivities(museumData.activities);
         }
 
         setLoading(false);
@@ -34,7 +35,6 @@ const MuseumDetail = () => {
     fetchMuseum();
   }, [museumId]);
 
-  // Convert image to base64 if exists
   let imageBase64 = null;
   if (museum?.image?.data?.data && museum.image.contentType) {
     const byteArray = new Uint8Array(museum.image.data.data);
@@ -42,18 +42,26 @@ const MuseumDetail = () => {
     imageBase64 = `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
   }
 
-  // Handle copying the link to clipboard
   const handleCopyLink = () => {
     const link = `http://localhost:3000/museum/${museumId}`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Link copied to clipboard!');
-      setIsShareOpen(false); 
+      setIsShareOpen(false);
     });
   };
 
-  if (loading) return <LoadingPage />;
+  const handleSendEmail = () => {
+    if (!email) {
+      alert('Please enter a valid email address.');
+      return;
+    }
 
-  // Helper function to render ticket prices from object
+    const link = `http://localhost:3000/museum/${museumId}`;
+    window.open(`mailto:${email}?subject=Check out this museum&body=Here's a link to an interesting museum: ${link}`, '_blank');
+    setEmail('');
+    setIsShareOpen(false);
+  };
+
   const renderTicketPrices = (ticketPrices) => {
     if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
       return <p className="text-gray-700">No ticket prices available.</p>;
@@ -81,6 +89,8 @@ const MuseumDetail = () => {
     );
   };
 
+  if (loading) return <LoadingPage />;
+
   return (
     <div>
       <section className="px-4 py-10 bg-gray-100">
@@ -103,7 +113,7 @@ const MuseumDetail = () => {
                 {isShareOpen && (
                   <div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
                     <p className="mb-2 font-semibold text-gray-700">Share this link:</p>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-4">
                       <input
                         type="text"
                         value={`http://localhost:3000/museum/${museumId}`}
@@ -116,6 +126,23 @@ const MuseumDetail = () => {
                         className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                       >
                         Copy
+                      </button>
+                    </div>
+                    {/* Email Sharing */}
+                    <p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="email"
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+                      />
+                      <button
+                        onClick={handleSendEmail}
+                        className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+                      >
+                        Send
                       </button>
                     </div>
                   </div>

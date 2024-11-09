@@ -10,6 +10,7 @@ const ActivityDetail = () => {
 	const [commentText, setCommentText] = useState("");
 	const [commentRating, setCommentRating] = useState(0);
 	const [isShareOpen, setIsShareOpen] = useState(false); // State to control share dropdown visibility
+	const [email, setEmail] = useState(''); // State to store email input
 	const activityId = useParams().id;
 
 	useEffect(() => {
@@ -91,42 +92,56 @@ const ActivityDetail = () => {
 		});
 	};
 
-	// Handle submitting a new comment
-	const handleAddComment = async () => {
-		if (!commentText || commentRating === 0) {
-			alert("Please provide a comment and a rating.");
+	// Handle sending the link via email
+	const handleSendEmail = () => {
+		if (!email) {
+			alert('Please enter a valid email address.');
 			return;
 		}
-		const newComment = {
-			user: sessionStorage.getItem('user id'),
-			text: commentText,
-			date: new Date().toISOString(),
-			stars: commentRating
-		};
 
-		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(newComment)
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to add comment');
-			}
-
-			// Update local state with new comment
-			setActivity((prev) => ({
-				...prev,
-				comments: [newComment, ...(prev.comments || [])]
-			}));
-			setCommentText("");
-			setCommentRating(0);
-		} catch (err) {
-			console.error("Error adding comment:", err);
-			alert("Failed to add comment. Please try again.");
-		}
+		const link = `http://localhost:3000/activities/${activityId}`;
+		window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: ${link}`, '_blank');
+		setEmail(''); // Clear email input
+		setIsShareOpen(false); // Close the dropdown
 	};
+
+	// Handle submitting a new comment
+    const handleAddComment = async () => {
+        if (!commentText || commentRating === 0) {
+            alert("Please provide a comment and a rating.");
+            return;
+        }
+        const newComment = {
+            user: sessionStorage.getItem('user id'),
+            text: commentText,
+            date: new Date().toISOString(),
+            stars: commentRating
+        };
+
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activityId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newComment)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add comment');
+            }
+
+            // Update local state with new comment
+            setActivity((prev) => ({
+                ...prev,
+                comments: [newComment, ...(prev.comments || [])]
+            }));
+            setCommentText("");
+            setCommentRating(0);
+        } catch (err) {
+            console.error("Error adding comment:", err);
+            alert("Failed to add comment. Please try again.");
+        }
+    };
+
 
 	return (
 		<div>
@@ -164,19 +179,36 @@ const ActivityDetail = () => {
 								{isShareOpen && (
 									<div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
 										<p className="mb-2 font-semibold text-gray-700">Share this link:</p>
-										<div className="flex items-center space-x-2">
+										<div className="flex items-center space-x-2 mb-4">
 											<input
 												type="text"
 												value={`http://localhost:3000/activities/${activityId}`}
 												readOnly
 												className="w-full px-2 py-1 border rounded-lg focus:outline-none"
-												onClick={(e) => e.target.select()} // Select text on click
+												onClick={(e) => e.target.select()}
 											/>
 											<button
 												onClick={handleCopyLink}
 												className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
 											>
 												Copy
+											</button>
+										</div>
+										{/* Email Sharing */}
+										<p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
+										<div className="flex items-center space-x-2">
+											<input
+												type="email"
+												placeholder="Enter email address"
+												value={email}
+												onChange={(e) => setEmail(e.target.value)}
+												className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+											/>
+											<button
+												onClick={handleSendEmail}
+												className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+											>
+												Send
 											</button>
 										</div>
 									</div>
@@ -196,7 +228,7 @@ const ActivityDetail = () => {
 						<div className="bg-white p-4 rounded-lg shadow-md">
 							<h2 className="font-semibold text-lg text-[#330577]">Ratings and reviews</h2>
 							<p className="text-gray-800 text-xl font-bold mt-2">{activity?.rating} ★</p>
-							<p className="text-gray-500 text-sm">{activity?.reviewCount} reviews</p>
+							 <p className="text-gray-500 text-sm">{activity?.reviewCount} reviews</p>
 							<div className="mt-4 space-y-2">
 								{activity?.comments?.slice(0, 3).map((review, index) => (
 									<div key={index} className="border-b border-gray-200 pb-2">
