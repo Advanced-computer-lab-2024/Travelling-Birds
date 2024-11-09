@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
 import LoadingPage from './LoadingPage'; 
-import LocationContact from "../Components/Locations/MuseumLocation"; // Import the LocationContact component
+import LocationContact from "../Components/Locations/MuseumLocation";
+import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay"; // Assuming this is used to display activities for a museum
 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);
   const [museum, setMuseum] = useState(null);
-  const [isShareOpen, setIsShareOpen] = useState(false); // State for share dropdown
+  const [activities, setActivities] = useState([]); // State for related activities
+  const [isShareOpen, setIsShareOpen] = useState(false); 
   const { id: museumId } = useParams();
 
   useEffect(() => {
@@ -17,9 +19,16 @@ const MuseumDetail = () => {
         const res = await fetch(apiUrl);
         const museumData = await res.json();
         setMuseum(museumData);
+
+        // Fetch related activities if any
+        if (museumData.activities && museumData.activities.length > 0) {
+          setActivities(museumData.activities); // Assuming activities are already populated
+        }
+
         setLoading(false);
       } catch (err) {
         console.log('Error fetching museum data', err);
+        setLoading(false);
       }
     };
     fetchMuseum();
@@ -38,13 +47,13 @@ const MuseumDetail = () => {
     const link = `http://localhost:3000/museum/${museumId}`;
     navigator.clipboard.writeText(link).then(() => {
       alert('Link copied to clipboard!');
-      setIsShareOpen(false); // Close the dropdown menu after copying
+      setIsShareOpen(false); 
     });
   };
 
-  if (loading) return <LoadingPage/>;
+  if (loading) return <LoadingPage />;
 
-  // Helper function to render ticket prices from object (not directly from Map)
+  // Helper function to render ticket prices from object
   const renderTicketPrices = (ticketPrices) => {
     if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
       return <p className="text-gray-700">No ticket prices available.</p>;
@@ -53,25 +62,22 @@ const MuseumDetail = () => {
     const currency = sessionStorage.getItem('currency');
     const convertPrice = (price) => {
       if (currency === 'EGP') {
-       
         return `${(price * 49.30).toFixed(2)} EGP`;
       } else if (currency === 'EUR') {
-     
         return `€${(price * 0.93).toFixed(2)}`;
       } else {
-       
         return `$${price.toFixed(2)}`;
       }
     };
 
     return (
-        <ul className="list-disc ml-6 text-gray-700">
-          {Object.entries(ticketPrices).map(([category, price], index) => (
-              <li key={index}>
-                {category}: {convertPrice(price)}
-              </li>
-          ))}
-        </ul>
+      <ul className="list-disc ml-6 text-gray-700">
+        {Object.entries(ticketPrices).map(([category, price], index) => (
+          <li key={index}>
+            {category}: {convertPrice(price)}
+          </li>
+        ))}
+      </ul>
     );
   };
 
@@ -86,7 +92,6 @@ const MuseumDetail = () => {
               <p className="text-gray-700 mt-4 text-lg">{museum?.description}</p>
             </div>
             <div className="flex flex-col items-center space-y-4">
-          
               {/* Share Button */}
               <div className="relative">
                 <button
@@ -104,7 +109,7 @@ const MuseumDetail = () => {
                         value={`http://localhost:3000/museum/${museumId}`}
                         readOnly
                         className="w-full px-2 py-1 border rounded-lg focus:outline-none"
-                        onClick={(e) => e.target.select()} // Select text on click
+                        onClick={(e) => e.target.select()}
                       />
                       <button
                         onClick={handleCopyLink}
@@ -131,7 +136,7 @@ const MuseumDetail = () => {
             {/* Location */}
             {museum?.location && (
               <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
-                <LocationContact museum={museum} /> {/* Pass the museum prop */}
+                <LocationContact museum={museum} />
               </div>
             )}
 
@@ -156,6 +161,18 @@ const MuseumDetail = () => {
               </div>
             </div>
           </div>
+
+          {/* Related Activities Section */}
+          {activities.length > 0 && (
+            <div className="mt-12">
+              <h2 className="text-3xl font-semibold text-[#330577] mb-6">Related Activities</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activities.map(activity => (
+                  <ActivityDisplay key={activity._id} activity={activity} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>
