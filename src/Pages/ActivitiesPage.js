@@ -12,19 +12,26 @@ const ActivityPage = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const userRole = sessionStorage.getItem('role');
+    const userId = sessionStorage.getItem('user id');
 
     useEffect(() => {
-        const fetchActivities = async () => {
-            const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/`;
-            setLoading(true);
-            try {
-                const res = await fetch(apiUrl);
-                const activities = await res.json();
-                setActivities(activities);
-            } catch (err) {
-                console.log('Error fetching activities', err);
-            } finally {
-                setLoading(false);
+        // Only fetch booked activities if the user is a tourist
+        const fetchBookedActivities = async () => {
+            if (userRole === 'tourist') {
+                const apiUrl = `${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`;
+                setLoading(true);
+                try {
+                    const res = await fetch(apiUrl);
+                    if (!res.ok) {
+                        throw new Error('Failed to fetch booked activities');
+                    }
+                    const bookedActivities = await res.json();
+                    setActivities(bookedActivities);
+                } catch (err) {
+                    console.log('Error fetching booked activities', err);
+                } finally {
+                    setLoading(false);
+                }
             }
         };
 
@@ -55,36 +62,23 @@ const ActivityPage = () => {
             }
         };
 
-        fetchActivities().then();
-        fetchTags().then();
-        fetchCategories().then();
+        fetchBookedActivities();
+        fetchTags();
+        fetchCategories();
 
-        window.addEventListener('modelModified', fetchActivities);
+        window.addEventListener('modelModified', fetchBookedActivities);
         window.addEventListener('tagModified', fetchTags);
         window.addEventListener('categoryModified', fetchCategories);
 
         return () => {
-            window.removeEventListener('modelModified', fetchActivities);
+            window.removeEventListener('modelModified', fetchBookedActivities);
             window.removeEventListener('tagModified', fetchTags);
             window.removeEventListener('categoryModified', fetchCategories);
         };
-    }, []);
+    }, [userRole, userId]);
 
     const handleCreateActivity = () => {
         navigate('/create-activity');
-    };
-    const handleViewMyActivities = async () => {
-        const apiUrl = `${process.env.REACT_APP_BACKEND}/api/activities/user/${sessionStorage.getItem('user id')}`;
-        try {
-            const res = await fetch(apiUrl);
-            const activities = await res.json();
-            setActivities(activities);
-            console.log('Activities:', activities);
-        } catch (err) {
-            console.log('Error fetching activities', err);
-        } finally {
-            setLoading(false);
-        }
     };
 
     return (
@@ -101,16 +95,6 @@ const ActivityPage = () => {
                                 className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6 mr-4"
                             >
                                 Create New Activity
-                            </button>
-                        )
-                    }
-                    {
-                        ['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(userRole) && (
-                            <button
-                                onClick={handleViewMyActivities}
-                                className="bg-[#330577] text-white px-4 py-2 rounded-md mb-6"
-                            >
-                                View My Created Activities
                             </button>
                         )
                     }
