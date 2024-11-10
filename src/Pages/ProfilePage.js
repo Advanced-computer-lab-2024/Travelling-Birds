@@ -6,6 +6,9 @@ import TourGuideProfile from "../Components/Profiles/TourGuideProfile";
 import AdminProfile from "../Components/Profiles/AdminProfile";
 import TourismGovernorProfile from "../Components/Profiles/TourismGovernorProfile";
 
+import logo from '../utils/logoTravelingBirds.png';
+
+
 
 const ProfilePage = () => {
 	const userId = sessionStorage.getItem('user id');
@@ -16,15 +19,34 @@ const ProfilePage = () => {
 	const [backgroundImage, setBackgroundImage] = useState(
 		localStorage.getItem(`backgroundImage_${userId}`) || ''
 	);
-	const [profilePicture, setProfilePicture] = useState(
-		localStorage.getItem(`profilePicture_${userId}`) || ''
+	const [profilePicture, setProfilePicture] = useState(localStorage.getItem(`profilePicture_${userId}`) || null);
+
+
+	const [selectedFavoritePlaces, setSelectedFavoritePlaces] = useState(
+		JSON.parse(localStorage.getItem(`favoritePlaces_${userId}`)) || []
 	);
+	const [selectedFavoriteFood, setSelectedFavoriteFood] = useState(
+		JSON.parse(localStorage.getItem(`favoriteFood_${userId}`)) || []
+	);
+	const [selectedBudget, setSelectedBudget] = useState(
+		JSON.parse(localStorage.getItem(`budget_${userId}`)) || []
+	);
+	const [favoritePlacesOptions] = useState(['Historical Places', 'Beaches', 'Museums']);
+	const [favoriteFoodOptions] = useState(['Family Friendly', 'Couples only']);
+	const [budgetOptions] = useState(['$500-$1000', '$1000-$4000', '$4000-20,000','$20000 or more']);
 
-	const [favoritePlaces, setFavoritePlaces] = useState([]);
-	const [searchQuery, setSearchQuery] = useState("");
-	const [searchResults, setSearchResults] = useState([]);
+	useEffect(() => {
+		localStorage.setItem(`favoritePlaces_${userId}`, JSON.stringify(selectedFavoritePlaces));
+	}, [selectedFavoritePlaces, userId]);
 
-	const [interest, setInterest] = useState('');
+	useEffect(() => {
+		localStorage.setItem(`favoriteFood_${userId}`, JSON.stringify(selectedFavoriteFood));
+	}, [selectedFavoriteFood, userId]);
+
+	useEffect(() => {
+		localStorage.setItem(`budget_${userId}`, JSON.stringify(selectedBudget));
+	}, [selectedBudget, userId]);
+
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -87,55 +109,7 @@ const ProfilePage = () => {
 		setDropdownOpen(!dropdownOpen);
 	};
 
-	const handleSearch = async () => {
-		try {
-			const res = await fetch(
-				`${process.env.REACT_APP_BACKEND}/api/places/search?query=${encodeURIComponent(searchQuery)}`
-			);
-			if (res.ok) {
-				const data = await res.json();
-				setSearchResults(Array.isArray(data) ? data : []);
-			} else {
-				console.error("Error fetching search results");
-				setSearchResults([]);
-			}
-		} catch (err) {
-			console.error("Error searching places:", err);
-			setSearchResults([]);
-		}
-	};
 
-	const addFavoritePlace = async (place) => {
-		const updatedFavorites = [...favoritePlaces, place];
-		setFavoritePlaces(updatedFavorites);
-		try {
-			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/favorites`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ favoritePlaces: updatedFavorites }),
-			});
-		} catch (err) {
-			console.error("Error adding favorite place:", err);
-		}
-	};
-
-	const removeFavoritePlace = async (placeId) => {
-		const updatedFavorites = favoritePlaces.filter((p) => p.id !== placeId);
-		setFavoritePlaces(updatedFavorites);
-		try {
-			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/favorites`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ favoritePlaces: updatedFavorites }),
-			});
-		} catch (err) {
-			console.error("Error removing favorite place:", err);
-		}
-	};
 
 	const handleRemoveProfilePicture = () => {
 		setProfilePicture('');  // Remove the profile picture from the state
@@ -147,10 +121,41 @@ const ProfilePage = () => {
 		localStorage.removeItem(`backgroundImage_${userId}`);  // Remove from localStorage
 	};
 
+	const handleFavoritePlaceSelect = (place) => {
+		if (!selectedFavoritePlaces.includes(place)) {
+			setSelectedFavoritePlaces([...selectedFavoritePlaces, place]);
+		}
+	};
+
+	const handleFavoriteFoodSelect = (food) => {
+		if (!selectedFavoriteFood.includes(food)) {
+			setSelectedFavoriteFood([...selectedFavoriteFood, food]);
+		}
+	};
+
+	const handleBudgetSelect = (budget) => {
+		if (!selectedBudget.includes(budget)) {
+			setSelectedBudget([...selectedBudget, budget]);
+		}
+	};
+
+	const handleRemoveFavoritePlace = (place) => {
+		setSelectedFavoritePlaces(selectedFavoritePlaces.filter(item => item !== place));
+	};
+
+	const handleRemoveFavoriteFood = (food) => {
+		setSelectedFavoriteFood(selectedFavoriteFood.filter(item => item !== food));
+	};
+
+	const handleRemoveBudget = (budget) => {
+		setSelectedBudget(selectedBudget.filter(item => item !== budget));
+	};
+
+
 
 
 	return (
-		<div style={{ position: 'relative', height: '100vh', backgroundColor: '#f5f5f5' }}>
+		<div style={{ position: 'relative', height: 'auto', backgroundColor: '#f5f5f5' }}>
 			{/* Background Image Section */}
 			<div
 				style={{
@@ -213,16 +218,16 @@ const ProfilePage = () => {
 						position: 'relative'
 					}}>
 						{profilePicture ? (
-							<img src={profilePicture} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+							<img src={profilePicture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 						) : (
 							<>
-								<span style={{
-									color: '#888',
-									fontSize: '14px',
-									textAlign: 'center'
-								}}>
-									+
-								</span>
+				<span style={{
+					color: '#888',
+					fontSize: '20px',
+					textAlign: 'center'
+				}}>
+					+
+				</span>
 								<input type="file" onChange={handleProfilePictureChange} style={{
 									position: 'absolute',
 									width: '100%',
@@ -234,6 +239,7 @@ const ProfilePage = () => {
 						)}
 					</div>
 				</div>
+
 
 				<div style={{ position: 'absolute', top: '20px', left: '160px', textAlign: 'left' }}>
 					<h2 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', color: '#333' }}>
@@ -334,7 +340,7 @@ const ProfilePage = () => {
 				borderRadius: '0px',
 				position: 'absolute',
 				top: '912px',
-				left: '23%',
+				left: '15.5%',
 				transform: 'translateX(-50%)',
 				boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
 				padding: '20px',
@@ -358,7 +364,7 @@ const ProfilePage = () => {
 					color: '#777',
 					marginBottom: '10px',
 				}}>
-					Location: {user.location || "Location not set"}
+					📍Egypt
 				</p>
 				<p style={{
 					color: '#777',
@@ -369,13 +375,14 @@ const ProfilePage = () => {
 
 			{/*  (Fill Out Your Profile container) */}
 			<div style={{
-				width: '700px',
+				width: '900px',
 				height: '150px',
 				backgroundColor: 'white',
 				borderRadius: '0px',
 				position: 'absolute',
 				top: '570px',
 				left: 'calc(23% + 220px)',  // Position this container next to the "About Me" container
+				transform: 'translateX(-15%)',
 				boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
 				padding: '20px',
 				textAlign: 'center',
@@ -385,14 +392,14 @@ const ProfilePage = () => {
 					fontWeight: 'bold',
 					color: '#000',
 					marginBottom: '17px',
-					fontSize: '22px',
+					fontSize: '24px',
 				}}>
 					Fill Out Your Profile
 				</h3>
 				<p style={{
 					color: '#777',
 					marginBottom: '10px',
-					fontSize: '16px',
+					fontSize: '20px',
 				}}>
 					Add photos and info to your profile so people can find you easily and get to know you better!
 				</p>
@@ -406,7 +413,8 @@ const ProfilePage = () => {
 				borderRadius: '0px',
 				position: 'absolute',
 				top: '1130px',
-				left: '16.77%',  // Position this container next to the "About Me" container
+				left: '15.5%',  // Position this container next to the "About Me" container
+				transform: 'translateX(-50%)',
 				boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
 				padding: '20px',
 				textAlign: 'left',
@@ -438,7 +446,7 @@ const ProfilePage = () => {
 				</p>
 			</div>
 
-			{/* Favorite Places Section */}
+			{/* Preferences Section */}
 			<div style={{
 				width: "300px",
 				height: "330px",
@@ -446,59 +454,96 @@ const ProfilePage = () => {
 				borderRadius: "0px",
 				position: "absolute",
 				top: "570px",
-				left: "23%",
+				left: "15.5%",
 				transform: "translateX(-50%)",
 				boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
 				padding: "20px",
 				textAlign: "center",
 				zIndex: 2,
 			}}>
-				<h3 style={{ fontWeight: "bold", color: "#000" }}>Favorite Places</h3>
+				<h3 style={{ fontWeight: "bold", color: "#000",marginBottom: '15px', textAlign: "left"}}>Your Preferences</h3>
 
-				{/* Search and Add to Favorites */}
-				<input
-					type="text"
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					placeholder="Search places..."
-					style={{ padding: "8px", marginBottom: "10px", width: "80%" }}
-				/>
-				<button onClick={handleSearch} style={{ padding: "8px 10px" }}>Search</button>
-
-				{/* Display Search Results */}
-				<div style={{ marginTop: "15px" }}>
-					{searchResults.map((place) => (
-						<div key={place.id} style={{ marginBottom: "8px" }}>
-							<span>{place.name}</span>
-							<button
-								onClick={() => addFavoritePlace(place)}
-								style={{ marginLeft: "10px", padding: "4px 8px" }}
-							>
-								Add
-							</button>
+				{/* Scrollable content container */}
+				<div style={{
+					maxHeight: "250px",  // Adjust maxHeight as needed
+					overflowY: "auto",
+				}}>
+					{/* Dropdown for selecting favorite places */}
+					<div>
+						<select onChange={(e) => handleFavoritePlaceSelect(e.target.value)} defaultValue="">
+							<option value="" disabled>Preferred Places</option>
+							{favoritePlacesOptions.map((place, index) => (
+								<option key={index} value={place}>{place}</option>
+							))}
+						</select>
+						{/* Display selected favorite places */}
+						<div style={{ marginTop: '10px' }}>
+							{selectedFavoritePlaces.map((place, index) => (
+								<span key={index} style={{
+									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+								}}>
+                        {place}
+									<button onClick={() => handleRemoveFavoritePlace(place)} style={{
+										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+									}}>
+                            ✕
+                        </button>
+                    </span>
+							))}
 						</div>
-					))}
-				</div>
 
-				{/* Display Favorite Places */}
-				<div style={{ marginTop: "20px" }}>
-					{favoritePlaces.length > 0 ? (
-						favoritePlaces.map((place) => (
-							<div key={place.id} style={{ marginBottom: "8px" }}>
-								<span>{place.name}</span>
-								<button
-									onClick={() => removeFavoritePlace(place.id)}
-									style={{ marginLeft: "10px", padding: "4px 8px" }}
-								>
-									Remove
-								</button>
-							</div>
-						))
-					) : (
-						<p>No favorite places added yet.</p>
-					)}
+						{/* Dropdown for selecting favorite food */}
+						<select onChange={(e) => handleFavoriteFoodSelect(e.target.value)} defaultValue="" style={{ marginTop: '10px' }}>
+							<option value="" disabled>Preferred Hotels</option>
+							{favoriteFoodOptions.map((food, index) => (
+								<option key={index} value={food}>{food}</option>
+							))}
+						</select>
+						{/* Display selected favorite food */}
+						<div style={{ marginTop: '10px' }}>
+							{selectedFavoriteFood.map((food, index) => (
+								<span key={index} style={{
+									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+								}}>
+                        {food}
+									<button onClick={() => handleRemoveFavoriteFood(food)} style={{
+										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+									}}>
+                            ✕
+                        </button>
+                    </span>
+							))}
+						</div>
+
+						{/* Dropdown for selecting budget */}
+						<select onChange={(e) => handleBudgetSelect(e.target.value)} defaultValue="" style={{ marginTop: '10px' }}>
+							<option value="" disabled>Preferred Budget</option>
+							{budgetOptions.map((budget, index) => (
+								<option key={index} value={budget}>{budget}</option>
+							))}
+						</select>
+						{/* Display selected budget */}
+						<div style={{ marginTop: '10px' }}>
+							{selectedBudget.map((budget, index) => (
+								<span key={index} style={{
+									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+								}}>
+                        {budget}
+									<button onClick={() => handleRemoveBudget(budget)} style={{
+										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+									}}>
+                            ✕
+                        </button>
+                    </span>
+							))}
+						</div>
+					</div>
 				</div>
 			</div>
+
+
+
+
 
 
 			{/* Profile Details */}

@@ -41,29 +41,26 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 		}
 	};
 
-	const deleteTourismGovernor = async () => {
-		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-				method: 'DELETE',
-			});
-			const data = await response.json();
-
-			if (data?.message === 'User deleted successfully') {
-				window.dispatchEvent(userDeletionEvent);
-				if (!displayOnly) {
-					sessionStorage.removeItem('user id');
-					sessionStorage.removeItem('role');
-					window.dispatchEvent(sessionStorageEvent);
-					navigate('/', { replace: true });
+	const requestAccountDeletion = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				requestToDelete: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.requestToDelete === true) {
+					toast.success('Account deletion requested successfully');
+				} else {
+					toast.error('Failed to request account deletion');
 				}
-				toast.success("User deleted successfully");
-			} else {
-				toast.error("Failed to delete user");
-			}
-		} catch (error) {
-			toast.error("Failed to delete user");
+			}).catch((error) => {
 			console.log(error);
-		}
+			toast.error('An error occurred while requesting account deletion');
+		});
 	};
 
 	useEffect(() => {
@@ -119,12 +116,12 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 						type="button"
 						onClick={() => {
 							if (window.confirm('Are you sure you want to delete this account?')) {
-								deleteTourismGovernor();
+								requestAccountDeletion();
 							}
 						}}
 						className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300"
 					>
-						Delete Account
+						Request Deletion
 					</button>
 				</form>
 			)}

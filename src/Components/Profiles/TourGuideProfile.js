@@ -58,22 +58,26 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 		}
 	};
 
-	const requestAccountDeletion = async () => {
-		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}/request-deletion`, {
-				method: 'POST',
-			});
-			const data = await response.json();
-
-			if (data?.message === 'Deletion request submitted') {
-				toast.success('Deletion request submitted. Awaiting admin approval.');
-			} else {
-				toast.error('Failed to submit deletion request');
-			}
-		} catch (error) {
-			toast.error('Failed to submit deletion request');
+	const requestAccountDeletion = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				requestToDelete: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.requestToDelete === true) {
+					toast.success('Account deletion requested successfully');
+				} else {
+					toast.error('Failed to request account deletion');
+				}
+			}).catch((error) => {
 			console.log(error);
-		}
+			toast.error('An error occurred while requesting account deletion');
+		});
 	};
 
 	useEffect(() => {

@@ -66,6 +66,28 @@ const SellerProfile = ({ user, displayOnly }) => {
 		});
 	}
 
+	const requestAccountDeletion = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				requestToDelete: true,
+			})
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.requestToDelete === true) {
+					toast.success('Account deletion requested successfully');
+				} else {
+					toast.error('Failed to request account deletion');
+				}
+			}).catch((error) => {
+			console.log(error);
+			toast.error('An error occurred while requesting account deletion');
+		});
+	};
+
 	const approveSeller = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
@@ -152,7 +174,7 @@ const SellerProfile = ({ user, displayOnly }) => {
 						type="button"
 						onClick={() => {
 							if (window.confirm('Are you sure you wish to delete this item?')) {
-								deleteSeller();
+								requestAccountDeletion();
 							}
 						}}
 						className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300"

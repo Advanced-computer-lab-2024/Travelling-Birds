@@ -46,30 +46,27 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 			});
 	};
 
-	const deleteAdvertiser = () => {
+	const requestAccountDeletion = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-			method: 'DELETE',
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data?.message === 'User deleted successfully') {
-					window.dispatchEvent(userDeletionEvent);
-					if (!displayOnly) {
-						sessionStorage.removeItem('user id');
-						sessionStorage.removeItem('role');
-						window.dispatchEvent(sessionStorageEvent);
-						navigate('/', { replace: true });
-					}
-					toast.success('User deleted successfully');
-				} else {
-					toast.error('Failed to delete user');
-				}
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				requestToDelete: true,
 			})
-			.catch((error) => {
-				console.log(error);
-			});
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.requestToDelete === true) {
+					toast.success('Account deletion requested successfully');
+				} else {
+					toast.error('Failed to request account deletion');
+				}
+			}).catch((error) => {
+			console.log(error);
+			toast.error('An error occurred while requesting account deletion');
+		});
 	};
-
 	const approveAdvertiser = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
@@ -139,8 +136,10 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 						</button>
 					)}
 
-					<button type="button" onClick={() => { if (window.confirm('Are you sure you wish to delete this profile?')) deleteAdvertiser(); }} className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300">
-						Delete Profile
+					<button type="button" onClick={() => { if (window.confirm('Are you sure you wish to delete this profile?'))requestAccountDeletion();
+					}}
+					        className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300">
+						Request Deletion
 					</button>
 				</form>
 			)}
