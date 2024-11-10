@@ -8,7 +8,7 @@ import Logo from "../../Assets/Logo2.png";
 const TourGuideNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
-	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'EGP');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const navigate = useNavigate();

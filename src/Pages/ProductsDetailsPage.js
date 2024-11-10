@@ -6,10 +6,11 @@ import { AiOutlineHeart } from "react-icons/ai";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
+	const [visibleProductComments, setVisibleProductComments] = useState(3);
 	const [product, setProduct] = useState("");
 	const [purchased, setPurchased] = useState(false);
 	const [loading, setLoading] = useState(true);
-	const userId = sessionStorage.getItem('userId');
+	const userId = sessionStorage.getItem('user id');
 	const [commentText, setCommentText] = useState('');
 	const [commentRating, setCommentRating] = useState(0);
 	const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
@@ -51,8 +52,11 @@ const ProductsDetailsPage = () => {
 			try {
 				const res = await fetch(apiUrl);
 				const purchases = await res.json();
-				const purchased = purchases.some((purchase) => purchase.product === productId);
+				const purchased = purchases.some((purchase) => purchase._id === productId);
+				console.log('Purchased:', purchased);
+				console.log('Purchases:', purchases);
 				setPurchased(purchased);
+
 			} catch (err) {
 				console.log('Error fetching purchases', err);
 			}
@@ -66,10 +70,10 @@ const ProductsDetailsPage = () => {
 	}, [productId]);
 
 	let imageBase64 = null;
-	if (product?.image?.data?.data && product.image.contentType) {
-		const byteArray = new Uint8Array(product.image.data.data);
+	if (product?.picture?.data?.data && product.picture.contentType) {
+		const byteArray = new Uint8Array(product.picture.data.data);
 		const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-		imageBase64 = `data:${product.image.contentType};base64,${btoa(binaryString)}`;
+		imageBase64 = `data:${product.picture.contentType};base64,${btoa(binaryString)}`;
 	}
 
 	const handleAddComment = async () => {
@@ -78,14 +82,14 @@ const ProductsDetailsPage = () => {
 			return;
 		}
 		const newComment = {
-			user: sessionStorage.getItem('userId'),
+			user: sessionStorage.getItem('user id'),
 			text: commentText,
 			date: new Date().toISOString(),
 			stars: commentRating
 		};
 
 		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${productId}/comments`, {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}/comments`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(newComment)
@@ -131,13 +135,14 @@ const ProductsDetailsPage = () => {
 			return;
 		}
 		try {
+			console.log('Fetching user data...');
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
 				throw new Error('Failed to fetch user data');
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-
+	
 			if (enteredWalletAmount > userWalletBalance) {
 				toast.error('Not enough in wallet.');
 				return;
@@ -147,12 +152,15 @@ const ProductsDetailsPage = () => {
 				closePurchaseModal();
 				return;
 			}
+			console.log('Updating wallet balance...');
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ wallet: updatedWalletBalance })
 			});
+	
+			console.log('Adding product purchase...');
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
@@ -180,11 +188,11 @@ const ProductsDetailsPage = () => {
 		return (
 			<>
 				{[...Array(fullStars)].map((_, i) => (
-					<FaStar key={i} style={{ color: '#FFD700' }} />
+					<FaStar key={i} style={{ color: '#330577' }} />
 				))}
-				{halfStars && <FaStarHalfAlt style={{ color: '#FFD700' }} />}
+				{halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
 				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-					<FaRegStar key={i + fullStars} style={{ color: '#FFD700' }} />
+					<FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
 				))}
 			</>
 		);
@@ -205,34 +213,48 @@ const ProductsDetailsPage = () => {
 		<div className="bg-gray-50 min-h-screen py-10">
 			<section className="px-4 py-10 max-w-7xl mx-auto">
 				<div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-					<div className="flex flex-col md:flex-row md:justify-between">
-						<div className="md:w-2/3">
-							<h1 className="text-3xl font-bold text-gray-800 mb-2">{product?.title}</h1>
-							<div className="flex items-center mt-2 space-x-3">
-                                <span className="flex items-center text-lg text-yellow-500">
-                                    {renderStars(product?.rating)}
-                                </span>
-								<p className="text-gray-600 text-sm">({product?.reviewsCount} reviews)</p>
-							</div>
-							<p className="text-gray-700 mt-4">{product?.description}</p>
+					<div className="flex flex-col md:flex-row">
+						{/* Image on Top-Left */}
+						<div className="md:w-1/3 mb-4 md:mb-0">
+							{imageBase64 && (
+								<img
+									src={imageBase64}
+									alt="Product"
+									className="w-full h-60 object-contain rounded-lg shadow-md"
+								/>
+							)}
 						</div>
-						<div className="mt-4 md:mt-0 md:w-1/3 flex flex-col items-center space-y-4">
-							<button
-								onClick={openPurchaseModal}
-								className="p-3 w-full bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition duration-150"
-							>
-								Purchase Now
-							</button>
-							<button
-								className="p-3 w-full bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition duration-150"
-							>
-								<AiOutlineHeart className="text-lg mr-2" />
-								Save
-							</button>
+						{/* Purchase and Save Buttons on the Right */}
+						<div className="md:w-2/3 flex flex-col md:flex-row justify-between ml-0 md:ml-6">
+							<div className="mb-4 md:mb-0">
+								<h1 className="text-3xl font-bold text-[#330577] mb-2">{product?.name}</h1>
+								<div className="flex items-center mt-2 space-x-3">
+									<span className="flex items-center text-lg text-yellow-500">
+										{renderStars(product?.rating)}
+									</span>
+									<p className="text-gray-600 text-sm">({product?.reviewsCount} reviews)</p>
+								</div>
+							</div>
+							<div className="flex flex-col space-y-4 mt-4 md:mt-0">
+								<button
+									onClick={openPurchaseModal}
+									className="px-10 p-4 bg-[#330577] text-white rounded-lg shadow hover:bg-[#280466] transition duration-150"
+								>
+									Purchase Now
+								</button>
+								<button
+									className="p-3 bg-[#330577] text-white rounded-lg shadow hover:bg-[#280466] transition duration-150 flex items-center justify-center space-x-2"
+								>
+									<span className="flex items-center">
+										<AiOutlineHeart className="text-lg" />
+										<span className="ml-2">Save</span>
+									</span>
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
-
+	
 				{isPurchaseModalOpen && (
 					<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 						<div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -243,7 +265,7 @@ const ProductsDetailsPage = () => {
 									type="text"
 									value={cardNumber}
 									onChange={(e) => setCardNumber(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
 									placeholder="1234 5678 9012 3456"
 								/>
 							</div>
@@ -253,7 +275,7 @@ const ProductsDetailsPage = () => {
 									type="text"
 									value={expiryDate}
 									onChange={(e) => setExpiryDate(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
 									placeholder="MM/YY"
 								/>
 							</div>
@@ -263,7 +285,7 @@ const ProductsDetailsPage = () => {
 									type="text"
 									value={cvv}
 									onChange={(e) => setCvv(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
 									placeholder="123"
 								/>
 							</div>
@@ -273,13 +295,13 @@ const ProductsDetailsPage = () => {
 									type="text"
 									value={walletAmount}
 									onChange={(e) => setWalletAmount(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
 									placeholder="Enter amount"
 								/>
 							</div>
 							<button
 								onClick={handleCompletePurchase}
-								className={`w-full bg-indigo-600 text-white p-3 rounded-lg ${!cardNumber || !expiryDate || !cvv ? 'opacity-60 cursor-not-allowed' : 'hover:bg-indigo-700 transition duration-150'}`}
+								className={`w-full bg-[#330577] text-white p-3 rounded-lg ${!cardNumber || !expiryDate || !cvv ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#280466] transition duration-150'}`}
 								disabled={!cardNumber || !expiryDate || !cvv}
 							>
 								Complete Purchase
@@ -293,70 +315,54 @@ const ProductsDetailsPage = () => {
 						</div>
 					</div>
 				)}
-
-				{/* Image Gallery */}
-				{imageBase64 && (
-					<div className="mt-8">
-						<img src={imageBase64} alt="Product" className="w-full h-96 object-cover rounded-lg shadow-lg" />
-					</div>
-				)}
-
+	
 				{/* Ratings, Details, and Reviews Sections */}
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 					{/* Ratings & Reviews */}
-					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<h2 className="text-lg font-semibold text-gray-800 mb-4">Ratings and Reviews</h2>
-						<p className="text-xl text-yellow-500 font-bold">{product?.rating} ★</p>
+						<div className="bg-white p-6 rounded-lg shadow-lg">
+						<h2 className="text-lg font-semibold text-[#330577] mb-4">Ratings and Reviews</h2>
+						<p className="text-xl text-[#330577] font-bold">{product?.rating} ★</p>
 						<p className="text-sm text-gray-500">{product?.reviewCount} reviews</p>
 						<div className="mt-4 space-y-2">
-							{/*{product?.comments?.slice(0, 3).map((review, index) => (*/}
-							{/*	<div key={index} className="border-b border-gray-200 pb-2">*/}
-							{/*		<p className="text-gray-800 font-semibold">{review.user}</p>*/}
-							{/*		<p className="text-gray-600">{review.text}</p>*/}
-							{/*		<p className="text-sm text-gray-400">{new Date(review.date).toLocaleDateString()}</p>*/}
-							{/*		<span className="flex">{renderStars(review.stars)}</span>*/}
-							{/*	</div>*/}
-							{/*))}*/}
+							{product?.comments?.length ? (
+								product.comments.slice(0, visibleProductComments).map((comment, index) => (
+									<div key={index} className="border-b border-gray-200 pb-2">
+										<p className="text-gray-800 font-semibold">{comment.user}</p>
+										<p className="text-gray-600">{comment.text}</p>
+										<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
+										<span className="flex">{renderStars(comment.stars)}</span>
+									</div>
+								))
+							) : (
+								<p className="text-gray-500">No reviews yet.</p>
+							)}
 						</div>
+						{product?.comments?.length > visibleProductComments && (
+							<button
+								onClick={() => setVisibleProductComments(visibleProductComments + 3)}
+								className="mt-4 px-4 py-2 bg-transparent text-black border border-gray-300 rounded-lg hover:bg-black hover:text-white transition"
+							>
+								Show More Comments
+							</button>
+						)}
 					</div>
-
+	
 					{/* Product Details */}
 					<div className="bg-white p-6 rounded-lg shadow-lg">
-						<h2 className="text-lg font-semibold text-gray-800 mb-4">Product Details</h2>
+						<h2 className="text-lg font-semibold text-[#330577] mb-4">Product Details</h2>
 						<p className="text-gray-700">Price Range: {product?.price ? formatPriceRange(product.price) : 'N/A'}</p>
 					</div>
 				</div>
-
+	
 				{/* Comments Section */}
-				<div className="mt-8 bg-white shadow-lg rounded-lg p-6">
-					<h2 className="text-lg font-semibold text-gray-800 mb-4">All Reviews</h2>
-					{product?.comments?.length ? (
-						product.comments.map((comment, index) => (
-							<div key={index} className="border-b border-gray-200 pb-4 mb-4">
-								<p className="text-gray-800 font-semibold">{comment.user}</p>
-								<p className="text-gray-600">{comment.text}</p>
-								<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
-								<div className="flex items-center mt-2">
-                                    <span className="flex items-center text-lg">
-                                        {renderStars(comment.stars)}
-                                    </span>
-								</div>
-							</div>
-						))
-					) : (
-						<p className="text-gray-500">No reviews yet.</p>
-					)}
-				</div>
-
-				{/* Add Comment Form */}
 				{purchased && (
 					<div className="mt-8 bg-white shadow-lg rounded-lg p-6">
-						<h2 className="text-lg font-semibold text-gray-800 mb-4">Add a Review</h2>
+						<h2 className="text-lg font-semibold text-[#330577] mb-4">Add a Review</h2>
 						<textarea
 							placeholder="Write your review here..."
 							value={commentText}
 							onChange={(e) => setCommentText(e.target.value)}
-							className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							className="w-full border rounded-lg p-3 mb-4 focus:outline-none focus:ring-2 focus:ring-[#330577]"
 						></textarea>
 						<div className="flex items-center mb-4">
 							<span className="mr-2">Rating:</span>
@@ -364,14 +370,14 @@ const ProductsDetailsPage = () => {
 								<FaStar
 									key={star}
 									className="cursor-pointer"
-									style={{ color: commentRating >= star ? '#FFD700' : 'lightgray' }}
+									style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
 									onClick={() => setCommentRating(star)}
 								/>
 							))}
 						</div>
 						<button
 							onClick={handleAddComment}
-							className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-150"
+							className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#280466] transition duration-150"
 						>
 							Submit Review
 						</button>
