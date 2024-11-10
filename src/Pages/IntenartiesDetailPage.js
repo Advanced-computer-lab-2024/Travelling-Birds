@@ -5,6 +5,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../Components/Locations/Location";
+import {userUpdateEvent} from "../utils/userUpdateEvent";
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);
@@ -188,6 +189,7 @@ const ItineraryDetail = () => {
 			});
 	
 			toast.success('Itinerary booked successfully');
+			window.dispatchEvent(userUpdateEvent);
 			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
@@ -212,6 +214,7 @@ const ItineraryDetail = () => {
 			}
 
 			toast.success('Booking canceled successfully');
+			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false);
 			setCanCancel(false);
 			setCanComment(false);

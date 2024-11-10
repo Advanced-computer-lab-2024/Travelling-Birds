@@ -21,6 +21,8 @@ const TouristNavBar = () => {
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
 
+
+
 	const handleLogOut = () => {
 		sessionStorage.removeItem('user id');
 		sessionStorage.removeItem('role');
@@ -58,6 +60,8 @@ const TouristNavBar = () => {
 			return;
 		}
 		fetchUserProfile().then(() => console.log('User profile fetched'));
+		window.addEventListener("userUpdated", fetchUserProfile);
+		return () =>{window.removeEventListener("userUpdated", fetchUserProfile)}
 	}, [id]);
 
 	useEffect(() => {
@@ -75,7 +79,7 @@ const TouristNavBar = () => {
 	}, []);
 
 	let imageBase64 = null;
-	if (user.profilePicture?.data?.data && user.profilePicture.contentType) {
+	if (user.profilePicture?.data?.data && user.profilePicture?.contentType) {
 		try {
 			const byteArray = new Uint8Array(user.profilePicture.data.data);
 			const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
