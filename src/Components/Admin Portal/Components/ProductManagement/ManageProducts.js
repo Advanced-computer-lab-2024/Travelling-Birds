@@ -12,8 +12,9 @@ const ManageProducts = () => {
 	const [price, setPrice] = useState('');
 	const [availableQuantity, setAvailableQuantity] = useState('');
 	const [picture, setPicture] = useState('');
-	const [seller, setSeller] = useState('');
+	const [seller, setSeller] = useState(sessionStorage.getItem('user id'));
 	const [isArchived, setIsArchived] = useState(false);
+	const [imagePreview, setImagePreview] = useState(null);
 
 	const average = (array) => {
 		if (array.length === 0) {
@@ -49,13 +50,19 @@ const ManageProducts = () => {
 	const handleSave = () => {
 		const endpoint = selectedProduct ? `${process.env.REACT_APP_BACKEND}/api/products/${selectedProduct._id}` : `${process.env.REACT_APP_BACKEND}/api/products`;
 		const method = selectedProduct ? 'PUT' : 'POST';
-		const sellerFinal = selectedProduct ? seller : sessionStorage.getItem('user id')
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('description', description);
+		formData.append('price', parseFloat(price));
+		formData.append('availableQuantity', parseInt(availableQuantity, 10));
+		if (picture) {
+			formData.append('picture', picture);
+		}
+		formData.append('seller', seller);
+		formData.append('isArchived', isArchived);
 		fetch(endpoint, {
 			method,
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({name, description, price, availableQuantity, picture, seller: sellerFinal, isArchived}),
+			body: formData
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -106,6 +113,25 @@ const ManageProducts = () => {
 				}
 			});
 	};
+	const handleViewImage = (product) => {
+		let imageBase64 = null;
+		if (product.picture?.data?.data && product.picture?.contentType) {
+			try {
+				const byteArray = new Uint8Array(product.picture?.data.data);
+				const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+				imageBase64 = `data:${product.picture?.contentType};base64,${btoa(binaryString)}`;
+			} catch (error) {
+				console.error('Error converting image data to base64:', error);
+			}
+		}
+
+		setImagePreview(imageBase64);
+	}
+
+	const closeImagePreview = () => {
+		setImagePreview(null);
+	};
+
 
 	return (
 		<div className="p-4">
@@ -147,7 +173,7 @@ const ManageProducts = () => {
 										{product.isArchived ? 'Unarchive' : 'Archive'}
 									</button>
 									<button className="btn btn-info btn-sm mr-2"
-									        onClick={() => window.open(product.picture, '_blank')}>View Image
+									        onClick={() => handleViewImage(product)}>View Image
 									</button>
 									<button className="btn btn-danger btn-sm"
 									        onClick={() => handleDelete(product._id)}>Delete
@@ -159,7 +185,14 @@ const ManageProducts = () => {
 					</table>
 				</div>
 			)}
-
+			{imagePreview && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" onClick={closeImagePreview}>
+					<div className="bg-white p-4 rounded shadow-md flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+						<img src={imagePreview} alt="Product" className="max-w-full max-h-screen mb-4" />
+						<p className="text-gray-700">Click outside the box to exit.</p>
+					</div>
+				</div>
+			)}
 			{modalVisible && (
 				<dialog id="update_modal" className="modal modal-bottom sm:modal-middle" open>
 					<div className="modal-box">
@@ -186,9 +219,9 @@ const ManageProducts = () => {
 							       className="input input-bordered w-full"/>
 						</div>
 						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Picture URL</label>
-							<input type="text" value={picture} onChange={(e) => setPicture(e.target.value)}
-							       className="input input-bordered w-full"/>
+							<label className="block text-sm font-medium text-gray-700">Image</label>
+							<input type="file" accept="image/*" onChange={(e) => setPicture(e.target.files[0])}
+							       className="w-full"/>
 						</div>
 						<div className="modal-action">
 							<button className="btn btn-primary" onClick={handleSave}>Save</button>
@@ -224,9 +257,9 @@ const ManageProducts = () => {
 							       className="input input-bordered w-full"/>
 						</div>
 						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Picture URL</label>
-							<input type="text" value={picture} onChange={(e) => setPicture(e.target.value)}
-							       className="input input-bordered w-full"/>
+							<label className="block text-sm font-medium text-gray-700">Image</label>
+							<input type="file" accept="image/*" onChange={(e) => setPicture(e.target.files[0])}
+							       className="w-full"/>
 						</div>
 						<div className="modal-action">
 							<button className="btn btn-primary" onClick={handleSave}>Create</button>
