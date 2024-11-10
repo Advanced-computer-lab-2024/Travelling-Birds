@@ -5,6 +5,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import LocationContact from "../Components/Locations/Location";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {userUpdateEvent} from "../utils/userUpdateEvent";
 
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
@@ -183,6 +184,7 @@ const ActivityDetail = () => {
             }
     
             toast.success('Activity booked successfully');
+            window.dispatchEvent(userUpdateEvent);
             closeBookingModal();
         } catch (error) {
             console.error('Error booking activity:', error);
@@ -208,6 +210,7 @@ const ActivityDetail = () => {
             }
 
             toast.success('Booking canceled successfully');
+            window.dispatchEvent(userUpdateEvent);
             setHasBooked(false); // Update state to reflect cancellation
             setCanCancel(false);
             setCanComment(false);
