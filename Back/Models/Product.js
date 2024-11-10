@@ -8,8 +8,10 @@ const productSchema = new Schema({
     availableQuantity: {type: Number, required: true},
     picture:  { data: Buffer, contentType: String },
     seller: {type: Schema.Types.ObjectId, ref: 'User', required: true},
+    soldQuantity: Number,
     ratings: [Number],
     reviews: [String],
+    soldOut: { type: Boolean, default: false },
     userPurchased: [{type: Schema.Types.ObjectId, ref: 'User'}],
     isArchived: {type: Boolean, default: false},
 });
