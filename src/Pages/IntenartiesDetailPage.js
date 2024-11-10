@@ -403,7 +403,7 @@ const ItineraryDetail = () => {
 					<div className="bg-white p-4 rounded-lg shadow-md mt-8">
 						<h2 className="font-semibold text-lg text-[#330577]">Comments</h2>
 						{itinerary?.comments?.length ? (
-							itinerary.comments.map((comment, index) => (
+							itinerary.comments?.slice(0, 3).map((comment, index) => (
 								<div key={index} className="border-b border-gray-200 pb-4 mb-4">
 									<p className="font-semibold text-gray-800">{comment.user}</p>
 									<p className="text-gray-600">{comment.text}</p>

@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-    addActivity,
+	addActivity,
 	getAllActivities,
 	getActivity,
 	updateActivity,
@@ -14,7 +14,6 @@ const {
 	getActivitiesBriefForUser,
 	addComment,
 	getComments,
-
 } = require('../Controllers/ActivityControllers.js');
 const {upload} = require('../Middleware/upload');
 

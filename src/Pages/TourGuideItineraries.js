@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-import {ItineraryForm} from "../../../Models/Forms";
-const ManageItineraries = () => {
+import {ItineraryForm} from "../Components/Models/Forms";
+const TourGuideItineraries = () => {
 	const [itineraries, setItineraries] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedItinerary, setSelectedItinerary] = useState(null);
@@ -12,7 +12,7 @@ const ManageItineraries = () => {
 	useEffect(() => {
 		const fetchItineraries = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/brief`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/brief/${sessionStorage.getItem('user id')}`);
 				const data = await response.json();
 				setItineraries(data);
 				setLoading(false);
@@ -46,24 +46,23 @@ const ManageItineraries = () => {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
 					method: 'PUT',
 					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({flaggedInappropriate: !itinerary.flaggedInappropriate})
+					body: JSON.stringify({active: !itinerary.active})
 				});
 				const data = await response.json();
 				if (data._id) {
 					const updatedItineraries = itineraries.map(a => {
 						if (a._id === itinerary._id) {
-							a.flaggedInappropriate = !itinerary.flaggedInappropriate;
+							a.active = !itinerary.active;
 						}
 						return a;
 					});
 					setItineraries(updatedItineraries);
-					itinerary.flaggedInappropriate ? toast.success('Itinerary flagged successfully') : toast.success('Itinerary unflagged successfully');
+					itinerary.active ? toast.success('Itinerary de-activated successfully') : toast.success('Itinerary activated successfully');
 				} else {
 					toast.error('Failed to flag itinerary');
 				}
 			} catch (error) {
-				console.error('Failed to flag itinerary:', error);
-				toast.error('Failed to flag itinerary');
+				itinerary.active ? toast.error('Failed to de-activate itinerary') : toast.error('Failed to activate itinerary');
 			}
 		}
 		flagItinerary().then(() => setIsModalOpen(false));
@@ -170,4 +169,4 @@ const ManageItineraries = () => {
 	);
 }
 
-export default ManageItineraries;
+export default TourGuideItineraries;

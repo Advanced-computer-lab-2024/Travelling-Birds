@@ -12,7 +12,9 @@ const {
 	getAllCreatedItineraries,
 	getComments,
 	addComment,
-	getActivities
+	getActivities,
+	getItineraryBrief,
+	getItineraryBriefForUser
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
@@ -23,6 +25,12 @@ router.post('/', upload.single('image'), addItinerary);
 
 // Get all itineraries
 router.get('/', getAllItineraries);
+
+// Get all itineraries brief
+router.get('/brief', getItineraryBrief);
+
+// Get all itineraries brief for a specific user
+router.get('/brief/:id', getItineraryBriefForUser);
 
 // Search for itineraries by category or tag
 router.get('/search', SearchForItinerary);

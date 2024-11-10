@@ -10,7 +10,6 @@ const addItinerary = async (req, res) => {
 		description,
 		activities,
 		locations,
-		duration,
 		language,
 		price,
 		availableDates,
@@ -32,7 +31,6 @@ const addItinerary = async (req, res) => {
 			description,
 			activities,
 			locations,
-			duration,
 			language,
 			price,
 			availableDates,
@@ -79,7 +77,6 @@ const updateItinerary = async (req, res) => {
 	    description,
         activities,
         locations,
-        duration,
         language,
         price,
         availableDates,
@@ -95,7 +92,6 @@ const updateItinerary = async (req, res) => {
 	        description,
             activities,
             locations,
-            duration,
             language,
             price,
             availableDates,
@@ -339,6 +335,7 @@ const getComments = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // create a comment for a specific itinerary
 const addComment = async (req, res) => {
 	const {user, text, stars} = req.body;
@@ -369,6 +366,7 @@ const addComment = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // get all activities for a specific itinerary
 const getActivities = async (req, res) => {
 	try {
@@ -380,6 +378,29 @@ const getActivities = async (req, res) => {
 		res.status(200).json(activities);
 	} catch (error) {
 		res.status(500).json({error: error.message});
+	}
+}
+
+const getItineraryBrief = async (req, res) => {
+	try {
+		const itineraries = await ItineraryModel.find().select('title description language price flaggedInappropriate active createdBy');
+		const updatedItineraries = await Promise.all(itineraries.map(async itinerary => {
+			const user = await UserModel.findById(itinerary.createdBy).select('firstName lastName');
+			itinerary._doc.createdByName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
+			return itinerary;
+		}));
+		res.status(200).json(updatedItineraries);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
+}
+
+const getItineraryBriefForUser = async (req, res) => {
+	try {
+		const itineraries = await ItineraryModel.find({createdBy: req.params.id}).select('title description language price flaggedInappropriate active');
+		res.status(200).json(itineraries);
+	} catch (error) {
+		res.status(400).json({message: error.message});
 	}
 }
 
@@ -396,5 +417,7 @@ module.exports = {
 	getAllCreatedItineraries,
 	getComments,
 	addComment,
-	getActivities
+	getActivities,
+	getItineraryBrief,
+	getItineraryBriefForUser
 };
