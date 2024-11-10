@@ -3,19 +3,25 @@ import { useParams } from 'react-router-dom';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt } from 'react-icons/fa';
 import { AiOutlineHeart } from "react-icons/ai";
 import LocationContact from "../Components/Locations/Location";
-import { toast } from 'react-toastify'; // Import toast from react-toastify
-import 'react-toastify/dist/ReactToastify.css'; // Import CSS for toast notifications
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
     const [activity, setActivity] = useState(null);
     const [commentText, setCommentText] = useState("");
     const [commentRating, setCommentRating] = useState(0);
-    const [isShareOpen, setIsShareOpen] = useState(false); // State to control share dropdown visibility
-    const [email, setEmail] = useState(''); // State to store email input
-    const [hasBooked, setHasBooked] = useState(false); // State to check if user has booked the activity
-    const [canCancel, setCanCancel] = useState(false); // State to check if user can cancel booking
-    const [canComment, setCanComment] = useState(false); // State to check if user can comment
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [email, setEmail] = useState('');
+    const [hasBooked, setHasBooked] = useState(false);
+    const [canCancel, setCanCancel] = useState(false);
+    const [canComment, setCanComment] = useState(false);
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [cardNumber, setCardNumber] = useState('');
+    const [expiryDate, setExpiryDate] = useState('');
+    const [cvv, setCvv] = useState('');
+    const [transportation, setTransportation] = useState('');
+    const [walletAmount, setWalletAmount] = useState('');
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
@@ -46,7 +52,7 @@ const ActivityDetail = () => {
 
         const checkUserBooking = async () => {
             if (userRole !== 'tourist') {
-                return; // Only proceed if the user is a tourist
+                return;
             }
             try {
                 const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
@@ -61,8 +67,8 @@ const ActivityDetail = () => {
                     const activityDate = new Date(booking.date);
                     const currentDate = new Date();
                     const hoursDifference = (activityDate - currentDate) / (1000 * 60 * 60);
-                    setCanCancel(hoursDifference >= 48); // Allow cancelation if more than 48 hours away
-                    setCanComment(activityDate < currentDate); // Allow commenting if the activity date has passed
+                    setCanCancel(hoursDifference >= 48);
+                    setCanComment(activityDate < currentDate);
                 }
             } catch (err) {
                 console.error('Error checking user bookings:', err);
@@ -76,23 +82,39 @@ const ActivityDetail = () => {
         }
     }, [activityId, userId, userRole]);
 
-    // Convert image to base64 if exists
-    let imageBase64 = null;
-    if (activity?.image?.data?.data && activity.image.contentType) {
-        const byteArray = new Uint8Array(activity.image.data.data);
-        const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-        imageBase64 = `data:${activity.image.contentType};base64,${btoa(binaryString)}`;
-    }
+      // Convert image to base64 if exists
+      let imageBase64 = null;
+      if (activity?.image?.data?.data && activity.image.contentType) {
+          const byteArray = new Uint8Array(activity.image.data.data);
+          const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+          imageBase64 = `data:${activity.image.contentType};base64,${btoa(binaryString)}`;
+      }
 
-    // Function to handle booking the activity
-    const handleBookActivity = async () => {
+    const openBookingModal = () => {
+        setIsBookingModalOpen(true);
+    };
+
+    const closeBookingModal = () => {
+        setIsBookingModalOpen(false);
+        setCardNumber('');
+        setExpiryDate('');
+        setCvv('');
+        setTransportation('');
+        setWalletAmount('');
+    };
+
+    const handleCompleteBooking = async () => {
         if (userRole !== 'tourist') {
             toast.error('Only tourists can book activities.');
             return;
         }
 
+        if (!cardNumber || !expiryDate || !cvv || !transportation) {
+            toast.error('Please complete all fields.');
+            return;
+        }
+
         try {
-            // Fetch the user's current activity bookings
             const userBookingsResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
             if (!userBookingsResponse.ok) {
                 throw new Error('Failed to fetch user bookings');
@@ -102,11 +124,11 @@ const ActivityDetail = () => {
             const isAlreadyBooked = userBookings.some((booking) => booking._id === activityId);
 
             if (isAlreadyBooked) {
-                toast.info('Activity already booked'); // Display toast if already booked
+                toast.info('Activity already booked');
+                closeBookingModal();
                 return;
             }
 
-            // Proceed to book the activity if not already booked
             const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -117,15 +139,20 @@ const ActivityDetail = () => {
                 throw new Error('Failed to book the activity');
             }
 
-            toast.success('Activity booked successfully'); // Display success toast
+            toast.success('Activity booked successfully');
+            closeBookingModal();
         } catch (error) {
             console.error('Error booking activity:', error);
-            toast.error('Failed to book the activity. Please try again.'); // Display error toast
+            toast.error('Failed to book the activity. Please try again.');
         }
     };
 
-    // Function to handle canceling the booking
-    const handleCancelBooking = async () => {
+     // Function to handle canceling the booking
+     const handleCancelBooking = async () => {
+        const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
+        if (!userConfirmed) {
+            return; // Do nothing if the user cancels the confirmation dialog
+        }
         try {
             const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
                 method: 'DELETE',
@@ -242,13 +269,13 @@ const ActivityDetail = () => {
         }
     };
 
+
     if (loading) return <p>Loading...</p>;
 
     return (
         <div>
             <section className="px-4 py-10 bg-gray-100">
                 <div className="container-xl lg:container m-auto">
-                    {/* Title, Description, and Buttons */}
                     <div className="flex items-center justify-between bg-white p-6 shadow-lg rounded-lg mb-4">
                         <div className="flex flex-col">
                             <h1 className="text-4xl font-bold text-gray-800 mb-1">{activity?.title}</h1>
@@ -267,7 +294,7 @@ const ActivityDetail = () => {
                         </div>
                         <div className="flex flex-col items-center space-y-4">
                             <button
-                                onClick={handleBookActivity}
+                                onClick={openBookingModal}
                                 className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
                             >
                                 Book Activity
@@ -297,13 +324,12 @@ const ActivityDetail = () => {
                                                 onClick={(e) => e.target.select()}
                                             />
                                             <button
-                                                onClick={handleCopyLink}
+                                                onClick={() => navigator.clipboard.writeText(`http://localhost:3000/activities/${activityId}`)}
                                                 className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                                             >
                                                 Copy
                                             </button>
                                         </div>
-                                        {/* Email Sharing */}
                                         <p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
                                         <div className="flex items-center space-x-2">
                                             <input
@@ -314,7 +340,7 @@ const ActivityDetail = () => {
                                                 className="w-full px-2 py-1 border rounded-lg focus:outline-none"
                                             />
                                             <button
-                                                onClick={handleSendEmail}
+                                                onClick={() => window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: http://localhost:3000/activities/${activityId}`, '_blank')}
                                                 className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                                             >
                                                 Send
@@ -326,8 +352,82 @@ const ActivityDetail = () => {
                         </div>
                     </div>
 
-                    {/* Image Gallery */}
-                    <div className="mt-8">
+                    {isBookingModalOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                                <h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+                                <div className="mb-4">
+                                    <label className="block mb-2">Card Number</label>
+                                    <input
+                                        type="text"
+                                        value={cardNumber}
+                                        onChange={(e) => setCardNumber(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                        placeholder="1234 5678 9012 3456"
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block mb-2">Expiry Date</label>
+                                    <input
+                                        type="text"
+                                        value={expiryDate}
+                                        onChange={(e) => setExpiryDate(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                        placeholder="MM/YY"
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block mb-2">CVV</label>
+                                    <input
+                                        type="text"
+                                        value={cvv}
+                                        onChange={(e) => setCvv(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                        placeholder="123"
+                                    />
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block mb-2">Transportation</label>
+                                    <select
+                                        value={transportation}
+                                        onChange={(e) => setTransportation(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                    >
+                                        <option value="">Select</option>
+                                        <option value="uber">Uber</option>
+                                        <option value="swvl">Swvl</option>
+                                        <option value="indriver">Indriver</option>
+                                        <option value="my car">My Car</option>
+                                    </select>
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block mb-2">Wallet Amount</label>
+                                    <input
+                                        type="text"
+                                        value={walletAmount}
+                                        onChange={(e) => setWalletAmount(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                        placeholder="Enter amount"
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleCompleteBooking}
+                                    className={`w-full bg-[#330577] text-white p-2 rounded-lg ${!cardNumber || !expiryDate || !cvv || !transportation ? 'opacity-85 cursor-not-allowed' : 'hover:bg-[#330577]'}`}
+                                    disabled={!cardNumber || !expiryDate || !cvv || !transportation}
+                                >
+                                    Book
+                                </button>
+                                <button
+                                    onClick={closeBookingModal}
+                                    className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                      {/* Image Gallery */}
+                      <div className="mt-8">
                         <img src={imageBase64} alt="Activity" className="w-full h-96 object-cover rounded-lg shadow-md" />
                     </div>
 
@@ -419,7 +519,7 @@ const ActivityDetail = () => {
                         <div className="mt-8">
                             <button
                                 onClick={handleCancelBooking}
-                                className="bg-red-600 text-white px-6 py-3 rounded-lg shadow hover:bg-red-700 flex items-center justify-center w-full"
+                                className="bg-[#330577] text-white px-6 py-3 rounded-lg shadow hover:bg-red-700 flex items-center justify-center w-full"
                             >
                                 Cancel Booking
                             </button>
