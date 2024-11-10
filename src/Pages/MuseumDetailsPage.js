@@ -46,7 +46,7 @@ const MuseumDetail = () => {
   const sendEmail = async () => {
     setLoading(true);
     try {
-        const subject = 'Check out this activity';
+        const subject = 'Check out this museum';
         const body = `Here's a link to an interesting museum: http://localhost:3000/museum/${museumId}`;
         
         const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {

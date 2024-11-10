@@ -52,7 +52,7 @@ const HistoricalPlaceDetail = () => {
   const sendEmail = async () => {
     setLoading(true);
     try {
-        const subject = 'Check out this activity';
+        const subject = 'Check out this historical place';
         const body = `Here's a link to an interesting historical place: http://localhost:3000/historicalplaces/${placeId}`;
         
         const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
