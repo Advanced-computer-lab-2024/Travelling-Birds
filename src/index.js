@@ -36,6 +36,7 @@ import LoginPage from "./Pages/LoginPage";
 import WaitPage from "./Pages/WaitPage";
 import AdvertiserActivities  from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
+import ProductDetails from "./Pages/ProductsDetailsPage";
 
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
@@ -100,6 +101,7 @@ root.render(
 					<Route path='update-historical-place/:id' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
+					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
 					<Route path="login" element={<LoginPage/>}/>
 					<Route path="register" element={<RegisterPage/>}/>

@@ -23,6 +23,7 @@ const ActivityDetail = () => {
     const [transportation, setTransportation] = useState('');
     const [walletAmount, setWalletAmount] = useState('');
     const [transportations, setTransportations] = useState([]);
+    const currencyCode = sessionStorage.getItem('currency') || 'EGP';
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
@@ -301,9 +302,9 @@ const ActivityDetail = () => {
     const formatPriceRange = (price) => {
         const currency = sessionStorage.getItem('currency') || 'EGP';
         if (currency === 'USD') {
-            return `$${(price / 49.3).toFixed(2)}`;
+            return `$${(price / 49.3).toFixed(2)} USD`;
         } else if (currency === 'EUR') {
-            return `€${(price / 49.3 * 0.93).toFixed(2)}`;
+            return `€${(price / 49.3 * 0.93).toFixed(2)} EUR`;
         } else {
             return `${price.toFixed(2)} EGP`; // Default to EGP
         }
@@ -502,7 +503,7 @@ const ActivityDetail = () => {
                         {/* Details Section */}
                         <div className="bg-white p-4 rounded-lg shadow-md">
                             <h2 className="font-semibold text-lg text-[#330577]">Details</h2>
-                            <p className="text-gray-700 mt-2">Price range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)} - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
+                            <p className="text-gray-700 mt-2">Price range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)}  - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
                             <p className="text-gray-700">Category: {activity?.category}</p>
                             <p className="text-gray-700">Special discounts: {activity?.specialDiscounts}</p>
                             <p className="text-gray-700">Features: {activity?.features?.join(', ')}</p>
