@@ -52,7 +52,7 @@ router.get('/toDelete', getUsersToDelete);
 router.get('/:id', getUser);
 
 // Update user
-router.put('/:id', upload.single('profilePicture'), updateUser);
+router.put('/:id', upload.fields([{ name: 'profilePicture', maxCount: 1 }, { name: 'backDrop', maxCount: 1 }]), updateUser);
 
 // Delete user
 router.delete('/:id', deleteUser);

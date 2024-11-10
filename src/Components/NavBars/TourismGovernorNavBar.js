@@ -112,6 +112,18 @@ const TourismGovernorNavBar = () => {
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Activity
 					</NavLink>
+					<NavLink to='/tour-guide-tags'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Tags
+					</NavLink>
+					<NavLink to='/tour-guide-historical-places'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Historical Places
+					</NavLink>
+					<NavLink to='/tour-guide-museums'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Museums
+					</NavLink>
 				</div>
 
 				{/* Right: Profile picture and EGP button */}
@@ -183,15 +195,6 @@ const TourismGovernorNavBar = () => {
 											onClick={() => setDropdownVisible(false)}
 										>
 											Profile
-										</NavLink>
-									</li>
-									<li>
-										<NavLink
-											to='/complaints'
-											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
-											onClick={() => setDropdownVisible(false)}
-										>
-											Complaints
 										</NavLink>
 									</li>
 									<li>

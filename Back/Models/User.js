@@ -25,6 +25,7 @@ const user = new Schema({
 	isApproved: Boolean,
 	description: String,
 	profilePicture: { data: Buffer, contentType: String },
+	backDrop: { data: Buffer, contentType: String },
 	termsFlag:  Boolean,
 	loyaltyPoints: Number,
 	redeemablePoints: Number,

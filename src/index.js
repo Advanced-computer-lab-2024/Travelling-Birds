@@ -56,6 +56,11 @@ import ManageActivities from "./Components/Admin Portal/Components/ContentManage
 import ManageItineraries from "./Components/Admin Portal/Components/ContentManagement/ManageItineraries";
 import ManageMuseums from "./Components/Admin Portal/Components/ContentManagement/ManageMuseums";
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
+import TourGuideItineraries from "./Pages/TourGuideItineraries";
+import TourismGovernorTags from "./Pages/TourismGovernorTags"
+import TourismGovernorHistoricalPlaces from "./Pages/TourismGovernorHistoricalPlaces"
+import TourismGovernorMuseums from "./Pages/TourismGovernorMuseums"
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -101,6 +106,10 @@ root.render(
 					<Route path="seller-products" element={<SellerProductsPage/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
 					<Route path="transportation" element={<TransportationManagement/>}/>
+					<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
+					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
+					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
+					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>

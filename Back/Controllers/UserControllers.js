@@ -31,6 +31,7 @@ const addUser = async (req, res) => {
 		description,
 	} = req.body;
 	try {
+		let backDrop = null;
 		let profilePicture;
 			// Use the imported base64 string and convert it to a buffer
 			const imageBuffer = Buffer.from(defaultProfilePicture, 'base64');
@@ -59,6 +60,7 @@ const addUser = async (req, res) => {
 			isApproved,
 			description,
 			profilePicture,
+			backDrop,
 			termsFlag:false,
 			loyaltyPoints: 0,
 			redeemablePoints: 0,
@@ -165,13 +167,17 @@ const updateUser = async (req, res) => {
 		termsFlag,
 		loyaltyPoints,
 		redeemablePoints,
-		requestToDelete
+		requestToDelete,
+		profilePicture, // Added to handle null value
+		backDrop // Added to handle null value
 	} = req.body;
+
 	try {
 		let hashedPassword = password;
 		if (req.body.password) {
 			hashedPassword = await bcrypt.hash(password, 10);
 		}
+
 		const updatedFields = {
 			firstName,
 			lastName,
@@ -193,23 +199,43 @@ const updateUser = async (req, res) => {
 			description,
 			termsFlag,
 			loyaltyPoints,
-			redeemablePoints,	
+			redeemablePoints,
 			requestToDelete
 		};
-		// Update image data if a new file is uploaded
-		if (req.file) {
-			updatedFields.profilePicture = {
-				data: req.file.buffer,
-				contentType: req.file.mimetype
-			};
+
+		// Handle setting profilePicture to null
+		if (profilePicture === null || profilePicture === '') {
+			updatedFields.profilePicture = null;
 		}
-		const user = await User.findByIdAndUpdate(req.params.id, updatedFields, {new: true});
+
+		// Handle setting backDrop to null
+		if (backDrop === null || backDrop === '') {
+			updatedFields.backDrop = null;
+		}
+
+		// Update image data if a new file is uploaded
+		if (req.files) {
+			if (req.files.profilePicture) {
+				updatedFields.profilePicture = {
+					data: req.files.profilePicture[0].buffer,
+					contentType: req.files.profilePicture[0].mimetype
+				};
+			}
+			if (req.files.backDrop) {
+				updatedFields.backDrop = {
+					data: req.files.backDrop[0].buffer,
+					contentType: req.files.backDrop[0].mimetype
+				};
+			}
+		}
+
+		const user = await User.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
 		if (!user) {
-			return res.status(404).json({message: 'User not found'});
+			return res.status(404).json({ message: 'User not found' });
 		}
 		res.status(200).json(user);
 	} catch (error) {
-		res.status(500).json({error: error.message});
+		res.status(500).json({ error: error.message });
 		console.log(error);
 	}
 }
