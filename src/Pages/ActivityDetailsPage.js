@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {userUpdateEvent} from "../utils/userUpdateEvent";
 
+
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
     const [showAllComments, setShowAllComments] = useState(false);
@@ -30,6 +31,7 @@ const ActivityDetail = () => {
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -116,6 +118,38 @@ const ActivityDetail = () => {
         setTransportation('');
         setWalletAmount('');
     };
+
+
+
+    const sendEmail = async () => {
+        setLoading(true);
+        try {
+            const subject = 'Check out this activity';
+            const body = `Here's a link to an interesting activity: http://localhost:3000/activities/${activityId}`;
+            
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, subject, message: body }),
+            });
+
+            if (response.ok) {
+                alert('Email sent successfully!');
+            } else {
+                const errorData = await response.json();
+                console.error('Server response error:', errorData);
+                alert(`Failed to send email: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+            alert('Failed to send email.');
+        } finally {
+            setLoading(false);
+        }
+    };
+    
 
     const handleCompleteBooking = async () => {
         if (userRole !== 'tourist') {
@@ -391,11 +425,13 @@ const ActivityDetail = () => {
                                                 className="w-full px-2 py-1 border rounded-lg focus:outline-none"
                                             />
                                             <button
-                                                onClick={() => window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: http://localhost:3000/activities/${activityId}`, '_blank')}
-                                                className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
+                                                onClick={sendEmail}
+                                                className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c] disabled:opacity-50"
+                                                disabled={!email || loading}
                                             >
-                                                Send
+                                                {loading ? 'Sending...' : 'Send'}
                                             </button>
+                                            {message && <p>{message}</p>}
                                         </div>
                                     </div>
                                 )}

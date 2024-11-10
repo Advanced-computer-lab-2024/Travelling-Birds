@@ -11,6 +11,7 @@ const MuseumDetail = () => {
   const [activities, setActivities] = useState([]);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [email, setEmail] = useState(''); // State for email input
+  const [message, setMessage] = useState(''); // State for email message
   const { id: museumId } = useParams();
 
   useEffect(() => {
@@ -41,6 +42,35 @@ const MuseumDetail = () => {
     const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
     imageBase64 = `data:${museum.image.contentType};base64,${btoa(binaryString)}`;
   }
+
+  const sendEmail = async () => {
+    setLoading(true);
+    try {
+        const subject = 'Check out this activity';
+        const body = `Here's a link to an interesting museum: http://localhost:3000/museum/${museumId}`;
+        
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, subject, message: body }),
+        });
+
+        if (response.ok) {
+            alert('Email sent successfully!');
+        } else {
+            const errorData = await response.json();
+            console.error('Server response error:', errorData);
+            alert(`Failed to send email: ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error sending email:', error);
+        alert('Failed to send email.');
+    } finally {
+        setLoading(false);
+    }
+};
 
   const handleCopyLink = () => {
     const link = `http://localhost:3000/museum/${museumId}`;
@@ -131,20 +161,22 @@ const MuseumDetail = () => {
                     {/* Email Sharing */}
                     <p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
                     <div className="flex items-center space-x-2">
-                      <input
-                        type="email"
-                        placeholder="Enter email address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-2 py-1 border rounded-lg focus:outline-none"
-                      />
-                      <button
-                        onClick={handleSendEmail}
-                        className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
-                      >
-                        Send
-                      </button>
-                    </div>
+                                            <input
+                                                type="email"
+                                                placeholder="Enter email address"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+                                            />
+                                            <button
+                                                onClick={sendEmail}
+                                                className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c] disabled:opacity-50"
+                                                disabled={!email || loading}
+                                            >
+                                                {loading ? 'Sending...' : 'Send'}
+                                            </button>
+                                            {message && <p>{message}</p>}
+                                        </div>
                   </div>
                 )}
               </div>
