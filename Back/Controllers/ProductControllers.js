@@ -210,10 +210,10 @@ const addComment = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Check if the user has purchased the product before commenting
-       // if (!user2.productPurchases.includes(req.params.id)) {
-            //return res.status(400).json({ message: 'User must purchase the product before commenting' });
-        //}
+        //Check if the user has purchased the product before commenting
+          if (!user2.productPurchases.includes(req.params.id)) {
+            return res.status(400).json({ message: 'User must purchase the product before commenting' });
+        }
 
         const newComment = new CommentModel({ user, text, stars, date: new Date() });
         await newComment.save();
