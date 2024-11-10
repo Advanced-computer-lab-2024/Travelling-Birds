@@ -1,5 +1,5 @@
 const HistoricalPlaceModel = require('../Models/HistoricalPlace');
-
+const UserModel = require('../Models/User');
 
 //Parse time to date
 const parseTimeToDate = (timeString) => {
@@ -209,6 +209,30 @@ const getAllCreatedHistoricalPlaces = async (req, res) => {
 	}
 }
 
+const getHistoricalPlacesBrief = async (req, res) => {
+    try {
+        const historicalPlaces = await HistoricalPlaceModel.find().select('name description location tags createdBy');
+
+        const updatedHistoricalPlaces = await Promise.all(historicalPlaces.map(async place => {
+            const user = await UserModel.findById(place.createdBy).select('firstName lastName');
+            place._doc.createdBy = `${user.firstName} ${user.lastName}`;
+            return place;
+        }));
+        res.status(200).json(updatedHistoricalPlaces);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching historical places', error });
+    }
+}
+
+const getHistoricalPlaceBriefForUser = async (req, res) => {
+    try {
+        const historicalPlaces = await HistoricalPlaceModel.find({createdBy: req.params.id}).select('name description location tags createdBy');
+        res.status(200).json(historicalPlaces);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching historical places', error });
+    }
+
+}
 module.exports = {
 	addHistoricalPlace,
 	getAllHistoricalPlaces,
@@ -217,5 +241,7 @@ module.exports = {
 	deleteHistoricalPlace,
 	SearchForHistoricalPlace,
 	filterHistoricalPlaces,
-	getAllCreatedHistoricalPlaces
+	getAllCreatedHistoricalPlaces,
+    getHistoricalPlacesBrief,
+    getHistoricalPlaceBriefForUser
 }

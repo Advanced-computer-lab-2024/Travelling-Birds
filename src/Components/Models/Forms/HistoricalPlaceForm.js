@@ -1,228 +1,184 @@
-import { useState, useEffect } from "react";
+import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
-import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
-import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 
-const HistoricalPlaceForm = () => {
-    const { id } = useParams(); // Use params to check if we are in edit mode
-    const [loading, setLoading] = useState(true);
-    const [historicalPlace, setHistoricalPlace] = useState(null);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
-    const [lat, setLat] = useState('');
-    const [lng, setLng] = useState('');
-    const [city, setCity] = useState('');
-    const [country, setCountry] = useState('');
-    const [address, setAddress] = useState('');
-    const [area, setArea] = useState('');
-    const [ticketPrices, setTicketPrices] = useState('');
-    const [tags, setTags] = useState('');
-    const [activities, setActivities] = useState('');
-    const [image, setImage] = useState(null);
-    const navigate = useNavigate();
+const HistoricalPlaceForm = ({historicalPlace: initialHistoricalPlace, historicalPlaces, setHistoricalPlaces}) => {
+	console.log(initialHistoricalPlace);
+	const [historicalPlace, setHistoricalPlace] = useState(initialHistoricalPlace);
+	const [name, setName] = useState(initialHistoricalPlace?.name || '');
+	const [description, setDescription] = useState(initialHistoricalPlace?.description || '');
+	const [startTime, setStartTime] = useState(initialHistoricalPlace?.openingHours?.startTime || '');
+	const [endTime, setEndTime] = useState(initialHistoricalPlace?.openingHours?.endTime || '');
+	const [lat, setLat] = useState(initialHistoricalPlace?.location?.lat || '');
+	const [lng, setLng] = useState(initialHistoricalPlace?.location?.lng || '');
+	const [city, setCity] = useState(initialHistoricalPlace?.location?.city || '');
+	const [country, setCountry] = useState(initialHistoricalPlace?.location?.country || '');
+	const [address, setAddress] = useState(initialHistoricalPlace?.location?.address || '');
+	const [area, setArea] = useState(initialHistoricalPlace?.location?.area || '');
+	const [ticketPrices, setTicketPrices] = useState(initialHistoricalPlace?.ticketPrices?.join(',') || '');
+	const [tags, setTags] = useState(initialHistoricalPlace?.tags?.join(',') || '');
+	const [activities, setActivities] = useState(initialHistoricalPlace?.activities ? Object.values(initialHistoricalPlace.activities).map(activity => activity._id).join(',') : '');
+	const [image, setImage] = useState(null);
+	const navigate = useNavigate();
 
-    const deleteHistoricalPlace = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${historicalPlace._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.msg === 'Historical place deleted successfully') {
-                    toast.success('Historical place deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                    navigate('/places');
-                } else {
-                    toast.error('Failed to delete historical place');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
+	const populateFormFields = (placeData) => {
+		if (placeData) {
+			setName(placeData.name || '');
+			setDescription(placeData.description || '');
+			setStartTime(placeData.openingHours?.startTime ? new Date(placeData.openingHours.startTime).toISOString().slice(11, 16) : '');
+			setEndTime(placeData.openingHours?.endTime ? new Date(placeData.openingHours.endTime).toISOString().slice(11, 16) : '');
+			setLat(placeData.location?.lat || '');
+			setLng(placeData.location?.lng || '');
+			setCity(placeData.location?.city || '');
+			setCountry(placeData.location?.country || '');
+			setAddress(placeData.location?.address || '');
+			setArea(placeData.location?.area || '');
+			setTicketPrices(placeData.ticketPrices?.join(',') || '');
+			setTags(placeData.tags?.join(',') || '');
+			setActivities(placeData.activities?.join(',') || '');
+		}
+	};
 
-    useEffect(() => {
-        const fetchHistoricalPlace = async () => {
-            if (id) {
-                try {
-                    const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${id}`);
-                    const data = await res.json();
-                    setHistoricalPlace(data);
-                    populateFormFields(data);
-                } catch (error) {
-                    console.error('Error fetching historical place:', error);
-                    toast.error('Failed to load historical place data');
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                setLoading(false);
-            }
-        };
-        fetchHistoricalPlace();
-    }, [id]);
+	const handleFileChange = (e) => {
+		setImage(e.target.files[0]);
+	};
 
-    const populateFormFields = (placeData) => {
-        if (placeData) {
-            setName(placeData.name || '');
-            setDescription(placeData.description || '');
-            setStartTime(placeData.openingHours?.startTime ? new Date(placeData.openingHours.startTime).toISOString().slice(11, 16) : '');
-            setEndTime(placeData.openingHours?.endTime ? new Date(placeData.openingHours.endTime).toISOString().slice(11, 16) : '');
-            setLat(placeData.location?.lat || '');
-            setLng(placeData.location?.lng || '');
-            setCity(placeData.location?.city || '');
-            setCountry(placeData.location?.country || '');
-            setAddress(placeData.location?.address || '');
-            setArea(placeData.location?.area || '');
-            setTicketPrices(placeData.ticketPrices?.join(',') || '');
-            setTags(placeData.tags?.join(',') || '');
-            setActivities(placeData.activities?.join(',') || '');
-        }
-    };
+	const createFormData = () => {
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('description', description);
+		formData.append('openingHours[startTime]', `${startTime}:00`);
+		formData.append('openingHours[endTime]', `${endTime}:00`);
+		formData.append('location[lat]', lat);
+		formData.append('location[lng]', lng);
+		formData.append('location[city]', city);
+		formData.append('location[country]', country);
+		formData.append('location[address]', address);
+		formData.append('location[area]', area);
+		formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
+		formData.append('tags', tags.split(',').map(tag => tag.trim()));
+		formData.append('activities', activities.split(',').map(id => id.trim()));
+		formData.append('createdBy', sessionStorage.getItem('user id'));
 
-    const handleFileChange = (e) => {
-        setImage(e.target.files[0]);
-    };
+		if (image) {
+			formData.append('image', image);
+		}
 
-    const createFormData = () => {
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('openingHours[startTime]', `${startTime}:00`);
-        formData.append('openingHours[endTime]', `${endTime}:00`);
-        formData.append('location[lat]', lat);
-        formData.append('location[lng]', lng);
-        formData.append('location[city]', city);
-        formData.append('location[country]', country);
-        formData.append('location[address]', address);
-        formData.append('location[area]', area);
-        formData.append('ticketPrices', ticketPrices.split(',').map(price => parseFloat(price.trim())));
-        formData.append('tags', tags.split(',').map(tag => tag.trim()));
-        formData.append('activities', activities.split(',').map(id => id.trim()));
-        formData.append('createdBy', sessionStorage.getItem('user id'));
+		return formData;
+	};
 
-        if (image) {
-            formData.append('image', image);
-        }
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		const formData = createFormData();
+		if (!formData) return;
 
-        return formData;
-    };
+		try {
+			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${initialHistoricalPlace ? initialHistoricalPlace._id : ''}`, {
+				method: initialHistoricalPlace ? 'PUT' : 'POST',
+				body: formData
+			});
+			const data = await res.json();
+			if (data && data._id) {
+				toast.success(`Historical place ${initialHistoricalPlace ? 'updated' : 'added'} successfully`);
+				if (initialHistoricalPlace) {
+					const updatedHistoricalPlaces = historicalPlaces.map(place => place._id === data._id ? data : place);
+					setHistoricalPlaces(updatedHistoricalPlaces);
+				} else {
+					setHistoricalPlaces([...historicalPlaces, data]);
+				}
+			} else {
+				toast.error(`Failed to ${initialHistoricalPlace ? 'update' : 'register'} historical place`);
+			}
+		} catch (error) {
+			console.error(`Error during historical place ${initialHistoricalPlace ? 'update' : 'registration'}:`, error);
+			toast.error(`Failed to ${initialHistoricalPlace ? 'update' : 'register'} historical place`);
+		}
+	};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = createFormData();
-        if (!formData) return;
+	return (
+		<div className="bg-white p-6 rounded-lg shadow-md">
+			<form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
+				<h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
+					{initialHistoricalPlace ? 'Update Historical Place' : 'Register Historical Place'}
+				</h1>
 
-        try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${id ? id : ''}`, {
-                method: id ? 'PUT' : 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            if (data && data._id) {
-                toast.success(`Historical place ${id ? 'updated' : 'added'} successfully`);
-                window.dispatchEvent(modelModificationEvent);
-                //navigate('/places');
-            } else {
-                toast.error(`Failed to ${id ? 'update' : 'register'} historical place`);
-            }
-        } catch (error) {
-            console.error(`Error during historical place ${id ? 'update' : 'registration'}:`, error);
-            toast.error(`Failed to ${id ? 'update' : 'register'} historical place`);
-        }
-    };
+				{/* Column 1 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)}/>
+					<ReusableInput type="text" name="Description" value={description}
+					               onChange={e => setDescription(e.target.value)}/>
+					<ReusableInput type="text" name="City" value={city} onChange={e => setCity(e.target.value)}/>
+					<ReusableInput type="text" name="Country" value={country}
+					               onChange={e => setCountry(e.target.value)}/>
+					<ReusableInput type="text" name="Address" value={address}
+					               onChange={e => setAddress(e.target.value)}/>
+				</div>
 
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-            {!loading ? (
-                <form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
-                    <h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
-                        {id ? 'Update Historical Place' : 'Register Historical Place'}
-                    </h1>
+				{/* Column 2 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)}/>
+					<ReusableInput type="number" step="any" name="Latitude" value={lat}
+					               onChange={e => setLat(e.target.value)}/>
+					<ReusableInput type="number" step="any" name="Longitude" value={lng}
+					               onChange={e => setLng(e.target.value)}/>
+					<ReusableInput type="text" name="Ticket Prices (Comma-separated)" value={ticketPrices}
+					               onChange={e => setTicketPrices(e.target.value)}/>
+					<ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)}/>
+				</div>
 
-                    {/* Column 1 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
-                        <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                        <ReusableInput type="text" name="City" value={city} onChange={e => setCity(e.target.value)} />
-                        <ReusableInput type="text" name="Country" value={country} onChange={e => setCountry(e.target.value)} />
-                        <ReusableInput type="text" name="Address" value={address} onChange={e => setAddress(e.target.value)} />
-                    </div>
+				{/* Column 3 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Activities (Comma-separated IDs)" value={activities}
+					               onChange={e => setActivities(e.target.value)}/>
+					<ReusableInput type="time" name="Opening Hours Start Time" value={startTime}
+					               onChange={e => setStartTime(e.target.value)}/>
+					<ReusableInput type="time" name="Opening Hours End Time" value={endTime}
+					               onChange={e => setEndTime(e.target.value)}/>
+					<input type="file" name="Image" onChange={handleFileChange} className="mt-4"/>
+				</div>
 
-                    {/* Column 2 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)} />
-                        <ReusableInput type="number" step="any" name="Latitude" value={lat} onChange={e => setLat(e.target.value)} />
-                        <ReusableInput type="number" step="any" name="Longitude" value={lng} onChange={e => setLng(e.target.value)} />
-                        <ReusableInput type="text" name="Ticket Prices (Comma-separated)" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
-                        <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
-                    </div>
-
-                    {/* Column 3 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Activities (Comma-separated IDs)" value={activities} onChange={e => setActivities(e.target.value)} />
-                        <ReusableInput type="time" name="Opening Hours Start Time" value={startTime} onChange={e => setStartTime(e.target.value)} />
-                        <ReusableInput type="time" name="Opening Hours End Time" value={endTime} onChange={e => setEndTime(e.target.value)} />
-                        <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />
-                    </div>
-
-                    {/* Buttons Row */}
-                    <div className="col-span-1 md:col-span-3 flex justify-between mt-4">
-                        <button
-                            type="submit"
-                            className="bg-[#330577] hover:bg-[#4a1c96] text-white py-2 px-6 rounded text-base"
-                        >
-                            {id ? 'Update' : 'Register'}
-                        </button>
-                        {id && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (window.confirm('Are you sure you wish to delete this historical place?')) {
-                                        deleteHistoricalPlace();
-                                    }
-                                }}
-                                className="bg-[#330577] hover:bg-red-700 text-white py-2 px-6 rounded text-base"
-                            >
-                                Delete
-                            </button>
-                        )}
-                    </div>
-                </form>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div>
-    );
+				{/* Buttons Row */}
+				<div className="col-span-1 md:col-span-3 flex justify-between mt-4">
+					<button
+						type="submit"
+						className="bg-[#330577] hover:bg-[#4a1c96] text-white py-2 px-6 rounded text-base"
+					>
+						{initialHistoricalPlace ? 'Update' : 'Register'}
+					</button>
+				</div>
+			</form>
+		</div>
+	);
 };
 
 HistoricalPlaceForm.propTypes = {
-    historicalPlace: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string,
-        description: PropTypes.string,
-        location: PropTypes.shape({
-            city: PropTypes.string,
-            country: PropTypes.string,
-            lat: PropTypes.number,
-            lng: PropTypes.number,
-            address: PropTypes.string,
-            area: PropTypes.string,
-        }),
-        openingHours: PropTypes.shape({
-            startTime: PropTypes.string,
-            endTime: PropTypes.string,
-        }),
-        ticketPrices: PropTypes.arrayOf(PropTypes.number),
-        tags: PropTypes.arrayOf(PropTypes.string),
-        activities: PropTypes.arrayOf(PropTypes.string),
-        image: PropTypes.shape({
-            data: PropTypes.object,
-            contentType: PropTypes.string,
-        }),
-        createdBy: PropTypes.string,
-    })
+	historicalPlace: PropTypes.shape({
+		_id: PropTypes.string.isRequired,
+		name: PropTypes.string,
+		description: PropTypes.string,
+		location: PropTypes.shape({
+			city: PropTypes.string,
+			country: PropTypes.string,
+			lat: PropTypes.number,
+			lng: PropTypes.number,
+			address: PropTypes.string,
+			area: PropTypes.string,
+		}),
+		openingHours: PropTypes.shape({
+			startTime: PropTypes.string,
+			endTime: PropTypes.string,
+		}),
+		ticketPrices: PropTypes.arrayOf(PropTypes.number),
+		tags: PropTypes.arrayOf(PropTypes.string),
+		activities: PropTypes.arrayOf(PropTypes.string),
+		image: PropTypes.shape({
+			data: PropTypes.object,
+			contentType: PropTypes.string,
+		}),
+		createdBy: PropTypes.string,
+	})
 };
 
 export default HistoricalPlaceForm;

@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import HistoricalPlaceForm from "../../../Models/Forms/HistoricalPlaceForm";
+import HistoricalPlaceForm from "../Components/Models/Forms/HistoricalPlaceForm";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 
-const ManageHistoricalPlaces = () => {
+const TourismGovernorHistoricalPlaces = () => {
 	const [historicalPlaces, setHistoricalPlaces] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedHistoricalPlace, setSelectedHistoricalPlace] = useState(null);
@@ -13,7 +13,7 @@ const ManageHistoricalPlaces = () => {
 	useEffect(() => {
 		const fetchHistoricalPlaces = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/brief`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/brief/${sessionStorage.getItem('user id')}`);
 				const data = await response.json();
 				setHistoricalPlaces(data);
 			} catch (error) {
@@ -82,7 +82,6 @@ const ManageHistoricalPlaces = () => {
 							<th>Description</th>
 							<th>Location</th>
 							<th>Tags</th>
-							<th>Created By</th>
 							<th className='w-[20%]'>Actions</th>
 						</tr>
 						</thead>
@@ -93,7 +92,6 @@ const ManageHistoricalPlaces = () => {
 								<td>{historicalPlace.description}</td>
 								<td>{historicalPlace.location.city}, {historicalPlace.location.country}</td>
 								<td>{historicalPlace.tags.join(', ')}</td>
-								<td>{historicalPlace.createdBy}</td>
 								<td>
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewClick(historicalPlace)}>
@@ -134,4 +132,4 @@ const ManageHistoricalPlaces = () => {
 	);
 };
 
-export default ManageHistoricalPlaces;
+export default TourismGovernorHistoricalPlaces;

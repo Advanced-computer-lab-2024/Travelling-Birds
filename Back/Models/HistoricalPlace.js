@@ -5,8 +5,8 @@ const historicalPlaceSchema = new Schema({
     name: {type: String, required: true},
     description: String,
     openingHours: {
-        startTime: { type: Date, required: true },
-        endTime: { type: Date, required: true }
+        startTime: { type: String, required: true },
+        endTime: { type: String, required: true }
     },
     location: {
         city: String,
