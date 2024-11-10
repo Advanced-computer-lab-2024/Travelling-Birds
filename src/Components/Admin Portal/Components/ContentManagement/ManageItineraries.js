@@ -81,6 +81,9 @@ const ManageItineraries = () => {
 						setItineraries(updatedItineraries);
 						toast.success('Itinerary deleted successfully');
 					}
+					if (response.status === 400) {
+						toast.error('Can not delete itinerary with bookings');
+					}
 				} catch (error) {
 					console.error('Failed to delete itinerary:', error);
 					toast.error('Failed to delete itinerary');

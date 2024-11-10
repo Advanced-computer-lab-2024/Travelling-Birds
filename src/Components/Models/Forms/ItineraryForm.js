@@ -36,7 +36,7 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 					toast.error('Failed to load itinerary data');
 				}
 			};
-			fetchItinerary();
+			fetchItinerary().then();
 		} else {
 			setFormFields(initialItinerary);
 		}

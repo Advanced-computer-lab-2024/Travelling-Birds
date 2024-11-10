@@ -124,17 +124,20 @@ const deleteItinerary = async (req, res) => {
 	try {
 		const itinerary = await ItineraryModel.findById(req.params.id);
 		if (!itinerary) {
-			return res.status(404).json({message: 'itinerary not found'});
+			return res.status(404).json({ message: 'Itinerary not found' });
 		}
-		if (itinerary.isBooked) {
-			return res.status(400).json({message: 'Cannot delete a booked itinerary'});
+
+		const isBooked = await UserModel.find({ itineraryBookings: req.params.id });
+		if (isBooked.length > 0) {
+			return res.status(400).json({ message: 'Cannot delete a booked itinerary' });
 		}
+
 		await ItineraryModel.findByIdAndDelete(req.params.id);
-		res.status(200).json({message: 'itinerary deleted successfully'});
+		res.status(200).json({ message: 'Itinerary deleted successfully' });
 	} catch (error) {
-		res.status(400).json({message: error.message});
+		res.status(400).json({ message: error.message });
 	}
-}
+};
 
 // search for a specific Intinerary by it's name or category or tag
 const SearchForItinerary = async (req, res) => {
