@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {MuseumForm} from "../../../Models/Forms";
+import {MuseumForm} from "../Components/Models/Forms";
 
-const ManageMuseums = () => {
+const TourismGovernorMuseums = () => {
 	const [museums, setMuseums] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedMuseum, setSelectedMuseum] = useState(null);
@@ -13,7 +13,7 @@ const ManageMuseums = () => {
 	useEffect(() => {
 		const fetchMuseums = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/brief`);
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/brief/${sessionStorage.getItem('user id')}`);
 				const data = await response.json();
 				setMuseums(data);
 			} catch (error) {
@@ -77,11 +77,11 @@ const ManageMuseums = () => {
 					<table className="table w-full">
 						<thead>
 						<tr>
-							<th className='w-[10%]'>Name</th>
-							<th className='w-[40%]'>Description</th>
-							<th className='w-[10%]'>Location</th>
-							<th className='w-[10%]'>Tags</th>
-							<th className='w-[10%]'>Created By</th>
+							<th>Name</th>
+							<th className='w-[50%]'>Description</th>
+							<th>Location</th>
+							<th>Tags</th>
+							<th>Created By</th>
 							<th className='w-[20%]'>Actions</th>
 						</tr>
 						</thead>
@@ -133,4 +133,4 @@ const ManageMuseums = () => {
 	);
 };
 
-export default ManageMuseums;
+export default TourismGovernorMuseums;

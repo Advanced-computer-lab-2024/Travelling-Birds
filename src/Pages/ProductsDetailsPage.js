@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
-import { toast } from "react-toastify";
-import { FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { AiOutlineHeart } from "react-icons/ai";
+import React, {useEffect, useState} from "react";
+import {useParams} from 'react-router-dom';
+import {toast} from "react-toastify";
+import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
+import {AiOutlineHeart} from "react-icons/ai";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -22,7 +22,7 @@ const ProductsDetailsPage = () => {
 	useEffect(() => {
 		const fetchProduct = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/products/${productId}`;
-			
+
 			try {
 				console.log('API URL:', apiUrl);
 				const res = await fetch(apiUrl);
@@ -41,7 +41,7 @@ const ProductsDetailsPage = () => {
 			try {
 				const res = await fetch(apiUrl);
 				const comments = await res.json();
-				setProduct((prev) => ({ ...prev, comments }));
+				setProduct((prev) => ({...prev, comments}));
 			} catch (err) {
 				console.log('Error fetching comments', err);
 			}
@@ -91,7 +91,7 @@ const ProductsDetailsPage = () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}/comments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(newComment)
 			});
 
@@ -142,7 +142,7 @@ const ProductsDetailsPage = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			if (enteredWalletAmount > userWalletBalance) {
 				toast.error('Not enough in wallet.');
 				return;
@@ -156,15 +156,15 @@ const ProductsDetailsPage = () => {
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance })
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance})
 			});
-	
+
 			console.log('Adding product purchase...');
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ productId })
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
 			});
 			if (!response.ok) {
 				throw new Error('Failed to purchase the product');
@@ -188,11 +188,11 @@ const ProductsDetailsPage = () => {
 		return (
 			<>
 				{[...Array(fullStars)].map((_, i) => (
-					<FaStar key={i} style={{ color: '#330577' }} />
+					<FaStar key={i} style={{color: '#330577'}}/>
 				))}
-				{halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
+				{halfStars && <FaStarHalfAlt style={{color: '#330577'}}/>}
 				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-					<FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
+					<FaRegStar key={i + fullStars} style={{color: '#330577'}}/>
 				))}
 			</>
 		);
@@ -246,7 +246,7 @@ const ProductsDetailsPage = () => {
 									className="p-3 bg-[#330577] text-white rounded-lg shadow hover:bg-[#280466] transition duration-150 flex items-center justify-center space-x-2"
 								>
 									<span className="flex items-center">
-										<AiOutlineHeart className="text-lg" />
+										<AiOutlineHeart className="text-lg"/>
 										<span className="ml-2">Save</span>
 									</span>
 								</button>
@@ -254,7 +254,7 @@ const ProductsDetailsPage = () => {
 						</div>
 					</div>
 				</div>
-	
+
 				{isPurchaseModalOpen && (
 					<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
 						<div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
@@ -315,11 +315,11 @@ const ProductsDetailsPage = () => {
 						</div>
 					</div>
 				)}
-	
+
 				{/* Ratings, Details, and Reviews Sections */}
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 					{/* Ratings & Reviews */}
-						<div className="bg-white p-6 rounded-lg shadow-lg">
+					<div className="bg-white p-6 rounded-lg shadow-lg">
 						<h2 className="text-lg font-semibold text-[#330577] mb-4">Ratings and Reviews</h2>
 						<p className="text-xl text-[#330577] font-bold">{product?.rating} ★</p>
 						<p className="text-sm text-gray-500">{product?.reviewCount} reviews</p>
@@ -346,14 +346,15 @@ const ProductsDetailsPage = () => {
 							</button>
 						)}
 					</div>
-	
+
 					{/* Product Details */}
 					<div className="bg-white p-6 rounded-lg shadow-lg">
 						<h2 className="text-lg font-semibold text-[#330577] mb-4">Product Details</h2>
-						<p className="text-gray-700">Price Range: {product?.price ? formatPriceRange(product.price) : 'N/A'}</p>
+						<p className="text-gray-700">Price
+							Range: {product?.price ? formatPriceRange(product.price) : 'N/A'}</p>
 					</div>
 				</div>
-	
+
 				{/* Comments Section */}
 				{purchased && (
 					<div className="mt-8 bg-white shadow-lg rounded-lg p-6">
@@ -370,7 +371,7 @@ const ProductsDetailsPage = () => {
 								<FaStar
 									key={star}
 									className="cursor-pointer"
-									style={{ color: commentRating >= star ? '#330577' : 'lightgray' }}
+									style={{color: commentRating >= star ? '#330577' : 'lightgray'}}
 									onClick={() => setCommentRating(star)}
 								/>
 							))}

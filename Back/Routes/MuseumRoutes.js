@@ -9,7 +9,9 @@ const {
 	deleteMuseum,
 	SearchForMuseums,
 	filterMuseums,
-	getAllCreatedMuseums
+	getAllCreatedMuseums,
+	getAllMuseumsBrief,
+	getAllMuseumsBriefForUser
 } = require('../Controllers/MuseumControllers.js');
 const {upload} = require('../Middleware/upload');
 
@@ -18,6 +20,12 @@ router.post('/', upload.single('image'), addMuseum);
 
 // Get all museums
 router.get('/', getAllMuseums);
+
+// Get all museums with brief details
+router.get('/brief', getAllMuseumsBrief);
+
+// Get all museums with brief details for a specific user
+router.get('/brief/:id', getAllMuseumsBriefForUser);
 
 // Search for museums by name or tag
 router.get('/search', SearchForMuseums);

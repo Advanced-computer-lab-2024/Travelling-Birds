@@ -1,7 +1,7 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 import NavBar from "./NavBar";
-import { useEffect, useState, useRef } from "react";
-import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
+import {useEffect, useRef, useState} from "react";
+import {sessionStorageEvent} from "../../utils/sessionStorageEvent";
 import {toast} from "react-toastify";
 import Logo from "../../Assets/Logo2.png";
 
@@ -19,7 +19,7 @@ const TourismGovernorNavBar = () => {
 		sessionStorage.removeItem('role');
 		window.dispatchEvent(sessionStorageEvent);
 		toast.success('Logged out successfully');
-		navigate('/login', { replace: true });
+		navigate('/login', {replace: true});
 	};
 
 	const handleCurrencyChange = (newCurrency) => {
@@ -52,7 +52,9 @@ const TourismGovernorNavBar = () => {
 		}
 		fetchUserProfile().then(() => console.log('User profile fetched'));
 		window.addEventListener("userUpdated", fetchUserProfile);
-		return () =>{window.removeEventListener("userUpdated", fetchUserProfile)}
+		return () => {
+			window.removeEventListener("userUpdated", fetchUserProfile)
+		}
 	}, [id]);
 
 	useEffect(() => {
@@ -88,13 +90,13 @@ const TourismGovernorNavBar = () => {
 			<div className="flex items-center justify-between w-full px-16 py-3">
 				{/* Left: Logo */}
 				<div className="flex items-center mr-72">
-    				 <NavLink to='/explore' replace={true} className="flex items-center space-x-2 group">
-        				<div className="flex items-center space-x-2 group-hover:brightness-150 transition duration-200">
-            				<img src={Logo} alt="Logo" className="w-16 h-16" />
-            				<span className="text-2xl font-bold text-[#330577]">Travelling Birds</span>
-        				</div>
-   					 </NavLink>
-					</div>
+					<NavLink to='/explore' replace={true} className="flex items-center space-x-2 group">
+						<div className="flex items-center space-x-2 group-hover:brightness-150 transition duration-200">
+							<img src={Logo} alt="Logo" className="w-16 h-16"/>
+							<span className="text-2xl font-bold text-[#330577]">Travelling Birds</span>
+						</div>
+					</NavLink>
+				</div>
 
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-4 mr-72">
@@ -126,7 +128,8 @@ const TourismGovernorNavBar = () => {
 							<dialog open id="currency_modal" className="modal modal-bottom sm:modal-middle">
 								<div className="modal-box">
 									<div className="flex justify-between items-center mb-4">
-										<h2 className="font-bold text-lg" style={{ color: '#330577' }}>Choose a currency</h2>
+										<h2 className="font-bold text-lg" style={{color: '#330577'}}>Choose a
+											currency</h2>
 										<button
 											onClick={() => setIsPopupVisible(false)}
 											className="text-gray-500 hover:text-gray-800 font-bold text-3xl"

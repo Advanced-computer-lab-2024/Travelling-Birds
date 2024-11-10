@@ -73,7 +73,7 @@ root.render(
 						<Route path='users-to-delete' element={<UsersToDelete/>}/>
 						<Route path='activities' element={<ManageActivities/>}/>
 						<Route path='itineraries' element={<ManageItineraries/>}/>
-						<Route path='musuems' element={<ManageMuseums/>}/>
+						<Route path='museums' element={<ManageMuseums/>}/>
 						<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
 						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
 						<Route path='manage-products' element={<ManageProducts/>}/>
@@ -85,20 +85,9 @@ root.render(
 					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
 					<Route path='hotels' element={<HotelSearchPage/>}/>
 					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
-					<Route path='users' element={<UsersPage/>}/>
-					<Route path='places' element={<PlacesPage/>}/>
-					<Route path='activities' element={<ActivityPage/>}/>
 					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
-					<Route path='create-activity' element={<ActivityForm/>}/>
-					<Route path='update-activity/:id' element={<ActivityForm/>}/>
-					<Route path='create-itinerary' element={<ItineraryForm/>}/>
-					<Route path='update-itinerary/:id' element={<ItineraryForm/>}/>
 					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
-					<Route path='create-museum' element={<MuseumForm/>}/>
-					<Route path='update-museum/:id' element={<MuseumForm/>}/>
-					<Route path='create-historical-place' element={<HistoricalPlaceForm/>}/>
-					<Route path='update-historical-place/:id' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>

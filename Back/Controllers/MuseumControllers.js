@@ -1,4 +1,5 @@
 const MuseumModel = require('../Models/Museum');
+const UserModel = require('../Models/User');
 
 
 //Parse time to date
@@ -79,6 +80,36 @@ const getAllMuseums = async (req, res) => {
 	try {
 		const museums = await MuseumModel.find();
 		res.status(200).json(museums)
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get all museums brief
+const getAllMuseumsBrief = async (req, res) => {
+	try {
+		const museums = await MuseumModel.find().select('name description tags location createdBy');
+		const updatedMuseums = await Promise.all(museums.map(async museum => {
+			const user = await UserModel.findById(museum.createdBy).select('firstName lastName');
+			museum._doc.createdByName = `${user.firstName} ${user.lastName}`;
+			return museum;
+		}));
+		res.status(200).json(updatedMuseums);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+// Get all museums brief for a specific user
+const getAllMuseumsBriefForUser = async (req, res) => {
+	try {
+		const museums = await MuseumModel.find({createdBy: req.params.id}).select('name description openingHours location createdBy');
+		const updatedMuseums = await Promise.all(museums.map(async museum => {
+			const user = await UserModel.findById(museum.createdBy).select('firstName lastName');
+			museum._doc.createdByName = `${user.firstName} ${user.lastName}`;
+			return museum;
+		}));
+		res.status(200).json(updatedMuseums);
 	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
@@ -242,5 +273,7 @@ module.exports = {
 	deleteMuseum,
 	SearchForMuseums,
 	filterMuseums,
-	getAllCreatedMuseums
+	getAllCreatedMuseums,
+	getAllMuseumsBrief,
+	getAllMuseumsBriefForUser
 }
