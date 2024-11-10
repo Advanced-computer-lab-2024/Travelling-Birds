@@ -21,7 +21,9 @@ const {
 	removeItineraryBooking,
 	addProductPurchase,
 	getProductPurchases,
-	removeProductPurchase
+	removeProductPurchase,
+	getComments,
+	addComment,
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -82,6 +84,11 @@ router.get('/product-purchases/:id', getProductPurchases);
 // Remove Product Purchase	
 router.delete('/product-purchase/:id', removeProductPurchase);
 
+// Get all comments for a specific user
+router.get('/:id/comments', getComments);
+
+// Add a comment to a specific user
+router.post('/:id/comments', addComment);
 
 
 

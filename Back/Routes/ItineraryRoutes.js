@@ -14,7 +14,8 @@ const {
 	addComment,
 	getActivities,
 	getItineraryBrief,
-	getItineraryBriefForUser
+	getItineraryBriefForUser,
+	getTourGuide
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
@@ -65,5 +66,9 @@ router.post('/:id/comments', addComment);
 
 // Get all activities for a specific itinerary
 router.get('/:id/activities', getActivities);
+
+// Get the tour guide for a specific itinerary
+router.get('/:id/tourguide', getTourGuide);
+
 
 module.exports = router;

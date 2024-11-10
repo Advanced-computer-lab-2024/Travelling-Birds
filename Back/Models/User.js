@@ -36,6 +36,8 @@ const user = new Schema({
 	activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
 	itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
 	productPurchases: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+	comments: [{ type: Schema.Types.ObjectId, ref: 'Comments' }],
+	ratings: Number
 });
 
 module.exports = mongoose.model('User', user);

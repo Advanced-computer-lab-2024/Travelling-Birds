@@ -383,6 +383,19 @@ const getActivities = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+// get tour guide details for a specific itinerary
+const getTourGuide = async (req, res) => {
+	try {
+		const itinerary = await ItineraryModel.findById(req.params.id);
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+		const tourGuide = await UserModel.findById(itinerary.createdBy);
+		res.status(200).json(tourGuide);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 
 const getItineraryBrief = async (req, res) => {
 	try {
@@ -421,6 +434,7 @@ module.exports = {
 	getComments,
 	addComment,
 	getActivities,
+	getTourGuide,
 	getItineraryBrief,
 	getItineraryBriefForUser
 };
