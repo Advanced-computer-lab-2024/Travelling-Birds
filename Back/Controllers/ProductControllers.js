@@ -1,5 +1,7 @@
 const Product = require('../Models/Product');
 const UserModel = require("../Models/User");
+const CommentModel = require('../Models/Comments');
+
 
 // Add product
 const addProduct = async (req, res) => {
@@ -178,6 +180,55 @@ const getProductPicture = async (req, res) => {
 	}
 }
 
+// Get comments of a specific product
+const getComments = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        const comments = await CommentModel.find({ _id: { $in: product.reviews } });
+        res.status(200).json(comments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Create a comment for a specific product
+const addComment = async (req, res) => {
+    const { user, text, stars } = req.body;
+
+    try {
+        const user2 = await UserModel.findById(user);
+        if (!user2) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Check if the user has purchased the product before commenting
+        if (!user2.productPurchases.includes(req.params.id)) {
+            return res.status(400).json({ message: 'User must purchase the product before commenting' });
+        }
+
+        const newComment = new CommentModel({ user, text, stars, date: new Date() });
+        await newComment.save();
+
+        // Update product's reviews and ratings
+        product.reviews.push(newComment._id);
+        product.ratings.push(stars);
+        await product.save();
+
+        res.status(201).json(product);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 module.exports = {
 	addProduct,
 	getAllProducts,
@@ -188,6 +239,8 @@ module.exports = {
 	filterProducts,
 	searchProducts,
 	getProductsAdmin,
-	getProductPicture
+	getProductPicture,
+	getComments,
+	addComment
 };
 

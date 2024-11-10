@@ -18,7 +18,10 @@ const {
 	removeActivityBooking,
 	getItineraryBookings,
 	addItineraryBooking,
-	removeItineraryBooking
+	removeItineraryBooking,
+	addProductPurchase,
+	getProductPurchases,
+	removeProductPurchase
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -69,6 +72,15 @@ router.post('/itinerary-booking/:id', addItineraryBooking);
 
 // Remove Itinerary Booking
 router.delete('/itinerary-booking/:id', removeItineraryBooking);
+
+// Add Product Purchase
+router.post('/product-purchase/:id', addProductPurchase);
+
+// Get Product Purchases
+router.get('/product-purchases/:id', getProductPurchases);
+
+// Remove Product Purchase	
+router.delete('/product-purchase/:id', removeProductPurchase);
 
 
 

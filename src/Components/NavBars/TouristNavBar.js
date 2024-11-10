@@ -154,9 +154,9 @@ const TouristNavBar = () => {
 					</div>
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-8 mr-80">
-					<NavLink to='/products'
+					<NavLink to='/my-purchases'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Discover
+						Purchases
 					</NavLink>
 					<NavLink to='/bookings'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
