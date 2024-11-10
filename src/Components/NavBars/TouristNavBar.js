@@ -154,14 +154,7 @@ const TouristNavBar = () => {
 					</div>
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-8 mr-80">
-					<NavLink to='/my-purchases'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Purchases
-					</NavLink>
-					<NavLink to='/bookings'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Bookings
-					</NavLink>
+
 					<NavLink to='/itineraries'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Review
@@ -319,6 +312,20 @@ const TouristNavBar = () => {
 										>
 											Profile
 										</NavLink>
+									</li>
+									<li>
+									<NavLink to='/my-purchases'
+									         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+									         onClick={() => setDropdownVisible(false)}>
+										 My Purchases
+									</NavLink>
+									</li>
+									<li>
+									<NavLink to='/bookings'
+									         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+									         onClick={() => setDropdownVisible(false)}>
+										My Bookings
+									</NavLink>
 									</li>
 									<li>
 										<NavLink
