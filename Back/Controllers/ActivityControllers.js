@@ -51,7 +51,7 @@ const addActivity = async (req, res) => {
 			features,
 			contact,
 			reviewsCount: comments.length,
-			rating: comments.stars / comments.length
+			rating: comments.length? comments.stars / comments.length : 0
 		});
 		await newActivity.save();
 		res.status(201).json(newActivity);

@@ -12,6 +12,7 @@ const {
 	getAllCreatedItineraries,
 	getComments,
 	addComment,
+	getActivities
 } = require('../Controllers/ItineraryControllers.js');
 
 const router = express.Router();
@@ -53,5 +54,8 @@ router.get('/:id/comments', getComments);
 
 // Add a comment to a specific itinerary
 router.post('/:id/comments', addComment);
+
+// Get all activities for a specific itinerary
+router.get('/:id/activities', getActivities);
 
 module.exports = router;

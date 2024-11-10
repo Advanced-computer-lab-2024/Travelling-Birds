@@ -3,7 +3,7 @@ import {ActivityForm} from '../Components/Models/Forms';
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 
-const TourGuideActivities = () => {
+const AdvertiserActivities = () => {
 	const [activities, setActivities] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedActivity, setSelectedActivity] = useState(null);
@@ -174,4 +174,4 @@ const TourGuideActivities = () => {
 	);
 };
 
-export default TourGuideActivities;
+export default AdvertiserActivities;
