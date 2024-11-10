@@ -10,6 +10,7 @@ function HotelSearchPage() {
 		checkInDate: '',
 		checkOutDate: '',
 		adults: 1,
+		currencyCode: sessionStorage.getItem('currency') || 'EGP',
 	});
 
 	const handleSearch = async () => {

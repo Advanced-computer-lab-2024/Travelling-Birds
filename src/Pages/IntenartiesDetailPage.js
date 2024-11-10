@@ -50,6 +50,15 @@ const ItineraryDetail = () => {
 				console.error('Error fetching activities', err);
 			}
 		};
+		const fetchComments = async () => {
+			try {
+				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`);
+				const data = await res.json();
+				setItinerary((prev) => ({ ...prev, comments: data }));
+			} catch (err) {
+				console.error('Error fetching comments', err);
+			}
+		}
 
 		const checkUserBooking = async () => {
 			if (userRole !== 'tourist') {
@@ -89,6 +98,7 @@ const ItineraryDetail = () => {
 
 		fetchItinerary();
 		fetchActivities();
+		fetchComments();
 		if (userId) {
 			checkUserBooking();
 		}
