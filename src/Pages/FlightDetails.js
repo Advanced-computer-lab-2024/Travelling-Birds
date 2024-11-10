@@ -5,6 +5,7 @@ import {toast} from "react-toastify";
 function FlightDetails() {
 	const {flightId} = useParams();
 	const {origin, destination, departureDate} = useParams();
+	const currencyCode = sessionStorage.getItem('currency');
 	const [flightDetails, setFlightDetails] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -48,7 +49,7 @@ function FlightDetails() {
 	useEffect(() => {
 		async function fetchFlight() {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}`, {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}/${currencyCode}`, {
 					method: 'GET',
 					headers: {'Content-Type': 'application/json'}
 				});

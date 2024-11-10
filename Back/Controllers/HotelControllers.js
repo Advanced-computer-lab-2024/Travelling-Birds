@@ -1,7 +1,7 @@
 const hotel = require('../Services/amadeusService');
 
 exports.searchHotels = async (req, res) => {
-	const { cityCode, checkInDate, checkOutDate, adults } = req.body;
+	const { cityCode, checkInDate, checkOutDate, adults , currencyCode} = req.body;
 	try {
 		const hotelCitySearchResponse = await hotel.referenceData.locations.hotels.byCity.get({
 			cityCode: cityCode
@@ -15,7 +15,7 @@ exports.searchHotels = async (req, res) => {
 			checkInDate: checkInDate,
 			checkOutDate: checkOutDate,
 			adults: adults,
-			currencyCode: "EGP"
+			currencyCode: currencyCode || "EGP"
 		});
 		console.log(hotelIds[0]);
 		const rating = await hotel.eReputation.hotelSentiments.get({
@@ -32,14 +32,14 @@ exports.searchHotels = async (req, res) => {
 	}
 };
 exports.getHotelDetails = async (req, res) => {
-	const {hotelId , checkInDate, checkOutDate, adults} = req.params;
+	const {hotelId , checkInDate, checkOutDate, adults, currencyCode} = req.params;
 	try {
 		const hotelOffersResponse = await hotel.shopping.hotelOffersSearch.get({
 			hotelIds: hotelId,
 			checkInDate: checkInDate,
 			checkOutDate: checkOutDate,
 			adults: adults,
-			currencyCode: "EGP"
+			currencyCode: currencyCode || "EGP"
 		});
 		const rating = await hotel.eReputation.hotelSentiments.get({
 			hotelIds: hotelId

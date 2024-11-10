@@ -4,6 +4,7 @@ import { FaUser, FaEnvelope, FaPhone, FaCreditCard, FaHotel } from 'react-icons/
 
 function HotelDetails() {
 	const { hotelId, checkInDate, checkOutDate } = useParams();
+	const currencyCode = sessionStorage.getItem('currency') || 'EGP';
 	const [hotel, setHotel] = useState(null);
 	const [showBookingForm, setShowBookingForm] = useState(false);
 	const [travelerDetails, setTravelerDetails] = useState({
@@ -16,7 +17,7 @@ function HotelDetails() {
 
 	useEffect(() => {
 		async function fetchHotelDetails() {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/${hotelId}/${checkInDate}/${checkOutDate}`);
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/${hotelId}/${checkInDate}/${checkOutDate}/${currencyCode}`);
 			const data = await response.json();
 			setHotel(data[0]);
 		}

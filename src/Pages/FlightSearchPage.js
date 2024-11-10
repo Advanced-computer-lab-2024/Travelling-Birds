@@ -7,6 +7,7 @@ function FlightSearchPage() {
 	const [destination, setDestination] = useState("");
 	const [departureDate, setDepartureDate] = useState("");
 	const [flights, setFlights] = useState([]);
+	const currencyCode = sessionStorage.getItem('currency');
 	const navigate = useNavigate();
 
 	const fetchFlights = async () => {
@@ -17,7 +18,7 @@ function FlightSearchPage() {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({origin, destination, departureDate})
+				body: JSON.stringify({origin, destination, departureDate, currencyCode})
 			});
 			const flightsData = await res.json();
 			setFlights(extractFlightInfo(flightsData));
