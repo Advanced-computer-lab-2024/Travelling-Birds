@@ -4,38 +4,21 @@ import React, { useState, useEffect } from 'react'; // Import React and necessar
 import { toast } from 'react-toastify'; // Import toast and ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import Slider from "rc-slider";
+import ProductDisplay from "../Models/Displays/ProductsDisplay"
 
 import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 
 const ProductHomePage = () => {
-	const [isHovered, setIsHovered] = useState(false);
 	const [products, setProducts] = useState([]);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [maxPrice, setMaxPrice] = useState();
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-	const [selectedProduct, setSelectedProduct] = useState(null);
-	const [isSoldOut, setIsSoldOut] = useState(false);
-	const [newProduct, setNewProduct] = useState({
-		name: '',
-		description: '',
-		price: '',
-		availableQuantity: '',
-		ratings: [],
-		picture: {
-			data: '',
-			contentType: ''
-		},
-		reviews: [],
-		seller: sessionStorage.getItem('user id') || '60d21b4667d0d8992e610c87'
-	});
+
 
 	useEffect(() => {
-		fetchAllProducts();
-	}, []);
-	const fetchAllProducts = async () => {
-			setLoading(true);
+
+		const fetchAllProducts = async () => {
+			
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products`);
 				const data = await response.json();
@@ -70,9 +53,11 @@ const ProductHomePage = () => {
 				setLoading(false);
 			}
 		};
+		fetchAllProducts();
+	}, []);
+	
 
 		const filterProducts = async (maxPrice) => {
-		setLoading(true);
 		try {
 			const url = `${process.env.REACT_APP_BACKEND}/api/products/filter?maxPrice=${encodeURIComponent(maxPrice)}`;
 			const response = await fetch(url);
@@ -90,28 +75,8 @@ const ProductHomePage = () => {
 			setLoading(false);
 		}
 	};
-	// Helper function to render stars based on rating
-	const renderStars = (rating) => {
-		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
-			rating = 0;
-		}
-		const totalStars = 5;
-		const fullStars = Math.min(Math.floor(rating), totalStars);
-		const halfStars = rating % 1 !== 0 && fullStars < totalStars;
 
-		return (
-			<>
-				{[...Array(fullStars)].map((_, i) => (
-					<FaStar key={i} style={{ color: '#330577' }} />
-				))}
-				{halfStars && <FaStarHalfAlt style={{ color: '#330577' }} />}
-				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => (
-					<FaRegStar key={i + fullStars} style={{ color: '#330577' }} />
-				))}
-			</>
-		);
-	};
-
+	
 	const searchProducts = async (searchTerm) => {
 		setLoading(true);
 		try {
@@ -152,43 +117,13 @@ const ProductHomePage = () => {
 		}
 	};
 
-	const handleUpdateProduct = (product) => {
-		setSelectedProduct(product);
-		setIsUpdateModalOpen(true);
-	};
+
 	const handlesearchNFilter=(searchTerm, maxPrice)=>{
 		const search = searchProducts(searchTerm);
 		filterProducts(maxPrice);
 
 	}
 
-	const handlePurchaseProduct = (product) => {
-		try {
-			const productId = product._id;
-			if(product.availableQuantity === 1){
-				setIsSoldOut(true);
-			}
-			fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					availableQuantity: (product.availableQuantity) - 1,
-					soldQuantity: (product.soldQuantity) + 1,
-					userPurchased: sessionStorage.getItem('user'),
-					soldOut: isSoldOut
-				})
-			});
-			fetchAllProducts();
-		} catch (error) {
-				console.log(error);
-			}
-	}
-
-	const handleCreateButtonClick = () => {
-		setIsCreateModalOpen(true);
-	};
 
 	return (
 		<div>
@@ -249,14 +184,7 @@ const ProductHomePage = () => {
 						>
 							Search
 						</button>
-						{['seller', 'admin'].includes(sessionStorage.getItem('role')) && (
-							<button
-								onClick={handleCreateButtonClick}
-								className="w-full max-w-xs px-6 py-2 bg-green-500 text-white text-base rounded-lg hover:bg-green-600 transition duration-300"
-							>
-								Add Product
-							</button>
-						)}
+						
 					</div>
 				</div>
 			</div>
@@ -267,36 +195,10 @@ const ProductHomePage = () => {
 				products.length > 0 && (
 					<div className="w-full mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
 						{products.map((product) => (
-								<div key={product._id}
-									 className="p-6 bg-white rounded-lg shadow-lg relative border border-gray-200"
-									 style={{margin: '0 8px'}}>
-									{/* Sold Out Banner */}
-									{product.soldOut && (
-										<div
-											className="absolute top-0 left-0 w-full bg-red-500 text-white text-center py-1 font-bold rounded-t-lg">
-											Sold Out
-										</div>
-									)}
-									{/* Product Image */}
-									{product.picture && (
-										<img
-											src={product.picture}
-											alt={product.name}
-											className={`w-full h-40 object-cover mb-2 rounded-lg ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
-											onMouseEnter={() => setIsHovered(true)}
-											onMouseLeave={() => setIsHovered(false)}
-										/>
-									)}
-									{/* Product Details */}
-									<h3 className="font-bold text-lg">{product.name}</h3>
-									<p><strong>Price:</strong> ${product.price}</p>
-									<p><strong>Average Rating:</strong></p>
-									<div className="flex space-x-4">
-										{renderStars((product.rating))}
-										</div>
-									</div>
-									))}
-								</div>
+							   <ProductDisplay key={product._id} product={product} />
+						))}
+
+	    			</div>
 							)
 						)}
 

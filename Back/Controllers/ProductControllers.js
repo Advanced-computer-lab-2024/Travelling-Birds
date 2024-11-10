@@ -70,7 +70,7 @@ const updateProduct = async (req, res) => {
 				contentType: req.file.mimetype
 			};
 		}
-		const product = await Product.findByIdAndUpdate(req.params.id, {updatedFields}, {new: true});
+		const product = await Product.findByIdAndUpdate(req.params.id, updatedFields, {new: true});
 		if (!product)
 			return res.status(404).json({message: 'Product not found'});
 
