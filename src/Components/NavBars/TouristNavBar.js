@@ -15,6 +15,9 @@ const TouristNavBar = () => {
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const [badgeDropdownVisible, setBadgeDropdownVisible] = useState(false);
+	const [redeemPopupVisible, setRedeemPopupVisible] = useState(false);
+	const [redeemPoints, setRedeemPoints] = useState(0);
+	const [redeemEgp, setRedeemEgp] = useState(0);
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
 
@@ -102,6 +105,40 @@ const TouristNavBar = () => {
 	const toggleDropdown = () => {
 		setDropdownVisible(!dropdownVisible);
 	};
+	const handleBadgeClick = () => {
+		setRedeemPopupVisible(true);
+	};
+	const handleRedeemPointsChange = (increment) => {
+		const newPoints = Math.max(0, Math.min(user.redeemablePoints, redeemPoints + increment));
+		setRedeemPoints(newPoints);
+		setRedeemEgp(newPoints / 100); // 10,000 points = 100 EGP, so 1 point = 0.01 EGP
+	};
+
+	const handleRedeemEgpChange = (increment) => {
+		const newEgp = Math.max(0, Math.min(user.redeemablePoints / 100, redeemEgp + increment));
+		setRedeemEgp(newEgp);
+		setRedeemPoints(newEgp * 100); // Convert EGP back to points
+	};
+
+	const handleRedeem = async () => {
+		try {
+			const newRedeemablePoints = user.redeemablePoints - redeemPoints;
+			const newWalletAmount = user.wallet + redeemEgp;
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ redeemablePoints: newRedeemablePoints, wallet: newWalletAmount }),
+			});
+			setUser((prevUser) => ({ ...prevUser, redeemablePoints: newRedeemablePoints, wallet: newWalletAmount }));
+			setRedeemPopupVisible(false);
+			toast.success('Points redeemed successfully');
+		} catch (error) {
+			console.error('Error redeeming points:', error);
+			toast.error('Failed to redeem points');
+		}
+	};
 
 	return (
 		<NavBar>
@@ -181,7 +218,84 @@ const TouristNavBar = () => {
 							</dialog>
 						</div>
 					)}
-					<div className="relative flex items-center space-x-4" ref={dropdownRef}> {/* Adjusted spacing */}
+					{redeemPopupVisible && (
+						<div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-20">
+							<dialog open id="currency_modal" className="modal modal-bottom sm:modal-middle">
+								<div className="modal-box">
+									<div className="flex flex-col items-center mb-4">
+										{/* Bigger header */}
+										<h2 className="font-extrabold text-2xl mb-4" style={{color: '#330577'}}>
+											Redeem Your Points!
+										</h2>
+										{user.redeemablePoints >= 10000 ? (
+											<p className="self-start mb-2 text-lg font-semibold">
+												Your current Redeemable Points: {user.redeemablePoints}
+											</p>
+										) : (
+											<p className="mt-4 text-gray-500 text-center">
+												You need at least 10,000 points to redeem.<br/>
+												Current Redeemable Points: {user.redeemablePoints}
+											</p>
+										)}
+										{user.redeemablePoints >= 10000 ? (
+											<div className="flex justify-center items-center mt-4">
+												<div className="flex flex-col items-center">
+													{/* Increment/decrement strictly by 10,000 points */}
+													<button
+														onClick={() => handleRedeemPointsChange(
+															Math.min(10000, Math.floor(user.redeemablePoints / 10000) * 10000 - redeemPoints)
+														)}
+														className="mb-1 px-2 py-1 bg-gray-200 rounded">▲
+													</button>
+													<input type="text" value={redeemPoints} readOnly
+													       className="text-center w-20 border rounded py-1"/>
+													<p>Points</p>
+													<button
+														onClick={() => handleRedeemPointsChange(
+															-Math.min(10000, redeemPoints)
+														)}
+														className="mt-1 px-2 py-1 bg-gray-200 rounded">▼
+													</button>
+												</div>
+												<span className="mx-4">→</span>
+												<div className="flex flex-col items-center">
+													<button
+														onClick={() => handleRedeemEgpChange(
+															Math.min(100, (Math.floor(user.redeemablePoints / 100) * 100) - redeemEgp)
+														)}
+														className="mb-1 px-2 py-1 bg-gray-200 rounded">▲
+													</button>
+													<input type="text" value={redeemEgp} readOnly
+													       className="text-center w-20 border rounded py-1"/>
+													<p>EGP</p>
+													<button
+														onClick={() => handleRedeemEgpChange(
+															-Math.min(100, redeemEgp)
+														)}
+														className="mt-1 px-2 py-1 bg-gray-200 rounded">▼
+													</button>
+												</div>
+											</div>
+										) : null}
+										<div className="flex justify-center mt-6 space-x-4">
+											{user.redeemablePoints >= 10000 && (
+												<button onClick={handleRedeem}
+												        className="px-4 py-2 bg-[#330577] text-white rounded hover:bg-opacity-85">
+													Redeem
+												</button>
+											)}
+											<button onClick={() => setRedeemPopupVisible(false)}
+											        className="px-4 py-2 bg-[#330577] text-white rounded hover:bg-opacity-85">
+												Close
+											</button>
+										</div>
+									</div>
+								</div>
+							</dialog>
+						</div>
+					)}
+					<div className="relative flex items-center space-x-4"
+					     ref={dropdownRef}> {/* Adjusted spacing */}
 						<button onClick={toggleDropdown} className="flex items-center focus:outline-none">
 							<div
 								className="w-16 h-16 rounded-full border border-white transition duration-200 hover:bg-[#330577] flex items-center justify-center"> {/* Increased size */}
@@ -234,18 +348,21 @@ const TouristNavBar = () => {
 								<img
 									src={badgeImage}
 									alt="Loyalty Badge"
-									className="w-16 h-16 rounded-full cursor-pointer ml-4" /* Increased size and spacing */
+									className="w-16 h-16 rounded-full cursor-pointer ml-4"
+									onClick={handleBadgeClick}/* Increased size and spacing */
 									onMouseEnter={() => setBadgeDropdownVisible(true)}
 									onMouseLeave={() => setBadgeDropdownVisible(false)}
 								/>
 								{badgeDropdownVisible && (
-									<div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-30">
+									<div
+										className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-30 text-center">
 										<p className="font-semibold text-gray-800">Badge Level: {badgeLevel}</p>
 										{user.loyaltyPoints <= 500000 ? (
 											<p className="text-gray-600">{pointsToNextBadge}</p>
 										) : (
 											<p className="text-gray-600">You have acquired the highest level!</p>
 										)}
+										<p className="mt-2 text-gray-600">Click badge to redeem points</p>
 									</div>
 								)}
 							</div>

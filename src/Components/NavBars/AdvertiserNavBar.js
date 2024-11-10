@@ -186,6 +186,15 @@ const AdvertiserNavBar = () => {
 									</li>
 									<li>
 										<NavLink
+											to='/advertiser-activities'
+											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+											onClick={() => setDropdownVisible(false)}
+										>
+											My Activities
+										</NavLink>
+									</li>
+									<li>
+										<NavLink
 											to='/complaints'
 											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
 											onClick={() => setDropdownVisible(false)}

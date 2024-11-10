@@ -135,6 +135,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity added successfully');
+					window.location.reload();
 				} else {
 					toast.error('Failed to register activity');
 				}

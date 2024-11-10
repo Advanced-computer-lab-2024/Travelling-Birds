@@ -100,7 +100,7 @@ const AdvertiserActivities = () => {
 
 	return (
 		<div className="p-4">
-			<h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+			<h2 className="text-2xl font-bold mb-4">My Activities</h2>
 			<button className="btn btn-primary mb-4" onClick={() => setIsModalOpen(true)}>
 				Add Activity
 			</button>
@@ -142,11 +142,6 @@ const AdvertiserActivities = () => {
 										<i className="fas fa-edit"></i>
 										Edit
 									</button>
-									<button className="btn btn-warning btn-sm mr-2"
-									        onClick={() => handleFlagClick(activity)}>
-										<i className="fas fa-flag"></i>
-										Flag
-									</button>
 									<button className="btn btn-danger btn-sm mr-2"
 									        onClick={() => handleDeleteClick(activity)}>
 										<i className="fas fa-trash"></i>
@@ -161,7 +156,7 @@ const AdvertiserActivities = () => {
 			)}
 
 			{isModalOpen && (
-				<div className="modal modal-open">
+				<div className="modal modal-open ">
 					<div className="modal-box w-full max-w-[100rem]">
 						<ActivityForm activity={selectedActivity}/>
 						<div className="modal-action">

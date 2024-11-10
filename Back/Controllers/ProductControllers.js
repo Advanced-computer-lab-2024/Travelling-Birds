@@ -3,8 +3,16 @@ const UserModel = require("../Models/User");
 
 // Add product
 const addProduct = async (req, res) => {
-	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
+	const {name, description, price, availableQuantity, seller, ratings, reviews} = req.body;
+
 	try {
+		let picture= null;
+		if (req.file) {
+			picture = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
 		const newProduct = new Product({
 			name, description, price, availableQuantity, picture, seller, ratings, reviews
 		});
@@ -42,11 +50,25 @@ const getProduct = async (req, res) => {
 
 // Update product
 const updateProduct = async (req, res) => {
-	const {name, description, price, availableQuantity, picture, seller, ratings, reviews} = req.body;
+	const {name, description, price, availableQuantity, seller, ratings, reviews} = req.body;
 	try {
-		const product = await Product.findByIdAndUpdate(req.params.id, {
-			name, description, price, availableQuantity, picture, seller, ratings, reviews
-		}, {new: true});
+		const updatedFields = {
+			name,
+			description,
+			price,
+			availableQuantity,
+			seller,
+			ratings,
+			reviews
+		};
+		// Update image data if a new file is uploaded
+		if (req.file) {
+			updatedFields.picture = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
+		const product = await Product.findByIdAndUpdate(req.params.id, {updatedFields}, {new: true});
 		if (!product)
 			return res.status(404).json({message: 'Product not found'});
 
