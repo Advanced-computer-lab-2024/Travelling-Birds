@@ -51,6 +51,8 @@ const TourismGovernorNavBar = () => {
 			return;
 		}
 		fetchUserProfile().then(() => console.log('User profile fetched'));
+		window.addEventListener("userUpdated", fetchUserProfile);
+		return () =>{window.removeEventListener("userUpdated", fetchUserProfile)}
 	}, [id]);
 
 	useEffect(() => {

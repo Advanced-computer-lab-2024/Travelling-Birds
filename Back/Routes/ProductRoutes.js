@@ -11,7 +11,9 @@ const {
 	updateProduct,
 	deleteProduct,
 	getProductPicture,
-	getProductsAdmin
+	getProductsAdmin,
+	getComments,
+	addComment
 } = require('../Controllers/ProductControllers.js');
 
 // Add product
@@ -43,5 +45,12 @@ router.put('/:id', upload.single('picture'),updateProduct);
 
 // Delete product
 router.delete('/:id', deleteProduct);
+
+// Get comments of a specific product
+router.get('/:id/comments', getComments);
+
+
+// Create a comment for a specific product
+router.post('/:id/comments', addComment);
 
 module.exports = router;

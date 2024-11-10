@@ -18,15 +18,15 @@ const MyActivityDisplay = ({ activity }) => {
         }
     }
     const formatPriceRange = (price) => {
-		const currency = sessionStorage.getItem('currency') || 'USD';
-		if (currency === 'EGP') {
-			return `${(price * 49.3).toFixed(2)} EGP`;
-		} else if (currency === 'EUR') {
-			return `€${(price * 0.93).toFixed(2)}`;
-		} else {
-			return `$${price.toFixed(2)}`; // Default to USD
-		}
-	};
+        const currency = sessionStorage.getItem('currency') || 'EGP';
+        if (currency === 'USD') {
+            return `$${(price / 49.3).toFixed(2)}`;
+        } else if (currency === 'EUR') {
+            return `€${(price / 49.3 * 0.93).toFixed(2)}`;
+        } else {
+            return `${price.toFixed(2)} EGP`; // Default to EGP
+        }
+    };
 
     const renderRatingStars = (rating) => {
         const stars = [];

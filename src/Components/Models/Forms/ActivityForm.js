@@ -182,7 +182,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity updated successfully');
-					window.dispatchEvent(modelModificationEvent);
+					window.location.reload();
 					//navigate('/activities', { replace: true });
 				} else {
 					toast.error('Failed to update activity');

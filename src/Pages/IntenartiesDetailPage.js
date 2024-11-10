@@ -5,6 +5,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../Components/Locations/Location";
+import {userUpdateEvent} from "../utils/userUpdateEvent";
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ const ItineraryDetail = () => {
 	const [cvv, setCvv] = useState('');
 	const [transportation, setTransportation] = useState('');
 	const [walletAmount, setWalletAmount] = useState('');
+	const [transportations, setTransportations] = useState([]);
 	const itineraryId = useParams().id;
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
@@ -49,6 +51,15 @@ const ItineraryDetail = () => {
 				console.error('Error fetching activities', err);
 			}
 		};
+		const fetchComments = async () => {
+			try {
+				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`);
+				const data = await res.json();
+				setItinerary((prev) => ({ ...prev, comments: data }));
+			} catch (err) {
+				console.error('Error fetching comments', err);
+			}
+		}
 
 		const checkUserBooking = async () => {
 			if (userRole !== 'tourist') {
@@ -75,8 +86,20 @@ const ItineraryDetail = () => {
 			}
 		};
 
+		const fetchTransportations = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
+                const data = await response.json();
+                setTransportations(data);
+            } catch (error) {
+                console.error('Error fetching transportations:', error);
+            }
+        };
+        fetchTransportations();
+
 		fetchItinerary();
 		fetchActivities();
+		fetchComments();
 		if (userId) {
 			checkUserBooking();
 		}
@@ -166,6 +189,7 @@ const ItineraryDetail = () => {
 			});
 	
 			toast.success('Itinerary booked successfully');
+			window.dispatchEvent(userUpdateEvent);
 			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
@@ -190,6 +214,7 @@ const ItineraryDetail = () => {
 			}
 
 			toast.success('Booking canceled successfully');
+			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false);
 			setCanCancel(false);
 			setCanComment(false);
@@ -253,6 +278,8 @@ const ItineraryDetail = () => {
 			toast.error('Failed to add comment. Please try again.');
 		}
 	};
+
+
 
 	if (loading) return <p>Loading...</p>;
 
@@ -468,19 +495,23 @@ const ItineraryDetail = () => {
 									/>
 								</div>
 								<div className="mb-4">
-									<label className="block mb-2">Transportation</label>
-									<select
-										value={transportation}
-										onChange={(e) => setTransportation(e.target.value)}
-										className="w-full border rounded-lg p-2"
-									>
-										<option value="">Select</option>
-										<option value="uber">Uber</option>
-										<option value="swvl">Swvl</option>
-										<option value="indriver">Indriver</option>
-										<option value="my car">My Car</option>
-									</select>
-								</div>
+                                        <label className="block mb-2">Transportation</label>
+                                            <select
+                                                     value={transportation}
+                                                     onChange={(e) => setTransportation(e.target.value)}
+                                                     className="w-full border rounded-lg p-2"
+                                             >
+                                             <option value="">Select</option>
+                                             {/* Render dynamically fetched transportations */}
+                                             {transportations.map((transport) => (
+                                             <option key={transport._id} value={transport.name}>
+                                                    {transport.name}
+                                             </option>
+                                            ))}
+                                             {/* Ensure "My Car" is always an option */}
+                                            <option value="my car">My Car</option>
+                                         </select>
+                                 </div>
 								<div className="mb-4">
 									<label className="block mb-2">Wallet Amount</label>
 									<input

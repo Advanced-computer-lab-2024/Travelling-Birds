@@ -5,6 +5,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import LocationContact from "../Components/Locations/Location";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {userUpdateEvent} from "../utils/userUpdateEvent";
 
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
@@ -22,6 +23,8 @@ const ActivityDetail = () => {
     const [cvv, setCvv] = useState('');
     const [transportation, setTransportation] = useState('');
     const [walletAmount, setWalletAmount] = useState('');
+    const [transportations, setTransportations] = useState([]);
+    const currencyCode = sessionStorage.getItem('currency') || 'EGP';
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
@@ -74,7 +77,16 @@ const ActivityDetail = () => {
                 console.error('Error checking user bookings:', err);
             }
         };
-
+        const fetchTransportations = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
+                const data = await response.json();
+                setTransportations(data);
+            } catch (error) {
+                console.error('Error fetching transportations:', error);
+            }
+        };
+        fetchTransportations();
         fetchActivity();
         fetchComments();
         if (userId) {
@@ -170,6 +182,7 @@ const ActivityDetail = () => {
             }
     
             toast.success('Activity booked successfully');
+            window.dispatchEvent(userUpdateEvent);
             closeBookingModal();
         } catch (error) {
             console.error('Error booking activity:', error);
@@ -195,6 +208,7 @@ const ActivityDetail = () => {
             }
 
             toast.success('Booking canceled successfully');
+            window.dispatchEvent(userUpdateEvent);
             setHasBooked(false); // Update state to reflect cancellation
             setCanCancel(false);
             setCanComment(false);
@@ -289,15 +303,16 @@ const ActivityDetail = () => {
 
     // Helper function to format price range based on currency
     const formatPriceRange = (price) => {
-        const currency = sessionStorage.getItem('currency') || 'USD';
-        if (currency === 'EGP') {
-            return `${(price * 49.3).toFixed(2)} EGP`;
+        const currency = sessionStorage.getItem('currency') || 'EGP';
+        if (currency === 'USD') {
+            return `$${(price / 49.3).toFixed(2)} USD`;
         } else if (currency === 'EUR') {
-            return `€${(price * 0.93).toFixed(2)}`;
+            return `€${(price / 49.3 * 0.93).toFixed(2)} EUR`;
         } else {
-            return `$${price.toFixed(2)}`; // Default to USD
+            return `${price.toFixed(2)} EGP`; // Default to EGP
         }
     };
+ 
 
 
     if (loading) return <p>Loading...</p>;
@@ -421,19 +436,23 @@ const ActivityDetail = () => {
                                     />
                                 </div>
                                 <div className="mb-4">
-                                    <label className="block mb-2">Transportation</label>
-                                    <select
-                                        value={transportation}
-                                        onChange={(e) => setTransportation(e.target.value)}
-                                        className="w-full border rounded-lg p-2"
-                                    >
-                                        <option value="">Select</option>
-                                        <option value="uber">Uber</option>
-                                        <option value="swvl">Swvl</option>
-                                        <option value="indriver">Indriver</option>
-                                        <option value="my car">My Car</option>
-                                    </select>
-                                </div>
+                                        <label className="block mb-2">Transportation</label>
+                                            <select
+                                                     value={transportation}
+                                                     onChange={(e) => setTransportation(e.target.value)}
+                                                     className="w-full border rounded-lg p-2"
+                                             >
+                                             <option value="">Select</option>
+                                             {/* Render dynamically fetched transportations */}
+                                             {transportations.map((transport) => (
+                                             <option key={transport._id} value={transport.name}>
+                                                    {transport.name}
+                                             </option>
+                                            ))}
+                                             {/* Ensure "My Car" is always an option */}
+                                            <option value="my car">My Car</option>
+                                         </select>
+                                 </div>
                                 <div className="mb-4">
                                     <label className="block mb-2">Wallet Amount</label>
                                     <input
@@ -487,7 +506,7 @@ const ActivityDetail = () => {
                         {/* Details Section */}
                         <div className="bg-white p-4 rounded-lg shadow-md">
                             <h2 className="font-semibold text-lg text-[#330577]">Details</h2>
-                            <p className="text-gray-700 mt-2">Price range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)} - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
+                            <p className="text-gray-700 mt-2">Price range: {activity?.priceRange ? `${formatPriceRange(activity.priceRange.lwBound)}  - ${formatPriceRange(activity.priceRange.hiBound)}` : 'N/A'}</p>
                             <p className="text-gray-700">Category: {activity?.category}</p>
                             <p className="text-gray-700">Special discounts: {activity?.specialDiscounts}</p>
                             <p className="text-gray-700">Features: {activity?.features?.join(', ')}</p>

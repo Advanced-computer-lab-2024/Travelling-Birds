@@ -7,23 +7,21 @@ const {
 	getUser,
 	updateUser,
 	deleteUser,
-	// registerTourist,
-	// registerGeneric,
-	// readTourGuideProfile,
-	// updateTourGuideProfile,
-	// updateTouristProfile,
-	// updateSellerProfile,
-	// addAdmin,
-	// addTourismGovernor,
-	// deleteUserByAdmin,
 	login,
 	getUnapprovedUsers,
 	getApprovedUsers,
+	getUserDocuments,
 	getUsersToDelete,
 	getUsername,
 	addActivityBooking,
 	getActivityBookings,
-	requestDeletion
+	removeActivityBooking,
+	getItineraryBookings,
+	addItineraryBooking,
+	removeItineraryBooking,
+	addProductPurchase,
+	getProductPurchases,
+	removeProductPurchase
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -32,11 +30,15 @@ router.post('/',multipleFieldsUpload, addUser);
 
 // Get all users
 router.get('/', getUsers);
+
 // Get specific username
 router.get('/username', getUsername);
 
 // Get Unapproved Users
 router.get('/unapproved', getUnapprovedUsers);
+
+// Get User Documents
+router.get('/documents/:id', getUserDocuments);
 
 // Get Approved Users
 router.get('/approved', getApprovedUsers);
@@ -48,7 +50,7 @@ router.get('/toDelete', getUsersToDelete);
 router.get('/:id', getUser);
 
 // Update user
-router.put('/:id',upload.single('profilePicture'), updateUser);
+router.put('/:id', upload.single('profilePicture'), updateUser);
 
 // Delete user
 router.delete('/:id', deleteUser);
@@ -56,40 +58,32 @@ router.delete('/:id', deleteUser);
 // Add Activity Booking
 router.post('/activity-booking/:id', addActivityBooking);
 
-
 // Get Activity Bookings
 router.get('/activity-bookings/:id', getActivityBookings);
 
-// Request account deletion
-router.patch('/request-Deletion/:id', requestDeletion);
+// Remove Activity Booking
+router.delete('/activity-booking/:id', removeActivityBooking);
+
+// Get Itinerary Bookings
+router.get('/itinerary-bookings/:id', getItineraryBookings);
+
+// Add Itinerary Booking
+router.post('/itinerary-booking/:id', addItineraryBooking);
+
+// Remove Itinerary Booking
+router.delete('/itinerary-booking/:id', removeItineraryBooking);
+
+// Add Product Purchase
+router.post('/product-purchase/:id', addProductPurchase);
+
+// Get Product Purchases
+router.get('/product-purchases/:id', getProductPurchases);
+
+// Remove Product Purchase	
+router.delete('/product-purchase/:id', removeProductPurchase);
 
 
-// // Register tourist
-// router.post('/register-tourist',upload.single('profilePicture'), registerTourist);
-//
-// // Register generic user
-// router.post('/register-generic',upload.single('profilePicture'), registerGeneric);
-//
-// // Read tour guide profile
-// router.get('/tour-guide/:id', readTourGuideProfile);
-//
-// // Update tour guide profile
-// router.put('/tour-guide/:id',upload.single('profilePicture'), updateTourGuideProfile);
-//
-// // Update tourist profile
-// router.put('/tourist/:id',upload.single('profilePicture'), updateTouristProfile);
-//
-// //Update Seller Profile
-// router.put('/seller/:id',upload.single('profilePicture'), updateSellerProfile);
-//
-// // Add an Admin
-// router.post('/add-admin',upload.single('profilePicture'), addAdmin);
-//
-// // Add a Tourism Governor
-// router.post('/add-tourism-governor',upload.single('profilePicture'), addTourismGovernor);
-//
-// // Delete user by Admin
-// router.delete('/admin/delete-user/:username', deleteUserByAdmin);
+
 
 // Login
 router.post('/login', login);

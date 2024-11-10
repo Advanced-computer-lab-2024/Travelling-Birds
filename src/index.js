@@ -36,10 +36,13 @@ import LoginPage from "./Pages/LoginPage";
 import WaitPage from "./Pages/WaitPage";
 import AdvertiserActivities  from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
+import ProductDetails from "./Pages/ProductsDetailsPage";
 
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
 import BookingPage from "./Pages/MyBookingsPage";
+import MyPurchases from './Pages/MyPurchases';
+import TransportationManagement from './Pages/TransportationPage';
 
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
@@ -98,6 +101,7 @@ root.render(
 					<Route path='update-historical-place/:id' element={<HistoricalPlaceForm/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
+					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
 					<Route path="login" element={<LoginPage/>}/>
 					<Route path="register" element={<RegisterPage/>}/>
@@ -106,6 +110,8 @@ root.render(
 					<Route path="bookings" element={<BookingPage/>}/>
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
 					<Route path="seller-products" element={<SellerProductsPage/>}/>
+					<Route path="my-purchases" element={<MyPurchases/>}/>
+					<Route path="transportation" element={<TransportationManagement/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
