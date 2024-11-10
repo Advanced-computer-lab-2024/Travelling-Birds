@@ -18,16 +18,15 @@ const MyHistoricalPlaceDisplay = ({ historicalPlace }) => {
     }
 
     const renderTicketPrice = (price) => {
-        const currency = sessionStorage.getItem('currency') || 'USD';
-        if (currency === 'EGP') {
-          return `${(price * 49.3).toFixed(2)} EGP`;
+        const currency = sessionStorage.getItem('currency') || 'EGP';
+        if (currency === 'USD') {
+            return `$${(price / 49.3).toFixed(2)}`;
         } else if (currency === 'EUR') {
-          return `€${(price * 0.93).toFixed(2)}`;
+            return `€${(price / 49.3 * 0.93).toFixed(2)}`;
         } else {
-          // Default is USD
-          return `$${price.toFixed(2)}`;
+            return `${price.toFixed(2)} EGP`; // Default to EGP
         }
-      };
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-md relative flex md:flex-row flex-col md:space-x-4 p-4">

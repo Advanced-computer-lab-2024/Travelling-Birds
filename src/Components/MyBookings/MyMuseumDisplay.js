@@ -16,6 +16,8 @@ const MyMuseumDisplay = ({ museum }) => {
             console.error('Error converting image data to base64:', error);
         }
     }
+
+
     const renderTicketPrices = (ticketPrices) => {
         if (!ticketPrices || Object.keys(ticketPrices).length === 0) {
           return <p className="text-gray-700">No ticket prices available.</p>;
@@ -23,16 +25,13 @@ const MyMuseumDisplay = ({ museum }) => {
     
         const currency = sessionStorage.getItem('currency');
         const convertPrice = (price) => {
-          if (currency === 'EGP') {
-           
-            return `${(price * 49.30).toFixed(2)} EGP`;
-          } else if (currency === 'EUR') {
-         
-            return `€${(price * 0.93).toFixed(2)}`;
-          } else {
-           
-            return `$${price.toFixed(2)}`;
-          }
+            if (currency === 'USD') {
+                return `$${(price / 49.3).toFixed(2)}`;
+            } else if (currency === 'EUR') {
+                return `€${(price / 49.3 * 0.93).toFixed(2)}`;
+            } else {
+                return `${price.toFixed(2)} EGP`; // Default to EGP
+            }
         };
     
         return (

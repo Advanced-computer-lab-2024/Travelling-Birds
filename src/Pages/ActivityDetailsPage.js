@@ -299,15 +299,16 @@ const ActivityDetail = () => {
 
     // Helper function to format price range based on currency
     const formatPriceRange = (price) => {
-        const currency = sessionStorage.getItem('currency') || 'USD';
-        if (currency === 'EGP') {
-            return `${(price * 49.3).toFixed(2)} EGP`;
+        const currency = sessionStorage.getItem('currency') || 'EGP';
+        if (currency === 'USD') {
+            return `$${(price / 49.3).toFixed(2)}`;
         } else if (currency === 'EUR') {
-            return `€${(price * 0.93).toFixed(2)}`;
+            return `€${(price / 49.3 * 0.93).toFixed(2)}`;
         } else {
-            return `$${price.toFixed(2)}`; // Default to USD
+            return `${price.toFixed(2)} EGP`; // Default to EGP
         }
     };
+ 
 
 
     if (loading) return <p>Loading...</p>;
