@@ -55,16 +55,36 @@ const ProductHomePage = () => {
 		};
 		fetchAllProducts();
 	}, []);
+
+	 const convertProductImages = (products) => {
+		return products.map(product => {
+			let imageBase64 = null;
+			if (product.picture?.data && product.picture.contentType) {
+				try {
+					const byteArray = new Uint8Array(product.picture.data.data);
+					const binaryString = Array.from(byteArray).map(byte => String.fromCharCode(byte)).join('');
+					imageBase64 = `data:${product.picture.contentType};base64,${btoa(binaryString)}`;
+				} catch (error) {
+					console.error('Error converting image data to base64:', error);
+				}
+			}
+			return {
+				...product,
+				picture: imageBase64 // Assign the base64 image string to the picture property
+			};
+		});
+	};
 	
 
-		const filterProducts = async (maxPrice) => {
+	const filterProducts = async (maxPrice) => {
 		try {
 			const url = `${process.env.REACT_APP_BACKEND}/api/products/filter?maxPrice=${encodeURIComponent(maxPrice)}`;
 			const response = await fetch(url);
 			const data = await response.json();
-
+	
 			if (response.ok) {
-				setProducts(data);
+				const productsWithImages = convertProductImages(data); // Convert images
+				setProducts(productsWithImages);
 			} else {
 				toast.error(data.message || 'Failed to fetch filtered products');
 			}
@@ -76,16 +96,16 @@ const ProductHomePage = () => {
 		}
 	};
 
-	
 	const searchProducts = async (searchTerm) => {
 		setLoading(true);
 		try {
 			const url = `${process.env.REACT_APP_BACKEND}/api/products/search?name=${encodeURIComponent(searchTerm)}`;
 			const response = await fetch(url);
 			const data = await response.json();
-
+	
 			if (response.ok) {
-				setProducts(data);
+				const productsWithImages = convertProductImages(data); // Convert images
+				setProducts(productsWithImages);
 			} else {
 				toast.error(data.message || 'Failed to fetch search results');
 			}
@@ -97,15 +117,17 @@ const ProductHomePage = () => {
 		}
 	};
 
+
 	const sortProducts = async (sortOrder) => {
 		setLoading(true);
 		try {
 			const url = `${process.env.REACT_APP_BACKEND}/api/products/sort?productsOrder=${encodeURIComponent(sortOrder)}`;
 			const response = await fetch(url);
 			const data = await response.json();
-
+	
 			if (response.ok) {
-				setProducts(data);
+				const productsWithImages = convertProductImages(data); // Convert images
+				setProducts(productsWithImages);
 			} else {
 				toast.error(data.message || 'Failed to fetch sorted products');
 			}
@@ -117,14 +139,41 @@ const ProductHomePage = () => {
 		}
 	};
 
-
-	const handlesearchNFilter=(searchTerm, maxPrice)=>{
-		const search = searchProducts(searchTerm);
-		filterProducts(maxPrice);
-
-	}
-
-
+	const handleSearchFilterAndSort = async (searchTerm, maxPrice, sortOrder = 'asc') => {
+		setLoading(true);
+		try {
+			// Step 1: Search products by name
+			let url = `${process.env.REACT_APP_BACKEND}/api/products/search?name=${encodeURIComponent(searchTerm)}`;
+			let response = await fetch(url);
+			let data = await response.json();
+	
+			if (!response.ok) {
+				throw new Error(data.message || 'Failed to fetch search results');
+			}
+	
+			// Step 2: Filter the searched products by max price
+			if (maxPrice) {
+				data = data.filter(product => product.price <= maxPrice);
+			}
+	
+			// Step 3: Sort the filtered products
+			if (sortOrder === 'asc') {
+				data.sort((a, b) => a.rating - b.rating);
+			} else if (sortOrder === 'desc') {
+				data.sort((a, b) => b.rating - a.rating);
+			}
+	
+			// Convert images before setting state
+			const productsWithImages = convertProductImages(data);
+			setProducts(productsWithImages);
+		} catch (error) {
+			console.error('Error during search, filter, and sort:', error);
+			toast.error('An error occurred while processing your request');
+		} finally {
+			setLoading(false);
+		}
+	};
+	
 	return (
 		<div>
 			<div className="w-11/12 max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-lg">
@@ -132,36 +181,17 @@ const ProductHomePage = () => {
 				<div className="space-y-4">
 					{/* Search Input */}
 					<div>
-						<label className="block text-gray-800 text-base mb-2">Search Sort and Filter</label>
+						<label className="block text-gray-800 text-base mb-2">Search, Filter, and Sort</label>
 						<input
 							type="text"
 							placeholder="Search by Product Name"
 							className="w-full p-3 border bg-white text-black text-base rounded-lg focus:outline-none focus:ring-2"
-							style={{borderColor: '#330577'}}
+							style={{ borderColor: '#330577' }}
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
-
-					{/* Sort by Average Rating Label and Buttons */}
-					<div>
-					<label className="block text-gray-800 text-base mb-2">Sort by Average Rating</label>
-						<div className="flex space-x-2">
-							<button
-								onClick={() => sortProducts('asc')}
-								className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-300"
-							>
-								Ascending
-							</button>
-							<button
-								onClick={() => sortProducts('desc')}
-								className="px-4 py-2 bg-purple-800 text-white rounded-lg hover:bg-purple-900 transition duration-300"
-							>
-								Descending
-							</button>
-						</div>
-					</div>
-
+	
 					{/* Budget Slider */}
 					<div className="mt-4">
 						<label className="block text-gray-800 text-base mb-2">Budget</label>
@@ -170,38 +200,52 @@ const ProductHomePage = () => {
 							max={10000}
 							defaultValue={maxPrice}
 							onChange={setMaxPrice}
-							trackStyle={{backgroundColor: '#330577', height: '6px'}}
-							handleStyle={{borderColor: '#330577', width: '20px', height: '20px'}}
+							trackStyle={{ backgroundColor: '#330577', height: '6px' }}
+							handleStyle={{ borderColor: '#330577', width: '20px', height: '20px' }}
 						/>
-						<p className="text-base text-gray-700 mt-2">Selected budget: ${maxPrice}</p>
+						<p className="text-base text-gray-700 mt-2">Selected budget: EGP{maxPrice}</p>
 					</div>
-
-					{/* Bottom Buttons - Search and Add Product */}
+	
+					{/* Sort by Average Rating Buttons */}
+					<div className="flex space-x-2 mt-4">
+						<button
+							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice, 'asc')}
+							className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-300"
+						>
+							Ascending
+						</button>
+						<button
+							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice, 'desc')}
+							className="px-4 py-2 bg-purple-800 text-white rounded-lg hover:bg-purple-900 transition duration-300"
+						>
+							Descending
+						</button>
+					</div>
+	
+					{/* Consolidated Button */}
 					<div className="flex justify-center space-x-4 mt-6">
 						<button
-							onClick={() => handlesearchNFilter(searchTerm, maxPrice)}
+							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice)}
 							className="w-full max-w-xs px-6 py-2 bg-[#330577] text-white text-base rounded-lg transition hover:bg-[#4a078c] focus:outline-none focus:ring-2"
 						>
-							Search
+							Search, Filter, and Sort
 						</button>
-						
 					</div>
 				</div>
 			</div>
-			{/*fetch all*/}
+	
+			{/* Display Products */}
 			{loading ? (
 				<div className="text-center text-lg mt-8">Loading products...</div>
 			) : (
 				products.length > 0 && (
 					<div className="w-full mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
 						{products.map((product) => (
-							   <ProductDisplay key={product._id} product={product} />
+							<ProductDisplay key={product._id} product={product} />
 						))}
-
-	    			</div>
-							)
-						)}
-
+					</div>
+				)
+			)}
 		</div>
 	);
 

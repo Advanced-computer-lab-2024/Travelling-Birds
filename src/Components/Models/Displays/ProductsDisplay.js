@@ -14,7 +14,7 @@ const ProductsDisplay = ({product}) => {
     
 
     const formatPrice = (price) => {
-        const currency = sessionStorage.getItem('currency') || 'EGP';
+        const currency = sessionStorage.getItem('currency');
         if (currency === 'USD') {
             return `$${(price / 49.3).toFixed(2)}`;
         } else if (currency === 'EUR') {
@@ -67,7 +67,7 @@ const ProductsDisplay = ({product}) => {
             <div className="p-4">
                 <div className="text-sm mb-2">
                     
-                        <span key={product.price} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 mr-1 mt-1">Price: {product.price}</span>
+                        <span key={product.price} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 mr-1 mt-1">Price: {formatPrice(product.price)}</span>
                 </div>
                 <div className="flex items-center text-yellow-500">
                     {renderStars(product.rating)}
