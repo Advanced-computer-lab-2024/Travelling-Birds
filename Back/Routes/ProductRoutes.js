@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 const {
 	addProduct,
 	getAllProducts,
@@ -15,7 +15,7 @@ const {
 } = require('../Controllers/ProductControllers.js');
 
 // Add product
-router.post('/', addProduct);
+router.post('/',upload.single('picture'), addProduct);
 
 // Get all products
 router.get('/', getAllProducts);
@@ -39,7 +39,7 @@ router.get('/sort', sortProductsByRating);
 router.get('/:id', getProduct);
 
 // Update product
-router.put('/:id', updateProduct);
+router.put('/:id', upload.single('picture'),updateProduct);
 
 // Delete product
 router.delete('/:id', deleteProduct);

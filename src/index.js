@@ -34,6 +34,8 @@ import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
 import LoginPage from "./Pages/LoginPage";
 import WaitPage from "./Pages/WaitPage";
+import AdvertiserActivities  from "./Pages/AdvertiserActivities";
+import SellerProductsPage from "./Pages/SellerProducts";
 
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
@@ -102,7 +104,8 @@ root.render(
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>
 					<Route path="bookings" element={<BookingPage/>}/>
-
+					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
+					<Route path="seller-products" element={<SellerProductsPage/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
