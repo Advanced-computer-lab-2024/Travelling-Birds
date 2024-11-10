@@ -25,6 +25,9 @@ const ItineraryDetail = () => {
 	const [transportation, setTransportation] = useState('');
 	const [walletAmount, setWalletAmount] = useState('');
 	const [transportations, setTransportations] = useState([]);
+	const [tourGuide, setTourGuide] = useState(null);
+	const [commentTextTourGuide, setCommentTextTourGuide] = useState("");
+	const [commentRatingTourGuide, setCommentRatingTourGuide] = useState(0);
 	const itineraryId = useParams().id;
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
@@ -51,6 +54,7 @@ const ItineraryDetail = () => {
 				console.error('Error fetching activities', err);
 			}
 		};
+
 		const fetchComments = async () => {
 			try {
 				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`);
@@ -95,8 +99,26 @@ const ItineraryDetail = () => {
                 console.error('Error fetching transportations:', error);
             }
         };
+		const fetchTourGuide = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/tour-guide`);
+				const data = await response.json();
+				setTourGuide(data);
+			}   catch (error) {
+				console.error('Error fetching tour guide:', error);
+			}
+		};
+		const fetchTourGuideComments = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}/comments`);
+				const data = await response.json();
+				setTourGuide((prev) => ({ ...prev, comments: data }));
+			} catch (error) {
+				console.error('Error fetching tour guide comments:', error);
+			}
+		}
         fetchTransportations();
-
+		fetchTourGuide();
 		fetchItinerary();
 		fetchActivities();
 		fetchComments();
@@ -197,6 +219,7 @@ const ItineraryDetail = () => {
 		}
 	};
 
+
 	const handleCancelBooking = async () => {
 		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
 		if (!userConfirmed) {
@@ -278,6 +301,32 @@ const ItineraryDetail = () => {
 			toast.error('Failed to add comment. Please try again.');
 		}
 	};
+	const handleAddTourGuideComment = async () => {
+		const newComment = {
+			user: sessionStorage.getItem('user id'),
+			text: commentTextTourGuide,
+			stars: commentRatingTourGuide,
+			date: new Date().toISOString() // Ensure correct date format
+		};
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}/comments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(newComment)
+			});
+			if (!response.ok) {
+				throw new Error('Failed to add comment');
+			}
+			const updatedItinerary = await response.json();
+			setItinerary(updatedItinerary);
+			setCommentText("");
+			setCommentRating(0);
+			toast.success("Comment added successfully");
+		} catch (error) {
+			console.error('Error adding comment:', error);
+			toast.error('Failed to add comment. Please try again.');
+		}
+	}
 
 
 

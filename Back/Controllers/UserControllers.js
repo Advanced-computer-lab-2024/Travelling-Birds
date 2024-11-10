@@ -4,6 +4,9 @@ const Activity = require('../Models/Activity');
 const Itinerary = require('../Models/Itinerary');
 const Product = require('../Models/Product');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
+const ItineraryModel = require("../Models/Itinerary");
+const CommentModel = require("../Models/Comments");
+const UserModel = require("../Models/User");
 
 // Add user
 const addUser = async (req, res) => {
@@ -648,6 +651,44 @@ const removeProductPurchase = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+//add comment on a specific tour guide
+const addComment = async (req, res) => {
+	const {user, text, stars} = req.body;
+	try {
+		const tourGuide = await UserModel.findById(req.params.id);
+
+		const newComment = new CommentModel({user, text, stars, date: new Date()});
+		await newComment.save();
+		const totalRating = tourGuide.comments.length * tourGuide.rating + stars;
+		const updatedReviewsCount = tourGuide.reviewsCount + 1;
+		const newRating = (totalRating / updatedReviewsCount).toFixed(1);
+		const userWithComment = await UserModel.findByIdAndUpdate(
+			req.params.id,
+			{
+				$push: {comments: newComment._id},
+				$set: {rating: newRating}
+			},
+			{new: true}
+		).populate('comments');
+		res.status(201).json(userWithComment);
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+// get all comments for a specific tour guide
+const getComments = async (req, res) => {
+	try {
+		const tourGuide = await UserModel.findById(req.params.id);
+		if (!tourGuide) {
+			return res.status(404).json({message: 'Tour guide not found'});
+		}
+		const comments = await CommentModel.find({_id: {$in: tourGuide.comments}});
+		res.status(200).json(comments);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -668,5 +709,7 @@ module.exports = {
 	removeItineraryBooking,
 	addProductPurchase,
 	getProductPurchases,
-	removeProductPurchase
+	removeProductPurchase,
+	addComment,
+	getComments
 };
