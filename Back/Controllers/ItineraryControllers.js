@@ -352,7 +352,7 @@ const addComment = async (req, res) => {
 			return res.status(404).json({message: 'Itinerary not found'});
 		}
 		//check user completed itinerary before commenting
-		if (!((user2.itineraryBookings.includes(req.params.id)) && (itinerary.date < new Date()))) {
+		if (!((user2.itineraryBookings.includes(req.params.id)) && (itinerary.availableDates[0] < new Date()))) {
 			return res.status(400).json({message: 'User must complete the itinerary before commenting'});
 		}
 		const newComment = new CommentModel({user, text, stars, date: new Date()});

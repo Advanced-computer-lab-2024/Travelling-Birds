@@ -28,6 +28,7 @@ const user = new Schema({
 	termsFlag:  Boolean,
 	loyaltyPoints: Number,
 	redeemablePoints: Number,
+	badge: String,
 	requestToDelete: Boolean,
 	identityCard:{name: { type: String }, file: {data: Buffer, contentType: String}},
 	certificates: [{name: { type: String }, file: {data: Buffer, contentType: String}}],

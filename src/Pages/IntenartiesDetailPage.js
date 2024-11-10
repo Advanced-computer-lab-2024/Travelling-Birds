@@ -100,37 +100,71 @@ const ItineraryDetail = () => {
 			toast.error('Only tourists can book itineraries.');
 			return;
 		}
-
+	
 		if (!cardNumber || !expiryDate || !cvv || !transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
-
+	
+		// Parse wallet amount input to a number
+		const enteredAmount = parseFloat(walletAmount);
+	
+		if (enteredAmount <= 0) {
+			toast.error('Please enter a valid wallet amount.');
+			return;
+		}
+	
 		try {
+			// Fetch user to check wallet balance
+			const userRes = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+			if (!userRes.ok) {
+				throw new Error('Failed to fetch user details');
+			}
+	
+			const user = await userRes.json();
+	
+			// Check if user has enough in wallet
+			if (enteredAmount > user.wallet) {
+				toast.error('Not enough balance in wallet.');
+				return;
+			}
+	
+			// Check for existing bookings
 			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`);
 			if (!res.ok) {
 				throw new Error('Failed to fetch user bookings');
 			}
-
+	
 			const userBookings = await res.json();
 			const isAlreadyBooked = userBookings.some((booking) => booking._id === itineraryId);
-
+	
 			if (isAlreadyBooked) {
 				toast.info('Itinerary already booked');
 				closeBookingModal();
 				return;
 			}
-
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
+	
+			// Deduct wallet amount from user balance
+			const updatedWalletBalance = user.wallet - enteredAmount;
+	
+			// Make the booking request and update wallet balance
+			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId })
+				body: JSON.stringify({ itineraryId, walletAmount: enteredAmount })
 			});
-
-			if (!response.ok) {
+	
+			if (!bookingResponse.ok) {
 				throw new Error('Failed to book the itinerary');
 			}
-
+	
+			// Update user's wallet balance
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wallet: updatedWalletBalance })
+			});
+	
 			toast.success('Itinerary booked successfully');
 			closeBookingModal();
 		} catch (error) {
@@ -187,32 +221,38 @@ const ItineraryDetail = () => {
 	};
 
 	const handleAddComment = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user: sessionStorage.getItem('user id'),
-                    text: commentText,
-                    stars: commentRating
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to add comment');
-            }
-
-            const updatedItinerary = await response.json();
-            setItinerary(updatedItinerary);
-            setCommentText("");
-            setCommentRating(0);
-            toast.success("Comment added successfully");
-        } catch (error) {
-            console.error('Error adding comment:', error);
-            toast.error('Failed to add comment. Please try again.');
-        }
-    };
-
+		if (!commentText || commentRating === 0) {
+			toast.error('Please provide a comment and a rating.');
+			return;
+		}
+		const newComment = {
+			user: sessionStorage.getItem('user id'),
+			text: commentText,
+			stars: commentRating,
+			date: new Date().toISOString() // Ensure correct date format
+		};
+	
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(newComment)
+			});
+	
+			if (!response.ok) {
+				throw new Error('Failed to add comment');
+			}
+	
+			const updatedItinerary = await response.json();
+			setItinerary(updatedItinerary);
+			setCommentText("");
+			setCommentRating(0);
+			toast.success("Comment added successfully");
+		} catch (error) {
+			console.error('Error adding comment:', error);
+			toast.error('Failed to add comment. Please try again.');
+		}
+	};
 
 	if (loading) return <p>Loading...</p>;
 
@@ -340,9 +380,9 @@ const ItineraryDetail = () => {
 								<div key={index} className="border-b border-gray-200 pb-4 mb-4">
 									<p className="font-semibold text-gray-800">{comment.user}</p>
 									<p className="text-gray-600">{comment.text}</p>
-									<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
+									<p className="text-sm text-gray-400">{comment.date ? new Date(comment.date).toLocaleDateString() : 'Date not available'}</p>
 									<div className="flex items-center mt-2">
-										<span className="flex items-center text-2xl">{renderStars(comment.stars)}</span>
+										<span className="flex items-center text-2xl">{comment.stars ? renderStars(comment.stars) : renderStars(0)}</span>
 									</div>
 								</div>
 							))

@@ -374,37 +374,69 @@ const getUsersToDelete = async (req, res) => {
 	}
 }
 
-// add activity booking to user
-const addActivityBooking = async (req, res) => {
-	const userId = req.params.id;
-	const activityId = req.body.activityId;
-	try {
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({message: 'User not found'});
-		}
-		user.activityBookings.push(activityId);
-		await user.save();
-		res.status(200).json({message: 'Activity booking added successfully'});
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+// Function to set user badge based on loyalty points
+const setUserBadge = (user) => {
+    if (user.loyaltyPoints <= 100000) {
+        user.badge = 'level 1';
+    } else if (user.loyaltyPoints <= 500000) {
+        user.badge = 'level 2';
+    } else {
+        user.badge = 'level 3';
+    }
+};
 
-// get activity bookings of a user from database
+// Add activity booking to user
+const addActivityBooking = async (req, res) => {
+    const userId = req.params.id;
+    const activityId = req.body.activityId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        user.activityBookings.push(activityId);
+
+        // Adjust loyalty and redeemable points based on user badge
+        let pointsMultiplier = 0.5;
+        if (user.badge === 'level 2') {
+            pointsMultiplier = 1;
+        }
+        user.loyaltyPoints += activity.price * pointsMultiplier;
+        user.redeemablePoints += activity.price * pointsMultiplier;
+
+        // Update badge based on new loyalty points
+        setUserBadge(user);
+
+        await user.save();
+        res.status(200).json({ message: 'Activity booking added successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get activity bookings of a user from the database
 const getActivityBookings = async (req, res) => {
-	const userId = req.params.id;
-	try {
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({message: 'User not found'});
-		}
-		const activityBookings = await Activity.find({_id: {$in: user.activityBookings}});
-		res.status(200).json(activityBookings);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const activityBookings = await Activity.find({ _id: { $in: user.activityBookings } });
+        res.status(200).json(activityBookings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Remove activity booking from user
 const removeActivityBooking = async (req, res) => {
@@ -412,57 +444,98 @@ const removeActivityBooking = async (req, res) => {
     const activityId = req.body.activityId;
 
     try {
-        // Find the user by ID
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Check if the activity is already booked
         const index = user.activityBookings.indexOf(activityId);
         if (index === -1) {
             return res.status(400).json({ message: 'Activity not found in user bookings' });
         }
 
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
         // Remove the activity from user's bookings
         user.activityBookings.splice(index, 1);
-        await user.save();
 
+        // Adjust loyalty and redeemable points based on user badge
+        let pointsMultiplier = 0.5;
+        if (user.badge === 'level 2') {
+            pointsMultiplier = 1;
+        }
+        user.loyaltyPoints -= activity.price * pointsMultiplier;
+        user.redeemablePoints -= activity.price * pointsMultiplier;
+
+        // Ensure points do not go below zero
+        user.loyaltyPoints = Math.max(0, user.loyaltyPoints);
+        user.redeemablePoints = Math.max(0, user.redeemablePoints);
+
+        // Update badge based on new loyalty points
+        setUserBadge(user);
+
+        await user.save();
         res.status(200).json({ message: 'Activity booking removed successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-// add intinerary booking to user
+
+// Add itinerary booking to user
 const addItineraryBooking = async (req, res) => {
-	const userId = req.params.id;
-	const itineraryId = req.body.itineraryId;
-	try {
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({message: 'User not found'});
-		}
-		user.itineraryBookings.push(itineraryId);
-		await user.save();
-		res.status(200).json({message: 'Itinerary booking added successfully'});
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
-// get itinerary bookings of a user from database
+    const userId = req.params.id;
+    const itineraryId = req.body.itineraryId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const itinerary = await Itinerary.findById(itineraryId);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+
+        user.itineraryBookings.push(itineraryId);
+
+        // Adjust loyalty and redeemable points based on user badge
+        let pointsMultiplier = 0.5;
+        if (user.badge === 'level 2') {
+            pointsMultiplier = 1;
+        }
+        user.loyaltyPoints += itinerary.price * pointsMultiplier;
+        user.redeemablePoints += itinerary.price * pointsMultiplier;
+
+        // Update badge based on new loyalty points
+        setUserBadge(user);
+
+        await user.save();
+        res.status(200).json({ message: 'Itinerary booking added successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Get itinerary bookings of a user from the database
 const getItineraryBookings = async (req, res) => {
-	const userId = req.params.id;
-	try {
-		const user = await User.findById(userId);
-		if (!user) {
-			return res.status(404).json({message: 'User not found'});
-		}
-		const itineraryBookings = await Itinerary.find({_id: {$in: user.itineraryBookings}});
-		res.status(200).json(itineraryBookings);
-	} catch (error) {
-		res.status(500).json({error: error.message});
-	}
-}
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const itineraryBookings = await Itinerary.find({ _id: { $in: user.itineraryBookings } });
+        res.status(200).json(itineraryBookings);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 // Remove itinerary booking from user
 const removeItineraryBooking = async (req, res) => {
@@ -470,22 +543,40 @@ const removeItineraryBooking = async (req, res) => {
     const itineraryId = req.body.itineraryId;
 
     try {
-        // Find the user by ID
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Check if the itinerary is already booked
         const index = user.itineraryBookings.indexOf(itineraryId);
         if (index === -1) {
             return res.status(400).json({ message: 'Itinerary not found in user bookings' });
         }
 
+        const itinerary = await Itinerary.findById(itineraryId);
+        if (!itinerary) {
+            return res.status(404).json({ message: 'Itinerary not found' });
+        }
+
         // Remove the itinerary from user's bookings
         user.itineraryBookings.splice(index, 1);
-        await user.save();
 
+        // Adjust loyalty and redeemable points based on user badge
+        let pointsMultiplier = 0.5;
+        if (user.badge === 'level 2') {
+            pointsMultiplier = 1;
+        }
+        user.loyaltyPoints -= itinerary.price * pointsMultiplier;
+        user.redeemablePoints -= itinerary.price * pointsMultiplier;
+
+        // Ensure points do not go below zero
+        user.loyaltyPoints = Math.max(0, user.loyaltyPoints);
+        user.redeemablePoints = Math.max(0, user.redeemablePoints);
+
+        // Update badge based on new loyalty points
+        setUserBadge(user);
+
+        await user.save();
         res.status(200).json({ message: 'Itinerary booking removed successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });

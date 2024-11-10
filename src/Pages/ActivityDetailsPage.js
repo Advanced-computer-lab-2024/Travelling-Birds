@@ -108,37 +108,67 @@ const ActivityDetail = () => {
             toast.error('Only tourists can book activities.');
             return;
         }
-
+    
         if (!cardNumber || !expiryDate || !cvv || !transportation) {
             toast.error('Please complete all fields.');
             return;
         }
-
+    
+        // Parse the wallet input amount
+        const enteredWalletAmount = parseFloat(walletAmount);
+        if (enteredWalletAmount <= 0) {
+            toast.error('Please enter a valid wallet amount.');
+            return;
+        }
+    
         try {
+            // Fetch user data to get the wallet balance
+            const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+            if (!userResponse.ok) {
+                throw new Error('Failed to fetch user data');
+            }
+            const userData = await userResponse.json();
+            const userWalletBalance = userData.wallet;
+    
+            // Check if there is enough balance in the wallet
+            if (enteredWalletAmount > userWalletBalance) {
+                toast.error('Not enough in wallet.');
+                return;
+            }
+    
+            // Proceed with booking
             const userBookingsResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
             if (!userBookingsResponse.ok) {
                 throw new Error('Failed to fetch user bookings');
             }
-
+    
             const userBookings = await userBookingsResponse.json();
             const isAlreadyBooked = userBookings.some((booking) => booking._id === activityId);
-
+    
             if (isAlreadyBooked) {
                 toast.info('Activity already booked');
                 closeBookingModal();
                 return;
             }
-
+    
+            // Deduct wallet balance
+            const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+            await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wallet: updatedWalletBalance })
+            });
+    
             const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ activityId })
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to book the activity');
             }
-
+    
             toast.success('Activity booked successfully');
             closeBookingModal();
         } catch (error) {
