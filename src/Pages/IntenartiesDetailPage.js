@@ -122,6 +122,8 @@ const ItineraryDetail = () => {
 		fetchItinerary();
 		fetchActivities();
 		fetchComments();
+		fetchTourGuideComments();
+		fetchTourGuide();
 		if (userId) {
 			checkUserBooking();
 		}
@@ -411,7 +413,54 @@ const ItineraryDetail = () => {
 							</div>
 						</div>
 					</div>
-	
+					{tourGuide && (
+						<div className="bg-white p-6 rounded-lg shadow-lg mt-8">
+							<h2 className="text-2xl font-semibold text-[#330577] mb-4">Meet Your Tour Guide</h2>
+							<div className="flex items-center space-x-6">
+								{tourGuide.profilePicture && (
+									<img
+										src={`data:${tourGuide.profilePicture.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(tourGuide.profilePicture.data.data)))}`}
+										alt={`${tourGuide.firstName} ${tourGuide.lastName}`}
+										className="w-24 h-24 rounded-full object-cover"
+									/>
+								)}
+								<div>
+									<p className="text-lg font-semibold">{`${tourGuide.firstName} ${tourGuide.lastName}`}</p>
+									<p className="text-gray-600">Years of Experience: {tourGuide.yearsOfExperience}</p>
+									<div className="flex items-center mt-1">{renderStars(tourGuide.rating)}</div>
+								</div>
+							</div>
+
+							{/* Add Comment on Tour Guide */}
+							{hasBooked && canComment && (
+								<div className="mt-4">
+									<h3 className="font-semibold text-lg text-[#330577]">Leave a Comment for the Tour Guide</h3>
+									<textarea
+										value={commentTextTourGuide}
+										onChange={(e) => setCommentTextTourGuide(e.target.value)}
+										placeholder="Write your comment here..."
+										className="w-full border rounded-lg p-2 mt-2 mb-4"
+									/>
+									<div className="flex items-center mb-4">
+										<span className="mr-2">Rating:</span>
+										{[1, 2, 3, 4, 5].map(star => (
+											<FaStar
+												key={star}
+												className={`cursor-pointer ${commentRatingTourGuide >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+												onClick={() => setCommentRatingTourGuide(star)}
+											/>
+										))}
+									</div>
+									<button
+										onClick={handleAddTourGuideComment}
+										className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]"
+									>
+										Submit
+									</button>
+								</div>
+							)}
+						</div>
+					)}
 					{/* Image Gallery */}
 					{imageBase64 && (
 						<div className="mt-8">

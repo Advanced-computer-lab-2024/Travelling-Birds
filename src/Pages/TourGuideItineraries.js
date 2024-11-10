@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 import {ItineraryForm} from "../Components/Models/Forms";
+
 const TourGuideItineraries = () => {
 	const [itineraries, setItineraries] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -108,7 +109,6 @@ const TourGuideItineraries = () => {
 					<table className="table w-full">
 						<thead>
 						<tr>
-							{/*title description duration language price createdByName*/}
 							<th>Title</th>
 							<th className='w-[40%]'>Description</th>
 							<th>Language</th>
@@ -161,7 +161,7 @@ const TourGuideItineraries = () => {
 				<div className="modal modal-open">
 					<div className="modal-box w-full max-w-[100rem]">
 						<ItineraryForm itinerary={selectedItinerary} itineraries={itineraries}
-						              setItineraries={setItineraries}/>
+						               setItineraries={setItineraries}/>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

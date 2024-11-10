@@ -7,7 +7,9 @@ const {
 	deleteHistoricalPlace,
 	SearchForHistoricalPlace,
 	filterHistoricalPlaces,
-	getAllCreatedHistoricalPlaces
+	getAllCreatedHistoricalPlaces,
+	getHistoricalPlacesBrief,
+	getHistoricalPlaceBriefForUser
 } = require('../Controllers/HistoricalPlaceControllers');
 const {upload} = require('../Middleware/upload');
 
@@ -18,6 +20,12 @@ router.post('/', upload.single('image'), addHistoricalPlace);
 
 // Get all historical places
 router.get('/', getAllHistoricalPlaces);
+
+// Get all historical places with brief details
+router.get('/brief', getHistoricalPlacesBrief);
+
+// Get all historical places with brief details for a specific user
+router.get('/brief/:id', getHistoricalPlaceBriefForUser);
 
 // Search for historical places by name or tag
 router.get('/search', SearchForHistoricalPlace);
