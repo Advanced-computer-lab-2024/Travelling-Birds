@@ -19,12 +19,11 @@ const ManageActivities = () => {
 					activity.displayPrice = activity.price ? activity.price : `${activity.priceRange.lwBound} - ${activity.priceRange.hiBound}`;
 				});
 				setActivities(data);
-				setLoading(false);
 			} catch (error) {
 				console.error('Failed to fetch activities:', error);
 			}
 		};
-		fetchActivities();
+		fetchActivities().then(() => setLoading(false));
 	}, []);
 
 	const handleViewClick = (activity) => {
@@ -163,7 +162,7 @@ const ManageActivities = () => {
 			{isModalOpen && (
 				<div className="modal modal-open">
 					<div className="modal-box w-full max-w-[100rem]">
-						<ActivityForm activity={selectedActivity}/>
+						<ActivityForm activity={selectedActivity} activities={activities} setActivities={setActivities}/>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

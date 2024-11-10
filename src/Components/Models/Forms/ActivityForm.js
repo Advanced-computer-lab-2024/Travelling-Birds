@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import ReusableInput from "../../ReusableInput";
-import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
-import PropTypes, { string } from "prop-types";
-import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import {toast} from "react-toastify";
+import {useParams} from "react-router-dom";
+import PropTypes, {string} from "prop-types";
 
-const ActivityForm = ({ activity: initialActivity }) => {
-	const { id } = useParams();
+const ActivityForm = ({activity: initialActivity, activities, setActivities}) => {
+	const {id} = useParams();
 	const [activity, setActivity] = useState(initialActivity);
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
@@ -32,22 +31,6 @@ const ActivityForm = ({ activity: initialActivity }) => {
 	const [email, setEmail] = useState('');
 	const [image, setImage] = useState(null);
 
-	const deleteActivity = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
-			method: 'DELETE',
-		}).then((response) => response.json())
-			.then((data) => {
-				if (data?.message === 'activity deleted successfully') {
-					toast.success('Activity deleted successfully');
-					window.dispatchEvent(modelModificationEvent);
-				} else {
-					toast.error('Failed to delete activity');
-				}
-			}).catch((error) => {
-			console.log(error);
-		});
-	};
-
 	useEffect(() => {
 		if (!initialActivity && id) {
 			const fetchActivity = async () => {
@@ -66,6 +49,22 @@ const ActivityForm = ({ activity: initialActivity }) => {
 			setFormFields(initialActivity);
 		}
 	}, [initialActivity, id]);
+
+	const deleteActivity = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.message === 'activity deleted successfully') {
+					toast.success('Activity deleted successfully');
+					setActivities(activities.filter(a => a._id !== activity._id));
+				} else {
+					toast.error('Failed to delete activity');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	};
 
 	const setFormFields = (activityData) => {
 		if (activityData) {
@@ -135,7 +134,7 @@ const ActivityForm = ({ activity: initialActivity }) => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity added successfully');
-					window.location.reload();
+					setActivities([...activities, data]);
 				} else {
 					toast.error('Failed to register activity');
 				}
@@ -182,8 +181,8 @@ const ActivityForm = ({ activity: initialActivity }) => {
 			.then((data) => {
 				if (data?._id) {
 					toast.success('Activity updated successfully');
-					window.location.reload();
-					//navigate('/activities', { replace: true });
+					data.displayPrice = data.price ? data.price : `${data.priceRange.lwBound} - ${data.priceRange.hiBound}`;
+					setActivities(activities.map(a => a._id === activity._id ? data : a));
 				} else {
 					toast.error('Failed to update activity');
 				}
@@ -201,29 +200,36 @@ const ActivityForm = ({ activity: initialActivity }) => {
 				e.preventDefault();
 				!activity ? registerActivity() : updateActivity();
 			}}>
-				<ReusableInput type="text" name="Title" value={title} onChange={e => setTitle(e.target.value)} />
-				<ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-				<ReusableInput type="date" name="Date" value={date} onChange={e => setDate(e.target.value)} />
-				<ReusableInput type="text" name="Time" value={time} onChange={e => setTime(e.target.value)} />
-				<ReusableInput type="number" name="Latitude" value={lat} onChange={e => setLat(e.target.value)} />
-				<ReusableInput type="number" name="Longitude" value={lng} onChange={e => setLng(e.target.value)} />
-				<ReusableInput type="text" name="City" value={city} onChange={e => setCity(e.target.value)} />
-				<ReusableInput type="text" name="Country" value={country} onChange={e => setCountry(e.target.value)} />
-				<ReusableInput type="text" name="Address" value={address} onChange={e => setAddress(e.target.value)} />
-				<ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)} />
-				<ReusableInput type="number" name="Price" value={price} onChange={e => setPrice(e.target.value)} />
-				<ReusableInput type="number" name="Lower Bound Price" value={lwBound} onChange={e => setLwBound(e.target.value)} />
-				<ReusableInput type="number" name="Higher Bound Price" value={hiBound} onChange={e => setHiBound(e.target.value)} />
-				<ReusableInput type="text" name="Category" value={category} onChange={e => setCategory(e.target.value)} />
-				<ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
-				<ReusableInput type="text" name="Special Discounts" value={specialDiscounts} onChange={e => setSpecialDiscounts(e.target.value)} />
-				<ReusableInput type="number" name="Rating" value={rating} onChange={e => setRating(e.target.value)} />
-				<ReusableInput type="text" name="Features" value={features} onChange={e => setFeatures(e.target.value)} />
-				<ReusableInput type="text" name="Phone" value={phone} onChange={e => setPhone(e.target.value)} />
-				<ReusableInput type="text" name="Website" value={website} onChange={e => setWebsite(e.target.value)} />
-				<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} />
-				<ReusableInput type="checkbox" name="Booking Open" checked={bookingOpen} onChange={e => setBookingOpen(e.target.checked)} />
-				<ReusableInput type="file" name="Image" onChange={handleFileChange} />
+				<ReusableInput type="text" name="Title" value={title} onChange={e => setTitle(e.target.value)}/>
+				<ReusableInput type="text" name="Description" value={description}
+				               onChange={e => setDescription(e.target.value)}/>
+				<ReusableInput type="date" name="Date" value={date} onChange={e => setDate(e.target.value)}/>
+				<ReusableInput type="text" name="Time" value={time} onChange={e => setTime(e.target.value)}/>
+				<ReusableInput type="number" name="Latitude" value={lat} onChange={e => setLat(e.target.value)}/>
+				<ReusableInput type="number" name="Longitude" value={lng} onChange={e => setLng(e.target.value)}/>
+				<ReusableInput type="text" name="City" value={city} onChange={e => setCity(e.target.value)}/>
+				<ReusableInput type="text" name="Country" value={country} onChange={e => setCountry(e.target.value)}/>
+				<ReusableInput type="text" name="Address" value={address} onChange={e => setAddress(e.target.value)}/>
+				<ReusableInput type="text" name="Area" value={area} onChange={e => setArea(e.target.value)}/>
+				<ReusableInput type="number" name="Price" value={price} onChange={e => setPrice(e.target.value)}/>
+				<ReusableInput type="number" name="Lower Bound Price" value={lwBound}
+				               onChange={e => setLwBound(e.target.value)}/>
+				<ReusableInput type="number" name="Higher Bound Price" value={hiBound}
+				               onChange={e => setHiBound(e.target.value)}/>
+				<ReusableInput type="text" name="Category" value={category}
+				               onChange={e => setCategory(e.target.value)}/>
+				<ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)}/>
+				<ReusableInput type="text" name="Special Discounts" value={specialDiscounts}
+				               onChange={e => setSpecialDiscounts(e.target.value)}/>
+				<ReusableInput type="number" name="Rating" value={rating} onChange={e => setRating(e.target.value)}/>
+				<ReusableInput type="text" name="Features" value={features}
+				               onChange={e => setFeatures(e.target.value)}/>
+				<ReusableInput type="text" name="Phone" value={phone} onChange={e => setPhone(e.target.value)}/>
+				<ReusableInput type="text" name="Website" value={website} onChange={e => setWebsite(e.target.value)}/>
+				<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)}/>
+				<ReusableInput type="checkbox" name="Booking Open" checked={bookingOpen}
+				               onChange={e => setBookingOpen(e.target.checked)}/>
+				<ReusableInput type="file" name="Image" onChange={handleFileChange}/>
 				<div className="flex items-center mt-6">
 					<button type="submit" className="btn btn-primary w-40 mx-auto">
 						{activity ? 'Update' : 'Register'}

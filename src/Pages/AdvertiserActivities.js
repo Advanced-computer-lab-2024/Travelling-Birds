@@ -44,34 +44,6 @@ const AdvertiserActivities = () => {
 		fetchActivity().then(() => setIsModalOpen(true));
 	};
 
-	const handleFlagClick = (activity) => {
-		const flagActivity = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
-					method: 'PUT',
-					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({flaggedInappropriate: !activity.flaggedInappropriate})
-				});
-				if (response.ok) {
-					const updatedActivities = activities.map(a => {
-						if (a._id === activity._id) {
-							a.flaggedInappropriate = !activity.flaggedInappropriate;
-						}
-						return a;
-					});
-					setActivities(updatedActivities);
-					activity.flaggedInappropriate ? toast.success('Activity flagged successfully') : toast.success('Activity unflagged successfully');
-				} else {
-					toast.error('Failed to flag activity');
-				}
-			} catch (error) {
-				console.error('Failed to flag activity:', error);
-				toast.error('Failed to flag activity');
-			}
-		}
-		flagActivity().then(() => setIsModalOpen(false));
-	}
-
 	const handleDeleteClick = (activity) => {
 		if (window.confirm(`Are you sure you want to delete ${activity.title}?`)) {
 			const deleteActivity = async () => {
@@ -158,7 +130,7 @@ const AdvertiserActivities = () => {
 			{isModalOpen && (
 				<div className="modal modal-open ">
 					<div className="modal-box w-full max-w-[100rem]">
-						<ActivityForm activity={selectedActivity}/>
+						<ActivityForm activity={selectedActivity} activities={activities} setActivities={setActivities}/>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

@@ -14,7 +14,7 @@ const complaintRoutes = require('./Routes/ComplaintRoutes');
 const flightRoutes = require('./routes/FlightRoutes');
 const hotelRouter = require('./Routes/HotelRoutes');
 const TransportRoutes = require('./Routes/TransportationRoutes');
-const emailroutes = require('./Routes/EmailRoutes');
+const mailRoutes = require('./Routes/MailRoutes');
 const bodyParser = require('body-parser');
 
 require('dotenv').config();
@@ -34,7 +34,7 @@ app.use('/api/complaints', complaintRoutes);
 app.use('/api/flights', flightRoutes);
 app.use('/api/hotels', hotelRouter);
 app.use('/api/transports', TransportRoutes);
-app.use('/api/email', emailroutes);
+app.use('/api/mail', mailRoutes);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -48,5 +48,4 @@ mongoose.connect(process.env.MONGO_URI)
 	})
 	.catch((error) => {
 		console.log(error)
-	})
-
+	});
