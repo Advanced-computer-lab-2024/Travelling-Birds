@@ -41,6 +41,7 @@ import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
 import BookingPage from "./Pages/MyBookingsPage";
 import MyPurchases from './Pages/MyPurchases';
+import TransportationManagement from './Pages/TransportationPage';
 
 import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
@@ -108,6 +109,7 @@ root.render(
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
 					<Route path="seller-products" element={<SellerProductsPage/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
+					<Route path="transportation" element={<TransportationManagement/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>

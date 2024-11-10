@@ -96,6 +96,10 @@ const AdvertiserNavBar = () => {
 
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-4 mr-72">
+				    <NavLink to='/transportation'
+					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
+						Transportation
+					</NavLink>
 					<NavLink to='/products'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Discover
@@ -112,6 +116,8 @@ const AdvertiserNavBar = () => {
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Activities
 					</NavLink>
+				
+					
 				</div>
 
 				{/* Right: Profile picture and EGP button */}

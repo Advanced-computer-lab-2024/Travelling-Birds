@@ -23,6 +23,7 @@ const ItineraryDetail = () => {
 	const [cvv, setCvv] = useState('');
 	const [transportation, setTransportation] = useState('');
 	const [walletAmount, setWalletAmount] = useState('');
+	const [transportations, setTransportations] = useState([]);
 	const itineraryId = useParams().id;
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
@@ -74,6 +75,17 @@ const ItineraryDetail = () => {
 				console.error('Error checking user bookings:', err);
 			}
 		};
+
+		const fetchTransportations = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
+                const data = await response.json();
+                setTransportations(data);
+            } catch (error) {
+                console.error('Error fetching transportations:', error);
+            }
+        };
+        fetchTransportations();
 
 		fetchItinerary();
 		fetchActivities();
@@ -468,19 +480,23 @@ const ItineraryDetail = () => {
 									/>
 								</div>
 								<div className="mb-4">
-									<label className="block mb-2">Transportation</label>
-									<select
-										value={transportation}
-										onChange={(e) => setTransportation(e.target.value)}
-										className="w-full border rounded-lg p-2"
-									>
-										<option value="">Select</option>
-										<option value="uber">Uber</option>
-										<option value="swvl">Swvl</option>
-										<option value="indriver">Indriver</option>
-										<option value="my car">My Car</option>
-									</select>
-								</div>
+                                        <label className="block mb-2">Transportation</label>
+                                            <select
+                                                     value={transportation}
+                                                     onChange={(e) => setTransportation(e.target.value)}
+                                                     className="w-full border rounded-lg p-2"
+                                             >
+                                             <option value="">Select</option>
+                                             {/* Render dynamically fetched transportations */}
+                                             {transportations.map((transport) => (
+                                             <option key={transport._id} value={transport.name}>
+                                                    {transport.name}
+                                             </option>
+                                            ))}
+                                             {/* Ensure "My Car" is always an option */}
+                                            <option value="my car">My Car</option>
+                                         </select>
+                                 </div>
 								<div className="mb-4">
 									<label className="block mb-2">Wallet Amount</label>
 									<input
