@@ -15,6 +15,7 @@ const MyPurchases = () => {
         const fetchPurchases = async () => {
             try {
                 const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchases/${userId}`);
+                //const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/products`);
                 
                 if (!res.ok) {
                     throw new Error('Failed to fetch product purchases');
