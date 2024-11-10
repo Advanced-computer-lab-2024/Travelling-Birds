@@ -463,6 +463,34 @@ const getItineraryBookings = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
+// Remove itinerary booking from user
+const removeItineraryBooking = async (req, res) => {
+    const userId = req.params.id;
+    const itineraryId = req.body.itineraryId;
+
+    try {
+        // Find the user by ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if the itinerary is already booked
+        const index = user.itineraryBookings.indexOf(itineraryId);
+        if (index === -1) {
+            return res.status(400).json({ message: 'Itinerary not found in user bookings' });
+        }
+
+        // Remove the itinerary from user's bookings
+        user.itineraryBookings.splice(index, 1);
+        await user.save();
+
+        res.status(200).json({ message: 'Itinerary booking removed successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -479,5 +507,6 @@ module.exports = {
 	getActivityBookings,
 	addItineraryBooking,
 	getItineraryBookings,
-	removeActivityBooking
+	removeActivityBooking,
+	removeItineraryBooking
 };

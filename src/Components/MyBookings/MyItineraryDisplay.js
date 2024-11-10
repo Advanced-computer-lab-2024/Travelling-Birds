@@ -56,7 +56,7 @@ const MyItineraryDisplay = ({ itinerary }) => {
                         className={`w-full h-full object-cover rounded-t-xl transition-transform duration-300 ${isHovered ? 'brightness-75 cursor-pointer' : ''}`}
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
-                        onClick={() => navigate(`/update-itinerary/${itinerary._id}`)}
+                        onClick={() => navigate(`/itineraries/${itinerary._id}`)}
                     />
                     <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black to-transparent text-white rounded-b-xl">
                         <h3 className="text-2xl font-bold">{`By ${userName}`}</h3>

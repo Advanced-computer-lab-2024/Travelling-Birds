@@ -7,10 +7,13 @@ const ItinerariesPage = () => {
     const [itineraries, setItineraries] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const userRole = sessionStorage.getItem('role');
+    const userId = sessionStorage.getItem('user id');
 
     useEffect(() => {
         const fetchItineraries = async () => {
-            const apiUrl = `${process.env.REACT_APP_BACKEND}/api/itineraries`;
+            if (userRole === 'tourist') {
+            const apiUrl = `${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`;
             try {
                 const res = await fetch(apiUrl);
                 const itineraries = await res.json();
@@ -21,6 +24,7 @@ const ItinerariesPage = () => {
             } finally {
                 setLoading(false);
             }
+        }
         };
         fetchItineraries().then(r => r);
         window.addEventListener('modelModified', fetchItineraries);

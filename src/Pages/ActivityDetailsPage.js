@@ -324,7 +324,11 @@ const ActivityDetail = () => {
                                                 onClick={(e) => e.target.select()}
                                             />
                                             <button
-                                                onClick={() => navigator.clipboard.writeText(`http://localhost:3000/activities/${activityId}`)}
+                                                onClick={() => navigator.clipboard.writeText(`http://localhost:3000/activities/${activityId}`)
+                                                    .then(() => toast.success('Link copied to clipboard'))
+                                                    .catch(() => toast.error('Failed to copy link to clipboard'))
+                                                    
+                                                }
                                                 className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
                                             >
                                                 Copy

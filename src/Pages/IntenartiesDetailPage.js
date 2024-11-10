@@ -17,6 +17,12 @@ const ItineraryDetail = () => {
 	const [hasBooked, setHasBooked] = useState(false);
 	const [canCancel, setCanCancel] = useState(false);
 	const [canComment, setCanComment] = useState(false);
+	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+	const [cardNumber, setCardNumber] = useState('');
+	const [expiryDate, setExpiryDate] = useState('');
+	const [cvv, setCvv] = useState('');
+	const [transportation, setTransportation] = useState('');
+	const [walletAmount, setWalletAmount] = useState('');
 	const itineraryId = useParams().id;
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
@@ -58,7 +64,7 @@ const ItineraryDetail = () => {
 
 				if (booking) {
 					setHasBooked(true);
-					const itineraryDate = new Date(booking.date);
+					const itineraryDate = new Date(booking.availableDates[0]);
 					const currentDate = new Date();
 					const hoursDifference = (itineraryDate - currentDate) / (1000 * 60 * 60);
 					setCanCancel(hoursDifference >= 48);
@@ -76,15 +82,30 @@ const ItineraryDetail = () => {
 		}
 	}, [itineraryId, userId, userRole]);
 
-	const imageBase64 = itinerary?.image?.data
-		? `data:${itinerary.image.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(itinerary.image.data.data)))}`
-		: '';
+	const openBookingModal = () => {
+		setIsBookingModalOpen(true);
+	};
 
-	const handleBookItinerary = async () => {
+	const closeBookingModal = () => {
+		setIsBookingModalOpen(false);
+		setCardNumber('');
+		setExpiryDate('');
+		setCvv('');
+		setTransportation('');
+		setWalletAmount('');
+	};
+
+	const handleCompleteBooking = async () => {
 		if (userRole !== 'tourist') {
 			toast.error('Only tourists can book itineraries.');
 			return;
 		}
+
+		if (!cardNumber || !expiryDate || !cvv || !transportation) {
+			toast.error('Please complete all fields.');
+			return;
+		}
+
 		try {
 			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`);
 			if (!res.ok) {
@@ -96,6 +117,7 @@ const ItineraryDetail = () => {
 
 			if (isAlreadyBooked) {
 				toast.info('Itinerary already booked');
+				closeBookingModal();
 				return;
 			}
 
@@ -110,38 +132,42 @@ const ItineraryDetail = () => {
 			}
 
 			toast.success('Itinerary booked successfully');
+			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
 			toast.error('Failed to book the itinerary. Please try again.');
 		}
 	};
 
-	const handleAddComment = async () => {
+	const handleCancelBooking = async () => {
+		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
+		if (!userConfirmed) {
+			return;
+		}
 		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
-				method: 'POST',
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
+				method: 'DELETE',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					user: sessionStorage.getItem('user id'),
-					text: commentText,
-					stars: commentRating
-				})
+				body: JSON.stringify({ itineraryId })
 			});
 
 			if (!response.ok) {
-				throw new Error('Failed to add comment');
+				throw new Error('Failed to cancel the booking');
 			}
 
-			const updatedItinerary = await response.json();
-			setItinerary(updatedItinerary);
-			setCommentText("");
-			setCommentRating(0);
-			toast.success("Comment added successfully");
+			toast.success('Booking canceled successfully');
+			setHasBooked(false);
+			setCanCancel(false);
+			setCanComment(false);
 		} catch (error) {
-			console.error('Error adding comment:', error);
-			toast.error('Failed to add comment. Please try again.');
+			console.error('Error canceling booking:', error);
+			toast.error('Failed to cancel the booking. Please try again.');
 		}
 	};
+
+	const imageBase64 = itinerary?.image?.data
+		? `data:${itinerary.image.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(itinerary.image.data.data)))}`
+		: '';
 
 	const renderStars = (rating) => {
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
@@ -151,7 +177,6 @@ const ItineraryDetail = () => {
 		const fullStars = Math.min(Math.floor(rating), totalStars);
 		const halfStars = rating % 1 !== 0 && fullStars < totalStars;
 
-
 		return (
 			<>
 				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500" />)}
@@ -160,6 +185,34 @@ const ItineraryDetail = () => {
 			</>
 		);
 	};
+
+	const handleAddComment = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: sessionStorage.getItem('user id'),
+                    text: commentText,
+                    stars: commentRating
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add comment');
+            }
+
+            const updatedItinerary = await response.json();
+            setItinerary(updatedItinerary);
+            setCommentText("");
+            setCommentRating(0);
+            toast.success("Comment added successfully");
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            toast.error('Failed to add comment. Please try again.');
+        }
+    };
+
 
 	if (loading) return <p>Loading...</p>;
 
@@ -184,7 +237,7 @@ const ItineraryDetail = () => {
 						</div>
 						<div className="flex flex-col items-center space-y-4">
 							<button
-								onClick={handleBookItinerary}
+								onClick={() => setIsBookingModalOpen(true)}
 								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 							>
 								Book Itinerary
@@ -212,7 +265,10 @@ const ItineraryDetail = () => {
 												onClick={(e) => e.target.select()}
 											/>
 											<button
-												onClick={() => navigator.clipboard.writeText(`http://localhost:3000/itineraries/${itineraryId}`)}
+												onClick={() => navigator.clipboard.writeText(`http://localhost:3000/itineraries/${itineraryId}`)
+													.then(() => toast.success('Link copied to clipboard'))
+													.catch(() => toast.error('Failed to copy link to clipboard'))
+												}
 												className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c]"
 											>
 												Copy
@@ -239,13 +295,14 @@ const ItineraryDetail = () => {
 							</div>
 						</div>
 					</div>
-
+	
 					{/* Image Gallery */}
 					{imageBase64 && (
 						<div className="mt-8">
 							<img src={imageBase64} alt="Itinerary" className="w-full h-96 object-cover rounded-lg shadow-md" />
 						</div>
 					)}
+					
 					{/* Activities Timeline */}
 					{activities.length > 0 && (
 						<div className="mt-8">
@@ -274,6 +331,7 @@ const ItineraryDetail = () => {
 							</div>
 						</div>
 					)}
+					
 					{/* Comments Section */}
 					<div className="bg-white p-4 rounded-lg shadow-md mt-8">
 						<h2 className="font-semibold text-lg text-[#330577]">Comments</h2>
@@ -291,7 +349,7 @@ const ItineraryDetail = () => {
 						) : (
 							<p className="text-gray-500">No comments yet.</p>
 						)}
-
+	
 						{/* Add Comment Form */}
 						{userRole === 'tourist' && hasBooked && canComment && (
 							<div className="mt-4">
@@ -321,15 +379,92 @@ const ItineraryDetail = () => {
 							</div>
 						)}
 					</div>
-
+	
 					{/* Cancel Booking Button */}
 					{userRole === 'tourist' && hasBooked && canCancel && (
 						<div className="mt-8">
 							<button
-								className="bg-red-600 text-white px-6 py-3 rounded-lg shadow hover:bg-red-700 flex items-center justify-center w-full"
+								onClick={handleCancelBooking}
+								className="bg-[#330577] text-white px-6 py-3 rounded-lg shadow hover:bg-red-700 flex items-center justify-center w-full"
 							>
 								Cancel Booking
 							</button>
+						</div>
+					)}
+	
+					{/* Booking Modal */}
+					{isBookingModalOpen && (
+						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+							<div className="bg-white p-6 rounded-lg shadow-lg w-96">
+								<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+								<div className="mb-4">
+									<label className="block mb-2">Card Number</label>
+									<input
+										type="text"
+										value={cardNumber}
+										onChange={(e) => setCardNumber(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="1234 5678 9012 3456"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Expiry Date</label>
+									<input
+										type="text"
+										value={expiryDate}
+										onChange={(e) => setExpiryDate(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="MM/YY"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">CVV</label>
+									<input
+										type="text"
+										value={cvv}
+										onChange={(e) => setCvv(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="123"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Transportation</label>
+									<select
+										value={transportation}
+										onChange={(e) => setTransportation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+									>
+										<option value="">Select</option>
+										<option value="uber">Uber</option>
+										<option value="swvl">Swvl</option>
+										<option value="indriver">Indriver</option>
+										<option value="my car">My Car</option>
+									</select>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Wallet Amount</label>
+									<input
+										type="text"
+										value={walletAmount}
+										onChange={(e) => setWalletAmount(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter amount"
+									/>
+								</div>
+								<button
+									onClick={handleCompleteBooking}
+									className={`w-full bg-[#330577] text-white p-2 rounded-lg ${!cardNumber || !expiryDate || !cvv || !transportation ? 'opacity-85 cursor-not-allowed' : 'hover:bg-[#472393]'}`}
+									disabled={!cardNumber || !expiryDate || !cvv || !transportation}
+								>
+									Book
+								</button>
+								<button
+									onClick={closeBookingModal}
+									className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+								>
+									Cancel
+								</button>
+							</div>
 						</div>
 					)}
 				</div>
