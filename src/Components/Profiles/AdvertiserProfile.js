@@ -20,23 +20,31 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 	const navigate = useNavigate();
 
 	const updateAdvertiser = () => {
+		const updatedData = {
+			firstName,
+			lastName,
+			email,
+			username,
+			website,
+			hotline,
+			companyProfile,
+		};
+
+		// Include password only if it has been changed
+		if (password) {
+			updatedData.password = password;
+		}
+
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				firstName,
-				lastName,
-				email,
-				username,
-				website,
-				hotline,
-				companyProfile,
-			}),
+			body: JSON.stringify(updatedData),
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
 					toast.success('User updated successfully');
+					setIsEditing(false);
 				} else {
 					toast.error('Failed to update user');
 				}
@@ -49,24 +57,23 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 	const requestAccountDeletion = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				requestToDelete: true,
-			})
-		}).then((response) => response.json())
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ requestToDelete: true }),
+		})
+			.then((response) => response.json())
 			.then((data) => {
 				if (data?.requestToDelete === true) {
 					toast.success('Account deletion requested successfully');
 				} else {
 					toast.error('Failed to request account deletion');
 				}
-			}).catch((error) => {
-			console.log(error);
-			toast.error('An error occurred while requesting account deletion');
-		});
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('An error occurred while requesting account deletion');
+			});
 	};
+
 	const approveAdvertiser = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
@@ -113,7 +120,7 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing} />
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing} />
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true} />
 						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="text" name="Website" value={website} onChange={e => setWebsite(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="text" name="Hotline" value={hotline} onChange={e => setHotline(e.target.value)} disabled={!isEditing} />
@@ -136,8 +143,7 @@ const AdvertiserProfile = ({ user, displayOnly }) => {
 						</button>
 					)}
 
-					<button type="button" onClick={() => { if (window.confirm('Are you sure you wish to delete this profile?'))requestAccountDeletion();
-					}}
+					<button type="button" onClick={() => { if (window.confirm('Are you sure you wish to delete this profile?')) requestAccountDeletion(); }}
 					        className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300">
 						Request Deletion
 					</button>

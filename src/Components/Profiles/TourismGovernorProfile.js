@@ -18,17 +18,29 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 
 	const updateTourismGovernor = async () => {
 		try {
+			// Create an object to store only the necessary update data
+			const updateData = { firstName, lastName, email, username };
+
+			// Only add password to updateData if it has been provided (not empty)
+			if (password) {
+				updateData.password = password;
+			}
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ firstName, lastName, email, username }),
+				body: JSON.stringify(updateData),
 			});
 			const data = await response.json();
 
 			if (data?._id) {
 				toast.success("Profile updated successfully");
+
+				// Clear the password field after a successful update
+				setPassword('');
+
 				setIsEditing(false);
 				setShowProfileDetails(false);
 				navigate('/profile', { replace: true });
@@ -87,7 +99,7 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true}/>
 						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
 					</div>
 

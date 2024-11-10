@@ -17,20 +17,29 @@ const AdminProfile = ({ user, displayOnly }) => {
 	const navigate = useNavigate();
 
 	const updateAdmin = () => {
+		// Create the data object to send in the PUT request
+		const updatedData = {
+			firstName,
+			lastName,
+			email,
+			username,
+		};
+
+		// Include password only if it's not empty
+		if (password) {
+			updatedData.password = password;
+		}
+
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				firstName,
-				lastName,
-				email,
-				username,
-			}),
+			body: JSON.stringify(updatedData),
 		}).then(response => response.json())
 			.then(data => {
 				if (data?._id) {
 					toast.success('User updated successfully');
 					setIsEditing(false);
+					setPassword(''); // Clear password field after update
 				} else {
 					toast.error('Failed to update user');
 				}
@@ -81,7 +90,7 @@ const AdminProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing} />
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing} />
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true} />
 						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing} />
 					</div>
 

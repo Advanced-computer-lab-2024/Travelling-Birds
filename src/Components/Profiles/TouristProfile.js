@@ -19,25 +19,34 @@ const TouristProfile = ({ user, displayOnly }) => {
 
 	const updateTourist = async () => {
 		try {
+			// Prepare data to send, excluding empty password
+			const updatedData = {
+				firstName,
+				lastName,
+				email,
+				username,
+				mobileNumber,
+				nationality,
+				dob,
+				job,
+				wallet
+			};
+
+			// Only include password if it has been entered
+			if (password) {
+				updatedData.password = password;
+			}
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					firstName,
-					lastName,
-					email,
-					username,
-					password,
-					mobileNumber,
-					nationality,
-					dob,
-					job,
-					wallet
-				})
+				body: JSON.stringify(updatedData),
 			});
+
 			const data = await response.json();
 
 			if (data?._id) {
+				// Update local state with the new data
 				setFirstName(data.firstName);
 				setLastName(data.lastName);
 				setEmail(data.email);
@@ -50,6 +59,7 @@ const TouristProfile = ({ user, displayOnly }) => {
 
 				toast.success("Profile updated successfully");
 				setIsEditing(false);
+				setPassword(''); // Clear password field after update
 				setShowProfileDetails(false);
 			} else {
 				toast.error("Failed to update profile");
@@ -59,26 +69,25 @@ const TouristProfile = ({ user, displayOnly }) => {
 			console.log(error);
 		}
 	};
+
 	const requestAccountDeletion = () => {
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				requestToDelete: true,
-			})
-		}).then((response) => response.json())
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ requestToDelete: true }),
+		})
+			.then((response) => response.json())
 			.then((data) => {
 				if (data?.requestToDelete === true) {
 					toast.success('Account deletion requested successfully');
 				} else {
 					toast.error('Failed to request account deletion');
 				}
-			}).catch((error) => {
-			console.log(error);
-			toast.error('An error occurred while requesting account deletion');
-		});
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('An error occurred while requesting account deletion');
+			});
 	};
 
 	useEffect(() => {
@@ -110,7 +119,7 @@ const TouristProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true}/>
 						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Mobile Number" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Nationality" value={nationality} onChange={e => setNationality(e.target.value)} disabled={!isEditing}/>
