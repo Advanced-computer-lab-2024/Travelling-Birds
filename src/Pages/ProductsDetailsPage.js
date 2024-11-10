@@ -5,13 +5,12 @@ import { FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt } from "re
 import { AiOutlineHeart } from "react-icons/ai";
 
 const ProductsDetailsPage = () => {
-	const {productId } = useParams();
+	const productId = useParams().id;
 	const [product, setProduct] = useState("");
 	const [purchased, setPurchased] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const userId = sessionStorage.getItem('userId');
 	const [commentText, setCommentText] = useState('');
-	const [comments, setComments] = useState([]);
 	const [commentRating, setCommentRating] = useState(0);
 	const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
 	const [cardNumber, setCardNumber] = useState('');
@@ -22,7 +21,9 @@ const ProductsDetailsPage = () => {
 	useEffect(() => {
 		const fetchProduct = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/products/${productId}`;
+			
 			try {
+				console.log('API URL:', apiUrl);
 				const res = await fetch(apiUrl);
 				const product = await res.json();
 				setProduct(product);
@@ -39,7 +40,6 @@ const ProductsDetailsPage = () => {
 			try {
 				const res = await fetch(apiUrl);
 				const comments = await res.json();
-				setComments(comments);
 				setProduct((prev) => ({ ...prev, comments }));
 			} catch (err) {
 				console.log('Error fetching comments', err);
