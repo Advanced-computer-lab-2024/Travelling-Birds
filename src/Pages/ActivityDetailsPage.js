@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
+    const [showAllComments, setShowAllComments] = useState(false);
+    const [visibleCommentsCount, setVisibleCommentsCount] = useState(3);
     const [activity, setActivity] = useState(null);
     const [commentText, setCommentText] = useState("");
     const [commentRating, setCommentRating] = useState(0);
@@ -514,25 +516,33 @@ const ActivityDetail = () => {
                     </div>
 
                     {/* Comments Section */}
-                    <div className="mt-8 bg-white shadow-md rounded-lg p-6">
-                        <h2 className="font-semibold text-lg mb-4 text-[#330577]">All Reviews</h2>
-                        {activity?.comments?.length ? (
-                            activity.comments.map((comment, index) => (
-                                <div key={index} className="border-b border-gray-200 pb-4 mb-4">
-                                    <p className="font-semibold text-gray-800">{comment.user}</p>
-                                    <p className="text-gray-600">{comment.text}</p>
-                                    <p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
-                                    <div className="flex items-center mt-2">
-                                        <span className="flex items-center text-2xl">
-                                            {renderStars(comment.stars)}
-                                        </span>
+                        <div className="mt-8 bg-white shadow-md rounded-lg p-6">
+                            <h2 className="font-semibold text-lg mb-4 text-[#330577]">All Reviews</h2>
+                            {activity?.comments?.length ? (
+                                activity.comments.slice(0, visibleCommentsCount).map((comment, index) => (
+                                    <div key={index} className="border-b border-gray-200 pb-4 mb-4">
+                                        <p className="font-semibold text-gray-800">{comment.user}</p>
+                                        <p className="text-gray-600">{comment.text}</p>
+                                        <p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
+                                        <div className="flex items-center mt-2">
+                                            <span className="flex items-center text-2xl">
+                                                {renderStars(comment.stars)}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500">No reviews yet.</p>
-                        )}
-                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">No reviews yet.</p>
+                            )}
+                            {activity?.comments?.length > visibleCommentsCount && (
+                                <button
+                                    onClick={() => setVisibleCommentsCount(visibleCommentsCount + 3)}
+                                    className="mt-4 px-4 py-2 bg-transparent text-black border border-gray-300 rounded-lg hover:bg-black hover:text-white transition"
+                                >
+                                    Show More Comments
+                                </button>
+                            )}
+                        </div>
 
                     {/* Add Comment Form */}
                     {userRole === 'tourist' && hasBooked && canComment && (

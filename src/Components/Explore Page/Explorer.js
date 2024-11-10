@@ -154,7 +154,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                     trackStyle={{ backgroundColor: '#330577', height: '6px' }}
                                     handleStyle={{ borderColor: '#330577', width: '20px', height: '20px' }}
                                 />
-                                <p className="text-base text-gray-700 mt-2">Selected budget: ${activityBudget}</p>
+                                <p className="text-base text-gray-700 mt-2">Selected budget: EGP{activityBudget}</p>
                             </div>
                             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-5">
                                 <input
@@ -240,7 +240,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                     trackStyle={{ backgroundColor: '#330577', height: '6px' }}
                                     handleStyle={{ borderColor: '#330577', width: '20px', height: '20px' }}
                                 />
-                                <p className="text-base text-gray-700 mt-2">Selected budget: ${itineraryBudget}</p>
+                                <p className="text-base text-gray-700 mt-2">Selected budget: EGP{itineraryBudget}</p>
                             </div>
                             <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-5">
                                 <input

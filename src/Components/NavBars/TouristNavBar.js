@@ -11,7 +11,7 @@ import Logo from "../../Assets/Logo2.png";
 const TouristNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
 	const [user, setUser] = useState({});
-	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
+	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'EGP');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
 	const [badgeDropdownVisible, setBadgeDropdownVisible] = useState(false);
@@ -155,9 +155,9 @@ const TouristNavBar = () => {
 				{/* Center: Navigation buttons */}
 				<div className="flex-grow flex justify-center space-x-8 mr-80">
 
-					<NavLink to='/itineraries'
+					<NavLink to='/products'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Review
+						Products
 					</NavLink>
 					<NavLink to='/more'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
