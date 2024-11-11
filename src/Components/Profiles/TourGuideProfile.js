@@ -11,6 +11,7 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 	const [email, setEmail] = useState(user.email || '');
 	const [username, setUsername] = useState(user.username || '');
 	const [password, setPassword] = useState('');
+	const [mobileNumber, setMobileNumber] = useState(user.mobileNumber || '');
 	const [yearsOfExperience, setYearsOfExperience] = useState(user.yearsOfExperience || 0);
 	const [previousWork, setPreviousWork] = useState(user.previousWork || '');
 	const [isEditing, setIsEditing] = useState(false);
@@ -19,15 +20,30 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 
 	const updateTourGuide = async () => {
 		try {
+			// Only include password in updateData if it's not empty
+			const updateData = {
+				firstName,
+				lastName,
+				email,
+				username,
+				mobileNumber,
+				yearsOfExperience,
+				previousWork,
+			};
+			if (password) {
+				updateData.password = password;
+			}
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ firstName, lastName, email, username, yearsOfExperience, previousWork }),
+				body: JSON.stringify(updateData),
 			});
 			const data = await response.json();
 
 			if (data?._id) {
 				toast.success("Profile updated successfully");
+				setPassword('');  // Clear the password field after update
 				setIsEditing(false);
 				setShowProfileDetails(false);
 			} else {
@@ -35,25 +51,6 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 			}
 		} catch (error) {
 			toast.error("Failed to update profile");
-			console.log(error);
-		}
-	};
-
-	const deleteTourGuide = async () => {
-		try {
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-				method: 'DELETE',
-			});
-			const data = await response.json();
-
-			if (data?.message === 'User deleted successfully') {
-				toast.success('User deleted successfully');
-				navigate('/');
-			} else {
-				toast.error('Failed to delete user');
-			}
-		} catch (error) {
-			toast.error("Failed to delete user");
 			console.log(error);
 		}
 	};
@@ -85,6 +82,7 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 		setLastName(user.lastName);
 		setEmail(user.email);
 		setUsername(user.username);
+		setMobileNumber(user.mobileNumber);
 		setYearsOfExperience(user.yearsOfExperience);
 		setPreviousWork(user.previousWork);
 	}, [user]);
@@ -106,8 +104,9 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true}/>
 						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Mobile Number" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="number" name="Years of Experience" value={yearsOfExperience} onChange={e => setYearsOfExperience(e.target.value)} disabled={!isEditing}/>
 						<ReusableInput type="text" name="Previous Work" value={previousWork} onChange={e => setPreviousWork(e.target.value)} disabled={!isEditing}/>
 					</div>
@@ -156,6 +155,7 @@ TourGuideProfile.propTypes = {
 		lastName: PropTypes.string.isRequired,
 		email: PropTypes.string.isRequired,
 		username: PropTypes.string.isRequired,
+		mobileNumber: PropTypes.string,
 		yearsOfExperience: PropTypes.number,
 		previousWork: PropTypes.string,
 		_id: PropTypes.string.isRequired,

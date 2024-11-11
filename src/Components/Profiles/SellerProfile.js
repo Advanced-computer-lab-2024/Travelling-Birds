@@ -18,19 +18,19 @@ const SellerProfile = ({ user, displayOnly }) => {
 	const navigate = useNavigate();
 
 	const updateSeller = () => {
+		// Preparing the data object to send in the update request
+		const updateData = { firstName, lastName, email, username, description };
+		// Include password only if it has been modified
+		if (password) updateData.password = password;
+
 		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				firstName,
-				lastName,
-				email,
-				username,
-				description,
-			})
-		}).then((response) => response.json())
+			body: JSON.stringify(updateData)
+		})
+			.then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
 					toast.success('User updated successfully');
@@ -39,31 +39,11 @@ const SellerProfile = ({ user, displayOnly }) => {
 				} else {
 					toast.error('Failed to update user');
 				}
-			}).catch((error) => {
-			console.log(error);
-		});
-	}
-
-	const deleteSeller = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-			method: 'DELETE',
-		}).then((response) => response.json())
-			.then((data) => {
-				if (data?.message === 'User deleted successfully') {
-					window.dispatchEvent(userDeletionEvent);
-					if (!displayOnly) {
-						sessionStorage.removeItem('user id');
-						sessionStorage.removeItem('role');
-						window.dispatchEvent(sessionStorageEvent);
-						navigate('/', { replace: true });
-					}
-					toast.success('User deleted successfully');
-				} else {
-					toast.error('Failed to delete user');
-				}
-			}).catch((error) => {
-			console.log(error);
-		});
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('An error occurred while updating the user');
+			});
 	}
 
 	const requestAccountDeletion = () => {
@@ -72,20 +52,20 @@ const SellerProfile = ({ user, displayOnly }) => {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				requestToDelete: true,
-			})
-		}).then((response) => response.json())
+			body: JSON.stringify({ requestToDelete: true })
+		})
+			.then((response) => response.json())
 			.then((data) => {
 				if (data?.requestToDelete === true) {
 					toast.success('Account deletion requested successfully');
 				} else {
 					toast.error('Failed to request account deletion');
 				}
-			}).catch((error) => {
-			console.log(error);
-			toast.error('An error occurred while requesting account deletion');
-		});
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('An error occurred while requesting account deletion');
+			});
 	};
 
 	const approveSeller = () => {
@@ -94,20 +74,21 @@ const SellerProfile = ({ user, displayOnly }) => {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({
-				isApproved: true,
-			})
-		}).then((response) => response.json())
+			body: JSON.stringify({ isApproved: true })
+		})
+			.then((response) => response.json())
 			.then((data) => {
 				if (data?._id) {
 					toast.success('User approved successfully');
 				} else {
 					toast.error('Failed to approve user');
 				}
-			}).catch((error) => {
-			console.log(error);
-		});
-	}
+			})
+			.catch((error) => {
+				console.log(error);
+				toast.error('An error occurred while approving the user');
+			});
+	};
 
 	useEffect(() => {
 		setFirstName(user.firstName);
@@ -134,8 +115,8 @@ const SellerProfile = ({ user, displayOnly }) => {
 						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing} />
 						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing} />
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={!isEditing} />
-						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing} />
+						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true} />
+						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing} placeholder="Leave blank to keep current password" />
 						<ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} disabled={!isEditing} />
 					</div>
 
@@ -173,19 +154,19 @@ const SellerProfile = ({ user, displayOnly }) => {
 					<button
 						type="button"
 						onClick={() => {
-							if (window.confirm('Are you sure you wish to delete this item?')) {
+							if (window.confirm('Are you sure you wish to delete this account?')) {
 								requestAccountDeletion();
 							}
 						}}
 						className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300"
 					>
-						Delete
+						Request Deletion
 					</button>
 				</form>
 			)}
 		</div>
 	);
-}
+};
 
 SellerProfile.propTypes = {
 	user: PropTypes.shape({

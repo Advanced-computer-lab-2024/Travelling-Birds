@@ -65,7 +65,7 @@ const AdminNavBar = () => {
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/Musuems'>
+					<Link to='/admin/museums'>
 						<i className="fa-solid fa-landmark fa-fw"></i>
 						{/**/}
 						Museums

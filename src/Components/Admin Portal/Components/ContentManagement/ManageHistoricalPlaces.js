@@ -78,7 +78,7 @@ const ManageHistoricalPlaces = () => {
 					<table className="table w-full">
 						<thead>
 						<tr>
-							<th>Title</th>
+							<th>Name</th>
 							<th>Description</th>
 							<th>Location</th>
 							<th>Tags</th>
@@ -93,7 +93,7 @@ const ManageHistoricalPlaces = () => {
 								<td>{historicalPlace.description}</td>
 								<td>{historicalPlace.location.city}, {historicalPlace.location.country}</td>
 								<td>{historicalPlace.tags.join(', ')}</td>
-								<td>{historicalPlace.createdBy}</td>
+								<td>{historicalPlace.createdByName}</td>
 								<td>
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewClick(historicalPlace)}>

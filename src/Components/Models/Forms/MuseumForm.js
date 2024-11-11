@@ -1,215 +1,173 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import ReusableInput from "../../ReusableInput";
-import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
-import { modelModificationEvent } from "../../../utils/modelModificationEvent";
+import {toast} from "react-toastify";
 
-const MuseumForm = () => {
-    const { id } = useParams(); 
-    const [loading, setLoading] = useState(true);
-    const [museum, setMuseum] = useState(null);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [location, setLocation] = useState({ city: '', country: '', lat: '', lng: '', address: '', area: '' });
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
-    const [ticketPrices, setTicketPrices] = useState('');
-    const [tags, setTags] = useState('');
-    const [activities, setActivities] = useState(''); // New state for activities
-    const [image, setImage] = useState(null);
-    const navigate = useNavigate();
+const MuseumForm = ({museum: initialMuseum, museums, setMuseums}) => {
+	const [loading, setLoading] = useState(true);
+	const [museum, setMuseum] = useState(initialMuseum);
+	const [name, setName] = useState(initialMuseum?.name || '');
+	const [description, setDescription] = useState(initialMuseum?.description || '');
+	const [location, setLocation] = useState(initialMuseum?.location || {
+		city: '',
+		country: '',
+		lat: '',
+		lng: '',
+		address: '',
+		area: ''
+	});
+	const [startTime, setStartTime] = useState(initialMuseum?.openingHours?.startTime ? new Date(initialMuseum.openingHours.startTime).toISOString().slice(11, 16) : '');
+	const [endTime, setEndTime] = useState(initialMuseum?.openingHours?.endTime ? new Date(initialMuseum.openingHours.endTime).toISOString().slice(11, 16) : '');
+	const [ticketPrices, setTicketPrices] = useState(initialMuseum?.ticketPrices ? Object.entries(initialMuseum.ticketPrices).map(([key, value]) => `${key}: ${value}`).join(', ') : '');
+	const [tags, setTags] = useState(initialMuseum?.tags?.join(',') || '');
+	const [activities, setActivities] = useState(initialMuseum?.activities ? Object.values(initialMuseum.activities).map(activity => activity._id).join(',') : '');
+	const [image, setImage] = useState(null);
 
-    const deleteMuseum = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${museum._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.msg === 'Museum deleted successfully') {
-                    toast.success('Museum deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                    navigate('/places');
-                } else {
-                    toast.error('Failed to delete museum');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
+	const deleteMuseum = () => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${museum._id}`, {
+			method: 'DELETE',
+		}).then((response) => response.json())
+			.then((data) => {
+				if (data?.msg === 'Museum deleted successfully') {
+					toast.success('Museum deleted successfully');
+					setMuseums(museums.filter(m => m._id !== museum._id));
+				} else {
+					toast.error('Failed to delete museum');
+				}
+			}).catch((error) => {
+			console.log(error);
+		});
+	};
 
-    useEffect(() => {
-        const fetchMuseum = async () => {
-            if (id) {
-                try {
-                    const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${id}`);
-                    const data = await res.json();
-                    setMuseum(data);
-                    populateFormFields(data);
-                } catch (error) {
-                    console.error('Error fetching museum:', error);
-                    toast.error('Failed to load museum data');
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                setLoading(false);
-            }
-        };
-        fetchMuseum();
-    }, [id]);
+	const handleFileChange = (e) => {
+		setImage(e.target.files[0]);
+	};
 
-    const populateFormFields = (museumData) => {
-        if (museumData) {
-            setName(museumData.name || '');
-            setDescription(museumData.description || '');
-            setLocation({
-                city: museumData.location?.city || '',
-                country: museumData.location?.country || '',
-                lat: museumData.location?.lat || '',
-                lng: museumData.location?.lng || '',
-                address: museumData.location?.address || '',
-                area: museumData.location?.area || ''
-            });
-            setStartTime(museumData.openingHours?.startTime ? new Date(museumData.openingHours.startTime).toISOString().slice(11, 16) : '');
-            setEndTime(museumData.openingHours?.endTime ? new Date(museumData.openingHours.endTime).toISOString().slice(11, 16) : '');
-            setTicketPrices(museumData.ticketPrices ? Object.entries(museumData.ticketPrices).map(([key, value]) => `${key}: ${value}`).join(', ') : '');
-            setTags(museumData.tags?.join(',') || '');
-            setActivities(museumData.activities?.join(',') || ''); // Populate activities if available
-        }
-    };
+	const handleLocationChange = (field, value) => {
+		setLocation(prevLocation => ({...prevLocation, [field]: value}));
+	};
 
-    const handleFileChange = (e) => {
-        setImage(e.target.files[0]);
-    };
+	const createFormData = () => {
+		const formData = new FormData();
+		formData.append('name', name);
+		formData.append('description', description);
+		formData.append('location[city]', location.city);
+		formData.append('location[country]', location.country);
+		formData.append('location[lat]', location.lat);
+		formData.append('location[lng]', location.lng);
+		formData.append('location[address]', location.address);
+		formData.append('location[area]', location.area);
+		const openingHoursObject = {
+			startTime: `${startTime}:00`,
+			endTime: `${endTime}:00`
+		};
+		formData.append('openingHours', JSON.stringify(openingHoursObject));
+		formData.append('tags', tags.split(',').map(tag => tag.trim()));
+		formData.append('activities', activities.split(',').map(id => id.trim())); // Add activities to form data
+		formData.append('createdBy', sessionStorage.getItem('user id'));
 
-    const handleLocationChange = (field, value) => {
-        setLocation(prevLocation => ({ ...prevLocation, [field]: value }));
-    };
+		try {
+			const ticketPricesObject = ticketPrices.split(',').reduce((acc, price) => {
+				const [key, value] = price.split(':').map(item => item.trim());
+				acc[key] = value === 'null' ? null : parseFloat(value);
+				return acc;
+			}, {});
+			formData.append('ticketPrices', JSON.stringify(ticketPricesObject));
+		} catch (error) {
+			console.error('Error processing ticketPrices:', error);
+			toast.error('Failed to process ticket prices');
+			return null;
+		}
 
-    const createFormData = () => {
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('description', description);
-        formData.append('location[city]', location.city);
-        formData.append('location[country]', location.country);
-        formData.append('location[lat]', location.lat);
-        formData.append('location[lng]', location.lng);
-        formData.append('location[address]', location.address);
-        formData.append('location[area]', location.area);
-        const openingHoursObject = {
-            startTime: `${startTime}:00`,
-            endTime: `${endTime}:00`
-        };
-        formData.append('openingHours', JSON.stringify(openingHoursObject));
-        formData.append('tags', tags.split(',').map(tag => tag.trim()));
-        formData.append('activities', activities.split(',').map(id => id.trim())); // Add activities to form data
-        formData.append('createdBy', sessionStorage.getItem('user id'));
+		if (image) {
+			formData.append('image', image);
+		}
 
-        try {
-            const ticketPricesObject = ticketPrices.split(',').reduce((acc, price) => {
-                const [key, value] = price.split(':').map(item => item.trim());
-                acc[key] = value === 'null' ? null : parseFloat(value);
-                return acc;
-            }, {});
-            formData.append('ticketPrices', JSON.stringify(ticketPricesObject));
-        } catch (error) {
-            console.error('Error processing ticketPrices:', error);
-            toast.error('Failed to process ticket prices');
-            return null;
-        }
+		return formData;
+	};
 
-        if (image) {
-            formData.append('image', image);
-        }
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		const formData = createFormData();
+		if (!formData) return;
 
-        return formData;
-    };
+		try {
+			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${initialMuseum ? initialMuseum._id : ''}`, {
+				method: initialMuseum ? 'PUT' : 'POST',
+				body: formData
+			});
+			const data = await res.json();
+			if (data && data._id) {
+				toast.success(`Museum ${initialMuseum ? 'updated' : 'added'} successfully`);
+				if (initialMuseum) {
+					setMuseums(museums.map(m => m._id === data._id ? data : m));
+				} else {
+					setMuseums([...museums, data]);
+				}
+			} else {
+				toast.error(`Failed to ${initialMuseum ? 'update' : 'register'} museum`);
+			}
+		} catch (error) {
+			console.error(`Error during museum ${initialMuseum ? 'update' : 'registration'}:`, error);
+			toast.error(`Failed to ${initialMuseum ? 'update' : 'register'} museum`);
+		}
+	};
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = createFormData();
-        if (!formData) return;
+	return (
+		<div className="bg-white p-6 rounded-lg shadow-md">
+			<form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
+				<h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
+					{initialMuseum? 'Update Museum' : 'Register Museum'}
+				</h1>
 
-        try {
-            const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${id ? id : ''}`, {
-                method: id ? 'PUT' : 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            if (data && data._id) {
-                toast.success(`Museum ${id ? 'updated' : 'added'} successfully`);
-                window.dispatchEvent(modelModificationEvent);
-                //navigate('/places');
-            } else {
-                toast.error(`Failed to ${id ? 'update' : 'register'} museum`);
-            }
-        } catch (error) {
-            console.error(`Error during museum ${id ? 'update' : 'registration'}:`, error);
-            toast.error(`Failed to ${id ? 'update' : 'register'} museum`);
-        }
-    };
+				{/* Column 1 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)}/>
+					<ReusableInput type="text" name="Description" value={description}
+					               onChange={e => setDescription(e.target.value)}/>
+					<ReusableInput type="text" name="City" value={location.city}
+					               onChange={e => handleLocationChange('city', e.target.value)}/>
+					<ReusableInput type="text" name="Country" value={location.country}
+					               onChange={e => handleLocationChange('country', e.target.value)}/>
+					<ReusableInput type="text" name="Address" value={location.address}
+					               onChange={e => handleLocationChange('address', e.target.value)}/>
+				</div>
 
-    return (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-            {!loading ? (
-                <form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
-                    <h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
-                        {id ? 'Update Museum' : 'Register Museum'}
-                    </h1>
+				{/* Column 2 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Area" value={location.area}
+					               onChange={e => handleLocationChange('area', e.target.value)}/>
+					<ReusableInput type="number" step="any" name="Latitude" value={location.lat}
+					               onChange={e => handleLocationChange('lat', e.target.value)}/>
+					<ReusableInput type="number" step="any" name="Longitude" value={location.lng}
+					               onChange={e => handleLocationChange('lng', e.target.value)}/>
+					<ReusableInput type="text" name="Ticket Prices" value={ticketPrices}
+					               onChange={e => setTicketPrices(e.target.value)}/>
+					<ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)}/>
+				</div>
 
-                    {/* Column 1 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Name" value={name} onChange={e => setName(e.target.value)} />
-                        <ReusableInput type="text" name="Description" value={description} onChange={e => setDescription(e.target.value)} />
-                        <ReusableInput type="text" name="City" value={location.city} onChange={e => handleLocationChange('city', e.target.value)} />
-                        <ReusableInput type="text" name="Country" value={location.country} onChange={e => handleLocationChange('country', e.target.value)} />
-                        <ReusableInput type="text" name="Address" value={location.address} onChange={e => handleLocationChange('address', e.target.value)} />
-                    </div>
+				{/* Column 3 */}
+				<div className="flex flex-col space-y-4">
+					<ReusableInput type="text" name="Activities (Comma-separated IDs)" value={activities}
+					               onChange={e => setActivities(e.target.value)}/>
+					<ReusableInput type="time" name="Opening Hours Start Time" value={startTime}
+					               onChange={e => setStartTime(e.target.value)}/>
+					<ReusableInput type="time" name="Opening Hours End Time" value={endTime}
+					               onChange={e => setEndTime(e.target.value)}/>
+					<input type="file" name="Image" onChange={handleFileChange} className="mt-4"/>
+				</div>
 
-                    {/* Column 2 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Area" value={location.area} onChange={e => handleLocationChange('area', e.target.value)} />
-                        <ReusableInput type="number" step="any" name="Latitude" value={location.lat} onChange={e => handleLocationChange('lat', e.target.value)} />
-                        <ReusableInput type="number" step="any" name="Longitude" value={location.lng} onChange={e => handleLocationChange('lng', e.target.value)} />
-                        <ReusableInput type="text" name="Ticket Prices" value={ticketPrices} onChange={e => setTicketPrices(e.target.value)} />
-                        <ReusableInput type="text" name="Tags" value={tags} onChange={e => setTags(e.target.value)} />
-                    </div>
-
-                    {/* Column 3 */}
-                    <div className="flex flex-col space-y-4">
-                        <ReusableInput type="text" name="Activities (Comma-separated IDs)" value={activities} onChange={e => setActivities(e.target.value)} />
-                        <ReusableInput type="time" name="Opening Hours Start Time" value={startTime} onChange={e => setStartTime(e.target.value)} />
-                        <ReusableInput type="time" name="Opening Hours End Time" value={endTime} onChange={e => setEndTime(e.target.value)} />
-                        <input type="file" name="Image" onChange={handleFileChange} className="mt-4" />
-                    </div>
-
-                    {/* Buttons Row */}
-                    <div className="col-span-1 md:col-span-3 flex justify-between mt-4">
-                        <button
-                            type="submit"
-                            className="bg-[#330577] hover:bg-[#4a1c96] text-white py-2 px-6 rounded text-base"
-                        >
-                            {id ? 'Update' : 'Register'}
-                        </button>
-                        {id && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    if (window.confirm('Are you sure you wish to delete this museum?')) {
-                                        deleteMuseum();
-                                    }
-                                }}
-                                className="bg-[#330577] hover:bg-red-700 text-white py-2 px-6 rounded text-base"
-                            >
-                                Delete
-                            </button>
-                        )}
-                    </div>
-                </form>
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div>
-    );
+				{/* Buttons Row */}
+				<div className="col-span-1 md:col-span-3 flex justify-between mt-4">
+					<button
+						type="submit"
+						className="bg-[#330577] hover:bg-[#4a1c96] text-white py-2 px-6 rounded text-base"
+					>
+						{initialMuseum ? 'Update' : 'Register'}
+					</button>
+				</div>
+			</form>
+		</div>
+	);
 };
 
 export default MuseumForm;

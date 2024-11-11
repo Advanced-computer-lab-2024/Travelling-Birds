@@ -7,6 +7,8 @@ import AdminProfile from "../Components/Profiles/AdminProfile";
 import TourismGovernorProfile from "../Components/Profiles/TourismGovernorProfile";
 
 import logo from '../utils/logoTravelingBirds.png';
+import {toast} from "react-toastify";
+import {userUpdateEvent} from "../utils/userUpdateEvent";
 
 
 
@@ -15,12 +17,6 @@ const ProfilePage = () => {
 	const [user, setUser] = useState({});
 	const [showProfileDetails, setShowProfileDetails] = useState(false);
 	const [dropdownOpen, setDropdownOpen] = useState(false);
-
-	const [backgroundImage, setBackgroundImage] = useState(
-		localStorage.getItem(`backgroundImage_${userId}`) || ''
-	);
-	const [profilePicture, setProfilePicture] = useState(localStorage.getItem(`profilePicture_${userId}`) || null);
-
 
 	const [selectedFavoritePlaces, setSelectedFavoritePlaces] = useState(
 		JSON.parse(localStorage.getItem(`favoritePlaces_${userId}`)) || []
@@ -60,14 +56,6 @@ const ProfilePage = () => {
 				const data = await res.json();
 				setUser(data);
 
-				if (data.profilePicture && !localStorage.getItem(`profilePicture_${userId}`)) {
-					setProfilePicture(data.profilePicture);
-					localStorage.setItem(`profilePicture_${userId}`, data.profilePicture);
-				}
-				if (data.backgroundImage && !localStorage.getItem(`backgroundImage_${userId}`)) {
-					setBackgroundImage(data.backgroundImage);
-					localStorage.setItem(`backgroundImage_${userId}`, data.backgroundImage);
-				}
 			} catch (err) {
 				console.error('Error fetching user profile:', err);
 			}
@@ -82,21 +70,79 @@ const ProfilePage = () => {
 		reader.onerror = (error) => reject(error);
 	});
 
+	let profilePicture = null;
+	if (user.profilePicture?.data?.data && user.profilePicture?.contentType) {
+		try {
+			const byteArray = new Uint8Array(user.profilePicture.data.data);
+			const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+			profilePicture = `data:${user.profilePicture.contentType};base64,${btoa(binaryString)}`;
+		} catch (error) {
+			console.error('Error converting image data to base64:', error);
+		}
+	}
+	let backDrop = null;
+	if (user.backDrop?.data?.data && user.backDrop?.contentType) {
+		try {
+			const byteArray = new Uint8Array(user.backDrop.data.data);
+			const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+			backDrop = `data:${user.backDrop.contentType};base64,${btoa(binaryString)}`;
+		} catch (error) {
+			console.error('Error converting image data to base64:', error);
+		}
+	}
+
 	const handleProfilePictureChange = async (event) => {
-		const file = event.target.files[0];
+		const file = event.target.files[0]; // Get the uploaded file
 		if (file) {
-			const imageUrl = await toBase64(file);
-			setProfilePicture(imageUrl);
-			localStorage.setItem(`profilePicture_${userId}`, imageUrl);
+			const formData = new FormData();
+			formData.append('profilePicture', file); // Append the profile picture file
+
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+					method: 'PUT',
+					body: formData,
+				});
+				const data = await response.json();
+
+				if (data?._id) {
+					toast.success("Profile picture updated successfully");
+					window.dispatchEvent(userUpdateEvent);
+					// Optionally, update the user state if needed
+					setUser((prevUser) => ({ ...prevUser, profilePicture: data.profilePicture }));
+				} else {
+					toast.error("Failed to update profile picture");
+				}
+			} catch (error) {
+				toast.error("Failed to update profile picture");
+				console.error(error);
+			}
 		}
 	};
 
 	const handleBackgroundImageChange = async (event) => {
-		const file = event.target.files[0];
+		const file = event.target.files[0]; // Get the uploaded file
 		if (file) {
-			const imageUrl = await toBase64(file);
-			setBackgroundImage(imageUrl);
-			localStorage.setItem(`backgroundImage_${userId}`, imageUrl);
+			const formData = new FormData();
+			formData.append('backDrop', file); // Append the background image file
+
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+					method: 'PUT',
+					body: formData,
+				});
+				const data = await response.json();
+
+				if (data?._id) {
+					toast.success("Background image updated successfully");
+					// Optionally, update the user state if needed
+					setUser((prevUser) => ({ ...prevUser, backDrop: data.backDrop }));
+				} else {
+					toast.error("Failed to update background image");
+				}
+			} catch (error) {
+				toast.error("Failed to update background image");
+				console.error(error);
+			}
 		}
 	};
 
@@ -111,15 +157,51 @@ const ProfilePage = () => {
 
 
 
-	const handleRemoveProfilePicture = () => {
-		setProfilePicture('');  // Remove the profile picture from the state
-		localStorage.removeItem(`profilePicture_${userId}`);  // Remove from localStorage
+	const handleRemoveProfilePicture = async () => {
+		try {
+			const formData = new FormData();
+			formData.append('profilePicture', ''); // Send an empty string to set profilePicture to null in the backend
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+				method: 'PUT',
+				body: formData,
+			});
+			const data = await response.json();
+
+			if (data?._id) {
+				toast.success("Profile picture removed successfully");
+				window.dispatchEvent(userUpdateEvent);
+				setUser((prevUser) => ({ ...prevUser, profilePicture: null })); // Update state to reflect the change
+			} else {
+				toast.error("Failed to remove profile picture");
+			}
+		} catch (error) {
+			toast.error("Failed to remove profile picture");
+			console.error(error);
+		}
 	};
 
-	const handleRemoveBackgroundImage = () => {
-		setBackgroundImage('');  // Remove the background image from the state
-		localStorage.removeItem(`backgroundImage_${userId}`);  // Remove from localStorage
+	const handleRemoveBackgroundImage = async () => {
+		try {
+			const formData = new FormData();
+			formData.append('backDrop', ''); // Send an empty string to set backDrop to null in the backend
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+				method: 'PUT',
+				body: formData,
+			});
+			const data = await response.json();
+
+			if (data?._id) {
+				toast.success("Background image removed successfully");
+				setUser((prevUser) => ({ ...prevUser, backDrop: null })); // Update state to reflect the change
+			} else {
+				toast.error("Failed to remove background image");
+			}
+		} catch (error) {
+			toast.error("Failed to remove background image");
+			console.error(error);
+		}
 	};
+
 
 	const handleFavoritePlaceSelect = (place) => {
 		if (!selectedFavoritePlaces.includes(place)) {
@@ -151,22 +233,19 @@ const ProfilePage = () => {
 		setSelectedBudget(selectedBudget.filter(item => item !== budget));
 	};
 
-
-
-
 	return (
-		<div style={{ position: 'relative', height: 'auto', backgroundColor: '#f5f5f5' }}>
+		<div style={{position: 'relative', height: 'auto', backgroundColor: '#f5f5f5'}}>
 			{/* Background Image Section */}
 			<div
 				style={{
 					height: '400px',
-					backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+					backgroundImage: backDrop ? `url(${backDrop})` : 'none', // Directly use base64-encoded image
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
 					position: 'relative',
 				}}
 			>
-				{!backgroundImage && (
+				{!backDrop && (
 					<label style={{
 						position: 'absolute',
 						top: '50%',
@@ -180,7 +259,7 @@ const ProfilePage = () => {
 						cursor: 'pointer'
 					}}>
 						Add Background Picture
-						<input type="file" onChange={handleBackgroundImageChange} style={{ display: 'none' }} />
+						<input type="file" onChange={handleBackgroundImageChange} style={{display: 'none'}}/>
 					</label>
 				)}
 			</div>
@@ -203,7 +282,7 @@ const ProfilePage = () => {
 				textAlign: 'center'
 			}}>
 				{/* Profile Picture */}
-				<div style={{ position: 'absolute', top: '5px', left: '20px' }}>
+				<div style={{position: 'absolute', top: '5px', left: '20px'}}>
 					<div style={{
 						width: '120px',
 						height: '120px',
@@ -218,7 +297,8 @@ const ProfilePage = () => {
 						position: 'relative'
 					}}>
 						{profilePicture ? (
-							<img src={profilePicture} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+							<img src={profilePicture} alt="Profile"
+							     style={{width: '100%', height: '100%', objectFit: 'cover'}}/>
 						) : (
 							<>
 				<span style={{
@@ -234,24 +314,25 @@ const ProfilePage = () => {
 									height: '100%',
 									opacity: 0,
 									cursor: 'pointer'
-								}} />
+								}}/>
 							</>
 						)}
 					</div>
 				</div>
 
 
-				<div style={{ position: 'absolute', top: '20px', left: '160px', textAlign: 'left' }}>
-					<h2 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', color: '#333' }}>
+				<div style={{position: 'absolute', top: '20px', left: '160px', textAlign: 'left'}}>
+					<h2 style={{margin: 0, fontSize: '28px', fontWeight: 'bold', color: '#333'}}>
 						{user.firstName || 'First Name'}
 					</h2>
-					<h4 style={{ margin: 0, fontSize: '16px', color: '#555' }}>
+					<h4 style={{margin: 0, fontSize: '16px', color: '#555'}}>
 						{user.username || 'Username'}
 					</h4>
 				</div>
 
-				<div style={{ position: 'absolute', top: '10px', right: '10px' }}>
-					<button style={{ border: 'none', background: 'transparent', fontSize: '24px', cursor: 'pointer' }} onClick={toggleDropdown}>
+				<div style={{position: 'absolute', top: '10px', right: '10px'}}>
+					<button style={{border: 'none', background: 'transparent', fontSize: '24px', cursor: 'pointer'}}
+					        onClick={toggleDropdown}>
 						⚙
 					</button>
 
@@ -330,6 +411,36 @@ const ProfilePage = () => {
 						</div>
 					)}
 				</div>
+				{/* Dream, Explore, Discover Text */}
+				<div style={{
+					position: 'absolute',
+					top: '120px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					textAlign: 'center',
+					fontSize: '60px',  // Increased font size
+					fontWeight: 'bold',
+					background: 'linear-gradient(90deg, rgba(88,24,138,1) 0%, rgba(48,0,76,1) 50%, rgba(0,0,0,1) 100%)', // Purple to black gradient
+					backgroundClip: 'text',
+					WebkitBackgroundClip: 'text',
+					color: 'transparent',
+					textShadow: '0 0 2px rgba(48,0,76,0.5), 0 0 4px rgba(0,0,0,0.5)', // Subtle purple and black glow
+					animation: 'purpleToBlackGlow 2s ease-in-out infinite'
+				}}>
+					Dream, Explore, Discover...
+				</div>
+
+				<style>
+					{`
+               /* Soft glow animation from purple to black */
+                @keyframes purpleToBlackGlow {
+                0% { text-shadow: 0 0 2px rgba(88,24,138,0.5), 0 0 4px rgba(48,0,76,0.5); }
+                50% { text-shadow: 0 0 3px rgba(88,24,138,0.6), 0 0 6px rgba(0,0,0,0.6); }
+                100% { text-shadow: 0 0 2px rgba(48,0,76,0.5), 0 0 4px rgba(0,0,0,0.5); }
+                                                }
+    `}
+				</style>
+
 			</div>
 
 			{/* Intro Container */}
@@ -461,7 +572,8 @@ const ProfilePage = () => {
 				textAlign: "center",
 				zIndex: 2,
 			}}>
-				<h3 style={{ fontWeight: "bold", color: "#000",marginBottom: '15px', textAlign: "left"}}>Your Preferences</h3>
+				<h3 style={{fontWeight: "bold", color: "#000", marginBottom: '15px', textAlign: "left"}}>Your
+					Preferences</h3>
 
 				{/* Scrollable content container */}
 				<div style={{
@@ -477,14 +589,22 @@ const ProfilePage = () => {
 							))}
 						</select>
 						{/* Display selected favorite places */}
-						<div style={{ marginTop: '10px' }}>
+						<div style={{marginTop: '10px'}}>
 							{selectedFavoritePlaces.map((place, index) => (
 								<span key={index} style={{
-									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+									display: 'inline-block',
+									padding: '5px 10px',
+									margin: '5px',
+									backgroundColor: '#e0e0e0',
+									borderRadius: '15px',
 								}}>
                         {place}
 									<button onClick={() => handleRemoveFavoritePlace(place)} style={{
-										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+										background: "none",
+										border: "none",
+										color: "red",
+										marginLeft: "5px",
+										cursor: "pointer",
 									}}>
                             ✕
                         </button>
@@ -492,22 +612,31 @@ const ProfilePage = () => {
 							))}
 						</div>
 
-						{/* Dropdown for selecting favorite food */}
-						<select onChange={(e) => handleFavoriteFoodSelect(e.target.value)} defaultValue="" style={{ marginTop: '10px' }}>
+						{/* Dropdown for selecting favorite hotels */}
+						<select onChange={(e) => handleFavoriteFoodSelect(e.target.value)} defaultValue=""
+						        style={{marginTop: '10px'}}>
 							<option value="" disabled>Preferred Hotels</option>
 							{favoriteFoodOptions.map((food, index) => (
 								<option key={index} value={food}>{food}</option>
 							))}
 						</select>
 						{/* Display selected favorite food */}
-						<div style={{ marginTop: '10px' }}>
+						<div style={{marginTop: '10px'}}>
 							{selectedFavoriteFood.map((food, index) => (
 								<span key={index} style={{
-									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+									display: 'inline-block',
+									padding: '5px 10px',
+									margin: '5px',
+									backgroundColor: '#e0e0e0',
+									borderRadius: '15px',
 								}}>
                         {food}
 									<button onClick={() => handleRemoveFavoriteFood(food)} style={{
-										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+										background: "none",
+										border: "none",
+										color: "red",
+										marginLeft: "5px",
+										cursor: "pointer",
 									}}>
                             ✕
                         </button>
@@ -516,21 +645,30 @@ const ProfilePage = () => {
 						</div>
 
 						{/* Dropdown for selecting budget */}
-						<select onChange={(e) => handleBudgetSelect(e.target.value)} defaultValue="" style={{ marginTop: '10px' }}>
+						<select onChange={(e) => handleBudgetSelect(e.target.value)} defaultValue=""
+						        style={{marginTop: '10px'}}>
 							<option value="" disabled>Preferred Budget</option>
 							{budgetOptions.map((budget, index) => (
 								<option key={index} value={budget}>{budget}</option>
 							))}
 						</select>
 						{/* Display selected budget */}
-						<div style={{ marginTop: '10px' }}>
+						<div style={{marginTop: '10px'}}>
 							{selectedBudget.map((budget, index) => (
 								<span key={index} style={{
-									display: 'inline-block', padding: '5px 10px', margin: '5px', backgroundColor: '#e0e0e0', borderRadius: '15px',
+									display: 'inline-block',
+									padding: '5px 10px',
+									margin: '5px',
+									backgroundColor: '#e0e0e0',
+									borderRadius: '15px',
 								}}>
                         {budget}
 									<button onClick={() => handleRemoveBudget(budget)} style={{
-										background: "none", border: "none", color: "red", marginLeft: "5px", cursor: "pointer",
+										background: "none",
+										border: "none",
+										color: "red",
+										marginLeft: "5px",
+										cursor: "pointer",
 									}}>
                             ✕
                         </button>
@@ -542,19 +680,15 @@ const ProfilePage = () => {
 			</div>
 
 
-
-
-
-
 			{/* Profile Details */}
 			{showProfileDetails && (
 				<>
-					{user.role === 'tourist' && <TouristProfile user={user} />}
-					{user.role === 'seller' && <SellerProfile user={user} />}
-					{user.role === 'advertiser' && <AdvertiserProfile user={user} />}
-					{user.role === 'tour_guide' && <TourGuideProfile user={user} />}
-					{user.role === 'admin' && <AdminProfile user={user} />}
-					{user.role === 'tourism_governor' && <TourismGovernorProfile user={user} />}
+					{user.role === 'tourist' && <TouristProfile user={user}/>}
+					{user.role === 'seller' && <SellerProfile user={user}/>}
+					{user.role === 'advertiser' && <AdvertiserProfile user={user}/>}
+					{user.role === 'tour_guide' && <TourGuideProfile user={user}/>}
+					{user.role === 'admin' && <AdminProfile user={user}/>}
+					{user.role === 'tourism_governor' && <TourismGovernorProfile user={user}/>}
 				</>
 			)}
 		</div>
