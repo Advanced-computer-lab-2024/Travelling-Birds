@@ -31,6 +31,8 @@ const ActivityDetail = () => {
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
+    const [userLocation, setUserLocation] = useState('');
+    const [userEmail, setUserEmail] = useState('');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -81,6 +83,17 @@ const ActivityDetail = () => {
                 console.error('Error checking user bookings:', err);
             }
         };
+
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+                const data = await response.json();
+                setUserEmail(data.email);
+            }
+            catch (error) {
+                console.error('Error fetching user:', error);
+            }
+        };
         const fetchTransportations = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
@@ -90,6 +103,7 @@ const ActivityDetail = () => {
                 console.error('Error fetching transportations:', error);
             }
         };
+        fetchUsers();
         fetchTransportations();
         fetchActivity();
         fetchComments();
@@ -216,6 +230,8 @@ const ActivityDetail = () => {
             if (!response.ok) {
                 throw new Error('Failed to book the activity');
             }
+         
+         
     
             toast.success('Activity booked successfully');
             window.dispatchEvent(userUpdateEvent);
@@ -224,6 +240,29 @@ const ActivityDetail = () => {
             console.error('Error booking activity:', error);
             toast.error('Failed to book the activity. Please try again.');
         }
+
+        try {
+            if (transportation.toLowerCase() !== 'my car') {
+                const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
+                const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
+                });
+
+                if (!emailResponse.ok) {
+                    throw new Error('Failed to send booking confirmation email');
+                }
+
+                toast.success('Confirmation email sent successfully');
+            }
+        } catch (error) {
+            console.error('Error sending confirmation email:', error);
+            toast.error('Failed to send confirmation email. Please try again.');
+        }
+
     };
 
      // Function to handle canceling the booking
@@ -315,27 +354,7 @@ const ActivityDetail = () => {
         );
     };
 
-    // Helper function to copy link to clipboard
-    const handleCopyLink = () => {
-        const link = `http://localhost:3000/activities/${activityId}`;
-        navigator.clipboard.writeText(link).then(() => {
-            alert('Link copied to clipboard!');
-            setIsShareOpen(false); // Close the dropdown menu after copying
-        });
-    };
 
-    // Handle sending the link via email
-    const handleSendEmail = () => {
-        if (!email) {
-            alert('Please enter a valid email address.');
-            return;
-        }
-
-        const link = `http://localhost:3000/activities/${activityId}`;
-        window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: ${link}`, '_blank');
-        setEmail(''); // Clear email input
-        setIsShareOpen(false); // Close the dropdown
-    };
 
     // Helper function to format price range based on currency
     const formatPriceRange = (price) => {
@@ -501,6 +520,17 @@ const ActivityDetail = () => {
                                         placeholder="Enter amount"
                                     />
                                 </div>
+                                <div className="mb-4">
+                                    <label className="block mb-2">Location</label>
+                                    <input
+                                        type="text"
+                                        value={userLocation}
+                                        onChange={(e) => setUserLocation(e.target.value)}
+                                        className="w-full border rounded-lg p-2"
+                                        placeholder="Enter your location"
+                                    />
+                                </div>
+                           
                                 <button
                                     onClick={handleCompleteBooking}
                                     className={`w-full bg-[#330577] text-white p-2 rounded-lg ${!cardNumber || !expiryDate || !cvv || !transportation ? 'opacity-85 cursor-not-allowed' : 'hover:bg-[#330577]'}`}

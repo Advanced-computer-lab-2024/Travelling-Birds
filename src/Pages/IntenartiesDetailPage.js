@@ -33,6 +33,8 @@ const ItineraryDetail = () => {
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
 	const [placeholder, setPlaceHolder] = useState('');
+	const [userLocation, setUserLocation] = useState('');
+    const [userEmail, setUserEmail] = useState('');
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -131,11 +133,22 @@ const ItineraryDetail = () => {
             }
         };
 
+		const fetchUser = async () => {
+			try {
+				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+				const data = await res.json();
+				setUserEmail(data.email);
+			} catch (err) {
+				console.error('Error fetching user', err);
+			}
+		};
+
 
 		fetchItinerary().then(r => {
 			fetchTransportations();
 			fetchActivities();
 			fetchComments();
+			fetchUser();
 			if (userId) {
 				checkUserBooking();
 			}
@@ -253,12 +266,45 @@ const ItineraryDetail = () => {
 				body: JSON.stringify({ wallet: updatedWalletBalance })
 			});
 
+			try {
+				// ... existing booking logic
+			
+				
+			} catch (error) {
+				console.error('Error during booking:', error);
+				toast.error('Failed to complete booking or send confirmation email. Please try again.');
+			}
+
 			toast.success('Itinerary booked successfully');
 			window.dispatchEvent(userUpdateEvent);
 			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
 			toast.error('Failed to book the itinerary. Please try again.');
+		}
+
+		try {
+			// Send a confirmation email
+			if (transportation.toLowerCase() !== 'my car') {
+				const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
+				const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
+				});
+
+				if (!emailResponse.ok) {
+					throw new Error('Failed to send booking confirmation email');
+				}
+
+				toast.success('Confirmation email sent successfully');
+			}
+		}
+		catch (error) {
+			console.error('Error sending confirmation email:', error);
+			toast.error('Failed to send confirmation email. Please try again.');
 		}
 	};
 	const handleShowTourGuideDetails = async () => {
@@ -523,7 +569,7 @@ const ItineraryDetail = () => {
 							</div>
 
 							{/* Add Comment on Tour Guide */}
-							{hasBooked && canComment && (
+							{hasBooked &&canComment && (
 								<div className="mt-4">
 									<h3 className="font-semibold text-lg text-[#330577]">Leave a Comment for the Tour Guide</h3>
 									<textarea
@@ -736,6 +782,16 @@ const ItineraryDetail = () => {
 										onChange={(e) => setWalletAmount(e.target.value)}
 										className="w-full border rounded-lg p-2"
 										placeholder="Enter amount"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Location</label>
+									<input
+										type="text"
+										value={userLocation}
+										onChange={(e) => setUserLocation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter your location"
 									/>
 								</div>
 								<button
