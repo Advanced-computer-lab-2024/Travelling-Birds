@@ -121,8 +121,8 @@ const ExplorePage = () => {
 
 			setResults((prevResults) => ({
 				...prevResults,
-				activities: sortParams.type === 'activities' ? (Array.isArray(data) ? data : []) : prevResults.activities,
-				itineraries: sortParams.type === 'itineraries' ? (Array.isArray(data) ? data : []) : prevResults.itineraries,
+				activities: sortParams.type === 'activities' ? data.filter(activity => !activity.flaggedInappropriate) : prevResults.activities,
+				itineraries: sortParams.type === 'itineraries' ? data.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate) : prevResults.itineraries,
 			}));
 
 			setLoading(false);
