@@ -523,7 +523,7 @@ const ItineraryDetail = () => {
 							</div>
 
 							{/* Add Comment on Tour Guide */}
-							{hasBooked && canComment && (
+							{hasBooked &&canComment && (
 								<div className="mt-4">
 									<h3 className="font-semibold text-lg text-[#330577]">Leave a Comment for the Tour Guide</h3>
 									<textarea

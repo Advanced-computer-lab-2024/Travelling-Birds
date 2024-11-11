@@ -424,6 +424,9 @@ const addActivityBooking = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+	    if (user.age < 18) {
+		    return res.status(400).json({ message: 'User is under 18 years old can not book' });
+	    }
 
         const activity = await Activity.findById(activityId);
         if (!activity) {
@@ -523,6 +526,9 @@ const addItineraryBooking = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+		if (user.age < 18) {
+			return res.status(400).json({ message: 'User is under 18 years old can not book' });
+		}
 
         const itinerary = await Itinerary.findById(itineraryId);
         if (!itinerary) {
