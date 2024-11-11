@@ -4,7 +4,6 @@ const Activity = require('../Models/Activity');
 const Itinerary = require('../Models/Itinerary');
 const Product = require('../Models/Product');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
-const ItineraryModel = require("../Models/Itinerary");
 const CommentModel = require("../Models/Comments");
 const UserModel = require("../Models/User");
 
@@ -631,7 +630,11 @@ const addProductPurchase = async (req, res) => {
 
         user.productPurchases.push(productId);
         await user.save();
-        res.status(200).json({ message: 'Product purchased successfully' });
+		const updatedProduct = await Product.findByIdAndUpdate(productId,
+			{ $push: { userPurchased: userId } },
+			{ new: true }).populate('userPurchased');
+		console.log(updatedProduct);
+        res.status(200).json(updatedProduct);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

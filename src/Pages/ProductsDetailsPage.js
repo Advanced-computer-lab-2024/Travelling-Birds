@@ -5,7 +5,7 @@ import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 import {AiOutlineHeart} from "react-icons/ai";
 
 const ProductsDetailsPage = () => {
-	const productId = useParams().id;
+	const productId = useParams();
 	const [visibleProductComments, setVisibleProductComments] = useState(3);
 	const [product, setProduct] = useState("");
 	const [purchased, setPurchased] = useState(false);

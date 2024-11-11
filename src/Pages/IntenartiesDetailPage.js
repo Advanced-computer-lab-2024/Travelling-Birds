@@ -562,51 +562,54 @@ const ItineraryDetail = () => {
 					{activities.length > 0 && (
 						<div className="mt-8">
 							<h2 className="text-2xl font-semibold text-[#330577] mb-4">Activities Timeline</h2>
-							<div className="space-y-8 relative bg-white p-4 rounded-lg shadow-md">
-								<div
-									className="absolute top-0 left-1 h-full w-1 bg-[#330577] rounded-lg"></div>
-								<div className="flex-shrink-0 mt-2">
-									<FaCalendarAlt className="text-[#330577] text-2xl"/>
-								</div>
-								{activities.map((activity, index) => {
-									const activityImage = convertToBase64(activity.image);
-									return (
-										<div key={activity._id}
-										     className="relative bg-[#eef2f5] p-4 rounded-lg shadow-md flex items-start justify-between">
-											<div>
-												<p className="text-sm text-gray-500 mb-1">
-													<FaClock
-														className="inline mr-1"/> {new Date(activity.date).toLocaleDateString()}
-												</p>
-												<h3
-													onClick={() => window.open(`/activities/${activity._id}`, '_blank')}
-													className="text-lg font-semibold text-[#330577] mb-1"
-												>
-													{activity.title}
-												</h3>
-												<p className="text-gray-600 mb-1">{activity.description}</p>
-												<LocationContact activity={activity}/>
-												<div className="flex items-center mt-3">
-													<span
-														className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
+							<div className="relative bg-gray-50 p-6 rounded-lg shadow-md overflow-hidden">
+								{/* Vertical line for timeline */}
+								<div className="absolute left-16 top-0 h-full w-1 bg-[#330577]"></div>
+								<div className="space-y-8">
+									{activities.map((activity, index) => {
+										const activityImage = convertToBase64(activity.image);
+										return (
+											<div
+												key={activity._id}
+												className="flex items-center p-4 bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-1"
+											>
+												{/* Timeline dot */}
+												<div className="flex-shrink-0 relative w-4 h-4 bg-[#330577] rounded-full mr-6 ml-2 border-2 border-white shadow-lg"></div>
+
+												{/* Activity image */}
+												{activityImage && (
+													<div className="flex-shrink-0 w-48 h-48 overflow-hidden rounded-lg border border-gray-200 shadow-sm mr-4">
+														<img
+															src={activityImage}
+															alt={`Activity ${activity.title}`}
+															className="object-cover w-full h-full"
+														/>
+													</div>
+												)}
+
+												{/* Activity Details */}
+												<div className="flex-grow">
+													<p className="text-sm text-gray-500 mb-2 flex items-center">
+														<FaClock className="mr-2 text-[#330577]" /> {new Date(activity.date).toLocaleDateString()}
+													</p>
+													<h3
+														onClick={() => window.open(`/activities/${activity._id}`, '_blank')}
+														className="text-lg font-semibold text-[#330577] mb-1 cursor-pointer hover:underline"
+													>
+														{activity.title}
+													</h3>
+													<p className="text-gray-600 mb-2">{activity.description}</p>
+													<div className="mb-2">
+														<LocationContact activity={activity} />
+													</div>
+													<div className="flex items-center mt-2">
+														<span className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
+													</div>
 												</div>
 											</div>
-											{activityImage && (
-												<img
-													src={activityImage}
-													alt={`Activity ${activity.title}`}
-													className="flex-shrink-0 object-cover rounded-lg ml-4 w-[48%] h-[48%]"
-													style={{
-														maxWidth: '100%',
-														maxHeight: '100%',
-														transform: 'translate(-80px,4px)', // Moves the image left and down
-														margin: '8px', // Adds margin around the image
-													}}
-												/>
-											)}
-										</div>
-									);
-								})}
+										);
+									})}
+								</div>
 							</div>
 						</div>
 					)}
