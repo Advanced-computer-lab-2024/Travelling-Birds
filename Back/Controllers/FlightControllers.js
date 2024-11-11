@@ -2,7 +2,7 @@
 const flight = require('../Services/amadeusService');
 
 exports.searchFlights = async (req, res) => {
-	const { origin, destination, departureDate, currencyCode } = req.body;
+	const {origin, destination, departureDate, currencyCode} = req.body;
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
 			originLocationCode: origin,
@@ -14,13 +14,13 @@ exports.searchFlights = async (req, res) => {
 		res.json(flightOffersResponse.data);
 	} catch (error) {
 		console.log(error);
-		res.status(500).json({ message: error.description });
+		res.status(500).json({message: error.description});
 	}
 };
 
 exports.getFlightDetails = async (req, res) => {
-	const { flightId } = req.params;
-	const { origin, destination, departureDate, currencyCode } = req.params;
+	const {flightId} = req.params;
+	const {origin, destination, departureDate, currencyCode} = req.params;
 
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
@@ -33,7 +33,7 @@ exports.getFlightDetails = async (req, res) => {
 
 		const selectedFlight = flightOffersResponse.data.find(flight => flight.id === flightId);
 		if (!selectedFlight) {
-			return res.status(404).json({ message: "Flight not found." });
+			return res.status(404).json({message: "Flight not found."});
 		}
 
 		const response = await flight.shopping.flightOffers.pricing.post({
@@ -48,24 +48,24 @@ exports.getFlightDetails = async (req, res) => {
 		res.json(response.data);
 	} catch (error) {
 		console.log(error);
-		res.status(500).json({ message: error.description });
+		res.status(500).json({message: error.description});
 	}
 };
 
 // Book Flight Controller
 exports.bookFlight = async (req, res) => {
-	const { flightDetails, travelerInfo} = req.body;
+	const {flightDetails, travelerInfo} = req.body;
 	try {
 		const flightOffersResponse = await flight.shopping.flightOffersSearch.get({
 			originLocationCode: flightDetails?.itineraries[0].segments[0].departure.iataCode,
-			destinationLocationCode: flightDetails?.itineraries[0].segments[flightDetails?.itineraries[0].segments.length-1].arrival.iataCode,
+			destinationLocationCode: flightDetails?.itineraries[0].segments[flightDetails?.itineraries[0].segments.length - 1].arrival.iataCode,
 			departureDate: flightDetails?.itineraries[0].segments[0].departure.at.split('T')[0],
 			adults: "1",
 		});
 
 		const selectedFlight = flightOffersResponse.data.find(flight => flight.id === flightDetails.id);
 		if (!selectedFlight) {
-			return res.status(404).json({ message: "Flight not found." });
+			return res.status(404).json({message: "Flight not found."});
 		}
 
 		const pricingResponse = await flight.shopping.flightOffers.pricing.post({
@@ -77,34 +77,37 @@ exports.bookFlight = async (req, res) => {
 		const bookingResponse = await flight.booking.flightOrders.post({
 			data: {
 				type: "flight-order",
-				flightOffers:[pricingResponse.data.flightOffers[0]],
+				flightOffers: [pricingResponse.data.flightOffers[0]],
 				travelers: [
 					{
 						id: "1",
 						dateOfBirth: travelerInfo.dateOfBirth,
-						name: {firstName: travelerInfo.firstName, lastName: travelerInfo.lastName},
+						name: {
+							firstName: travelerInfo.name.firstName,
+							lastName: travelerInfo.name.lastName
+						},
 						gender: travelerInfo.gender,
 						contact: {
-							emailAddress: travelerInfo.emailAddress,
+							emailAddress: travelerInfo.contact.emailAddress,
 							phones: [
 								{
 									deviceType: "MOBILE",
-									countryCallingCode: "1",
-									number: travelerInfo.phone
+									countryCallingCode: "20",
+									number: travelerInfo.contact.phones[0].number
 								}
 							]
 						},
 						documents: [
 							{
 								documentType: "PASSPORT",
-								birthPlace: travelerInfo.birthPlace,
-								issuanceLocation: travelerInfo.issuanceLocation,
-								issuanceDate: travelerInfo.issuanceDate,
-								number: travelerInfo.passportNumber,
-								expiryDate: travelerInfo.passportExpiry,
-								issuanceCountry: travelerInfo.issuanceCountry,
-								validityCountry: travelerInfo.validityCountry,
-								nationality: travelerInfo.nationality,
+								birthPlace: travelerInfo.documents[0].birthPlace,
+								issuanceLocation: travelerInfo.documents[0].issuanceLocation,
+								issuanceDate: travelerInfo.documents[0].issuanceDate,
+								number: travelerInfo.documents[0].number,
+								expiryDate: travelerInfo.documents[0].expiryDate,
+								issuanceCountry: travelerInfo.documents[0].issuanceCountry,
+								validityCountry: travelerInfo.documents[0].validityCountry,
+								nationality: travelerInfo.documents[0].nationality,
 								holder: true
 							}
 						]
@@ -118,7 +121,7 @@ exports.bookFlight = async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		res.status(500).json({ message: error.description || "An error occurred while booking the flight." });
+		res.status(500).json({message: error.description || "An error occurred while booking the flight."});
 	}
 };
 

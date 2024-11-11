@@ -5,7 +5,6 @@ import {toast} from "react-toastify";
 function FlightDetails() {
 	const {flightId} = useParams();
 	const {origin, destination, departureDate} = useParams();
-	const currencyCode = sessionStorage.getItem('currency');
 	const [flightDetails, setFlightDetails] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -29,27 +28,27 @@ function FlightDetails() {
 
 	const setTest = () => {
 		setTravelerInfo({
-			firstName: "PAUL",
-			lastName: "SMITH",
-			dateOfBirth: "2024-11-20",
+			birthPlace: "CAIRO",
+			dateOfBirth: "2004-02-18",
+			emailAddress: "alyserry@outlook.com",
+			firstName: "Aly",
 			gender: "MALE",
-			emailAddress: "PAULSMITH@OUTLOOK.COM",
-			phone: "1234567890",
-			passportNumber: "1234567890",
-			passportExpiry: "2026-11-21",
-			birthPlace: "FRANCE",
-			issuanceLocation: "FRANCE",
-			issuanceDate: "2024-11-22",
-			issuanceCountry: "FR",
-			validityCountry: "FR",
-			nationality: "FR"
+			issuanceCountry: "EG",
+			issuanceDate: "2015-04-14",
+			issuanceLocation: "CAIRO",
+			lastName: "Serry",
+			nationality: "EG",
+			passportExpiry: "2025-04-14",
+			passportNumber: "00000000",
+			phone: "+201018833175",
+			validityCountry: "EG"
 		});
 	}
 
 	useEffect(() => {
 		async function fetchFlight() {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}/${currencyCode}`, {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/${flightId}/${origin}/${destination}/${departureDate}/${sessionStorage.getItem('currency') || 'EGP'}`, {
 					method: 'GET',
 					headers: {'Content-Type': 'application/json'}
 				});
@@ -77,7 +76,7 @@ function FlightDetails() {
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					flightDetails,
-					travelerInfo : [
+					travelerInfo:
 						{
 							id: "1",
 							dateOfBirth: travelerInfo.dateOfBirth,
@@ -108,7 +107,7 @@ function FlightDetails() {
 								}
 							]
 						}
-					]
+
 				})
 			});
 			console.log(travelerInfo);
@@ -238,30 +237,34 @@ function FlightDetails() {
 						<h4 className="font-semibold text-xl text-[#330577]  mb-4">Enter Traveler Information</h4>
 						<div className="grid grid-cols-2 gap-4">
 							{[
-								{ label: 'First Name', name: 'firstName', type: 'text' },
-								{ label: 'Last Name', name: 'lastName', type: 'text' },
-								{ label: 'Date of Birth', name: 'dateOfBirth', type: 'date' },
-								{ label: 'Gender', name: 'gender', type: 'text' },
-								{ label: 'Email Address', name: 'emailAddress', type: 'email' },
-								{ label: 'Phone Number', name: 'phone', type: 'text' },
-								{ label: 'Passport Number', name: 'passportNumber', type: 'text' },
-								{ label: 'Passport Expiry', name: 'passportExpiry', type: 'date' },
-								{ label: 'Birth Place', name: 'birthPlace', type: 'text' },
-								{ label: 'Issuance Location', name: 'issuanceLocation', type: 'text' },
-								{ label: 'Issuance Date', name: 'issuanceDate', type: 'date' },
-								{ label: 'Issuance Country', name: 'issuanceCountry', type: 'text' },
-								{ label: 'Validity Country', name: 'validityCountry', type: 'text' },
-								{ label: 'Nationality', name: 'nationality', type: 'text' }
+								{label: 'First Name', name: 'firstName', type: 'text'},
+								{label: 'Last Name', name: 'lastName', type: 'text'},
+								{label: 'Date of Birth', name: 'dateOfBirth', type: 'date'},
+								{label: 'Gender', name: 'gender', type: 'text'},
+								{label: 'Email Address', name: 'emailAddress', type: 'email'},
+								{label: 'Phone Number', name: 'phone', type: 'text'},
+								{label: 'Passport Number', name: 'passportNumber', type: 'text'},
+								{label: 'Passport Expiry', name: 'passportExpiry', type: 'date'},
+								{label: 'Birth Place', name: 'birthPlace', type: 'text'},
+								{label: 'Issuance Location', name: 'issuanceLocation', type: 'text'},
+								{label: 'Issuance Date', name: 'issuanceDate', type: 'date'},
+								{label: 'Issuance Country', name: 'issuanceCountry', type: 'text'},
+								{label: 'Validity Country', name: 'validityCountry', type: 'text'},
+								{label: 'Nationality', name: 'nationality', type: 'text'}
 							].map((input) => (
-								<input
-									key={input.name}
-									type={input.type}
-									name={input.name}
-									placeholder={input.label}
-									value={travelerInfo[input.name]}
-									onChange={handleChange}
-									className="p-2 rounded border"
-								/>
+								<div key={input.name} className="form-control">
+									<label className="label">
+										<span className="label-text">{input.label}</span>
+									</label>
+									<input
+										type={input.type}
+										name={input.name}
+										placeholder={input.label}
+										value={travelerInfo[input.name]}
+										onChange={handleChange}
+										className="input input-bordered"
+									/>
+								</div>
 							))}
 						</div>
 						<button

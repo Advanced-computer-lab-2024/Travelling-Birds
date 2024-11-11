@@ -12,7 +12,7 @@ function HotelDetails() {
 		lastName: '',
 		email: '',
 		phone: '',
-		creditCard: { number: '', expiryDate: '', cvc: '' },
+		creditCard: { number: '4151289722471370', expiryDate: '2026-08', cvc: '' },
 	});
 
 	useEffect(() => {
@@ -140,7 +140,7 @@ function HotelDetails() {
 							<input
 								type="text"
 								name="creditCard.expiryDate"
-								placeholder="Expiry Date (MM/YY)"
+								placeholder="Expiry Date (YYYY-MM)"
 								className="border rounded-lg p-2 focus:ring-2 focus:ring-[#330577] w-full"
 								value={travelerDetails.creditCard.expiryDate}
 								onChange={handleChange}
