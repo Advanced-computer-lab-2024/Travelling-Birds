@@ -16,7 +16,7 @@ const addProduct = async (req, res) => {
 			};
 		}
 		const newProduct = new Product({
-			name, description, price, availableQuantity, picture, seller, ratings, reviews
+			name, description, price, availableQuantity,soldQuantity:0, picture, seller, ratings, reviews
 		});
 		await newProduct.save();
 		const user = await UserModel.findById(newProduct.seller).select('firstName lastName');
@@ -30,7 +30,7 @@ const addProduct = async (req, res) => {
 // Get products
 const getAllProducts = async (req, res) => {
 	try {
-		const products = await Product.find();
+		const products = await Product.find({isArchived: false });
 		res.status(200).json(products);
 	} catch (error) {
 		res.status(500).json({error: error.message});
