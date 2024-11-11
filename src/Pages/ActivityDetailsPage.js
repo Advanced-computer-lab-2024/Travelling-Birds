@@ -83,6 +83,17 @@ const ActivityDetail = () => {
                 console.error('Error checking user bookings:', err);
             }
         };
+
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+                const data = await response.json();
+                setUserEmail(data.email);
+            }
+            catch (error) {
+                console.error('Error fetching user:', error);
+            }
+        };
         const fetchTransportations = async () => {
             try {
                 const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
@@ -92,6 +103,7 @@ const ActivityDetail = () => {
                 console.error('Error fetching transportations:', error);
             }
         };
+        fetchUsers();
         fetchTransportations();
         fetchActivity();
         fetchComments();
@@ -528,16 +540,7 @@ const ActivityDetail = () => {
                                         placeholder="Enter your location"
                                     />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block mb-2">Contact</label>
-                                    <input
-                                        type="email"
-                                        value={userEmail}
-                                        onChange={(e) => setUserEmail(e.target.value)}
-                                        className="w-full border rounded-lg p-2"
-                                        placeholder="Enter your email"
-                                    />
-                                </div>
+                           
                                 <button
                                     onClick={handleCompleteBooking}
                                     className={`w-full bg-[#330577] text-white p-2 rounded-lg ${!cardNumber || !expiryDate || !cvv || !transportation ? 'opacity-85 cursor-not-allowed' : 'hover:bg-[#330577]'}`}

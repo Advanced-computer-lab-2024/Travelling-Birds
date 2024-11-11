@@ -133,11 +133,22 @@ const ItineraryDetail = () => {
             }
         };
 
+		const fetchUser = async () => {
+			try {
+				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+				const data = await res.json();
+				setUserEmail(data.email);
+			} catch (err) {
+				console.error('Error fetching user', err);
+			}
+		};
+
 
 		fetchItinerary().then(r => {
 			fetchTransportations();
 			fetchActivities();
 			fetchComments();
+			fetchUser();
 			if (userId) {
 				checkUserBooking();
 			}
@@ -771,16 +782,6 @@ const ItineraryDetail = () => {
 										onChange={(e) => setUserLocation(e.target.value)}
 										className="w-full border rounded-lg p-2"
 										placeholder="Enter your location"
-									/>
-								</div>
-								<div className="mb-4">
-									<label className="block mb-2">Contact</label>
-									<input
-										type="email"
-										value={userEmail}
-										onChange={(e) => setUserEmail(e.target.value)}
-										className="w-full border rounded-lg p-2"
-										placeholder="Enter your email"
 									/>
 								</div>
 								<button
