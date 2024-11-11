@@ -75,70 +75,6 @@ const ProductHomePage = () => {
 			};
 		});
 	};
-	
-
-	const filterProducts = async (maxPrice) => {
-		try {
-			const url = `${process.env.REACT_APP_BACKEND}/api/products/filter?maxPrice=${encodeURIComponent(maxPrice)}`;
-			const response = await fetch(url);
-			const data = await response.json();
-	
-			if (response.ok) {
-				const productsWithImages = convertProductImages(data); // Convert images
-				setProducts(productsWithImages);
-			} else {
-				toast.error(data.message || 'Failed to fetch filtered products');
-			}
-		} catch (error) {
-			console.error('Error filtering products:', error);
-			toast.error('An error occurred while filtering products');
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const searchProducts = async (searchTerm) => {
-		setLoading(true);
-		try {
-			const url = `${process.env.REACT_APP_BACKEND}/api/products/search?name=${encodeURIComponent(searchTerm)}`;
-			const response = await fetch(url);
-			const data = await response.json();
-	
-			if (response.ok) {
-				const productsWithImages = convertProductImages(data); // Convert images
-				setProducts(productsWithImages);
-			} else {
-				toast.error(data.message || 'Failed to fetch search results');
-			}
-		} catch (error) {
-			console.error('Error searching products:', error);
-			toast.error('An error occurred while searching for products');
-		} finally {
-			setLoading(false);
-		}
-	};
-
-
-	const sortProducts = async (sortOrder) => {
-		setLoading(true);
-		try {
-			const url = `${process.env.REACT_APP_BACKEND}/api/products/sort?productsOrder=${encodeURIComponent(sortOrder)}`;
-			const response = await fetch(url);
-			const data = await response.json();
-	
-			if (response.ok) {
-				const productsWithImages = convertProductImages(data); // Convert images
-				setProducts(productsWithImages);
-			} else {
-				toast.error(data.message || 'Failed to fetch sorted products');
-			}
-		} catch (error) {
-			console.error('Error sorting products:', error);
-			toast.error('An error occurred while sorting products');
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	const handleSearchFilterAndSort = async (searchTerm, maxPrice, sortOrder = 'asc') => {
 		setLoading(true);
@@ -163,9 +99,12 @@ const ProductHomePage = () => {
 			} else if (sortOrder === 'desc') {
 				data.sort((a, b) => b.rating - a.rating);
 			}
-	
+
+			data.filter(product => !product.isArchived);
+
 			// Convert images before setting state
 			const productsWithImages = convertProductImages(data);
+
 			setProducts(productsWithImages);
 		} catch (error) {
 			console.error('Error during search, filter, and sort:', error);
