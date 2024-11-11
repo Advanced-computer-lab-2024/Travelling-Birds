@@ -87,7 +87,8 @@ const updateItinerary = async (req, res) => {
 		pickupLocation,
 		dropoffLocation,
 		createdBy,
-		flaggedInappropriate
+		flaggedInappropriate,
+		active
 	} = req.body;
 
 	try {
@@ -104,7 +105,8 @@ const updateItinerary = async (req, res) => {
 			pickupLocation,
 			dropoffLocation,
 			createdBy,
-			flaggedInappropriate
+			flaggedInappropriate,
+			active
 		};
 
 		// Handle image upload
