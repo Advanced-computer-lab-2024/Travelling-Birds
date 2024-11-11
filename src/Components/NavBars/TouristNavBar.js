@@ -162,7 +162,7 @@ const TouristNavBar = () => {
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Products
 					</NavLink>
-					<NavLink to='/more'
+					<NavLink to='/flights-and-hotels'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						More
 					</NavLink>
