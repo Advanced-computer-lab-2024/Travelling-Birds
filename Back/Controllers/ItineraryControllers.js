@@ -11,6 +11,7 @@ const addItinerary = async (req, res) => {
 		activities,
 		locations,
 		language,
+		preferences,
 		price,
 		availableDates,
 		accessibility,
@@ -20,18 +21,19 @@ const addItinerary = async (req, res) => {
 	} = req.body;
 	try {
 		let image = null;
-        if (req.file) {
-            image = {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            };
-        }
+		if (req.file) {
+			image = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
 		const itinerary = new ItineraryModel({
 			title,
 			description,
-			activities:activities.split(',').map(id => id.trim()),
+			activities: activities.split(',').map(id => id.trim()),
 			locations,
 			language,
+			preferences,
 			price,
 			availableDates,
 			accessibility,
@@ -72,53 +74,55 @@ const getItinerary = async (req, res) => {
 
 // Update itinerary
 const updateItinerary = async (req, res) => {
-    const {
+	const {
 		title,
-	    description,
-        activities,
-        locations,
-        language,
-        price,
-        availableDates,
-        accessibility,
-        pickupLocation,
-        dropoffLocation,
-        createdBy,
+		description,
+		activities,
+		locations,
+		language,
+		preferences,
+		price,
+		availableDates,
+		accessibility,
+		pickupLocation,
+		dropoffLocation,
+		createdBy,
 		flaggedInappropriate
-    } = req.body;
+	} = req.body;
 
-    try {
-        const updatedFields = {
+	try {
+		const updatedFields = {
 			title,
-	        description,
-            activities,
-            locations,
-            language,
-            price,
-            availableDates,
-            accessibility,
-            pickupLocation,
-            dropoffLocation,
-            createdBy,
+			description,
+			activities,
+			locations,
+			language,
+			preferences,
+			price,
+			availableDates,
+			accessibility,
+			pickupLocation,
+			dropoffLocation,
+			createdBy,
 			flaggedInappropriate
-        };
+		};
 
-        // Handle image upload
-        if (req.file) {
-            updatedFields.image = {
-                data: req.file.buffer,
-                contentType: req.file.mimetype
-            };
-        }
+		// Handle image upload
+		if (req.file) {
+			updatedFields.image = {
+				data: req.file.buffer,
+				contentType: req.file.mimetype
+			};
+		}
 
-        const itinerary = await ItineraryModel.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
-        if (!itinerary) {
-            return res.status(404).json({ message: 'Itinerary not found' });
-        }
-        res.status(200).json(itinerary);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
+		const itinerary = await ItineraryModel.findByIdAndUpdate(req.params.id, updatedFields, {new: true});
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+		res.status(200).json(itinerary);
+	} catch (error) {
+		res.status(400).json({message: error.message});
+	}
 };
 
 // Delete itinerary
@@ -126,18 +130,18 @@ const deleteItinerary = async (req, res) => {
 	try {
 		const itinerary = await ItineraryModel.findById(req.params.id);
 		if (!itinerary) {
-			return res.status(404).json({ message: 'Itinerary not found' });
+			return res.status(404).json({message: 'Itinerary not found'});
 		}
 
-		const isBooked = await UserModel.find({ itineraryBookings: req.params.id });
+		const isBooked = await UserModel.find({itineraryBookings: req.params.id});
 		if (isBooked.length > 0) {
-			return res.status(400).json({ message: 'Cannot delete a booked itinerary' });
+			return res.status(400).json({message: 'Cannot delete a booked itinerary'});
 		}
 
 		await ItineraryModel.findByIdAndDelete(req.params.id);
-		res.status(200).json({ message: 'Itinerary deleted successfully' });
+		res.status(200).json({message: 'Itinerary deleted successfully'});
 	} catch (error) {
-		res.status(400).json({ message: error.message });
+		res.status(400).json({message: error.message});
 	}
 };
 
@@ -186,7 +190,7 @@ const SearchForItinerary = async (req, res) => {
 const getUpcomingItineraries = async (req, res) => {
 	try {
 		const currentDate = new Date(); // Get the current date
-		
+
 
 		// Find itineraries and populate activities
 		const itineraries = await ItineraryModel.find()
@@ -194,11 +198,11 @@ const getUpcomingItineraries = async (req, res) => {
 				path: 'activities', // Populate the activities field
 				match: {date: {$gte: currentDate}} // Only include activities with dates in the future
 			});
-		
+
 
 		// Filter out itineraries that have no upcoming activities
 		const upcomingItineraries = itineraries.filter(itinerary => itinerary.activities.length > 0);
-		
+
 
 		// If no upcoming itineraries are found, return a 404 response
 		if (upcomingItineraries.length === 0) {
