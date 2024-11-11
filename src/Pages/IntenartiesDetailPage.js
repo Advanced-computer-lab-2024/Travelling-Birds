@@ -270,20 +270,22 @@ const ItineraryDetail = () => {
 				// ... existing booking logic
 			
 				// Send a confirmation email
-				const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
-				const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
-				});
-			
-				if (!emailResponse.ok) {
-					throw new Error('Failed to send booking confirmation email');
+				if (transportation.toLowerCase() !== 'my car') {
+					const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
+					const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
+					});
+	
+					if (!emailResponse.ok) {
+						throw new Error('Failed to send booking confirmation email');
+					}
+	
+					toast.success('Confirmation email sent successfully');
 				}
-			
-				toast.success('Confirmation email sent successfully');
 			} catch (error) {
 				console.error('Error during booking:', error);
 				toast.error('Failed to complete booking or send confirmation email. Please try again.');
