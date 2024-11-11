@@ -230,6 +230,18 @@ const ActivityDetail = () => {
             if (!response.ok) {
                 throw new Error('Failed to book the activity');
             }
+         
+         
+    
+            toast.success('Activity booked successfully');
+            window.dispatchEvent(userUpdateEvent);
+            closeBookingModal();
+        } catch (error) {
+            console.error('Error booking activity:', error);
+            toast.error('Failed to book the activity. Please try again.');
+        }
+
+        try {
             if (transportation.toLowerCase() !== 'my car') {
                 const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
                 const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
@@ -246,15 +258,11 @@ const ActivityDetail = () => {
 
                 toast.success('Confirmation email sent successfully');
             }
-         
-    
-            toast.success('Activity booked successfully');
-            window.dispatchEvent(userUpdateEvent);
-            closeBookingModal();
         } catch (error) {
-            console.error('Error booking activity:', error);
-            toast.error('Failed to book the activity. Please try again.');
+            console.error('Error sending confirmation email:', error);
+            toast.error('Failed to send confirmation email. Please try again.');
         }
+
     };
 
      // Function to handle canceling the booking
