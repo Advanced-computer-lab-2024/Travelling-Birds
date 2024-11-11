@@ -10,6 +10,7 @@ const productSchema = new Schema({
     seller: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     ratings: [Number],
     reviews: [String],
+    soldQuantity:Number,
     soldOut: { type: Boolean, default: false },
     userPurchased: [{type: Schema.Types.ObjectId, ref: 'User'}],
     isArchived: {type: Boolean, default: false},
