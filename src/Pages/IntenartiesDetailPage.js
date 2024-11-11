@@ -32,6 +32,7 @@ const ItineraryDetail = () => {
 	const [message, setMessage] = useState('');
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
+	const [placeholder, setPlaceHolder] = useState('');
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -260,7 +261,7 @@ const ItineraryDetail = () => {
 			toast.error('Failed to book the itinerary. Please try again.');
 		}
 	};
-const handleShowTourGuideDetails = async () => {
+	const handleShowTourGuideDetails = async () => {
 		try {
 			console.log('Itinerary:', itinerary);
 			console.log('Tour Guide ID:', itinerary?.createdBy);
@@ -270,8 +271,21 @@ const handleShowTourGuideDetails = async () => {
 			const data = await response.json();
 			setTourGuide(data);
 			console.log('Tour Guide:', data);
-		}   catch (error) {
+
+			let image2Base64 = null;
+			if (data?.profilePicture?.data?.data && data?.profilePicture?.contentType) {
+				try {
+					const byteArray = new Uint8Array(data.profilePicture.data.data);
+					const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+					image2Base64 = `data:${data.profilePicture.contentType};base64,${btoa(binaryString)}`;
+				} catch (error) {
+					console.error('Error converting image data to base64:', error);
+				}
+			}
+			setPlaceHolder(image2Base64 || ''); // Ensure placeholder updates even if there's no image.
+		} catch (error) {
 			console.error('Error fetching tour guide:', error);
+			setPlaceHolder(''); // Ensure placeholder resets on error.
 		}
 	};
 
@@ -479,9 +493,9 @@ const handleShowTourGuideDetails = async () => {
 						<div className="bg-white p-6 rounded-lg shadow-lg mt-8">
 							<h2 className="text-2xl font-semibold text-[#330577] mb-4">Meet Your Tour Guide</h2>
 							<div className="flex items-center space-x-6">
-								{tourGuide?.profilePicture && (
+								{placeholder && (
 									<img
-										//src={imageBase64TourGuide}
+										src={placeholder}
 										alt={`${tourGuide.firstName} ${tourGuide.lastName}`}
 										className="w-24 h-24 rounded-full object-cover"
 									/>
