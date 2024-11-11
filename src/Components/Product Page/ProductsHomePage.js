@@ -100,7 +100,7 @@ const ProductHomePage = () => {
 				data.sort((a, b) => b.rating - a.rating);
 			}
 
-			data.filter(product => !product.isArchived);
+			data = data.filter(product => !product.isArchived);
 
 			// Convert images before setting state
 			const productsWithImages = convertProductImages(data);
