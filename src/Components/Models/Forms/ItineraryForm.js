@@ -69,6 +69,7 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 		const formData = new FormData();
 		formData.append('title', title);
 		formData.append('description', description);
+		//formData.append('activities', JSON.stringify(activities.split(',').map(id => id.trim())));
 		formData.append('activities', activities.split(',').map(id => id.trim()));
 		formData.append('locations', locations.split(',').map(loc => loc.trim()));
 		formData.append('timeline', timeline);
@@ -95,6 +96,7 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 
 	const registerItinerary = () => {
 		const formData = createFormData();
+		console.log('formData:', formData.get('activities'));
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`, {
 			method: 'POST',
 			body: formData
@@ -116,6 +118,7 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 
 	const updateItinerary = () => {
 		const formData = createFormData();
+		console.log('formData:', formData);
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
 			method: 'PUT',
 			body: formData

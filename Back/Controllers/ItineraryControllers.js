@@ -29,7 +29,7 @@ const addItinerary = async (req, res) => {
 		const itinerary = new ItineraryModel({
 			title,
 			description,
-			activities,
+			activities:activities.split(',').map(id => id.trim()),
 			locations,
 			language,
 			price,
