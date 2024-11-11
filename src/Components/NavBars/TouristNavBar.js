@@ -49,7 +49,6 @@ const TouristNavBar = () => {
 				});
 				const data = await res.json();
 				setUser(data);
-				console.log('User profile:', data);
 			} catch (err) {
 				console.log('Error fetching user profile', err);
 			}
@@ -59,7 +58,7 @@ const TouristNavBar = () => {
 			console.log('User id not found');
 			return;
 		}
-		fetchUserProfile().then(() => console.log('User profile fetched'));
+		fetchUserProfile();
 		window.addEventListener("userUpdated", fetchUserProfile);
 		return () =>{window.removeEventListener("userUpdated", fetchUserProfile)}
 	}, [id]);

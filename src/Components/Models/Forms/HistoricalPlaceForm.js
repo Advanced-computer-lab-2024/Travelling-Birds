@@ -5,7 +5,6 @@ import {useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 
 const HistoricalPlaceForm = ({historicalPlace: initialHistoricalPlace, historicalPlaces, setHistoricalPlaces}) => {
-	console.log(initialHistoricalPlace);
 	const [historicalPlace, setHistoricalPlace] = useState(initialHistoricalPlace);
 	const [name, setName] = useState(initialHistoricalPlace?.name || '');
 	const [description, setDescription] = useState(initialHistoricalPlace?.description || '');

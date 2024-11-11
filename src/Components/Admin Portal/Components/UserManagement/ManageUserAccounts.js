@@ -17,10 +17,8 @@ const ManageUserAccounts = () => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
-					console.log(user);
 					if (user.role === 'tourist') {
 						setTourists(tourists.filter(tourist => tourist._id !== user._id));
-						console.log(tourists);
 					}
 					if (user.role === 'tour_guide') {
 						setTourGuides(tourGuides.filter(tourGuide => tourGuide._id !== user._id));

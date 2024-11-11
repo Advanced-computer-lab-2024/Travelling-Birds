@@ -30,8 +30,6 @@ const ExplorePage = () => {
 				historicalPlaces: Array.isArray(data[2]) ? data[2] : [],
 				museums: Array.isArray(data[3]) ? data[3] : []
 			}
-			console.log(results);
-
 			const filteredResults = {
 				activities: results.activities.filter(activity => !activity.flaggedInappropriate),
 				itineraries: results.itineraries.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate),

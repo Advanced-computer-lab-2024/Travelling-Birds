@@ -71,6 +71,11 @@ function FlightDetails() {
 // Handle booking submission
 	const handleBookingSubmit = async () => {
 		try {
+			if (new Date().getFullYear() - new Date(travelerInfo.dateOfBirth).getFullYear() < 18) {
+				toast.error('Traveler must be at least 18 years old.');
+				return;
+			}
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/flights/book`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
@@ -107,14 +112,11 @@ function FlightDetails() {
 								}
 							]
 						}
-
 				})
 			});
-			console.log(travelerInfo);
 			const bookingData = await response.json();
 			if (response.ok) {
 				toast.success('Booking confirmed!');
-				console.log('Booking Data:', bookingData);
 			} else {
 				toast.error('Booking failed. Please try again.');
 				console.error('Booking Error:', bookingData);
@@ -125,11 +127,9 @@ function FlightDetails() {
 		}
 	};
 
-// Update traveler info on form change
 	const handleChange = (e) => {
 		const {name, value} = e.target;
 		setTravelerInfo((prevInfo) => ({...prevInfo, [name]: value}));
-		console.log(travelerInfo);
 	};
 
 	if (loading) return <p>Loading...</p>;

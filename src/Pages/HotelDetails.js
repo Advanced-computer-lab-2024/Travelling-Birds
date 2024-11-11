@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaPhone, FaCreditCard, FaHotel } from 'react-icons/fa';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {FaCreditCard, FaEnvelope, FaHotel, FaPhone, FaUser} from 'react-icons/fa';
+import {toast} from "react-toastify";
 
 function HotelDetails() {
-	const { hotelId, checkInDate, checkOutDate } = useParams();
+	const {hotelId, checkInDate, checkOutDate} = useParams();
 	const currencyCode = sessionStorage.getItem('currency') || 'EGP';
 	const [hotel, setHotel] = useState(null);
 	const [showBookingForm, setShowBookingForm] = useState(false);
@@ -11,8 +12,9 @@ function HotelDetails() {
 		firstName: '',
 		lastName: '',
 		email: '',
+		dateOfBirth: '',
 		phone: '',
-		creditCard: { number: '4151289722471370', expiryDate: '2026-08', cvc: '' },
+		creditCard: {number: '4151289722471370', expiryDate: '2026-08', cvc: ''},
 	});
 
 	useEffect(() => {
@@ -21,19 +23,35 @@ function HotelDetails() {
 			const data = await response.json();
 			setHotel(data[0]);
 		}
+
 		fetchHotelDetails();
 	}, [hotelId, checkInDate, checkOutDate]);
 
 	const handleBooking = async () => {
-		await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/book`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ hotelId,travelerDetails , checkInDate, checkOutDate}),
-		});
+		if (new Date().getFullYear() - new Date(travelerDetails.dateOfBirth).getFullYear() < 18) {
+			toast.error('You must be 18 years or older to book a hotel.');
+			return;
+		}
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/book`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({hotelId, travelerDetails, checkInDate, checkOutDate}),
+			});
+			const data = await response.json();
+			if (data.message.includes('successfully')) {
+				toast.success(data.message);
+			} else {
+				toast.error(data.message);
+			}
+		} catch (error) {
+			console.error('Error booking hotel:', error);
+			toast.error('Failed to book hotel');
+		}
 	};
 
 	const handleChange = (e) => {
-		const { name, value } = e.target;
+		const {name, value} = e.target;
 		setTravelerDetails((prev) => {
 			if (name.startsWith('creditCard.')) {
 				const key = name.replace('creditCard.', '');
@@ -45,7 +63,7 @@ function HotelDetails() {
 					}
 				};
 			}
-			return { ...prev, [name]: value };
+			return {...prev, [name]: value};
 		});
 	};
 
@@ -56,11 +74,11 @@ function HotelDetails() {
 			{/* Hotel Details */}
 			<div className="bg-white shadow rounded-lg p-6 mb-6">
 				<h2 className="text-4xl font-bold mb-4 text-[#330577] flex items-center">
-					<FaHotel className="mr-2" /> {hotel?.hotel?.name}
+					<FaHotel className="mr-2"/> {hotel?.hotel?.name}
 				</h2>
 				<p className="text-gray-600 mb-2">Rating: {hotel?.hotel?.rating || 'N/A'}</p>
 				<p className="text-gray-600 mb-6">
-					{hotel?.offers && hotel.offers[0]?.price ? (
+					{hotel?.offers[0]?.price ? (
 						<>Price: {hotel.offers[0].price.total} {hotel.offers[0].price.currency}</>
 					) : (
 						'Price information not available'
@@ -80,7 +98,7 @@ function HotelDetails() {
 					<h3 className="text-2xl font-semibold mb-4">Booking Information</h3>
 					<div className="grid gap-4">
 						<div className="relative">
-							<FaUser className="absolute left-3 top-3 text-gray-500" />
+							<FaUser className="absolute left-3 top-3 text-gray-500"/>
 							<input
 								type="text"
 								name="firstName"
@@ -91,7 +109,7 @@ function HotelDetails() {
 							/>
 						</div>
 						<div className="relative">
-							<FaUser className="absolute left-3 top-3 text-gray-500" />
+							<FaUser className="absolute left-3 top-3 text-gray-500"/>
 							<input
 								type="text"
 								name="lastName"
@@ -102,7 +120,7 @@ function HotelDetails() {
 							/>
 						</div>
 						<div className="relative">
-							<FaEnvelope className="absolute left-3 top-3 text-gray-500" />
+							<FaEnvelope className="absolute left-3 top-3 text-gray-500"/>
 							<input
 								type="email"
 								name="email"
@@ -113,7 +131,18 @@ function HotelDetails() {
 							/>
 						</div>
 						<div className="relative">
-							<FaPhone className="absolute left-3 top-3 text-gray-500" />
+							<FaEnvelope className="absolute left-3 top-3 text-gray-500"/>
+							<input
+								type="date"
+								name="dateOfBirth"
+								placeholder="Date of Birth (YYYY-MM-DD)"
+								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								value={travelerDetails.dateOfBirth}
+								onChange={handleChange}
+							/>
+						</div>
+						<div className="relative">
+							<FaPhone className="absolute left-3 top-3 text-gray-500"/>
 							<input
 								type="tel"
 								name="phone"
@@ -126,7 +155,7 @@ function HotelDetails() {
 
 						{/* Payment Fields */}
 						<div className="relative">
-							<FaCreditCard className="absolute left-3 top-3 text-gray-500" />
+							<FaCreditCard className="absolute left-3 top-3 text-gray-500"/>
 							<input
 								type="text"
 								name="creditCard.number"

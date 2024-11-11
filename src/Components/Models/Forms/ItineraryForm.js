@@ -96,7 +96,6 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 
 	const registerItinerary = () => {
 		const formData = createFormData();
-		console.log('formData:', formData.get('activities'));
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`, {
 			method: 'POST',
 			body: formData
@@ -118,7 +117,6 @@ const ItineraryForm = ({itinerary: initialItinerary, itineraries, setItineraries
 
 	const updateItinerary = () => {
 		const formData = createFormData();
-		console.log('formData:', formData);
 		fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
 			method: 'PUT',
 			body: formData

@@ -18,7 +18,6 @@ const ItinerariesPage = () => {
                 const res = await fetch(apiUrl);
                 const itineraries = await res.json();
                 setItineraries(itineraries);
-                console.log('Itineraries:', itineraries);
             } catch (err) {
                 console.log('Error fetching itineraries', err);
             } finally {
@@ -43,7 +42,6 @@ const ItinerariesPage = () => {
             const res = await fetch(apiUrl);
             const data = await res.json();
             setItineraries(data.itineraries);
-            console.log('Itineraries:', data.itineraries);
         } catch (err) {
             console.log('Error fetching itineraries', err);
         } finally {

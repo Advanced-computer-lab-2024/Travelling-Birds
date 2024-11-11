@@ -317,7 +317,6 @@ const getComments = async (req, res) => {
 		if (!activity) {
 			return res.status(404).json({message: 'Activity not found'});
 		}
-		console.log(activity.comments);
 		const comments = await CommentModel.find({_id: {$in: activity.comments}});
 		res.status(200).json(comments);
 	} catch (error) {

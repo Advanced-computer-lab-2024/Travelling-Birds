@@ -50,8 +50,7 @@ const PlacesPage = () => {
 				setMuseums(filteredMuseums);
 				setHistoricalPlaces(filteredHistoricalPlaces);
 
-				console.log("Museums:", filteredMuseums);
-				console.log("Historical Places:", filteredHistoricalPlaces);
+
 			} catch (err) {
 				console.log("Error fetching data", err);
 			} finally {
@@ -110,9 +109,7 @@ const PlacesPage = () => {
 				setMuseums(museumsData);
 				setHistoricalPlaces(historicalPlacesData);
 
-				console.log("Museums:", museumsData);
-				console.log("Historical Places:", historicalPlacesData);
-			} catch (err) {
+				} catch (err) {
 				console.log("Error fetching data", err);
 			} finally {
 				setLoading(false);

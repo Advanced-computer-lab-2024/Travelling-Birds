@@ -639,7 +639,6 @@ const addProductPurchase = async (req, res) => {
 		const updatedProduct = await Product.findByIdAndUpdate(productId,
 			{ $push: { userPurchased: userId } },
 			{ new: true }).populate('userPurchased');
-		console.log(updatedProduct);
         res.status(200).json(updatedProduct);
     } catch (error) {
         res.status(500).json({ error: error.message });
