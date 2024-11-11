@@ -37,6 +37,7 @@ import WaitPage from "./Pages/WaitPage";
 import AdvertiserActivities  from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
 import ProductDetails from "./Pages/ProductsDetailsPage";
+import FlightsandHotels from "./Pages/FlightsandHotels";
 
 import HotelSearchPage from "./Pages/HotelSearchPage";
 import HotelDetails from "./Pages/HotelDetails";
@@ -110,6 +111,7 @@ root.render(
 					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
 					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
 					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
+					<Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
 				</Route>
 			</Routes>
 		</BrowserRouter>
