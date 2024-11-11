@@ -39,8 +39,6 @@ const ExplorePage = () => {
                 museums: results.museums,
             }
 
-            console.log(filteredResults);
-
             setResults(filteredResults);
             setLoading(false);
         } catch (error) {
@@ -65,11 +63,32 @@ const ExplorePage = () => {
 
             const data = response ? await response.json() : [];
 
+            // const results = {
+            //                 activities: Array.isArray(data[0]) ? data[0] : [],
+            //                 itineraries: Array.isArray(data[1]) ? data[1] : [],
+            //                 historicalPlaces: Array.isArray(data[2]) ? data[2] : [],
+            //                 museums: Array.isArray(data[3]) ? data[3] : []
+            //             }
+            //             console.log(results);
+            //
+            //             const filteredResults = {
+            //                 activities: results.activities.filter(activity => !activity.flaggedInappropriate),
+            //                 itineraries: results.itineraries.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate),
+            //                 historicalPlaces: results.historicalPlaces,
+            //                 museums: results.museums,
+            //             }
+            //
+            //             setResults(filteredResults);
+
+            console.log(data)
+
+
+
             setResults({
-                activities: searchParams.activeSection === 'activities' ? (Array.isArray(data) ? data : []) : results.activities,
-                itineraries: searchParams.activeSection === 'itineraries' ? (Array.isArray(data) ? data : []) : results.itineraries,
-                historicalPlaces: searchParams.activeSection === 'historicalPlaces' ? (Array.isArray(data) ? data : []) : results.historicalPlaces,
-                museums: searchParams.activeSection === 'museums' ? (Array.isArray(data) ? data : []) : results.museums
+                activities: searchParams.activeSection === 'activities' ? data.filter(activity => !activity.flaggedInappropriate) : results.activities,
+                itineraries: searchParams.activeSection === 'itineraries' ? data.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate) : results.itineraries,
+                historicalPlaces: searchParams.activeSection === 'historicalPlaces' ? data : results.historicalPlaces,
+                museums: searchParams.activeSection === 'museums' ? data : results.museums
             });
 
             setLoading(false);
