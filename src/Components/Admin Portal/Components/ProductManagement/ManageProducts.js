@@ -77,37 +77,37 @@ const ManageProducts = () => {
 			});
 	};
 
-	const handleArchive = (id, isArchived) => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/products/${id}`, {
+	const handleArchive = (product) => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/products/${product._id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({isArchived: !isArchived}),
+			body: JSON.stringify({isArchived: !product.isArchived}),
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				if (data._id) {
-					toast.success(isArchived ? 'Product unarchived successfully' : 'Product archived successfully');
-					setProducts(products.map(product => product._id === id ? {
+					toast.success(product.isArchived ? 'Product unarchived successfully' : 'Product archived successfully');
+					setProducts(products.map(p => p._id === product._id ? {
 						...product,
-						isArchived: !isArchived
-					} : product));
+						isArchived: !product.isArchived
+					} : p));
 				} else {
 					toast.error('Failed to archive/unarchive product');
 				}
 			});
 	};
 
-	const handleDelete = (id) => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/products/${id}`, {
+	const handleDelete = (product) => {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/products/${product._id}`, {
 			method: 'DELETE',
 		})
 			.then((response) => response.json())
 			.then(data => {
 				if (data.message.includes('deleted')) {
 					toast.success('Product deleted successfully');
-					setProducts(products.filter(product => product._id !== id));
+					setProducts(products.filter(p => p._id !== product._id));
 				} else {
 					toast.error('Failed to delete product');
 				}
@@ -169,14 +169,14 @@ const ManageProducts = () => {
 									        onClick={() => handleUpdate(product)}>Edit
 									</button>
 									<button className="btn btn-secondary btn-sm mr-2"
-									        onClick={() => handleArchive(product._id, product.isArchived)}>
-										{product.isArchived ? 'Unarchive' : 'Archive'}
+									        onClick={() => handleArchive(product)}>
+										{product.isArchived ? 'Un-archive' : 'Archive'}
 									</button>
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewImage(product)}>View Image
 									</button>
 									<button className="btn btn-danger btn-sm"
-									        onClick={() => handleDelete(product._id)}>Delete
+									        onClick={() => handleDelete(product)}>Delete
 									</button>
 								</td>
 							</tr>

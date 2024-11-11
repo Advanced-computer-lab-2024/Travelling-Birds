@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Explorer from '../Components/Explore Page/Explorer';
 import ResultsList from '../Components/Explore Page/ResultsList';
 import ActivityDisplay from '../Components/Models/Displays/ActivityDisplay';
@@ -6,10 +6,10 @@ import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
 import HistoricalPlaceDisplay from '../Components/Models/Displays/HistoricalPlaceDisplay';
 import MuseumDisplay from '../Components/Models/Displays/MuseumDisplay';
 import Modal from 'react-modal';
-import LoadingPage from './LoadingPage'; 
+import LoadingPage from './LoadingPage';
 
 const ExplorePage = () => {
-    const [results, setResults] = useState({ activities: [], itineraries: [], museums: [], historicalPlaces: [] });
+    const [results, setResults] = useState({activities: [], itineraries: [], museums: [], historicalPlaces: []});
     const [loading, setLoading] = useState(true);
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -24,13 +24,24 @@ const ExplorePage = () => {
             ]);
 
             const data = await Promise.all(responses.map(res => res.json()));
-
-            setResults({
+            const results = {
                 activities: Array.isArray(data[0]) ? data[0] : [],
                 itineraries: Array.isArray(data[1]) ? data[1] : [],
                 historicalPlaces: Array.isArray(data[2]) ? data[2] : [],
                 museums: Array.isArray(data[3]) ? data[3] : []
-            });
+            }
+            console.log(results);
+
+            const filteredResults = {
+                activities: results.activities.filter(activity => !activity.flaggedInappropriate),
+                itineraries: results.itineraries.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate),
+                historicalPlaces: results.historicalPlaces,
+                museums: results.museums,
+            }
+
+            console.log(filteredResults);
+
+            setResults(filteredResults);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching initial results:', error);
@@ -132,13 +143,13 @@ const ExplorePage = () => {
 
         switch (selectedItem.type) {
             case 'activity':
-                return <ActivityDisplay activity={selectedItem.data} />;
+                return <ActivityDisplay activity={selectedItem.data}/>;
             case 'itinerary':
-                return <ItineraryDisplay itinerary={selectedItem.data} />;
+                return <ItineraryDisplay itinerary={selectedItem.data}/>;
             case 'historicalPlace':
-                return <HistoricalPlaceDisplay historicalPlace={selectedItem.data} />;
+                return <HistoricalPlaceDisplay historicalPlace={selectedItem.data}/>;
             case 'museum':
-                return <MuseumDisplay museum={selectedItem.data} />;
+                return <MuseumDisplay museum={selectedItem.data}/>;
             default:
                 return null;
         }
@@ -153,9 +164,10 @@ const ExplorePage = () => {
             {/* Video section */}
             <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-lg mb-10">
                 <video className="w-full h-full object-cover" autoPlay muted loop>
-                    <source src={require('../Assets/video.mp4')} type="video/mp4" />
+                    <source src={require('../Assets/video.mp4')} type="video/mp4"/>
                 </video>
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-6">
+                <div
+                    className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white p-6">
                     <div className="text-center space-y-4">
                         <p className="text-4xl font-bold">"Explore over 2 million places around the world"</p>
                         <p className="text-2xl">Join 5 million users who trust us for their travel plans</p>
@@ -163,12 +175,12 @@ const ExplorePage = () => {
                     </div>
                 </div>
             </div>
-    
+
             {/* Search and Filter section */}
             <div className="mt-10">
-                <Explorer onSearch={handleSearch} onFilter={handleFilter} onSort={handleSort} />
+                <Explorer onSearch={handleSearch} onFilter={handleFilter} onSort={handleSort}/>
             </div>
-    
+
             {/* Modal for displaying item details */}
             <Modal
                 isOpen={!!selectedItem}
@@ -185,10 +197,10 @@ const ExplorePage = () => {
                     Close
                 </button>
             </Modal>
-    
+
             {/* Results section */}
             {loading ? (
-                <LoadingPage /> 
+                <LoadingPage/>
             ) : (
                 <div className="mt-10">
                     <ResultsList

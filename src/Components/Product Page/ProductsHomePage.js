@@ -21,9 +21,10 @@ const ProductHomePage = () => {
 			
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products`);
-				const data = await response.json();
+				let data = await response.json();
 
 				if (response.ok) {
+					data = data.filter(product => !product.isArchived);
 					const productsWithImages = data.map(product => {
 						let imageBase64 = null;
 						if (product.picture?.data && product.picture.contentType) {

@@ -30,7 +30,7 @@ const addProduct = async (req, res) => {
 // Get products
 const getAllProducts = async (req, res) => {
 	try {
-		const products = await Product.find({isArchived: false });
+		const products = await Product.find();
 		res.status(200).json(products);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -52,7 +52,7 @@ const getProduct = async (req, res) => {
 
 // Update product
 const updateProduct = async (req, res) => {
-	const {name, description, price, availableQuantity, seller, ratings, reviews} = req.body;
+	const {name, description, price, availableQuantity, seller, ratings, reviews, isArchived} = req.body;
 	try {
 		const updatedFields = {
 			name,
@@ -61,7 +61,8 @@ const updateProduct = async (req, res) => {
 			availableQuantity,
 			seller,
 			ratings,
-			reviews
+			reviews,
+			isArchived
 		};
 		// Update image data if a new file is uploaded
 		if (req.file) {

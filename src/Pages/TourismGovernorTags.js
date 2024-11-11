@@ -111,7 +111,7 @@ const TourismGovernorTags = () => {
 								</td>
 								<td>
 									<button className="btn btn-primary btn-sm"
-									        onClick={() => handleDelete(tag.id)}>Delete
+									        onClick={() => handleDelete(tag._id)}>Delete
 									</button>
 								</td>
 							</tr>

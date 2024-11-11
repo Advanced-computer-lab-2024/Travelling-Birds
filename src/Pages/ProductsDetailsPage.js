@@ -18,6 +18,8 @@ const ProductsDetailsPage = () => {
 	const [expiryDate, setExpiryDate] = useState('');
 	const [cvv, setCvv] = useState('');
 	const [walletAmount, setWalletAmount] = useState('');
+	const [availableQuantity, setAvailableQuantity] = useState(0);
+	const [soldQuantity, setSoldQuantity] = useState(0);
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -28,6 +30,8 @@ const ProductsDetailsPage = () => {
 				const res = await fetch(apiUrl);
 				const product = await res.json();
 				setProduct(product);
+				setAvailableQuantity(product.availableQuantity);
+				setSoldQuantity(product.soldQuantity);
 				console.log('Product:', product);
 			} catch (err) {
 				console.log('Error fetching product', err);
@@ -153,11 +157,21 @@ const ProductsDetailsPage = () => {
 				return;
 			}
 			console.log('Updating wallet balance...');
+			if(!(userWalletBalance === null)) {
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({wallet: updatedWalletBalance})
+			});}
+
+			const product =await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+				method: 'PUT',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({
+					availableQuantity:availableQuantity-1 ,
+					soldQuantity: soldQuantity+1
+				})
 			});
 
 			console.log('Adding product purchase...');
@@ -198,6 +212,15 @@ const ProductsDetailsPage = () => {
 		);
 	};
 
+	//const calculateAvgRating = (rating) => {
+		{/*if (!ratings || ratings.length === 0)
+			return 0;*/}
+		//const total = rating.reduce((acc, rating) => acc + rating, 0);
+		//const average = total / rating.length;
+		//return average.toFixed(1);
+	//};
+
+
 	const formatPriceRange = (price) => {
 		const currency = sessionStorage.getItem('currency') || 'EGP';
 		if (currency === 'USD') {
@@ -234,6 +257,11 @@ const ProductsDetailsPage = () => {
 									</span>
 									<p className="text-gray-600 text-sm">({product?.reviewsCount} reviews)</p>
 								</div>
+							</div>
+							<div className="mt-3">
+								<p className="text-gray-700 text-base">
+									{product?.description}
+								</p>
 							</div>
 							<div className="flex flex-col space-y-4 mt-4 md:mt-0">
 								<button
@@ -321,13 +349,13 @@ const ProductsDetailsPage = () => {
 					{/* Ratings & Reviews */}
 					<div className="bg-white p-6 rounded-lg shadow-lg">
 						<h2 className="text-lg font-semibold text-[#330577] mb-4">Ratings and Reviews</h2>
-						<p className="text-xl text-[#330577] font-bold">{product?.rating} ★</p>
+						<p className="text-xl text-[#330577] font-bold">{(product?.rating)} ★</p>
 						<p className="text-sm text-gray-500">{product?.reviewCount} reviews</p>
 						<div className="mt-4 space-y-2">
 							{product?.comments?.length ? (
 								product.comments.slice(0, visibleProductComments).map((comment, index) => (
 									<div key={index} className="border-b border-gray-200 pb-2">
-										<p className="text-gray-800 font-semibold">{comment.user}</p>
+										<p className="text-gray-800 font-semibold">{comment.user.username}</p>
 										<p className="text-gray-600">{comment.text}</p>
 										<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
 										<span className="flex">{renderStars(comment.stars)}</span>
