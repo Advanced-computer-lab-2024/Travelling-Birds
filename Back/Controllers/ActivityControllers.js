@@ -267,11 +267,13 @@ const filterUpcomingActivities = async (req, res) => {
 const sortActivities = async (req, res) => {
 	try {
 		// Extract the sort parameter from the query string (price or rating)
-		const {sortBy} = req.query;
+		const { sortBy } = req.query;
 
+		// Get the current date to filter out past activities
+		const currentDate = new Date();
 
 		// Build the base query to find only upcoming activities
-		let query = {};
+		let query = { date: { $gte: currentDate } }; // Only activities with a date greater than or equal to the current date
 
 		// Determine the sort criteria based on the sortBy parameter
 		let sortCriteria = {};
@@ -288,16 +290,15 @@ const sortActivities = async (req, res) => {
 
 		// If no activities are found, return a 404 error
 		if (sortedActivities.length === 0) {
-			return res.status(404).json({message: 'No upcoming activities found to sort'});
+			return res.status(404).json({ message: 'No upcoming activities found to sort' });
 		}
 
 		// Send back the sorted activities
 		res.status(200).json(sortedActivities);
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
-		res.status(500).json({message: 'Error sorting activities', error});
+		res.status(500).json({ message: 'Error sorting activities', error });
 	}
-
 }
 
 // Get all created activities
