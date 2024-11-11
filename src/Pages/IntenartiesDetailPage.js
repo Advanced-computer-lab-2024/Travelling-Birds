@@ -33,6 +33,8 @@ const ItineraryDetail = () => {
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
 	const [placeholder, setPlaceHolder] = useState('');
+	const [userLocation, setUserLocation] = useState('');
+    const [userEmail, setUserEmail] = useState('');
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -252,6 +254,29 @@ const ItineraryDetail = () => {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ wallet: updatedWalletBalance })
 			});
+
+			try {
+				// ... existing booking logic
+			
+				// Send a confirmation email
+				const emailBody = `${transportation} will take you from ${userLocation} at the appropriate time.`;
+				const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
+				});
+			
+				if (!emailResponse.ok) {
+					throw new Error('Failed to send booking confirmation email');
+				}
+			
+				toast.success('Confirmation email sent successfully');
+			} catch (error) {
+				console.error('Error during booking:', error);
+				toast.error('Failed to complete booking or send confirmation email. Please try again.');
+			}
 
 			toast.success('Itinerary booked successfully');
 			window.dispatchEvent(userUpdateEvent);
@@ -736,6 +761,26 @@ const ItineraryDetail = () => {
 										onChange={(e) => setWalletAmount(e.target.value)}
 										className="w-full border rounded-lg p-2"
 										placeholder="Enter amount"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Location</label>
+									<input
+										type="text"
+										value={userLocation}
+										onChange={(e) => setUserLocation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter your location"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Contact</label>
+									<input
+										type="email"
+										value={userEmail}
+										onChange={(e) => setUserEmail(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter your email"
 									/>
 								</div>
 								<button
