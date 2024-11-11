@@ -344,27 +344,7 @@ const ActivityDetail = () => {
         );
     };
 
-    // Helper function to copy link to clipboard
-    const handleCopyLink = () => {
-        const link = `http://localhost:3000/activities/${activityId}`;
-        navigator.clipboard.writeText(link).then(() => {
-            alert('Link copied to clipboard!');
-            setIsShareOpen(false); // Close the dropdown menu after copying
-        });
-    };
 
-    // Handle sending the link via email
-    const handleSendEmail = () => {
-        if (!email) {
-            alert('Please enter a valid email address.');
-            return;
-        }
-
-        const link = `http://localhost:3000/activities/${activityId}`;
-        window.open(`mailto:${email}?subject=Check out this activity&body=Here's a link to an interesting activity: ${link}`, '_blank');
-        setEmail(''); // Clear email input
-        setIsShareOpen(false); // Close the dropdown
-    };
 
     // Helper function to format price range based on currency
     const formatPriceRange = (price) => {
