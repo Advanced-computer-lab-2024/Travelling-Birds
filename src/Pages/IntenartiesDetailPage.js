@@ -316,6 +316,21 @@ const ItineraryDetail = () => {
 		}
 	};
 
+	const convertToBase64 = (imageDataObject) => {
+		if (!imageDataObject?.data?.data || !imageDataObject?.contentType) {
+			return null; // Return null if data or content type is missing
+		}
+
+		try {
+			const byteArray = new Uint8Array(imageDataObject.data.data);
+			const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+			return `data:${imageDataObject.contentType};base64,${btoa(binaryString)}`;
+		} catch (error) {
+			console.error('Error converting image data to base64:', error);
+			return null; // Return null in case of error
+		}
+	};
+
 	const imageBase64 = itinerary?.image?.data
 		? `data:${itinerary.image.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(itinerary.image.data.data)))}`
 		: '';
@@ -543,36 +558,52 @@ const ItineraryDetail = () => {
 							<img src={imageBase64} alt="Itinerary" className="w-full h-96 object-cover rounded-lg shadow-md" />
 						</div>
 					)}
-
 					{/* Activities Timeline */}
 					{activities.length > 0 && (
 						<div className="mt-8">
 							<h2 className="text-2xl font-semibold text-[#330577] mb-4">Activities Timeline</h2>
-							<div className="space-y-8">
-								{activities.map((activity, index) => (
-									<div key={activity._id} className="relative bg-white p-4 rounded-lg shadow-md flex items-start space-x-6">
-										<div className="absolute top-0 left-1 h-full w-1 bg-[#330577] rounded-lg"></div>
-										<div className="flex-shrink-0 mt-2">
-											<FaCalendarAlt className="text-[#330577] text-2xl" />
-										</div>
-										<div>
-											<p className="text-sm text-gray-500 mb-1">
-												<FaClock className="inline mr-1" /> {new Date(activity.date).toLocaleDateString()}</p>
-											<h3
-												onClick={() => window.open(`/activities/${activity._id}`, '_blank')}
-												className="text-lg font-semibold text-[#330577] mb-1">{activity.title}</h3>
-											<p className="text-gray-600 mb-1">{activity.description}</p>
-											<LocationContact activity={activity} />
-											<div className="flex items-center mt-3">
-												<span className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
+							<div className="space-y-8 relative bg-white p-4 rounded-lg shadow-md">
+								{activities.map((activity, index) => {
+									const activityImage = convertToBase64(activity.image);
+									return (
+										<div key={activity._id} className="relative bg-[#eef2f5] p-4 rounded-lg shadow-md flex items-start justify-between">
+											<div>
+												<p className="text-sm text-gray-500 mb-1">
+													<FaClock className="inline mr-1" /> {new Date(activity.date).toLocaleDateString()}
+												</p>
+												<h3
+													onClick={() => window.open(`/activities/${activity._id}`, '_blank')}
+													className="text-lg font-semibold text-[#330577] mb-1"
+												>
+													{activity.title}
+												</h3>
+												<p className="text-gray-600 mb-1">{activity.description}</p>
+												<LocationContact activity={activity} />
+												<div className="flex items-center mt-3">
+													<span className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
+												</div>
 											</div>
+											{activityImage && (
+												<img
+													src={activityImage}
+													alt={`Activity ${activity.title}`}
+													className="flex-shrink-0 object-cover rounded-lg ml-4 w-[48%] h-[48%]"
+													style={{
+														maxWidth: '100%',
+														maxHeight: '100%',
+														transform: 'translate(-80px,4px)', // Moves the image left and down
+														margin: '8px', // Adds margin around the image
+													}}
+												/>
+											)}
 										</div>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						</div>
 					)}
-					
+
+
 					{/* Comments Section */}
 					<div className="bg-white p-4 rounded-lg shadow-md mt-8">
 						<h2 className="font-semibold text-lg text-[#330577]">Comments</h2>
