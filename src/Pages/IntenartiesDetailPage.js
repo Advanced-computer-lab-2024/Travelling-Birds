@@ -28,7 +28,7 @@ const ItineraryDetail = () => {
 	const [tourGuide, setTourGuide] = useState(null);
 	const [commentTextTourGuide, setCommentTextTourGuide] = useState("");
 	const [commentRatingTourGuide, setCommentRatingTourGuide] = useState(0);
-	const itineraryId = useParams().id;
+	const[ itineraryId, setItineraryId] = useState(useParams().id);
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
 
@@ -99,34 +99,16 @@ const ItineraryDetail = () => {
                 console.error('Error fetching transportations:', error);
             }
         };
-		const fetchTourGuide = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/tour-guide`);
-				const data = await response.json();
-				setTourGuide(data);
-			}   catch (error) {
-				console.error('Error fetching tour guide:', error);
+
+
+		fetchItinerary().then(r => {
+			fetchTransportations();
+			fetchActivities();
+			fetchComments();
+			if (userId) {
+				checkUserBooking();
 			}
-		};
-		const fetchTourGuideComments = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}/comments`);
-				const data = await response.json();
-				setTourGuide((prev) => ({ ...prev, comments: data }));
-			} catch (error) {
-				console.error('Error fetching tour guide comments:', error);
-			}
-		}
-        fetchTransportations();
-		fetchTourGuide();
-		fetchItinerary();
-		fetchActivities();
-		fetchComments();
-		fetchTourGuideComments();
-		fetchTourGuide();
-		if (userId) {
-			checkUserBooking();
-		}
+		});
 	}, [itineraryId, userId, userRole]);
 
 	const openBookingModal = () => {
@@ -147,71 +129,71 @@ const ItineraryDetail = () => {
 			toast.error('Only tourists can book itineraries.');
 			return;
 		}
-	
+
 		if (!cardNumber || !expiryDate || !cvv || !transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
-	
+
 		// Parse wallet amount input to a number
 		const enteredAmount = parseFloat(walletAmount);
-	
+
 		if (enteredAmount <= 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
-	
+
 		try {
 			// Fetch user to check wallet balance
 			const userRes = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userRes.ok) {
 				throw new Error('Failed to fetch user details');
 			}
-	
+
 			const user = await userRes.json();
-	
+
 			// Check if user has enough in wallet
 			if (enteredAmount > user.wallet) {
 				toast.error('Not enough balance in wallet.');
 				return;
 			}
-	
+
 			// Check for existing bookings
 			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`);
 			if (!res.ok) {
 				throw new Error('Failed to fetch user bookings');
 			}
-	
+
 			const userBookings = await res.json();
 			const isAlreadyBooked = userBookings.some((booking) => booking._id === itineraryId);
-	
+
 			if (isAlreadyBooked) {
 				toast.info('Itinerary already booked');
 				closeBookingModal();
 				return;
 			}
-	
+
 			// Deduct wallet amount from user balance
 			const updatedWalletBalance = user.wallet - enteredAmount;
-	
+
 			// Make the booking request and update wallet balance
 			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ itineraryId, walletAmount: enteredAmount })
 			});
-	
+
 			if (!bookingResponse.ok) {
 				throw new Error('Failed to book the itinerary');
 			}
-	
+
 			// Update user's wallet balance
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ wallet: updatedWalletBalance })
 			});
-	
+
 			toast.success('Itinerary booked successfully');
 			window.dispatchEvent(userUpdateEvent);
 			closeBookingModal();
@@ -220,7 +202,20 @@ const ItineraryDetail = () => {
 			toast.error('Failed to book the itinerary. Please try again.');
 		}
 	};
-
+const handleShowTourGuideDetails = async () => {
+		try {
+			console.log('Itinerary:', itinerary);
+			console.log('Tour Guide ID:', itinerary?.createdBy);
+			const url = `${process.env.REACT_APP_BACKEND}/api/users/${itinerary?.createdBy}`;
+			console.log('Tour Guide URL:', url);
+			const response = await fetch(url);
+			const data = await response.json();
+			setTourGuide(data);
+			console.log('Tour Guide:', data);
+		}   catch (error) {
+			console.error('Error fetching tour guide:', error);
+		}
+	};
 
 	const handleCancelBooking = async () => {
 		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
@@ -253,6 +248,11 @@ const ItineraryDetail = () => {
 		? `data:${itinerary.image.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(itinerary.image.data.data)))}`
 		: '';
 
+	// const imageBase64TourGuide = tourGuide?.profilePicture?.data?.data
+	// 	? `data:${tourGuide.profilePicture.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(tourGuide.profilePicture.data.data)))}`
+	// 	: '';
+
+
 	const renderStars = (rating) => {
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
 			rating = 0;
@@ -281,18 +281,18 @@ const ItineraryDetail = () => {
 			stars: commentRating,
 			date: new Date().toISOString() // Ensure correct date format
 		};
-	
+
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(newComment)
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to add comment');
 			}
-	
+
 			const updatedItinerary = await response.json();
 			setItinerary(updatedItinerary);
 			setCommentText("");
@@ -413,13 +413,15 @@ const ItineraryDetail = () => {
 							</div>
 						</div>
 					</div>
+					<button onClick={handleShowTourGuideDetails} className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]">Show Tour Guide Details</button>
+					{/* Tour Guide Details */}
 					{tourGuide && (
 						<div className="bg-white p-6 rounded-lg shadow-lg mt-8">
 							<h2 className="text-2xl font-semibold text-[#330577] mb-4">Meet Your Tour Guide</h2>
 							<div className="flex items-center space-x-6">
-								{tourGuide.profilePicture && (
+								{tourGuide?.profilePicture && (
 									<img
-										src={`data:${tourGuide.profilePicture.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(tourGuide.profilePicture.data.data)))}`}
+										//src={imageBase64TourGuide}
 										alt={`${tourGuide.firstName} ${tourGuide.lastName}`}
 										className="w-24 h-24 rounded-full object-cover"
 									/>
@@ -467,7 +469,7 @@ const ItineraryDetail = () => {
 							<img src={imageBase64} alt="Itinerary" className="w-full h-96 object-cover rounded-lg shadow-md" />
 						</div>
 					)}
-					
+
 					{/* Activities Timeline */}
 					{activities.length > 0 && (
 						<div className="mt-8">
@@ -496,7 +498,7 @@ const ItineraryDetail = () => {
 							</div>
 						</div>
 					)}
-					
+
 					{/* Comments Section */}
 					<div className="bg-white p-4 rounded-lg shadow-md mt-8">
 						<h2 className="font-semibold text-lg text-[#330577]">Comments</h2>
@@ -514,7 +516,7 @@ const ItineraryDetail = () => {
 						) : (
 							<p className="text-gray-500">No comments yet.</p>
 						)}
-	
+
 						{/* Add Comment Form */}
 						{userRole === 'tourist' && hasBooked && canComment && (
 							<div className="mt-4">
@@ -544,7 +546,7 @@ const ItineraryDetail = () => {
 							</div>
 						)}
 					</div>
-	
+
 					{/* Cancel Booking Button */}
 					{userRole === 'tourist' && hasBooked && canCancel && (
 						<div className="mt-8">
@@ -556,7 +558,7 @@ const ItineraryDetail = () => {
 							</button>
 						</div>
 					)}
-	
+
 					{/* Booking Modal */}
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -638,6 +640,7 @@ const ItineraryDetail = () => {
 					)}
 				</div>
 			</section>
+
 		</div>
 	);
 };
