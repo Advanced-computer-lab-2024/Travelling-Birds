@@ -411,6 +411,36 @@ const ProfilePage = () => {
 						</div>
 					)}
 				</div>
+				{/* Dream, Explore, Discover Text */}
+				<div style={{
+					position: 'absolute',
+					top: '120px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					textAlign: 'center',
+					fontSize: '60px',  // Increased font size
+					fontWeight: 'bold',
+					background: 'linear-gradient(90deg, rgba(88,24,138,1) 0%, rgba(48,0,76,1) 50%, rgba(0,0,0,1) 100%)', // Purple to black gradient
+					backgroundClip: 'text',
+					WebkitBackgroundClip: 'text',
+					color: 'transparent',
+					textShadow: '0 0 2px rgba(48,0,76,0.5), 0 0 4px rgba(0,0,0,0.5)', // Subtle purple and black glow
+					animation: 'purpleToBlackGlow 2s ease-in-out infinite'
+				}}>
+					Dream, Explore, Discover...
+				</div>
+
+				<style>
+					{`
+               /* Soft glow animation from purple to black */
+                @keyframes purpleToBlackGlow {
+                0% { text-shadow: 0 0 2px rgba(88,24,138,0.5), 0 0 4px rgba(48,0,76,0.5); }
+                50% { text-shadow: 0 0 3px rgba(88,24,138,0.6), 0 0 6px rgba(0,0,0,0.6); }
+                100% { text-shadow: 0 0 2px rgba(48,0,76,0.5), 0 0 4px rgba(0,0,0,0.5); }
+                                                }
+    `}
+				</style>
+
 			</div>
 
 			{/* Intro Container */}
@@ -582,7 +612,7 @@ const ProfilePage = () => {
 							))}
 						</div>
 
-						{/* Dropdown for selecting favorite food */}
+						{/* Dropdown for selecting favorite hotels */}
 						<select onChange={(e) => handleFavoriteFoodSelect(e.target.value)} defaultValue=""
 						        style={{marginTop: '10px'}}>
 							<option value="" disabled>Preferred Hotels</option>
