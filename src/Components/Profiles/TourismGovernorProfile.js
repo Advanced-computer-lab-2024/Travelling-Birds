@@ -123,18 +123,6 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 							</button>
 						</div>
 					)}
-
-					<button
-						type="button"
-						onClick={() => {
-							if (window.confirm('Are you sure you want to delete this account?')) {
-								requestAccountDeletion();
-							}
-						}}
-						className="w-full py-2 sm:py-3 rounded-lg font-semibold bg-red-500 hover:bg-red-600 text-white transition duration-300"
-					>
-						Request Deletion
-					</button>
 				</form>
 			)}
 		</div>
