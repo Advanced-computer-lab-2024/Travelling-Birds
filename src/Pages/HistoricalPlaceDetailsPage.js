@@ -79,7 +79,7 @@ const HistoricalPlaceDetail = () => {
 };
 
   const renderTicketPrice = (price) => {
-    const currency = sessionStorage.getItem('currency') || 'USD';
+    const currency = sessionStorage.getItem('currency') || 'EGP';
     if (currency === 'USD') {
       return `$${(price / 49.3).toFixed(2)}`;
   } else if (currency === 'EUR') {
