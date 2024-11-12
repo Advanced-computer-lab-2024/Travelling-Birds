@@ -5,7 +5,7 @@ import Logo from "../../Assets/Logo2.png";
 
 const GeneralNavBar = () => {
     const navigate = useNavigate();
-    const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'USD');
+    const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'EGP');
     const [isPopupVisible, setIsPopupVisible] = useState(false);
 
     const handleSignInClick = () => {
@@ -36,17 +36,8 @@ const GeneralNavBar = () => {
                 <div className="flex-grow flex justify-center space-x-4 mr-72">
                     <NavLink to='/products'
                              className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-                        Discover
+                        Products
                     </NavLink>
-                    <NavLink to='/places'
-                             className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-                        Trips
-                    </NavLink>
-                    <NavLink to='/itineraries'
-                             className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-                        Review
-                    </NavLink>
-              
                 </div>
 
                 {/* Right: EGP button and Sign In button */}

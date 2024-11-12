@@ -76,7 +76,7 @@ const ProductHomePage = () => {
 		});
 	};
 
-	const handleSearchFilterAndSort = async (searchTerm, maxPrice, sortOrder = 'asc') => {
+	const handleSearchFilterAndSort = async (searchTerm, maxPrice, sortOrder) => {
 		setLoading(true);
 		try {
 			// Step 1: Search products by name
@@ -95,9 +95,9 @@ const ProductHomePage = () => {
 	
 			// Step 3: Sort the filtered products
 			if (sortOrder === 'asc') {
-				data.sort((a, b) => a.rating - b.rating);
+				data.sort((a, b) => a.ratings - b.ratings);
 			} else if (sortOrder === 'desc') {
-				data.sort((a, b) => b.rating - a.rating);
+				data.sort((a, b) => b.ratings - a.ratings);
 			}
 
 			data = data.filter(product => !product.isArchived);
@@ -165,7 +165,7 @@ const ProductHomePage = () => {
 					{/* Consolidated Button */}
 					<div className="flex justify-center space-x-4 mt-6">
 						<button
-							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice)}
+							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice,'asc')}
 							className="w-full max-w-xs px-6 py-2 bg-[#330577] text-white text-base rounded-lg transition hover:bg-[#4a078c] focus:outline-none focus:ring-2"
 						>
 							Search, Filter, and Sort

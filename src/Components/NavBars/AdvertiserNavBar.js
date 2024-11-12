@@ -101,24 +101,6 @@ const AdvertiserNavBar = () => {
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
 						Transportation
 					</NavLink>
-					<NavLink to='/products'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Discover
-					</NavLink>
-					<NavLink to='/places'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Trips
-					</NavLink>
-					<NavLink to='/itineraries'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Review
-					</NavLink>
-					<NavLink to='/activities'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Activities
-					</NavLink>
-				
-					
 				</div>
 
 				{/* Right: Profile picture and EGP button */}
@@ -197,7 +179,7 @@ const AdvertiserNavBar = () => {
 											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
 											onClick={() => setDropdownVisible(false)}
 										>
-											My Activities
+											Manage Activities
 										</NavLink>
 									</li>
 									<li>
