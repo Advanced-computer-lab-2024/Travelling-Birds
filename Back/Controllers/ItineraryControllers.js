@@ -365,7 +365,7 @@ const getComments = async (req, res) => {
 		if (!itinerary) {
 			return res.status(404).json({message: 'Itinerary not found'});
 		}
-		const comments = await CommentModel.find({_id: {$in: itinerary.comments}});
+		const comments = await CommentModel.find({_id: {$in: itinerary.comments}}).populate('user', 'userName');
 		res.status(200).json(comments);
 	} catch (error) {
 		res.status(500).json({error: error.message});
