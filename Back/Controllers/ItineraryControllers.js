@@ -189,7 +189,7 @@ const SearchForItinerary = async (req, res) => {
 }
 
 // get all upcoming itineraries
-const getUpcomingItineraries = async (req, res) => {
+/*const getUpcomingItineraries = async (req, res) => {
 	try {
 		const currentDate = new Date(); // Get the current date
 
@@ -218,7 +218,32 @@ const getUpcomingItineraries = async (req, res) => {
 		console.error('Error fetching upcoming itineraries:', error);
 		res.status(500).json({message: 'Error fetching upcoming itineraries', error});
 	}
+}*/
+
+// Get all upcoming itineraries
+const getUpcomingItineraries = async (req, res) => {
+	try {
+		const currentDate = new Date(); // Get the current date
+
+		// Find itineraries where the first available date is in the future
+		const itineraries = await ItineraryModel.find({
+			availableDates: { $gte: currentDate } // Check if the first date in availableDates array is greater than or equal to current date
+		});
+
+		// If no upcoming itineraries are found, return a 404 response
+		if (itineraries.length === 0) {
+			return res.status(404).json({ message: 'No upcoming itineraries found' });
+		}
+
+		// Return the filtered upcoming itineraries
+		res.status(200).json(itineraries);
+	} catch (error) {
+		// Handle errors and send a 500 status if something goes wrong
+		console.error('Error fetching upcoming itineraries:', error);
+		res.status(500).json({ message: 'Error fetching upcoming itineraries', error });
+	}
 }
+
 
 //sort all itineraries based on price or ratings
 const sortItineraries = async (req, res) => {
