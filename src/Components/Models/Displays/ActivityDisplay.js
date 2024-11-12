@@ -12,21 +12,6 @@ const ActivityDisplay = ({ activity }) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate(); // Initialize navigate for redirection
 
-    const deleteActivity = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.message === 'activity deleted successfully') {
-                    toast.success('Activity deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete activity');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
 
     // Safely handle image conversion for the browser
     let imageBase64 = null;
@@ -77,30 +62,7 @@ const ActivityDisplay = ({ activity }) => {
                 <div className="flex items-center text-yellow-500">
                     {renderRatingStars(activity.rating)}
                 </div>
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        className="h-fit overflow-y-scroll"
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
-                                Update Activity
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <ActivityForm className="overflow-y-scroll" activity={activity} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this item?')) {
-                            deleteActivity();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
-                        Delete Activity
-                    </button>
-                )}
+              
             </div>
         </div>
     );
