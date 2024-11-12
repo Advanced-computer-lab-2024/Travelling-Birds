@@ -67,7 +67,7 @@ const addUser = async (req, res) => {
 		});
 
 		// Handle identity card upload if provided
-		if (req.files && req.files.identityCard) {
+		if (req.files?.identityCard) {
 			newUser.identityCard = {
 				name: req.files.identityCard[0].originalname,
 				file: {
@@ -78,7 +78,7 @@ const addUser = async (req, res) => {
 		}
 
 		// Handle certificates upload if provided
-		if (req.files && req.files.certificates) {
+		if (req.files?.certificates) {
 			newUser.certificates = req.files.certificates.map((file) => ({
 				name: file.originalname,
 				file: {
@@ -89,7 +89,7 @@ const addUser = async (req, res) => {
 		}
 
 		// Handle tax registration card upload if provided
-		if (req.files && req.files.taxRegCard) {
+		if (req.files?.taxRegCard) {
 			newUser.taxRegCard = {
 				name: req.files.taxRegCard[0].originalname,
 				file: {
@@ -717,7 +717,7 @@ const getComments = async (req, res) => {
 		if (!tourGuide) {
 			return res.status(404).json({message: 'Tour guide not found'});
 		}
-		const comments = await CommentModel.find({_id: {$in: tourGuide.comments}});
+		const comments = await CommentModel.find({_id: {$in: tourGuide.comments}}).populate('user', 'username');
 		res.status(200).json(comments);
 	} catch (error) {
 		res.status(500).json({error: error.message});
