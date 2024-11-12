@@ -27,7 +27,7 @@ import {HistoricalPlaceForm} from "./Components/Models/Forms";
 import PlacesPage from "./Pages/PlacesPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
-import ItineraryDetail from "./Pages/IntenartiesDetailPage";
+import ItineraryDetail from "./Pages/ItinerariesDetailPage";
 import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
