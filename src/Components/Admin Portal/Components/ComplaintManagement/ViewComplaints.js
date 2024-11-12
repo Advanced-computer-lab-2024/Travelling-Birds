@@ -112,7 +112,7 @@ const ViewComplaints = () => {
 							<th className='w-[7%]'>Created By</th>
 							<th>Body</th>
 							<th>Reply</th>
-							<th>Actions</th>
+							<th className='w-[20%]'>Actions</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -169,7 +169,7 @@ const ViewComplaints = () => {
 							          className="textarea textarea-bordered w-full"></textarea>
 						</div>
 						<div className="modal-action">
-							<button type="submit" className="btn btn-primary">Submit Reply</button>
+							<button type="submit" className="btn btn-primary mr-2">Submit Reply</button>
 							<button type="button" className="btn"
 							        onClick={() => document.getElementById('my_modal_5').close()}>Close
 							</button>
