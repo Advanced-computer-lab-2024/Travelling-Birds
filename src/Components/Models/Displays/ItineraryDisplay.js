@@ -12,21 +12,6 @@ const ItineraryDisplay = ({ itinerary }) => {
     const [userName, setUserName] = useState('');
     const navigate = useNavigate(); // Initialize navigate for redirection
 
-    const deleteItinerary = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.message === 'Itinerary deleted successfully') {
-                    toast.success('Itinerary deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete itinerary');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -86,30 +71,7 @@ const ItineraryDisplay = ({ itinerary }) => {
                         Dropoff Location: {itinerary.dropoffLocation}
                     </span>
                 </div>
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        className="h-fit overflow-y-scroll"
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
-                                Update Itinerary
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <ItineraryForm className="overflow-y-scroll" itinerary={itinerary} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this item?')) {
-                            deleteItinerary();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
-                        Delete Itinerary
-                    </button>
-                )}
+
             </div>
         </div>
     );

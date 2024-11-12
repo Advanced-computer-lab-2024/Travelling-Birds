@@ -10,21 +10,7 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
     const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate(); // Initialize navigate for redirection
 
-    const deleteHistoricalPlace = () => {
-        fetch(`${process.env.REACT_APP_BACKEND}/api/historicalPlaces/${historicalPlace._id}`, {
-            method: 'DELETE',
-        }).then((response) => response.json())
-            .then((data) => {
-                if (data?.msg === 'Historical Place deleted successfully') {
-                    toast.success('Historical place deleted successfully');
-                    window.dispatchEvent(modelModificationEvent);
-                } else {
-                    toast.error('Failed to delete historical place');
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
-    };
+
 
     // Safely handle image conversion for the browser
     let imageBase64 = null;
@@ -65,29 +51,7 @@ const HistoricalPlaceDisplay = ({ historicalPlace }) => {
                         <span key={tag} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 text-sm mr-2 mb-2">{tag}</span>
                     ))}
                 </div>
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <Popup
-                        trigger={
-                            <button className="bg-indigo-500 text-white py-2 w-full mt-4">
-                                Update Historical Place
-                            </button>
-                        }
-                        modal
-                        contentStyle={{ maxHeight: '80vh', overflowY: 'auto' }}
-                        overlayStyle={{ background: 'rgba(0, 0, 0, 0.5)' }}
-                    >
-                        <HistoricalPlaceForm historicalPlace={historicalPlace} />
-                    </Popup>
-                )}
-                {['tour_guide', 'advertiser', 'tourism_governor', 'admin'].includes(sessionStorage.getItem('role')) && (
-                    <button onClick={() => {
-                        if (window.confirm('Are you sure you wish to delete this historical place?')) {
-                            deleteHistoricalPlace();
-                        }
-                    }} className="bg-red-500 hover:bg-red-700 text-white py-2 w-full mt-2 rounded-b-xl">
-                        Delete Historical Place
-                    </button>
-                )}
+              
             </div>
         </div>
     );
