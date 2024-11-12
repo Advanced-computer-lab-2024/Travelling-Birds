@@ -7,7 +7,7 @@ const addComplaint = async (req, res) => {
 	const currentDate = new Date();
 	const {title, body, createdBy} = req.body;
 	try {
-		const newComplaint = new Complaint({title, date: currentDate, body, status: 'pending', reply: '', createdBy});
+		const newComplaint = new Complaint({title, date: currentDate, body, status: 'Pending', reply: '', createdBy});
 		await newComplaint.save();
 		res.status(201).json(newComplaint);
 	} catch (error) {
