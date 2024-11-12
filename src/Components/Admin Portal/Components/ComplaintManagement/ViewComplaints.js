@@ -126,7 +126,7 @@ const ViewComplaints = () => {
 								<td>{complaint.body}</td>
 								<td>{complaint.reply}</td>
 								<td>
-									<button className="btn btn-primary btn-sm"
+									<button className="btn btn-primary btn-sm  mr-2"
 									        onClick={() => {
 										        document.getElementById('my_modal_5').showModal();
 										        setSelectedComplaint(complaint)
@@ -169,7 +169,7 @@ const ViewComplaints = () => {
 							          className="textarea textarea-bordered w-full"></textarea>
 						</div>
 						<div className="modal-action">
-							<button type="submit" className="btn btn-primary mr-2">Submit Reply</button>
+							<button type="submit" className="btn btn-primary">Submit Reply</button>
 							<button type="button" className="btn"
 							        onClick={() => document.getElementById('my_modal_5').close()}>Close
 							</button>
