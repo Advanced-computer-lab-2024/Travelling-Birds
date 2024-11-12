@@ -70,7 +70,7 @@ const ProductsDisplay = ({product}) => {
                         <span key={product.price} className="inline-block bg-gray-300 text-gray-900 rounded-full px-2 py-1 mr-1 mt-1">Price: {formatPrice(product.price)}</span>
                 </div>
                 <div className="flex items-center text-yellow-500">
-                    {renderStars(product.rating)}
+                    {renderStars(product.ratings)}
                 </div>
                 
             </div>
