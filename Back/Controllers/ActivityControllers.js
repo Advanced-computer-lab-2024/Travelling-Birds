@@ -1,6 +1,6 @@
 const ActivityModel = require('../Models/Activity.js');
 const UserModel = require('../Models/User.js');
-const CommentModel = require('../Models/Comments.js');
+const CommentModel = require('../Models/Comment.js');
 
 // Add Activity
 const addActivity = async (req, res) => {

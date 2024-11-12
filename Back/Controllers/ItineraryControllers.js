@@ -1,7 +1,7 @@
 const ItineraryModel = require('../Models/Itinerary.js');
 const ActivityModel = require('../Models/Activity.js');
 const UserModel = require('../Models/User.js');
-const CommentModel = require('../Models/Comments.js');
+const CommentModel = require('../Models/Comment.js');
 
 // Add itinerary
 const addItinerary = async (req, res) => {
@@ -62,7 +62,7 @@ const getAllItineraries = async (req, res) => {
 // Get specific itinerary
 const getItinerary = async (req, res) => {
 	try {
-		const itinerary = await ItineraryModel.findById(req.params.id);
+		const itinerary = await ItineraryModel.findById(req.params.id).populate('comments');
 		if (!itinerary) {
 			return res.status(404).json({message: 'itinerary not found'});
 		}

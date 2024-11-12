@@ -37,7 +37,7 @@ const user = new Schema({
 	activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
 	itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
 	productPurchases: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
-	comments: [{ type: Schema.Types.ObjectId, ref: 'Comments' }],
+	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 	ratings: Number
 });
 

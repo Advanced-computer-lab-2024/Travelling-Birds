@@ -1,6 +1,6 @@
 const Product = require('../Models/Product');
 const UserModel = require("../Models/User");
-const CommentModel = require('../Models/Comments');
+const CommentModel = require('../Models/Comment');
 
 
 // Add product

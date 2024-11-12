@@ -4,7 +4,7 @@ const Activity = require('../Models/Activity');
 const Itinerary = require('../Models/Itinerary');
 const Product = require('../Models/Product');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
-const CommentModel = require("../Models/Comments");
+const CommentModel = require('../Models/Comment.js');
 const UserModel = require("../Models/User");
 
 // Add user
@@ -120,7 +120,7 @@ const getAllUsers = async (req, res) => {
 // Get specific user
 const getUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id);
+		const user = await User.findById(req.params.id).populate('comments');
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -129,6 +129,7 @@ const getUser = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 const getUsername = async (req, res) => {
 	const {username} = req.query;
 	try {
@@ -716,6 +717,7 @@ const addComment = async (req, res) => {
 		).populate('comments');
 		res.status(201).json(userWithComment);
 	} catch (error) {
+		console.log(error);
 		res.status(500).json({error: error.message});
 	}
 }

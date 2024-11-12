@@ -94,7 +94,6 @@ router.get('/:id/comments', getComments);
 // Add a comment to a specific user
 router.post('/:id/comments', addComment);
 
-
 // Login
 router.post('/login', login);
 

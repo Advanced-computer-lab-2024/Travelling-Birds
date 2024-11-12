@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt, FaCalendarAlt, FaClock } from 'react-icons/fa';
-import { AiOutlineHeart } from "react-icons/ai";
-import { toast } from 'react-toastify';
+import React, {useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
+import {FaClock, FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt} from 'react-icons/fa';
+import {AiOutlineHeart} from "react-icons/ai";
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../Components/Locations/Location";
 import {userUpdateEvent} from "../utils/userUpdateEvent";
@@ -28,13 +28,14 @@ const ItineraryDetail = () => {
 	const [tourGuide, setTourGuide] = useState(null);
 	const [commentTextTourGuide, setCommentTextTourGuide] = useState("");
 	const [commentRatingTourGuide, setCommentRatingTourGuide] = useState(0);
-	const[ itineraryId, setItineraryId] = useState(useParams().id);
+	const [itineraryId, setItineraryId] = useState(useParams().id);
 	const [message, setMessage] = useState('');
 	const userId = sessionStorage.getItem('user id');
 	const userRole = sessionStorage.getItem('role');
 	const [placeholder, setPlaceHolder] = useState('');
 	const [userLocation, setUserLocation] = useState('');
-    const [userEmail, setUserEmail] = useState('');
+	const [userEmail, setUserEmail] = useState('');
+	const [tourguideRating, setTourguideRating] = useState(0);
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -63,7 +64,7 @@ const ItineraryDetail = () => {
 			try {
 				const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`);
 				const data = await res.json();
-				setItinerary((prev) => ({ ...prev, comments: data }));
+				setItinerary((prev) => ({...prev, comments: data}));
 			} catch (err) {
 				console.error('Error fetching comments', err);
 			}
@@ -80,7 +81,7 @@ const ItineraryDetail = () => {
 					headers: {
 						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({ email, subject, message: body }),
+					body: JSON.stringify({email, subject, message: body}),
 				});
 
 				if (response.ok) {
@@ -124,14 +125,14 @@ const ItineraryDetail = () => {
 		};
 
 		const fetchTransportations = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
-                const data = await response.json();
-                setTransportations(data);
-            } catch (error) {
-                console.error('Error fetching transportations:', error);
-            }
-        };
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
+				const data = await response.json();
+				setTransportations(data);
+			} catch (error) {
+				console.error('Error fetching transportations:', error);
+			}
+		};
 
 		const fetchUser = async () => {
 			try {
@@ -168,33 +169,33 @@ const ItineraryDetail = () => {
 		setWalletAmount('');
 	};
 	const sendEmail = async () => {
-        setLoading(true);
-        try {
-            const subject = 'Check out this itineraries';
-            const body = `Here's a link to an interesting itinerary: http://localhost:3000/itineraries/${itineraryId}`;
+		setLoading(true);
+		try {
+			const subject = 'Check out this itineraries';
+			const body = `Here's a link to an interesting itinerary: http://localhost:3000/itineraries/${itineraryId}`;
 
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, subject, message: body }),
-            });
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({email, subject, message: body}),
+			});
 
-            if (response.ok) {
-                alert('Email sent successfully!');
-            } else {
-                const errorData = await response.json();
-                console.error('Server response error:', errorData);
-                alert(`Failed to send email: ${errorData.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error sending email:', error);
-            alert('Failed to send email.');
-        } finally {
-            setLoading(false);
-        }
-    };
+			if (response.ok) {
+				alert('Email sent successfully!');
+			} else {
+				const errorData = await response.json();
+				console.error('Server response error:', errorData);
+				alert(`Failed to send email: ${errorData.message || 'Unknown error'}`);
+			}
+		} catch (error) {
+			console.error('Error sending email:', error);
+			alert('Failed to send email.');
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleCompleteBooking = async () => {
 		if (userRole !== 'tourist') {
@@ -260,8 +261,8 @@ const ItineraryDetail = () => {
 			// Make the booking request and update wallet balance
 			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId, walletAmount: enteredAmount })
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId, walletAmount: enteredAmount})
 			});
 
 			if (!bookingResponse.ok) {
@@ -271,14 +272,14 @@ const ItineraryDetail = () => {
 			// Update user's wallet balance
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance })
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance})
 			});
 
 			try {
 				// ... existing booking logic
-			
-				
+
+
 			} catch (error) {
 				console.error('Error during booking:', error);
 				toast.error('Failed to complete booking or send confirmation email. Please try again.');
@@ -302,7 +303,7 @@ const ItineraryDetail = () => {
 					headers: {
 						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({ email: userEmail, subject: 'Booking Confirmation', message: emailBody }),
+					body: JSON.stringify({email: userEmail, subject: 'Booking Confirmation', message: emailBody}),
 				});
 
 				if (!emailResponse.ok) {
@@ -311,22 +312,17 @@ const ItineraryDetail = () => {
 
 				toast.success('Confirmation email sent successfully');
 			}
-		}
-		catch (error) {
+		} catch (error) {
 			console.error('Error sending confirmation email:', error);
 			toast.error('Failed to send confirmation email. Please try again.');
 		}
 	};
 	const handleShowTourGuideDetails = async () => {
 		try {
-			console.log('Itinerary:', itinerary);
-			console.log('Tour Guide ID:', itinerary?.createdBy);
 			const url = `${process.env.REACT_APP_BACKEND}/api/users/${itinerary?.createdBy}`;
-			console.log('Tour Guide URL:', url);
 			const response = await fetch(url);
 			const data = await response.json();
 			setTourGuide(data);
-			console.log('Tour Guide:', data);
 
 			let image2Base64 = null;
 			if (data?.profilePicture?.data?.data && data?.profilePicture?.contentType) {
@@ -339,6 +335,9 @@ const ItineraryDetail = () => {
 				}
 			}
 			setPlaceHolder(image2Base64 || ''); // Ensure placeholder updates even if there's no image.
+
+			//set tour guide ratingfs
+
 		} catch (error) {
 			console.error('Error fetching tour guide:', error);
 			setPlaceHolder(''); // Ensure placeholder resets on error.
@@ -353,8 +352,8 @@ const ItineraryDetail = () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId })
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId})
 			});
 
 			if (!response.ok) {
@@ -397,18 +396,21 @@ const ItineraryDetail = () => {
 
 
 	const renderStars = (rating) => {
-		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
+		// check rating correct
+		if (isNaN(rating) || rating < 0 || rating > 5) {
 			rating = 0;
 		}
+
 		const totalStars = 5;
 		const fullStars = Math.min(Math.floor(rating), totalStars);
 		const halfStars = rating % 1 !== 0 && fullStars < totalStars;
 
 		return (
 			<>
-				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500" />)}
-				{halfStars && <FaStarHalfAlt className="text-yellow-500" />}
-				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars} className="text-yellow-500" />)}
+				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500"/>)}
+				{halfStars && <FaStarHalfAlt className="text-yellow-500"/>}
+				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars}
+				                                                                                   className="text-yellow-500"/>)}
 			</>
 		);
 	};
@@ -424,18 +426,18 @@ const ItineraryDetail = () => {
 			stars: commentRating,
 			date: new Date().toISOString() // Ensure correct date format
 		};
-	
+
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itineraryId}/comments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(newComment)
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to add comment');
 			}
-	
+
 			const updatedItinerary = await response.json();
 			setItinerary(updatedItinerary);
 			setCommentText("");
@@ -456,7 +458,7 @@ const ItineraryDetail = () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}/comments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(newComment)
 			});
 			if (!response.ok) {
@@ -474,7 +476,6 @@ const ItineraryDetail = () => {
 	}
 
 
-
 	if (loading) return <p>Loading...</p>;
 
 	return (
@@ -487,11 +488,13 @@ const ItineraryDetail = () => {
 							<h1 className="text-4xl font-bold text-gray-800 mb-1">{itinerary?.title}</h1>
 							<p className="text-gray-500 text-lg">{itinerary?.duration}</p>
 							<div className="flex items-center mt-2 space-x-3">
-								<span className="flex items-center text-2xl">{renderStars(itinerary?.rating)}</span>
+								<span className="flex items-center text-2xl">{<span
+									className="flex items-center text-2xl">
+									{itinerary?.comments.length > 0 ? renderStars((itinerary.comments.reduce((sum, comment) => sum + comment.stars, 0) / itinerary.comments.length).toFixed(1)) : 'No ratings'}</span>}</span>
 								<p className="text-gray-600 text-sm">({itinerary?.comments?.length} reviews)</p>
 							</div>
 							<div className="flex items-center mt-3 text-gray-600 space-x-1">
-								<FaMapMarkerAlt className="text-gray-500" />
+								<FaMapMarkerAlt className="text-gray-500"/>
 								<span>{itinerary?.pickupLocation}</span>
 							</div>
 							<p className="text-gray-700 mt-4 leading-relaxed">{itinerary?.description}</p>
@@ -503,8 +506,9 @@ const ItineraryDetail = () => {
 							>
 								Book Itinerary
 							</button>
-							<button className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40">
-								<AiOutlineHeart className="text-lg mr-2" />
+							<button
+								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40">
+								<AiOutlineHeart className="text-lg mr-2"/>
 								Save
 							</button>
 							<div className="relative">
@@ -512,7 +516,7 @@ const ItineraryDetail = () => {
 									onClick={() => setIsShareOpen(!isShareOpen)}
 									className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 								>
-									<FaShareAlt className="mr-2" /> Share
+									<FaShareAlt className="mr-2"/> Share
 								</button>
 								{isShareOpen && (
 									<div className="absolute mt-2 bg-white p-4 shadow-md rounded-lg w-72 -left-20">
@@ -537,28 +541,31 @@ const ItineraryDetail = () => {
 										</div>
 										<p className="mb-2 font-semibold text-gray-700">Send via Email:</p>
 										<div className="flex items-center space-x-2">
-                                            <input
-                                                type="email"
-                                                placeholder="Enter email address"
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
-                                                className="w-full px-2 py-1 border rounded-lg focus:outline-none"
-                                            />
-                                            <button
-                                                onClick={sendEmail}
-                                                className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c] disabled:opacity-50"
-                                                disabled={!email || loading}
-                                            >
-                                                {loading ? 'Sending...' : 'Send'}
-                                            </button>
-                                            {message && <p>{message}</p>}
-                                        </div>
+											<input
+												type="email"
+												placeholder="Enter email address"
+												value={email}
+												onChange={(e) => setEmail(e.target.value)}
+												className="w-full px-2 py-1 border rounded-lg focus:outline-none"
+											/>
+											<button
+												onClick={sendEmail}
+												className="bg-[#330577] text-white px-3 py-1 rounded-lg hover:bg-[#27045c] disabled:opacity-50"
+												disabled={!email || loading}
+											>
+												{loading ? 'Sending...' : 'Send'}
+											</button>
+											{message && <p>{message}</p>}
+										</div>
 									</div>
 								)}
 							</div>
 						</div>
 					</div>
-					<button onClick={handleShowTourGuideDetails} className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]">Show Tour Guide Details</button>
+					<button onClick={handleShowTourGuideDetails}
+					        className="bg-[#330577] text-white px-4 py-2 rounded-lg hover:bg-[#27045c]">Show Tour Guide
+						Details
+					</button>
 					{/* Tour Guide Details */}
 					{tourGuide && (
 						<div className="bg-white p-6 rounded-lg shadow-lg mt-8">
@@ -574,14 +581,15 @@ const ItineraryDetail = () => {
 								<div>
 									<p className="text-lg font-semibold">{`${tourGuide.firstName} ${tourGuide.lastName}`}</p>
 									<p className="text-gray-600">Years of Experience: {tourGuide.yearsOfExperience}</p>
-									<div className="flex items-center mt-1">{renderStars(tourGuide.rating)}</div>
+									<div className="flex items-center mt-1">{renderStars((tourGuide.comments.reduce((sum, comment) => sum + comment.stars, 0) / tourGuide.comments.length).toFixed(1))}</div>
 								</div>
 							</div>
 
 							{/* Add Comment on Tour Guide */}
-							{hasBooked &&canComment && (
+							{hasBooked && canComment && (
 								<div className="mt-4">
-									<h3 className="font-semibold text-lg text-[#330577]">Leave a Comment for the Tour Guide</h3>
+									<h3 className="font-semibold text-lg text-[#330577]">Leave a Comment for the Tour
+										Guide</h3>
 									<textarea
 										value={commentTextTourGuide}
 										onChange={(e) => setCommentTextTourGuide(e.target.value)}
@@ -611,7 +619,8 @@ const ItineraryDetail = () => {
 					{/* Image Gallery */}
 					{imageBase64 && (
 						<div className="mt-8">
-							<img src={imageBase64} alt="Itinerary" className="w-full h-96 object-cover rounded-lg shadow-md" />
+							<img src={imageBase64} alt="Itinerary"
+							     className="w-full h-96 object-cover rounded-lg shadow-md"/>
 						</div>
 					)}
 					{/* Activities Timeline */}
@@ -630,11 +639,13 @@ const ItineraryDetail = () => {
 												className="flex items-center p-4 bg-white rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:-translate-y-1"
 											>
 												{/* Timeline dot */}
-												<div className="flex-shrink-0 relative w-4 h-4 bg-[#330577] rounded-full mr-6 ml-2 border-2 border-white shadow-lg"></div>
+												<div
+													className="flex-shrink-0 relative w-4 h-4 bg-[#330577] rounded-full mr-6 ml-2 border-2 border-white shadow-lg"></div>
 
 												{/* Activity image */}
 												{activityImage && (
-													<div className="flex-shrink-0 w-48 h-48 overflow-hidden rounded-lg border border-gray-200 shadow-sm mr-4">
+													<div
+														className="flex-shrink-0 w-48 h-48 overflow-hidden rounded-lg border border-gray-200 shadow-sm mr-4">
 														<img
 															src={activityImage}
 															alt={`Activity ${activity.title}`}
@@ -646,7 +657,8 @@ const ItineraryDetail = () => {
 												{/* Activity Details */}
 												<div className="flex-grow">
 													<p className="text-sm text-gray-500 mb-2 flex items-center">
-														<FaClock className="mr-2 text-[#330577]" /> {new Date(activity.date).toLocaleDateString()}
+														<FaClock
+															className="mr-2 text-[#330577]"/> {new Date(activity.date).toLocaleDateString()}
 													</p>
 													<h3
 														onClick={() => window.open(`/activities/${activity._id}`, '_blank')}
@@ -656,10 +668,11 @@ const ItineraryDetail = () => {
 													</h3>
 													<p className="text-gray-600 mb-2">{activity.description}</p>
 													<div className="mb-2">
-														<LocationContact activity={activity} />
+														<LocationContact activity={activity}/>
 													</div>
 													<div className="flex items-center mt-2">
-														<span className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
+														<span
+															className="flex text-yellow-500 text-lg">{renderStars(activity.rating)}</span>
 													</div>
 												</div>
 											</div>
@@ -681,14 +694,15 @@ const ItineraryDetail = () => {
 									<p className="text-gray-600">{comment?.text}</p>
 									<p className="text-sm text-gray-400">{comment?.date ? new Date(comment?.date).toLocaleDateString() : 'Date not available'}</p>
 									<div className="flex items-center mt-2">
-										<span className="flex items-center text-2xl">{comment?.stars ? renderStars(comment?.stars) : renderStars(0)}</span>
+										<span
+											className="flex items-center text-2xl">{comment?.stars ? renderStars(comment?.stars) : renderStars(0)}</span>
 									</div>
 								</div>
 							))
 						) : (
 							<p className="text-gray-500">No comments yet.</p>
 						)}
-	
+
 						{/* Add Comment Form */}
 						{userRole === 'tourist' && hasBooked && canComment && (
 							<div className="mt-4">
@@ -718,7 +732,7 @@ const ItineraryDetail = () => {
 							</div>
 						)}
 					</div>
-	
+
 					{/* Cancel Booking Button */}
 					{userRole === 'tourist' && hasBooked && canCancel && (
 						<div className="mt-8">
@@ -730,7 +744,7 @@ const ItineraryDetail = () => {
 							</button>
 						</div>
 					)}
-	
+
 					{/* Booking Modal */}
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -767,23 +781,23 @@ const ItineraryDetail = () => {
 									/>
 								</div>
 								<div className="mb-4">
-                                        <label className="block mb-2">Transportation</label>
-                                            <select
-                                                     value={transportation}
-                                                     onChange={(e) => setTransportation(e.target.value)}
-                                                     className="w-full border rounded-lg p-2"
-                                             >
-                                             <option value="">Select</option>
-                                             {/* Render dynamically fetched transportations */}
-                                             {transportations.map((transport) => (
-                                             <option key={transport._id} value={transport.name}>
-                                                    {transport.name}
-                                             </option>
-                                            ))}
-                                             {/* Ensure "My Car" is always an option */}
-                                            <option value="my car">My Car</option>
-                                         </select>
-                                 </div>
+									<label className="block mb-2">Transportation</label>
+									<select
+										value={transportation}
+										onChange={(e) => setTransportation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+									>
+										<option value="">Select</option>
+										{/* Render dynamically fetched transportations */}
+										{transportations.map((transport) => (
+											<option key={transport._id} value={transport.name}>
+												{transport.name}
+											</option>
+										))}
+										{/* Ensure "My Car" is always an option */}
+										<option value="my car">My Car</option>
+									</select>
+								</div>
 								<div className="mb-4">
 									<label className="block mb-2">Wallet Amount</label>
 									<input
