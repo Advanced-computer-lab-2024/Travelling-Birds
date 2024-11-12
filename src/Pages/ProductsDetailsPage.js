@@ -230,9 +230,10 @@ const ProductsDetailsPage = () => {
 						<div className="md:w-2/3 flex flex-col md:flex-row justify-between ml-0 md:ml-6">
 							<div className="mb-4 md:mb-0">
 								<h1 className="text-3xl font-bold text-[#330577] mb-2">{product?.name}</h1>
+								<h4 className="text-3xl font-bold text-[#330577] mb-2">Sold By {product?.seller?.username}</h4>
 								<div className="flex items-center mt-2 space-x-3">
 									<span className="flex items-center text-lg text-yellow-500">
-										{renderStars(product?.rating)}
+										{renderStars(product?.ratings)}
 									</span>
 									<p className="text-gray-600 text-sm">{product?.reviewsCount} reviews</p>
 								</div>
@@ -334,7 +335,7 @@ const ProductsDetailsPage = () => {
 							{product?.comments?.length ? (
 								product.comments.slice(0, visibleProductComments).map((comment, index) => (
 									<div key={index} className="border-b border-gray-200 pb-2">
-										<p className="text-gray-800 font-semibold">{comment.user.username}</p>
+										<p className="text-gray-800 font-semibold">{comment.user?.username}</p>
 										<p className="text-gray-600">{comment.text}</p>
 										<p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
 										<span className="flex">{renderStars(comment.stars)}</span>

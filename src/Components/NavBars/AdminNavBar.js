@@ -101,26 +101,11 @@ const AdminNavBar = () => {
 					</div>
 
 				{/* Center: Navigation buttons */}
+
 				<div className="flex-grow flex justify-center space-x-4 mr-72">
 					<NavLink to='/products'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Discover
-					</NavLink>
-					<NavLink to='/places'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Trips
-					</NavLink>
-					<NavLink to='/itineraries'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Review
-					</NavLink>
-					<NavLink to='/activities'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Activities
-					</NavLink>
-					<NavLink to='/users'
-					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">
-						Users
+						Products
 					</NavLink>
 					<NavLink to='/admin'
 					         className="text-black font-semibold hover:bg-[#330577] hover:text-white rounded-md px-4 py-2 text-lg">

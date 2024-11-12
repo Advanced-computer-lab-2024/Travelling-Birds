@@ -91,7 +91,7 @@ const TourismGovernorMuseums = () => {
 								<td>{museum.name}</td>
 								<td>{museum.description}</td>
 								<td>{museum.location.city}, {museum.location.country}</td>
-								<td>{museum.tags.join(', ')}</td>
+								<td>{museum.tags?.join(', ')}</td>
 								<td>{museum.createdByName}</td>
 								<td>
 									<button className="btn btn-info btn-sm mr-2"
