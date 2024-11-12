@@ -149,8 +149,8 @@ const ManageProducts = () => {
 							<th>Sold</th>
 							<th>Seller</th>
 							<th>Average Rating</th>
-							<th>Reviews</th>
-							<th>Actions</th>
+							<th className='w-[25%]'>Reviews</th>
+							<th className='w-[25%]'>Actions</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -162,7 +162,7 @@ const ManageProducts = () => {
 								<td>{product.availableQuantity}</td>
 								<td>{product.userPurchased.length}</td>
 								<td>{product.sellerName}</td>
-								<td>{average(product.ratings)}</td>
+								<td>{product.ratings}</td>
 								<td>{product.reviews?.join(', ')}</td>
 								<td>
 									<button className="btn btn-primary btn-sm mr-2"

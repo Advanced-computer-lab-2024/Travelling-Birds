@@ -386,9 +386,9 @@ const getUsersToDelete = async (req, res) => {
 				$project: {
 					"items.profilePicture": 0,
 					"items.password": 0,
-					"items.role": 0,
 					"items.isApproved": 0,
-					"items.termsFlag": 0
+					"items.termsFlag": 0,
+
 				}
 			}
 		];

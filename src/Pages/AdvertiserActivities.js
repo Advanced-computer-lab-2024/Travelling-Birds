@@ -31,6 +31,33 @@ const AdvertiserActivities = () => {
 		navigate(`/activities/${activity._id}`, {replace: true});
 	}
 
+	const handleToggleBooking = (activity) => {
+		const newBookingStatus = !activity.bookingOpen;
+		fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				bookingOpen: newBookingStatus
+			})
+		})
+			.then((response) => response.json())
+			.then(data => {
+				if (data?._id) {
+					toast.success('Booking status updated successfully');
+					setActivities(activities.map(a => {
+						if (a._id === activity._id) {
+							return {...a, bookingOpen: newBookingStatus};
+						}
+						return a;
+					}));
+				} else {
+					toast.error('Failed to update booking status');
+				}
+			});
+	}
+
 	const handleEditClick = (activity) => {
 		const fetchActivity = async () => {
 			try {
@@ -107,16 +134,25 @@ const AdvertiserActivities = () => {
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewClick(activity)}>
 										<i className="fas fa-eye"></i>
+										{/**/}
 										View
+									</button>
+									<button className="btn btn-primary btn-sm mr-2"
+									        onClick={() => handleToggleBooking(activity)}>
+										<i className="fas fa-flag"></i>
+										{/**/}
+										Flag
 									</button>
 									<button className="btn btn-primary btn-sm mr-2"
 									        onClick={() => handleEditClick(activity)}>
 										<i className="fas fa-edit"></i>
+										{/**/}
 										Edit
 									</button>
 									<button className="btn btn-danger btn-sm mr-2"
 									        onClick={() => handleDeleteClick(activity)}>
 										<i className="fas fa-trash"></i>
+										{/**/}
 										Delete
 									</button>
 								</td>
@@ -130,7 +166,8 @@ const AdvertiserActivities = () => {
 			{isModalOpen && (
 				<div className="modal modal-open ">
 					<div className="modal-box w-full max-w-[100rem]">
-						<ActivityForm activity={selectedActivity} activities={activities} setActivities={setActivities}/>
+						<ActivityForm activity={selectedActivity} activities={activities}
+						              setActivities={setActivities}/>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

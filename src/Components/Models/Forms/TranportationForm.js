@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 const TransportationForm = ({ transportations, setTransportations }) => {
     const [name, setName] = useState('');
 
-    const handleAddTransportation = () => {
+    const handleAddTransportation = async () => {
         if (!name.trim()) {
             toast.error("Transportation name is required.");
             return;
@@ -16,10 +16,9 @@ const TransportationForm = ({ transportations, setTransportations }) => {
             name,
             createdBy
         };
-
         fetch(`${process.env.REACT_APP_BACKEND}/api/transports`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(formData)
         })
             .then(response => response.json())
@@ -27,7 +26,7 @@ const TransportationForm = ({ transportations, setTransportations }) => {
                 if (data?._id) {
                     toast.success("Transportation added successfully.");
                     setTransportations([...transportations, data]);
-                    setName(''); // Reset form field
+                    setName('');
                 } else {
                     toast.error("Failed to add transportation.");
                 }
@@ -45,7 +44,7 @@ const TransportationForm = ({ transportations, setTransportations }) => {
                 className="grid grid-cols-1 gap-6"
                 onSubmit={(e) => {
                     e.preventDefault();
-                    handleAddTransportation();
+                    handleAddTransportation().then(r => r);
                 }}
             >
                 <div className="flex flex-col">

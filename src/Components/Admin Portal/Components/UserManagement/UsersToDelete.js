@@ -17,7 +17,6 @@ const UsersToDelete = () => {
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.message === 'User deleted successfully') {
-					window.dispatchEvent(userDeletionEvent);
 					if (user.role === 'tourist') {
 						setTourists(tourists.filter(tourist => tourist._id !== user._id));
 					}

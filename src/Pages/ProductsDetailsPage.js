@@ -200,15 +200,6 @@ const ProductsDetailsPage = () => {
 		);
 	};
 
-	//const calculateAvgRating = (rating) => {
-		{/*if (!ratings || ratings.length === 0)
-			return 0;*/}
-		//const total = rating.reduce((acc, rating) => acc + rating, 0);
-		//const average = total / rating.length;
-		//return average.toFixed(1);
-	//};
-
-
 	const formatPriceRange = (price) => {
 		const currency = sessionStorage.getItem('currency') || 'EGP';
 		if (currency === 'USD') {
@@ -243,7 +234,7 @@ const ProductsDetailsPage = () => {
 									<span className="flex items-center text-lg text-yellow-500">
 										{renderStars(product?.rating)}
 									</span>
-									<p className="text-gray-600 text-sm">({product?.reviewsCount} reviews)</p>
+									<p className="text-gray-600 text-sm">{product?.reviewsCount} reviews</p>
 								</div>
 							</div>
 							<div className="mt-3">

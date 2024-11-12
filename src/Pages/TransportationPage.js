@@ -6,13 +6,13 @@ import TransportationForm from '../Components/Models/Forms/TranportationForm.js'
 
 const TransportationManagement = () => {
     const [transportations, setTransportations] = useState([]);
+    const [selectedTransport, setSelectedTransport] = useState(null);
     const [editTransportName, setEditTransportName] = useState('');
-    const [editTransportId, setEditTransportId] = useState(null);
     const userRole = sessionStorage.getItem('role');
     const userId = sessionStorage.getItem('user id'); // Assuming userId is stored in session storage
 
     useEffect(() => {
-        fetchTransportations();
+        fetchTransportations().then(r => r);
     }, []);
 
     const fetchTransportations = async () => {
@@ -25,8 +25,8 @@ const TransportationManagement = () => {
         }
     };
 
-    const handleDeleteTransportation = async (id, createdBy) => {
-        if (createdBy !== userId) {
+    const handleDeleteTransportation = async (transport) => {
+        if (transport.createdBy !== userId) {
             toast.error('You are not authorized to delete this transportation.');
             return;
         }
@@ -35,7 +35,7 @@ const TransportationManagement = () => {
         if (!confirmDelete) return;
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports/${transport._id}`, {
                 method: 'DELETE'
             });
 
@@ -44,7 +44,7 @@ const TransportationManagement = () => {
             }
 
             toast.success('Transportation deleted successfully.');
-            fetchTransportations();
+            await fetchTransportations();
         } catch (error) {
             console.error('Error deleting transportation:', error);
             toast.error('Failed to delete transportation.');
@@ -52,16 +52,16 @@ const TransportationManagement = () => {
     };
 
     const handleEditTransportation = async () => {
-        if (!editTransportName) {
+        if (!selectedTransport.name.trim()) {
             toast.error('Transportation name is required.');
             return;
         }
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports/${editTransportId}`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports/${selectedTransport._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: editTransportName })
+                body: JSON.stringify({name: editTransportName})
             });
 
             if (!response.ok) {
@@ -69,9 +69,8 @@ const TransportationManagement = () => {
             }
 
             toast.success('Transportation updated successfully.');
-            setEditTransportId(null);
-            setEditTransportName('');
-            fetchTransportations();
+            setSelectedTransport(null);
+            await fetchTransportations();
         } catch (error) {
             console.error('Error updating transportation:', error);
             toast.error('Failed to update transportation.');
@@ -105,6 +104,7 @@ const TransportationManagement = () => {
                                             </button>
                                         }
                                         modal
+                                        onOpen={() => setSelectedTransport(transport)}
                                     >
                                         <div className="p-4 bg-white rounded-lg">
                                             <h3 className="text-xl font-semibold mb-4 text-[#330577]">Edit Transportation</h3>
@@ -117,7 +117,6 @@ const TransportationManagement = () => {
                                             />
                                             <button
                                                 onClick={() => {
-                                                    setEditTransportId(transport._id);
                                                     handleEditTransportation();
                                                 }}
                                                 className="bg-[#330577] text-white px-4 py-2 rounded-md hover:bg-[#472393]"
@@ -127,7 +126,7 @@ const TransportationManagement = () => {
                                         </div>
                                     </Popup>
                                     <button
-                                        onClick={() => handleDeleteTransportation(transport._id, transport.createdBy)}
+                                        onClick={() => handleDeleteTransportation(transport)}
                                         className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700"
                                     >
                                         Delete
