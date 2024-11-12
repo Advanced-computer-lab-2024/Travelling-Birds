@@ -208,76 +208,6 @@ const UsersToDelete = () => {
 		</div>
 	);
 
-	const renderAdminTable = () => (
-		<div className="mb-8">
-			<h3 className="text-xl font-bold mb-2">Admins</h3>
-			<div className="overflow-x-auto">
-				<table className="table w-full">
-					<thead>
-					<tr>
-						<th className='w-[4%]'>Delete</th>
-						<th className='w-[12.5%]'>Name</th>
-						<th className='w-[12.5%]'>Username</th>
-						<th className='w-[12.5%]'>Email</th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-					</tr>
-					</thead>
-					<tbody>
-					{admins?.map((user) => (
-						<tr key={user._id}>
-							<td>
-								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
-								</button>
-							</td>
-							<td>{user.firstName + " " + user.lastName}</td>
-							<td>{user.username}</td>
-							<td>{user.email}</td>
-						</tr>
-					))}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	);
-
-	const renderTourismGovernorTable = () => (
-		<div className="mb-8">
-			<h3 className="text-xl font-bold mb-2">Tourism Governors</h3>
-			<div className="overflow-x-auto">
-				<table className="table w-full">
-					<thead>
-					<tr>
-						<th className='w-[4%]'>Delete</th>
-						<th className='w-[12.5%]'>Name</th>
-						<th className='w-[12.5%]'>Username</th>
-						<th className='w-[12.5%]'>Email</th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-						<th className='w-[12.5%]'></th>
-					</tr>
-					</thead>
-					<tbody>
-					{tourismGovernors?.map((user) => (
-						<tr key={user._id}>
-							<td>
-								<button className="btn btn-primary btn-sm" onClick={() => deleteUser(user)}>Delete
-								</button>
-							</td>
-							<td>{user.firstName + " " + user.lastName}</td>
-							<td>{user.username}</td>
-							<td>{user.email}</td>
-						</tr>
-					))}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	);
-
 	return (
 		<div className="p-4">
 			<h2 className="text-2xl font-bold mb-4">Users To Be Deleted</h2>
@@ -287,8 +217,6 @@ const UsersToDelete = () => {
 					{renderTourGuideTable()}
 					{renderAdvertiserTable()}
 					{renderSellerTable()}
-					{renderAdminTable()}
-					{renderTourismGovernorTable()}
 				</>
 			)}
 		</div>
