@@ -1,10 +1,11 @@
 const Transportation = require('../Models/Transportation');
 
+
 // Add transportation
 const addTransportation = async (req, res) => {
-    const {name} = req.body;
+    const {name , createdBy} = req.body;
     try {
-        const newTransportation = new Transportation({name});
+        const newTransportation = new Transportation({name , createdBy});
         await newTransportation.save();
         res.status(201).json(newTransportation);
     } catch (error) {
@@ -37,6 +38,7 @@ const getTransportation = async (req, res) => {
 
 // Update transportation
 const updateTransportation = async (req, res) => {
+    const {name , createdBy} = req.body;
     try {
         const transportation = await Transportation.findByIdAndUpdate({_id: req.params.id}, req.body, {new: true});
         res.status(201).json(transportation);
