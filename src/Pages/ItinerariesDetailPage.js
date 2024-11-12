@@ -677,11 +677,11 @@ const ItineraryDetail = () => {
 						{itinerary?.comments?.length ? (
 							itinerary.comments?.slice(0, 3).map((comment, index) => (
 								<div key={index} className="border-b border-gray-200 pb-4 mb-4">
-									<p className="font-semibold text-gray-800">{comment.user}</p>
-									<p className="text-gray-600">{comment.text}</p>
-									<p className="text-sm text-gray-400">{comment.date ? new Date(comment.date).toLocaleDateString() : 'Date not available'}</p>
+									<p className="font-semibold text-gray-800">{comment?.user?.username}</p>
+									<p className="text-gray-600">{comment?.text}</p>
+									<p className="text-sm text-gray-400">{comment?.date ? new Date(comment?.date).toLocaleDateString() : 'Date not available'}</p>
 									<div className="flex items-center mt-2">
-										<span className="flex items-center text-2xl">{comment.stars ? renderStars(comment.stars) : renderStars(0)}</span>
+										<span className="flex items-center text-2xl">{comment?.stars ? renderStars(comment?.stars) : renderStars(0)}</span>
 									</div>
 								</div>
 							))

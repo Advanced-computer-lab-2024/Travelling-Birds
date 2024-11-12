@@ -169,7 +169,7 @@ const ManageCategoriesTags = () => {
 								</td>
 								<td>
 									<button className="btn btn-primary btn-sm"
-									        onClick={() => handleDelete(tag.id, false)}>Delete
+									        onClick={() => handleDelete(tag._id, false)}>Delete
 									</button>
 								</td>
 							</tr>

@@ -7,7 +7,7 @@ import { FaStar } from 'react-icons/fa';
 const Explorer = ({ onSearch, onFilter, onSort }) => {
     const [activityCategory, setActivityCategory] = useState('');
     const [activityTag, setActivityTag] = useState('');
-    const [activityBudget, setActivityBudget] = useState(1000);
+    const [activityBudget, setActivityBudget] = useState(3000);
     const [activityDate, setActivityDate] = useState('');
     const [activityRating, setActivityRating] = useState(0);
 
@@ -148,7 +148,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                                 <label className="block text-gray-800 text-base">Budget</label>
                                 <Slider
                                     min={0}
-                                    max={1000}
+                                    max={3000}
                                     defaultValue={activityBudget}
                                     onChange={setActivityBudget}
                                     trackStyle={{ backgroundColor: '#330577', height: '6px' }}

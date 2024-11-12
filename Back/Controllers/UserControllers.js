@@ -424,9 +424,6 @@ const addActivityBooking = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-	    if (user.age < 18) {
-		    return res.status(400).json({ message: 'User is under 18 years old can not book' });
-	    }
 
         const activity = await Activity.findById(activityId);
         if (!activity) {
@@ -440,6 +437,9 @@ const addActivityBooking = async (req, res) => {
         if (user.badge === 'level 2') {
             pointsMultiplier = 1;
         }
+	    if (user.badge === 'level 3') {
+		    pointsMultiplier = 1.5;
+	    }
         user.loyaltyPoints += activity.price * pointsMultiplier;
         user.redeemablePoints += activity.price * pointsMultiplier;
 
@@ -495,10 +495,13 @@ const removeActivityBooking = async (req, res) => {
         user.activityBookings.splice(index, 1);
 
         // Adjust loyalty and redeemable points based on user badge
-        let pointsMultiplier = 0.5;
-        if (user.badge === 'level 2') {
-            pointsMultiplier = 1;
-        }
+	    let pointsMultiplier = 0.5;
+	    if (user.badge === 'level 2') {
+		    pointsMultiplier = 1;
+	    }
+	    if (user.badge === 'level 3') {
+		    pointsMultiplier = 1.5;
+	    }
         user.loyaltyPoints -= activity.price * pointsMultiplier;
         user.redeemablePoints -= activity.price * pointsMultiplier;
 
@@ -542,6 +545,9 @@ const addItineraryBooking = async (req, res) => {
         if (user.badge === 'level 2') {
             pointsMultiplier = 1;
         }
+	    if (user.badge === 'level 3') {
+		    pointsMultiplier = 1.5;
+	    }
         user.loyaltyPoints += itinerary.price * pointsMultiplier;
         user.redeemablePoints += itinerary.price * pointsMultiplier;
 
@@ -597,10 +603,13 @@ const removeItineraryBooking = async (req, res) => {
         user.itineraryBookings.splice(index, 1);
 
         // Adjust loyalty and redeemable points based on user badge
-        let pointsMultiplier = 0.5;
-        if (user.badge === 'level 2') {
-            pointsMultiplier = 1;
-        }
+	    let pointsMultiplier = 0.5;
+	    if (user.badge === 'level 2') {
+		    pointsMultiplier = 1;
+	    }
+	    if (user.badge === 'level 3') {
+		    pointsMultiplier = 1.5;
+	    }
         user.loyaltyPoints -= itinerary.price * pointsMultiplier;
         user.redeemablePoints -= itinerary.price * pointsMultiplier;
 
