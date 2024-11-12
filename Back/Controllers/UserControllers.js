@@ -750,7 +750,7 @@ const requestDelete = async (req, res) => {
 		if (user.role === 'tour_guide') {
 			const itineraries = await Itinerary.find({createdBy: user._id});
 			await Promise.all(itineraries.map(itinerary =>
-				Itinerary.findByIdAndUpdate(itinerary._id, {bookingOpen: false}, {new: true})
+				Itinerary.findByIdAndUpdate(itinerary._id, {active: false}, {new: true})
 			));
 		}
 		if (user.role === 'seller') {
@@ -762,7 +762,7 @@ const requestDelete = async (req, res) => {
 		if (user.role === 'advertiser') {
 			const activities = await Activity.find({seller: user._id});
 			await Promise.all(activities.map(activity =>
-				Product.findByIdAndUpdate(activity._id, {isArchived: true}, {new: true})
+				Product.findByIdAndUpdate(activity._id, {bookingOpen: false}, {new: true})
 			));
 		}
 		if (user.role === 'tourist') {
