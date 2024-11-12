@@ -741,6 +741,9 @@ const requestDelete = async (req, res) => {
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
+		if(user.requestToDelete){
+			return res.status(400).json({message: 'User already marked for deletion'});
+		}
 		if (user.role === 'admin') {
 			return res.status(403).json({message: 'Admin cannot be deleted'});
 		}
