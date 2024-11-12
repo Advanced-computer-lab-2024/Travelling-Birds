@@ -741,7 +741,7 @@ const requestDelete = async (req, res) => {
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
-		if(user.requestToDelete){
+		if (user.requestToDelete) {
 			return res.status(400).json({message: 'User already marked for deletion'});
 		}
 		if (user.role === 'admin') {
@@ -763,7 +763,7 @@ const requestDelete = async (req, res) => {
 			));
 		}
 		if (user.role === 'advertiser') {
-			const activities = await Activity.find({seller: user._id});
+			const activities = await Activity.find({createdBy: user._id});
 			await Promise.all(activities.map(activity =>
 				Product.findByIdAndUpdate(activity._id, {bookingOpen: false}, {new: true})
 			));
