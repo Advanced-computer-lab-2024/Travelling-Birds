@@ -223,7 +223,16 @@ const ItineraryDetail = () => {
 			}
 
 			const user = await userRes.json();
+			const userDob = new Date(user.dob);
+			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
+			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
+				(new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
+				? ageDifference - 1 : ageDifference;
 
+			if (age < 18) {
+				toast.error('You must be at least 18 to book.');
+				return;
+			}
 			// Check if user has enough in wallet
 			if (enteredAmount > user.wallet) {
 				toast.error('Not enough balance in wallet.');
@@ -277,6 +286,7 @@ const ItineraryDetail = () => {
 
 			toast.success('Itinerary booked successfully');
 			window.dispatchEvent(userUpdateEvent);
+			window.location.reload();
 			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
