@@ -26,13 +26,11 @@ const ProductsDetailsPage = () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/products/${productId}`;
 
 			try {
-				console.log('API URL:', apiUrl);
 				const res = await fetch(apiUrl);
 				const product = await res.json();
 				setProduct(product);
 				setAvailableQuantity(product.availableQuantity);
 				setSoldQuantity(product.soldQuantity);
-				console.log('Product:', product);
 			} catch (err) {
 				console.log('Error fetching product', err);
 			} finally {
@@ -57,8 +55,6 @@ const ProductsDetailsPage = () => {
 				const res = await fetch(apiUrl);
 				const purchases = await res.json();
 				const purchased = purchases.some((purchase) => purchase._id === productId);
-				console.log('Purchased:', purchased);
-				console.log('Purchases:', purchases);
 				setPurchased(purchased);
 
 			} catch (err) {
@@ -139,7 +135,6 @@ const ProductsDetailsPage = () => {
 			return;
 		}
 		try {
-			console.log('Fetching user data...');
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
 				throw new Error('Failed to fetch user data');
@@ -156,7 +151,6 @@ const ProductsDetailsPage = () => {
 				closePurchaseModal();
 				return;
 			}
-			console.log('Updating wallet balance...');
 			if(!(userWalletBalance === null)) {
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
@@ -174,7 +168,6 @@ const ProductsDetailsPage = () => {
 				})
 			});
 
-			console.log('Adding product purchase...');
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
