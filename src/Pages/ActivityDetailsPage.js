@@ -191,6 +191,17 @@ const ActivityDetail = () => {
             }
             const userData = await userResponse.json();
             const userWalletBalance = userData.wallet;
+
+            const userDob = new Date(userData.dob);
+            const ageDifference = new Date().getFullYear() - userDob.getFullYear();
+            const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
+                (new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
+                ? ageDifference - 1 : ageDifference;
+
+            if (age < 18) {
+                toast.error('You must be at least 18 to book.');
+                return;
+            }
     
             // Check if there is enough balance in the wallet
             if (enteredWalletAmount > userWalletBalance) {
@@ -212,7 +223,7 @@ const ActivityDetail = () => {
                 closeBookingModal();
                 return;
             }
-    
+
             // Deduct wallet balance
             const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
             await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
@@ -235,6 +246,7 @@ const ActivityDetail = () => {
     
             toast.success('Activity booked successfully');
             window.dispatchEvent(userUpdateEvent);
+            window.location.reload();
             closeBookingModal();
         } catch (error) {
             console.error('Error booking activity:', error);
@@ -562,7 +574,7 @@ const ActivityDetail = () => {
                             <div className="mt-4 space-y-2">
                                 {activity?.comments?.slice(0, 3).map((review, index) => (
                                     <div key={index} className="border-b border-gray-200 pb-2">
-                                        <p className="text-gray-800">{review.user}</p>
+                                        <p className="text-gray-800">{review.user?.username}</p>
                                         <p className="text-gray-600">{review.text}</p>
                                         <p className="text-sm text-gray-400">{new Date(review.date).toLocaleDateString()}</p>
                                         <span className="flex">{renderStars(review.stars)}</span>
@@ -590,12 +602,12 @@ const ActivityDetail = () => {
                             {activity?.comments?.length ? (
                                 activity.comments.slice(0, visibleCommentsCount).map((comment, index) => (
                                     <div key={index} className="border-b border-gray-200 pb-4 mb-4">
-                                        <p className="font-semibold text-gray-800">{comment.user}</p>
-                                        <p className="text-gray-600">{comment.text}</p>
-                                        <p className="text-sm text-gray-400">{new Date(comment.date).toLocaleDateString()}</p>
+                                        <p className="font-semibold text-gray-800">{comment?.user?.username}</p>
+                                        <p className="text-gray-600">{comment?.text}</p>
+                                        <p className="text-sm text-gray-400">{new Date(comment?.date).toLocaleDateString()}</p>
                                         <div className="flex items-center mt-2">
                                             <span className="flex items-center text-2xl">
-                                                {renderStars(comment.stars)}
+                                                {renderStars(comment?.stars)}
                                             </span>
                                         </div>
                                     </div>

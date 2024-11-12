@@ -16,12 +16,7 @@ const SellerProducts = () => {
 	const [isArchived, setIsArchived] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null); // New state for image preview
 
-	const average = (array) => {
-		if (array.length === 0) {
-			return 0;
-		}
-		return array.reduce((a, b) => a + b) / array.length;
-	}
+
 
 	const clearFields = () => {
 		setName('');
@@ -158,7 +153,7 @@ const SellerProducts = () => {
 								<td>{product.price}</td>
 								<td>{product.availableQuantity}</td>
 								<td>{product.userPurchased.length}</td>
-								<td>{average(product.ratings)}</td>
+								<td>{product.ratings}</td>
 								<td>{product.reviews?.join(', ')}</td>
 								<td>
 									<button className="btn btn-primary btn-sm mr-2" onClick={() => handleUpdate(product)}>Edit</button>

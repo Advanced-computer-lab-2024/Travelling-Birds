@@ -18,7 +18,7 @@ const ViewComplaints = () => {
 			},
 			body: JSON.stringify({
 				reply,
-				status: 'resolved'
+				status: 'Resolved'
 			})
 		})
 			.then((response) => response.json())
@@ -36,6 +36,33 @@ const ViewComplaints = () => {
 					setSelectedComplaint({});
 				} else {
 					toast.error('Failed to send reply');
+				}
+			});
+	}
+
+	const toggleResolved = (complaint) => {
+		const newStatus = complaint.status === 'Pending' ? 'Resolved' : 'Pending';
+		fetch(`${process.env.REACT_APP_BACKEND}/api/complaints/${complaint._id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				status: newStatus
+			})
+		})
+			.then((response) => response.json())
+			.then(data => {
+				if (data?.status) {
+					toast.success('Complaint status updated successfully');
+					setComplaints(complaints.map(c => {
+						if (c._id === complaint._id) {
+							return {...c, status: newStatus};
+						}
+						return c;
+					}));
+				} else {
+					toast.error('Failed to update complaint status');
 				}
 			});
 	}
@@ -85,6 +112,7 @@ const ViewComplaints = () => {
 							<th className='w-[7%]'>Created By</th>
 							<th>Body</th>
 							<th>Reply</th>
+							<th>Actions</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -96,12 +124,20 @@ const ViewComplaints = () => {
 								<td className={complaint.status === 'Pending' ? 'text-yellow-500' : 'text-green-500'}>{complaint.status}</td>
 								<td>{complaint.createdByName}</td>
 								<td>{complaint.body}</td>
-								<td>{complaint.reply || <button className="btn btn-primary btn-sm"
-								                                onClick={() => {
-									                                document.getElementById('my_modal_5').showModal();
-									                                setSelectedComplaint(complaint)
-								                                }}>Reply
-								</button>}</td>
+								<td>{complaint.reply}</td>
+								<td>
+									<button className="btn btn-primary btn-sm"
+									        onClick={() => {
+										        document.getElementById('my_modal_5').showModal();
+										        setSelectedComplaint(complaint)
+									        }}>Reply
+									</button>
+									<button className="btn btn-secondary btn-sm"
+									        onClick={() => toggleResolved(complaint)}
+									>
+										{complaint.status === 'Pending' ? 'Mark Resolved' : 'Mark Pending'}
+									</button>
+								</td>
 							</tr>
 						))}
 						</tbody>

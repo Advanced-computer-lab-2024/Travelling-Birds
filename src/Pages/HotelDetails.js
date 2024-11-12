@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {FaCreditCard, FaEnvelope, FaHotel, FaPhone, FaUser} from 'react-icons/fa';
 import {toast} from "react-toastify";
 
 function HotelDetails() {
@@ -74,7 +73,7 @@ function HotelDetails() {
 			{/* Hotel Details */}
 			<div className="bg-white shadow rounded-lg p-6 mb-6">
 				<h2 className="text-4xl font-bold mb-4 text-[#330577] flex items-center">
-					<FaHotel className="mr-2"/> {hotel?.hotel?.name}
+					<i className="fas fa-hotel mr-2"></i> {hotel?.hotel?.name}
 				</h2>
 				<p className="text-gray-600 mb-2">Rating: {hotel?.hotel?.rating || 'N/A'}</p>
 				<p className="text-gray-600 mb-6">
@@ -85,7 +84,7 @@ function HotelDetails() {
 					)}
 				</p>
 				<button
-					className="bg-[#330577] hover:bg-[#27045c] text-white px-4 py-2 rounded-lg shadow-lg transition duration-300"
+					className="bg-[#330577] hover:bg-[#27045c] text-white px-4 py-2 rounded-lg shadow-lg transition duration-300 flex items-center"
 					onClick={() => setShowBookingForm(!showBookingForm)}
 				>
 					{showBookingForm ? 'Close Booking Form' : 'Book This Hotel'}
@@ -98,56 +97,66 @@ function HotelDetails() {
 					<h3 className="text-2xl font-semibold mb-4">Booking Information</h3>
 					<div className="grid gap-4">
 						<div className="relative">
-							<FaUser className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">First Name</span>
+							</label>
 							<input
 								type="text"
 								name="firstName"
 								placeholder="First Name"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.firstName}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
-							<FaUser className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">Last Name</span>
+							</label>
 							<input
 								type="text"
 								name="lastName"
 								placeholder="Last Name"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.lastName}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
-							<FaEnvelope className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">Email</span>
+							</label>
 							<input
 								type="email"
 								name="email"
 								placeholder="Email"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.email}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
-							<FaEnvelope className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">Date of Birth</span>
+							</label>
 							<input
 								type="date"
 								name="dateOfBirth"
 								placeholder="Date of Birth (YYYY-MM-DD)"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.dateOfBirth}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
-							<FaPhone className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">Phone</span>
+							</label>
 							<input
 								type="tel"
 								name="phone"
 								placeholder="Phone"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.phone}
 								onChange={handleChange}
 							/>
@@ -155,32 +164,40 @@ function HotelDetails() {
 
 						{/* Payment Fields */}
 						<div className="relative">
-							<FaCreditCard className="absolute left-3 top-3 text-gray-500"/>
+							<label className="label">
+								<span className="label-text">Credit Card Number</span>
+							</label>
 							<input
 								type="text"
 								name="creditCard.number"
 								placeholder="Credit Card Number"
-								className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.creditCard.number}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
+							<label className="label">
+								<span className="label-text">Expiry Date</span>
+							</label>
 							<input
 								type="text"
 								name="creditCard.expiryDate"
 								placeholder="Expiry Date (YYYY-MM)"
-								className="border rounded-lg p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.creditCard.expiryDate}
 								onChange={handleChange}
 							/>
 						</div>
 						<div className="relative">
+							<label className="label">
+								<span className="label-text">CVC</span>
+							</label>
 							<input
 								type="text"
 								name="creditCard.cvc"
-								placeholder="Holder Name"
-								className="border rounded-lg p-2 focus:ring-2 focus:ring-[#330577] w-full"
+								placeholder="CVC"
+								className="input input-bordered pl-10 w-full"
 								value={travelerDetails.creditCard.cvc}
 								onChange={handleChange}
 							/>

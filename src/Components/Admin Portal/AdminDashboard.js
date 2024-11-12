@@ -11,7 +11,6 @@ import ManageInventory from './Components/ProductManagement/ManageInventory';
 import SalesReports from './Components/ProductManagement/SalesReports';
 import StockAlerts from './Components/ProductManagement/StockAlerts';
 import ViewComplaints from './Components/ComplaintManagement/ViewComplaints';
-import RespondComplaints from './Components/ComplaintManagement/RespondComplaints';
 import UserGrowth from './Components/Analytics/UserGrowth';
 import CreatePromotionalCodes from './Components/PromotionalManagement/CreatePromotionalCodes';
 
@@ -30,7 +29,6 @@ const AdminDashboard = () => {
 					<Route path="/admin/product-management/sales-reports" element={<SalesReports />} />
 					<Route path="/admin/product-management/stock-alerts" element={<StockAlerts />} />
 					<Route path="/admin/complaint-management/view-complaints" element={<ViewComplaints />} />
-					<Route path="/admin/complaint-management/respond-complaints" element={<RespondComplaints />} />
 					<Route path="/admin/analytics/user-growth" element={<UserGrowth />} />
 					<Route path="/admin/promotional-management/create-codes" element={<CreatePromotionalCodes />} />
 				</Routes>

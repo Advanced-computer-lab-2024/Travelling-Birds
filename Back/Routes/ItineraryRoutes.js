@@ -53,7 +53,6 @@ router.put('/:id', upload.single('image'), updateItinerary);
 // Delete itinerary
 router.delete('/:id', deleteItinerary);
 
-
 // Get all created itineraries by a specific user
 router.get('/user/:id', getAllCreatedItineraries);
 

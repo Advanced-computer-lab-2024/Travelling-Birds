@@ -11,6 +11,7 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 	const [mobileNumber, setMobileNumber] = useState('');
 	const [nationality, setNationality] = useState('');
 	const [dob, setDob] = useState('');
+	const [job,setJob]=useState('')
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [errors, setErrors] = useState({});
@@ -31,6 +32,7 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 		} else if (dob >= currentDate) {
 			newErrors.dob = 'Date of birth must be in the past';
 		}
+		if (!job) newErrors.job = 'The field above is required';
 		if (!password) newErrors.password = 'The field above is required';
 		if (!confirmPassword) newErrors.confirmPassword = 'The field above is required';
 
@@ -95,7 +97,7 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 			const registerResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, firstName, lastName, email, mobileNumber, nationality, dob, password, role: 'tourist' }),
+				body: JSON.stringify({ username, firstName, lastName, email, mobileNumber, nationality, dob, job, password, role: 'tourist' }),
 			});
 
 			if (registerResponse.status === 201) {
@@ -161,10 +163,10 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 				<div className="w-1/2">
 					<label className="block text-gray-700">Mobile Number</label>
 					<input
-					type="text"
-					value={mobileNumber}
-					onChange={(e) => setMobileNumber(e.target.value.replace(/\D/, ''))}
-					className="w-full p-2 border border-gray-300 rounded mt-0.5"
+						type="text"
+						value={mobileNumber}
+						onChange={(e) => setMobileNumber(e.target.value.replace(/\D/, ''))}
+						className="w-full p-2 border border-gray-300 rounded mt-0.5"
 					/>
 					{errors.mobileNumber && <p className="text-red-500 text-sm">{errors.mobileNumber}</p>}
 				</div>
@@ -188,6 +190,16 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 					className="w-full p-2 border border-gray-300 rounded mt-0.5"
 				/>
 				{errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
+			</div>
+			<div className="mb-1">
+				<label className="block text-gray-700">Job</label>
+				<input
+					type="job"
+					value={job}
+					onChange={(e) => setJob(e.target.value)}
+					className="w-full p-2 border border-gray-300 rounded mt-0.5"
+				/>
+				{errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
 			</div>
 			<div className="mb-1">
 				<label className="block text-gray-700">Password</label>
@@ -217,7 +229,7 @@ const TouristRegisterForm = ({ onChangeRole }) => {
 			</button>
 			<div className="mt-3 text-center">
 				<p className="text-gray-700">
-					Not a tourist? <br />
+					Not a tourist? <br/>
 					<span
 						className="text-[#330577] underline cursor-pointer hover:text-[#4a1a99]"
 						onClick={() => onChangeRole('Tour Guide')}

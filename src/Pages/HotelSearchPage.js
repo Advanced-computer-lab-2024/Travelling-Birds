@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import { FaCity, FaCalendarAlt, FaUser, FaInfoCircle } from 'react-icons/fa';
+import React, {useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {FaCalendarAlt, FaCity, FaInfoCircle, FaUser} from 'react-icons/fa';
 
 function HotelSearchPage() {
 	const [hotels, setHotels] = useState([]);
@@ -17,7 +17,7 @@ function HotelSearchPage() {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/hotels/search`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(formData),
 			});
 			const data = await response.json();
@@ -32,44 +32,64 @@ function HotelSearchPage() {
 			<h2 className="text-4xl font-extrabold mb-8 text-center text-[#330577]">Search Hotels</h2>
 			<div className="bg-white shadow-md rounded-lg p-6 mb-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-					<div className="relative">
-						<FaCity className="absolute left-3 top-3 text-gray-500" />
-						<input
-							type="text"
-							placeholder="City Code (e.g., CAI)"
-							className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
-							value={formData.cityCode}
-							onChange={(e) => setFormData({ ...formData, cityCode: e.target.value })}
-						/>
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text">City Code (e.g., CAI)</span>
+						</label>
+						<div className="relative">
+							<FaCity className="absolute left-3 top-3 text-gray-500"/>
+							<input
+								type="text"
+								placeholder="City Code (e.g., CAI)"
+								className="input input-bordered pl-10 w-full"
+								value={formData.cityCode}
+								onChange={(e) => setFormData({...formData, cityCode: e.target.value})}
+							/>
+						</div>
 					</div>
-					<div className="relative">
-						<FaCalendarAlt className="absolute left-3 top-3 text-gray-500" />
-						<input
-							type="date"
-							className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
-							value={formData.checkInDate}
-							onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
-						/>
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text">Check-In Date</span>
+						</label>
+						<div className="relative">
+							<FaCalendarAlt className="absolute left-3 top-3 text-gray-500"/>
+							<input
+								type="date"
+								className="input input-bordered pl-10 w-full"
+								value={formData.checkInDate}
+								onChange={(e) => setFormData({...formData, checkInDate: e.target.value})}
+							/>
+						</div>
 					</div>
-					<div className="relative">
-						<FaCalendarAlt className="absolute left-3 top-3 text-gray-500" />
-						<input
-							type="date"
-							className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
-							value={formData.checkOutDate}
-							onChange={(e) => setFormData({ ...formData, checkOutDate: e.target.value })}
-						/>
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text">Check-Out Date</span>
+						</label>
+						<div className="relative">
+							<FaCalendarAlt className="absolute left-3 top-3 text-gray-500"/>
+							<input
+								type="date"
+								className="input input-bordered pl-10 w-full"
+								value={formData.checkOutDate}
+								onChange={(e) => setFormData({...formData, checkOutDate: e.target.value})}
+							/>
+						</div>
 					</div>
-					<div className="relative">
-						<FaUser className="absolute left-3 top-3 text-gray-500" />
-						<input
-							type="number"
-							placeholder="Adults"
-							className="border rounded-lg pl-10 p-2 focus:ring-2 focus:ring-[#330577] w-full"
-							min="1"
-							value={formData.adults}
-							onChange={(e) => setFormData({ ...formData, adults: e.target.value })}
-						/>
+					<div className="form-control">
+						<label className="label">
+							<span className="label-text">Adults</span>
+						</label>
+						<div className="relative">
+							<FaUser className="absolute left-3 top-3 text-gray-500"/>
+							<input
+								type="number"
+								placeholder="Adults"
+								className="input input-bordered pl-10 w-full"
+								min="1"
+								value={formData.adults}
+								onChange={(e) => setFormData({...formData, adults: e.target.value})}
+							/>
+						</div>
 					</div>
 				</div>
 				<button
@@ -97,7 +117,7 @@ function HotelSearchPage() {
 									className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-md transition duration-300"
 									onClick={() => navigate(`/hotels/${hotel.hotel.hotelId}/${hotel.offers[0].checkInDate}/${hotel.offers[0].checkOutDate}`)}
 								>
-									View Details <FaInfoCircle className="inline-block ml-2" />
+									View Details <FaInfoCircle className="inline-block ml-2"/>
 								</button>
 							</div>
 						</div>

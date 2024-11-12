@@ -5,7 +5,7 @@ import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 import {AiOutlineHeart} from "react-icons/ai";
 
 const ProductsDetailsPage = () => {
-	const productId = useParams();
+	const productId = useParams().id;
 	const [visibleProductComments, setVisibleProductComments] = useState(3);
 	const [product, setProduct] = useState("");
 	const [purchased, setPurchased] = useState(false);
@@ -26,13 +26,11 @@ const ProductsDetailsPage = () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/products/${productId}`;
 
 			try {
-				console.log('API URL:', apiUrl);
 				const res = await fetch(apiUrl);
 				const product = await res.json();
 				setProduct(product);
 				setAvailableQuantity(product.availableQuantity);
 				setSoldQuantity(product.soldQuantity);
-				console.log('Product:', product);
 			} catch (err) {
 				console.log('Error fetching product', err);
 			} finally {
@@ -57,8 +55,6 @@ const ProductsDetailsPage = () => {
 				const res = await fetch(apiUrl);
 				const purchases = await res.json();
 				const purchased = purchases.some((purchase) => purchase._id === productId);
-				console.log('Purchased:', purchased);
-				console.log('Purchases:', purchases);
 				setPurchased(purchased);
 
 			} catch (err) {
@@ -81,14 +77,9 @@ const ProductsDetailsPage = () => {
 	}
 
 	const handleAddComment = async () => {
-		if (!commentText || commentRating === 0) {
-			toast.error('Please provide a comment and a rating.');
-			return;
-		}
 		const newComment = {
 			user: sessionStorage.getItem('user id'),
 			text: commentText,
-			date: new Date().toISOString(),
 			stars: commentRating
 		};
 
@@ -139,7 +130,6 @@ const ProductsDetailsPage = () => {
 			return;
 		}
 		try {
-			console.log('Fetching user data...');
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
 				throw new Error('Failed to fetch user data');
@@ -156,10 +146,9 @@ const ProductsDetailsPage = () => {
 				closePurchaseModal();
 				return;
 			}
-			console.log('Updating wallet balance...');
 			if(!(userWalletBalance === null)) {
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({wallet: updatedWalletBalance})
@@ -174,7 +163,6 @@ const ProductsDetailsPage = () => {
 				})
 			});
 
-			console.log('Adding product purchase...');
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
@@ -349,7 +337,7 @@ const ProductsDetailsPage = () => {
 					{/* Ratings & Reviews */}
 					<div className="bg-white p-6 rounded-lg shadow-lg">
 						<h2 className="text-lg font-semibold text-[#330577] mb-4">Ratings and Reviews</h2>
-						<p className="text-xl text-[#330577] font-bold">{(product?.rating)} ★</p>
+						<p className="text-xl text-[#330577] font-bold">{(product?.ratings)} ★</p>
 						<p className="text-sm text-gray-500">{product?.reviewCount} reviews</p>
 						<div className="mt-4 space-y-2">
 							{product?.comments?.length ? (

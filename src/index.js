@@ -15,26 +15,19 @@ import {
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import ProfilePage from "./Pages/ProfilePage";
-import ActivityPage from "./Pages/ActivitiesPage";
-import ActivityForm from "./Components/Models/Forms/ActivityForm";
 import ExplorePage from "./Pages/ExplorePage";
-import UsersPage from "./Pages/UsersPage";
 import ItinerariesPage from "./Pages/ItinerariesPage";
-import ItineraryForm from "./Components/Models/Forms/ItineraryForm";
 import ProductsPage from "./Pages/ProductsPage";
-import MuseumForm from "./Components/Models/Forms/MuseumForm";
-import {HistoricalPlaceForm} from "./Components/Models/Forms";
-import PlacesPage from "./Pages/PlacesPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
-import ItineraryDetail from "./Pages/IntenartiesDetailPage";
+import ItineraryDetail from "./Pages/ItinerariesDetailPage";
 import FlightSearchPage from "./Pages/FlightSearchPage";
 import FlightDetails from "./Pages/FlightDetails";
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
 import LoginPage from "./Pages/LoginPage";
 import WaitPage from "./Pages/WaitPage";
-import AdvertiserActivities  from "./Pages/AdvertiserActivities";
+import AdvertiserActivities from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
 import ProductDetails from "./Pages/ProductsDetailsPage";
 import FlightsandHotels from "./Pages/FlightsandHotels";
@@ -61,7 +54,6 @@ import TourGuideItineraries from "./Pages/TourGuideItineraries";
 import TourismGovernorTags from "./Pages/TourismGovernorTags"
 import TourismGovernorHistoricalPlaces from "./Pages/TourismGovernorHistoricalPlaces"
 import TourismGovernorMuseums from "./Pages/TourismGovernorMuseums"
-
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

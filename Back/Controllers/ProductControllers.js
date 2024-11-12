@@ -189,7 +189,7 @@ const getComments = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        const comments = await CommentModel.find({ _id: { $in: product.reviews } });
+        const comments = await CommentModel.find({ _id: { $in: product.reviews } }).populate('user', 'username');
         res.status(200).json(comments);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -215,16 +215,16 @@ const addComment = async (req, res) => {
           if (!user2.productPurchases.includes(req.params.id)) {
             return res.status(400).json({ message: 'User must purchase the product before commenting' });
         }
+	    const totalRating = (product.reviews.length * product.ratings) + stars;
+	    const newRating = (totalRating / (product.reviews.length+1)).toFixed(1);
+		const newComment = new CommentModel({ user, text, stars, date: new Date()});
+		await newComment.save();
+		console.log(stars);
 
-        const newComment = new CommentModel({ user, text, stars, date: new Date() });
-        await newComment.save();
+		// Update product's reviews and ratings
+		const updatedProduct = await Product.findByIdAndUpdate(req.params.id, { $push: { reviews: newComment._id }, $set: { ratings: newRating } }, { new: true }).populate('reviews', 'ratings');
 
-        // Update product's reviews and ratings
-        product.reviews.push(newComment._id);
-        product.ratings.push(stars);
-        await product.save();
-
-        res.status(201).json(product);
+        res.status(201).json(updatedProduct);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

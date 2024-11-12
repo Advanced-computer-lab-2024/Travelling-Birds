@@ -223,7 +223,16 @@ const ItineraryDetail = () => {
 			}
 
 			const user = await userRes.json();
+			const userDob = new Date(user.dob);
+			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
+			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
+				(new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
+				? ageDifference - 1 : ageDifference;
 
+			if (age < 18) {
+				toast.error('You must be at least 18 to book.');
+				return;
+			}
 			// Check if user has enough in wallet
 			if (enteredAmount > user.wallet) {
 				toast.error('Not enough balance in wallet.');
@@ -277,6 +286,7 @@ const ItineraryDetail = () => {
 
 			toast.success('Itinerary booked successfully');
 			window.dispatchEvent(userUpdateEvent);
+			window.location.reload();
 			closeBookingModal();
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
@@ -667,11 +677,11 @@ const ItineraryDetail = () => {
 						{itinerary?.comments?.length ? (
 							itinerary.comments?.slice(0, 3).map((comment, index) => (
 								<div key={index} className="border-b border-gray-200 pb-4 mb-4">
-									<p className="font-semibold text-gray-800">{comment.user}</p>
-									<p className="text-gray-600">{comment.text}</p>
-									<p className="text-sm text-gray-400">{comment.date ? new Date(comment.date).toLocaleDateString() : 'Date not available'}</p>
+									<p className="font-semibold text-gray-800">{comment?.user?.username}</p>
+									<p className="text-gray-600">{comment?.text}</p>
+									<p className="text-sm text-gray-400">{comment?.date ? new Date(comment?.date).toLocaleDateString() : 'Date not available'}</p>
 									<div className="flex items-center mt-2">
-										<span className="flex items-center text-2xl">{comment.stars ? renderStars(comment.stars) : renderStars(0)}</span>
+										<span className="flex items-center text-2xl">{comment?.stars ? renderStars(comment?.stars) : renderStars(0)}</span>
 									</div>
 								</div>
 							))
