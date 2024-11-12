@@ -765,7 +765,7 @@ const requestDelete = async (req, res) => {
 		if (user.role === 'advertiser') {
 			const activities = await Activity.find({createdBy: user._id});
 			await Promise.all(activities.map(activity =>
-				Product.findByIdAndUpdate(activity._id, {bookingOpen: false}, {new: true})
+				Activity.findByIdAndUpdate(activity._id, {bookingOpen: false}, {new: true})
 			));
 		}
 		if (user.role === 'tourist') {
