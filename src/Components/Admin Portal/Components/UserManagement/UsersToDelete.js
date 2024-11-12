@@ -12,7 +12,7 @@ const UsersToDelete = () => {
 	const [loading, setLoading] = useState(true);
 
 	const deleteUser = (user) => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}/admin`, {
 			method: 'DELETE',
 		}).then((response) => response.json())
 			.then((data) => {

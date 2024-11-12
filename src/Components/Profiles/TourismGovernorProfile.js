@@ -53,28 +53,6 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 		}
 	};
 
-	const requestAccountDeletion = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				requestToDelete: true,
-			})
-		}).then((response) => response.json())
-			.then((data) => {
-				if (data?.requestToDelete === true) {
-					toast.success('Account deletion requested successfully');
-				} else {
-					toast.error('Failed to request account deletion');
-				}
-			}).catch((error) => {
-			console.log(error);
-			toast.error('An error occurred while requesting account deletion');
-		});
-	};
-
 	useEffect(() => {
 		setFirstName(user.firstName);
 		setLastName(user.lastName);

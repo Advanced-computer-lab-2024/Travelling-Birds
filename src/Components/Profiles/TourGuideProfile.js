@@ -55,26 +55,24 @@ const TourGuideProfile = ({ user, displayOnly }) => {
 		}
 	};
 
-	const requestAccountDeletion = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				requestToDelete: true,
-			})
-		}).then((response) => response.json())
-			.then((data) => {
-				if (data?.requestToDelete === true) {
-					toast.success('Account deletion requested successfully');
-				} else {
-					toast.error('Failed to request account deletion');
+	const requestAccountDeletion = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/requestDelete/${user._id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
 				}
-			}).catch((error) => {
+			});
+			if (response.ok) {
+				toast.success('Deletion request sent successfully');
+			} else {
+				const data = await response.json();
+				toast.error(data.message || 'Failed to send deletion request');
+			}
+		} catch (error) {
 			console.log(error);
-			toast.error('An error occurred while requesting account deletion');
-		});
+			toast.error('An error occurred while sending the deletion request');
+		}
 	};
 
 	useEffect(() => {

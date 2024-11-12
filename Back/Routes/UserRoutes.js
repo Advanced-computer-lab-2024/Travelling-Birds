@@ -24,6 +24,7 @@ const {
 	removeProductPurchase,
 	getComments,
 	addComment,
+	requestDelete
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -44,6 +45,9 @@ router.get('/documents/:id', getUserDocuments);
 
 // Get Approved Users
 router.get('/approved', getApprovedUsers);
+
+// Request Delete
+router.put('/requestDelete/:id', requestDelete);
 
 // Get Users to Delete
 router.get('/toDelete', getUsersToDelete);

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import ReusableInput from "../ReusableInput";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
-const TouristProfile = ({ user, displayOnly }) => {
+const TouristProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
 	const [lastName, setLastName] = useState(user.lastName || '');
 	const [email, setEmail] = useState(user.email || '');
@@ -39,7 +39,7 @@ const TouristProfile = ({ user, displayOnly }) => {
 
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify(updatedData),
 			});
 
@@ -70,24 +70,24 @@ const TouristProfile = ({ user, displayOnly }) => {
 		}
 	};
 
-	const requestAccountDeletion = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/users/${user._id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ requestToDelete: true }),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data?.requestToDelete === true) {
-					toast.success('Account deletion requested successfully');
-				} else {
-					toast.error('Failed to request account deletion');
+	const requestAccountDeletion = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/requestDelete/${user._id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
 				}
-			})
-			.catch((error) => {
-				console.log(error);
-				toast.error('An error occurred while requesting account deletion');
 			});
+			if (response.ok) {
+				toast.success('Deletion request sent successfully');
+			} else {
+				const data = await response.json();
+				toast.error(data.message || 'Failed to send deletion request');
+			}
+		} catch (error) {
+			console.log(error);
+			toast.error('An error occurred while sending the deletion request');
+		}
 	};
 
 	useEffect(() => {
@@ -103,7 +103,8 @@ const TouristProfile = ({ user, displayOnly }) => {
 	}, [user]);
 
 	return (
-		<div className={`fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 ${!showProfileDetails && 'hidden'}`}>
+		<div
+			className={`fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 ${!showProfileDetails && 'hidden'}`}>
 			{showProfileDetails && (
 				<form
 					className="bg-white shadow-lg rounded-lg p-4 sm:p-6 w-full max-w-md sm:max-w-lg lg:max-w-xl border border-gray-200 z-60 overflow-y-auto max-h-[90vh]"
@@ -113,19 +114,30 @@ const TouristProfile = ({ user, displayOnly }) => {
 						else setIsEditing(true);
 					}}
 				>
-					{!displayOnly && <h1 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">Profile</h1>}
+					{!displayOnly &&
+						<h1 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">Profile</h1>}
 
 					<div className="grid gap-3 sm:gap-4 mb-4">
-						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true}/>
-						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Mobile Number" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Nationality" value={nationality} onChange={e => setNationality(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="date" name="Date of Birth" value={dob} onChange={e => setDob(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Job" value={job} onChange={e => setJob(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="number" name="Wallet" value={wallet} onChange={e => setWallet(e.target.value)} disabled={true}/>
+						<ReusableInput type="text" name="First Name" value={firstName}
+						               onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Last Name" value={lastName}
+						               onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)}
+						               disabled={!isEditing}/>
+						<ReusableInput type="text" name="Username" value={username}
+						               onChange={e => setUsername(e.target.value)} disabled={true}/>
+						<ReusableInput type="password" name="Password" value={password}
+						               onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Mobile Number" value={mobileNumber}
+						               onChange={e => setMobileNumber(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Nationality" value={nationality}
+						               onChange={e => setNationality(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="date" name="Date of Birth" value={dob}
+						               onChange={e => setDob(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Job" value={job} onChange={e => setJob(e.target.value)}
+						               disabled={!isEditing}/>
+						<ReusableInput type="number" name="Wallet" value={wallet}
+						               onChange={e => setWallet(e.target.value)} disabled={true}/>
 					</div>
 
 					{!displayOnly && (
