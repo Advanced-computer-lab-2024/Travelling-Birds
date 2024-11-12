@@ -18,7 +18,7 @@ const ViewComplaints = () => {
 			},
 			body: JSON.stringify({
 				reply,
-				status: 'resolved'
+				status: 'Resolved'
 			})
 		})
 			.then((response) => response.json())

@@ -189,7 +189,7 @@ const getComments = async (req, res) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        const comments = await CommentModel.find({ _id: { $in: product.reviews } });
+        const comments = await CommentModel.find({ _id: { $in: product.reviews } }).populate('user', 'username');
         res.status(200).json(comments);
     } catch (error) {
         res.status(500).json({ error: error.message });
