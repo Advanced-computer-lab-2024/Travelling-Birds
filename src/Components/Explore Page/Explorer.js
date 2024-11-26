@@ -81,7 +81,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                 <button
                     onClick={() => {
                         setActiveSection('activities');
-                        setMessage('Do something fun! Search, filter, or sort activities');
+                        setMessage('Do something fun! Search, filter, and sort activities');
                     }}
                     className={`text-white font-medium text-lg px-6 py-2 rounded-full transition ${activeSection === 'activities' ? 'bg-[#330577]' : 'bg-gray-300 hover:bg-gray-400'}`}
                 >
@@ -90,7 +90,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                 <button
                     onClick={() => {
                         setActiveSection('itineraries');
-                        setMessage('Plan your trip! Search, filter, or sort itineraries');
+                        setMessage('Plan your trip! Search, filter, and sort itineraries');
                     }}
                     className={`text-white font-medium text-lg px-6 py-2 rounded-full transition ${activeSection === 'itineraries' ? 'bg-[#330577]' : 'bg-gray-300 hover:bg-gray-400'}`}
                 >
@@ -99,7 +99,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                 <button
                     onClick={() => {
                         setActiveSection('historicalPlaces');
-                        setMessage('Explore the past! Search or filter historical places');
+                        setMessage('Explore the past! Search and filter historical places');
                     }}
                     className={`text-white font-medium text-lg px-6 py-2 rounded-full transition ${activeSection === 'historicalPlaces' ? 'bg-[#330577]' : 'bg-gray-300 hover:bg-gray-400'}`}
                 >
@@ -108,7 +108,7 @@ const Explorer = ({ onSearch, onFilter, onSort }) => {
                 <button
                     onClick={() => {
                         setActiveSection('museums');
-                        setMessage('Learn something new! Search or filter museums');
+                        setMessage('Learn something new! Search and filter museums');
                     }}
                     className={`text-white font-medium text-lg px-6 py-2 rounded-full transition ${activeSection === 'museums' ? 'bg-[#330577]' : 'bg-gray-300 hover:bg-gray-400'}`}
                 >
