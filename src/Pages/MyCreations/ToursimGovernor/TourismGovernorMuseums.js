@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
-import {MuseumForm} from "../Components/Models/Forms";
+import {MuseumForm} from "../../../Components/Models/Forms";
 
 const TourismGovernorMuseums = () => {
 	const [museums, setMuseums] = useState([]);

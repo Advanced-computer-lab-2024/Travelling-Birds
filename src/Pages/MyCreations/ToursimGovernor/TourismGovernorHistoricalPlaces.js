@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import HistoricalPlaceForm from "../Components/Models/Forms/HistoricalPlaceForm";
+import HistoricalPlaceForm from "../../../Components/Models/Forms/HistoricalPlaceForm";
 import {toast} from "react-toastify";
 import {useNavigate} from "react-router-dom";
 

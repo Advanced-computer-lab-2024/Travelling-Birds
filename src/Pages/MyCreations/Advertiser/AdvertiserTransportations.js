@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Popup from 'reactjs-popup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import TransportationForm from '../Components/Models/Forms/TranportationForm.js'; // Import the form component
+import TransportationForm from '../../../Components/Models/Forms/TranportationForm.js'; // Import the form component
 
 const TransportationManagement = () => {
     const [transportations, setTransportations] = useState([]);

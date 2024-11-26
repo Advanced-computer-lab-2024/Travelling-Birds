@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityForm} from '../Components/Models/Forms';
+import {ActivityForm} from '../../../Components/Models/Forms';
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
 

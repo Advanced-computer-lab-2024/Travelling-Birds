@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast} from "react-toastify";
-import {ItineraryForm} from "../Components/Models/Forms";
+import {ItineraryForm} from "../../../Components/Models/Forms";
 
 const TourGuideItineraries = () => {
 	const [itineraries, setItineraries] = useState([]);
