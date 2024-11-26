@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
-import LoadingPage from './LoadingPage';
-import LocationContact from "../Components/Locations/HistoricalPlaceLocation";
-import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay";
+import LoadingPage from '../LoadingPage';
+import LocationContact from "../../Components/Locations/HistoricalPlaceLocation";
+import ActivityDisplay from "../../Components/Models/Displays/ActivityDisplay";
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);

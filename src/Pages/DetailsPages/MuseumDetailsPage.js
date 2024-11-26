@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
-import LoadingPage from './LoadingPage'; 
-import LocationContact from "../Components/Locations/MuseumLocation";
-import ActivityDisplay from "../Components/Models/Displays/ActivityDisplay"; // Assuming this is used to display activities for a museum
+import LoadingPage from '../LoadingPage'; 
+import LocationContact from "../../Components/Locations/MuseumLocation";
+import ActivityDisplay from "../../Components/Models/Displays/ActivityDisplay"; // Assuming this is used to display activities for a museum
 
 const MuseumDetail = () => {
   const [loading, setLoading] = useState(true);

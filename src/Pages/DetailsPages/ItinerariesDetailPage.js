@@ -4,8 +4,8 @@ import {FaClock, FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt} f
 import {AiOutlineHeart} from "react-icons/ai";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LocationContact from "../Components/Locations/Location";
-import {userUpdateEvent} from "../utils/userUpdateEvent";
+import LocationContact from "../../Components/Locations/Location";
+import {userUpdateEvent} from "../../utils/userUpdateEvent";
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);

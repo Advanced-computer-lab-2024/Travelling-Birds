@@ -18,16 +18,12 @@ import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
 import ProductsPage from "./Pages/ProductsPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
-import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
-import ItineraryDetail from "./Pages/ItinerariesDetailPage";
 
-import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
-import MuseumDetail from './Pages/MuseumDetailsPage';
 import LoginPage from "./Pages/LoginPage";
 import WaitPage from "./Pages/WaitPage";
 import AdvertiserActivities from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
-import ProductDetails from "./Pages/ProductsDetailsPage";
+
 
 //flights and hotels
 import FlightsandHotels from "./Pages/FlightsAndHotels/FlightsandHotels";
@@ -41,6 +37,13 @@ import BookingPage from "./Pages/MyBookings/MyBookingsPage";
 import ActivitiesPage from "./Pages/MyBookings/Activities/ActivitiesPage";
 import ItinerariesPage from "./Pages/MyBookings/Itineraries/ItinerariesPage";
 import PlacesPage from "./Pages/MyBookings/Places/PlacesPage";
+
+//details
+import ActivityDetailsPage from "./Pages/DetailsPages/ActivityDetailsPage";
+import ItineraryDetail from "./Pages/DetailsPages/ItinerariesDetailPage";
+import HistoricalPlaceDetail from "./Pages/DetailsPages/HistoricalPlaceDetailsPage";
+import MuseumDetail from './Pages/DetailsPages/MuseumDetailsPage';
+import ProductDetails from "./Pages/DetailsPages/ProductsDetailsPage";
 
 
 import MyPurchases from './Pages/MyPurchases';
@@ -92,11 +95,13 @@ root.render(
 					<Route path='hotels' element={<HotelSearchPage/>}/>
 					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
 
+
 					<Route path='activities' element={<ActivitiesPage/>}/>
-					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
-					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
+					
+					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
+					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>
 

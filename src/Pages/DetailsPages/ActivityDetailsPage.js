@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt } from 'react-icons/fa';
 import { AiOutlineHeart } from "react-icons/ai";
-import LocationContact from "../Components/Locations/Location";
+import LocationContact from "../../Components/Locations/Location";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {userUpdateEvent} from "../utils/userUpdateEvent";
+import {userUpdateEvent} from "../../utils/userUpdateEvent";
 
 
 const ActivityDetail = () => {
