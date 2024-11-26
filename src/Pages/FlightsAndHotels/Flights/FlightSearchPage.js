@@ -142,7 +142,7 @@ function FlightSearchPage() {
 							>
 								<div className="flex items-center mb-4 md:mb-0">
 									<img
-										src={require(`../Assets/Square/${flight.itineraries[0].segments[0].carrierCode}.png`)}
+										src={require(`../../../Assets/Square/${flight.itineraries[0].segments[0].carrierCode}.png`)}
 										className="w-12 h-12 mr-4"
 										alt={`${flight.itineraries[0].segments[0].carrierCode} logo`}
 									/>

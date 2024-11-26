@@ -16,13 +16,11 @@ import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
 import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
-import ItinerariesPage from "./Pages/ItinerariesPage";
 import ProductsPage from "./Pages/ProductsPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 import ActivityDetailsPage from "./Pages/ActivityDetailsPage";
 import ItineraryDetail from "./Pages/ItinerariesDetailPage";
-import FlightSearchPage from "./Pages/FlightSearchPage";
-import FlightDetails from "./Pages/FlightDetails";
+
 import HistoricalPlaceDetail from "./Pages/HistoricalPlaceDetailsPage";
 import MuseumDetail from './Pages/MuseumDetailsPage';
 import LoginPage from "./Pages/LoginPage";
@@ -30,11 +28,21 @@ import WaitPage from "./Pages/WaitPage";
 import AdvertiserActivities from "./Pages/AdvertiserActivities";
 import SellerProductsPage from "./Pages/SellerProducts";
 import ProductDetails from "./Pages/ProductsDetailsPage";
-import FlightsandHotels from "./Pages/FlightsandHotels";
 
-import HotelSearchPage from "./Pages/HotelSearchPage";
-import HotelDetails from "./Pages/HotelDetails";
-import BookingPage from "./Pages/MyBookingsPage";
+//flights and hotels
+import FlightsandHotels from "./Pages/FlightsAndHotels/FlightsandHotels";
+import FlightSearchPage from "./Pages/FlightsAndHotels/Flights/FlightSearchPage";
+import FlightDetails from "./Pages/FlightsAndHotels/Flights/FlightDetails";
+import HotelSearchPage from "./Pages/FlightsAndHotels/Hotels/HotelSearchPage";
+import HotelDetails from "./Pages/FlightsAndHotels/Hotels/HotelDetails";
+
+//my bookings
+import BookingPage from "./Pages/MyBookings/MyBookingsPage";
+import ActivitiesPage from "./Pages/MyBookings/Activities/ActivitiesPage";
+import ItinerariesPage from "./Pages/MyBookings/Itineraries/ItinerariesPage";
+import PlacesPage from "./Pages/MyBookings/Places/PlacesPage";
+
+
 import MyPurchases from './Pages/MyPurchases';
 import TransportationManagement from './Pages/TransportationPage';
 
@@ -83,17 +91,21 @@ root.render(
 					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
 					<Route path='hotels' element={<HotelSearchPage/>}/>
 					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
+
+					<Route path='activities' element={<ActivitiesPage/>}/>
 					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
+					<Route path='places' element={<PlacesPage/>}/>
+					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
+					<Route path="museum/:id" element={<MuseumDetail/>}/>
+
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
 					<Route path="login" element={<LoginPage/>}/>
 					<Route path="register" element={<RegisterPage/>}/>
-					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
-					<Route path="museum/:id" element={<MuseumDetail/>}/>
 					<Route path="bookings" element={<BookingPage/>}/>
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
 					<Route path="seller-products" element={<SellerProductsPage/>}/>

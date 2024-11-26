@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import FlightSearchPage from './FlightSearchPage'; // Import the flight search page
-import HotelSearchPage from './HotelSearchPage'; // Import the hotel search page
+import FlightSearchPage from './Flights/FlightSearchPage'; // Import the flight search page
+import HotelSearchPage from './Hotels/HotelSearchPage'; // Import the hotel search page
 
 const FlightsandHotels = () => {
     // Retrieve the last selected page from localStorage, or default to 'Flights'

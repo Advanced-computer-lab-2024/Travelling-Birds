@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
 import { FaCalendarAlt } from 'react-icons/fa';
-import Popup from "reactjs-popup";
-import { ItineraryForm } from "../Forms";
-import { toast } from "react-toastify";
-import { modelModificationEvent } from "../../../utils/modelModificationEvent";
 import PropTypes from "prop-types";
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 

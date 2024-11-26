@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ActivityPage from './ActivitiesPage'; // Import the existing page
-import ItinerariesPage from './ItinerariesPage'; // Import the existing page
-import PlacesPage from './PlacesPage'; // Import the existing page
+import ActivityPage from './Activities/ActivitiesPage'; // Import the existing page
+import ItinerariesPage from './Itineraries/ItinerariesPage'; // Import the existing page
+import PlacesPage from './Places/PlacesPage'; // Import the existing page
 
 const BookingPage = () => {
     // Retrieve the last selected page from localStorage, or default to 'Activities'
