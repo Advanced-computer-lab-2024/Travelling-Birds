@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Logo from '../Assets/Logo.png';
+import Logo from '../../Assets/Logo.png';
 
 const WaitPage = () => {
 	const navigate = useNavigate();

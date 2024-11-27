@@ -13,16 +13,15 @@ import {
 	TouristNavBar
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
-import RegisterPage from "./Pages/RegisterPage";
+
 import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
-import ProductsPage from "./Pages/ProductsPage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 
-import LoginPage from "./Pages/LoginPage";
-import WaitPage from "./Pages/WaitPage";
-
-
+//Login and Register
+import RegisterPage from "./Pages/LoginAndRegister/RegisterPage";
+import LoginPage from "./Pages/LoginAndRegister/LoginPage";
+import WaitPage from "./Pages/LoginAndRegister/WaitPage";
 
 //flights and hotels
 import FlightsandHotels from "./Pages/FlightsAndHotels/FlightsandHotels";
@@ -38,11 +37,15 @@ import ItinerariesPage from "./Pages/MyBookings/Itineraries/ItinerariesPage";
 import PlacesPage from "./Pages/MyBookings/Places/PlacesPage";
 
 //details
-import ActivityDetailsPage from "./Pages/DetailsPages/ActivityDetailsPage";
-import ItineraryDetail from "./Pages/DetailsPages/ItinerariesDetailPage";
-import HistoricalPlaceDetail from "./Pages/DetailsPages/HistoricalPlaceDetailsPage";
-import MuseumDetail from './Pages/DetailsPages/MuseumDetailsPage';
-import ProductDetails from "./Pages/DetailsPages/ProductsDetailsPage";
+import ActivityDetailsPage from "./Pages/BookingDetailsPages/ActivityDetailsPage";
+import ItineraryDetail from "./Pages/BookingDetailsPages/ItinerariesDetailPage";
+import HistoricalPlaceDetail from "./Pages/BookingDetailsPages/HistoricalPlaceDetailsPage";
+import MuseumDetail from './Pages/BookingDetailsPages/MuseumDetailsPage';
+
+//Products
+import ProductsPage from "./Pages/Products/ProductsPage";
+import ProductDetails from "./Pages/Products/ProductsDetailsPage";
+import MyPurchases from './Pages/Products/MyPurchases';
 
 //my creations
 import AdvertiserActivities from "./Pages/MyCreations/Advertiser/AdvertiserActivities";
@@ -54,16 +57,16 @@ import TourismGovernorMuseums from "./Pages/MyCreations/ToursimGovernor/TourismG
 import TourismGovernorTags from "./Pages/MyCreations/ToursimGovernor/TourismGovernorTags"
 
 
-
-import MyPurchases from './Pages/MyPurchases';
-
-
-import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
+//Admin Portal Part 1
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
+//Admin Portal Part 2
+import CreateAdminAccount from "./Components/Admin Portal/Components/UserManagement/CreateNewAccounts";
 import ApproveRegistrants from "./Components/Admin Portal/Components/UserManagement/ApproveRegistrants";
 import ManageUserAccounts from "./Components/Admin Portal/Components/UserManagement/ManageUserAccounts";
-import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
 import UsersToDelete from "./Components/Admin Portal/Components/UserManagement/UsersToDelete";
+//Admin Portal Part 3
+import ViewComplaints from "./Components/Admin Portal/Components/ComplaintManagement/ViewComplaints";
+//Admin Portal Part 4
 import ManageCategoriesTags from "./Components/Admin Portal/Components/ContentManagement/ManageCategoriesTags";
 import ManageProducts from "./Components/Admin Portal/Components/ProductManagement/ManageProducts";
 import ManageActivities from "./Components/Admin Portal/Components/ContentManagement/ManageActivities";
@@ -96,7 +99,17 @@ root.render(
 						<Route path='manage-products' element={<ManageProducts/>}/>
 						<Route path='manage-complaints' element={<ViewComplaints/>}/>
 					</Route>
-					<Route path='profile' element={<ProfilePage/>}/>
+
+					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
+					<Route path="transportation" element={<TransportationManagement/>}/>
+					<Route path="seller-products" element={<SellerProductsPage/>}/>
+					<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
+					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
+					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
+					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
+					
+                    <Route path="register" element={<RegisterPage/>}/>
+					<Route path="login" element={<LoginPage/>}/>	
 					<Route path='wait' element={<WaitPage/>}/>
 
                     <Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
@@ -114,27 +127,14 @@ root.render(
 					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>
-					<Route path="products/:id" element={<ProductDetails/>}/>
-
-					<Route path="explore" element={<ExplorePage/>}/>
+					
 					<Route path="products" element={<ProductsPage/>}/>
-
-					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
-					<Route path="transportation" element={<TransportationManagement/>}/>
-					<Route path="seller-products" element={<SellerProductsPage/>}/>
-					<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
-					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
-					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
-					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
-					
-					
-					<Route path="complaints" element={<ComplaintsPage/>}/>
-					<Route path="login" element={<LoginPage/>}/>
-					<Route path="register" element={<RegisterPage/>}/>
-					
-					
+					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
-					
+
+                    <Route path='profile' element={<ProfilePage/>}/>
+					<Route path="explore" element={<ExplorePage/>}/>
+					<Route path="complaints" element={<ComplaintsPage/>}/>					
 					
 				</Route>
 			</Routes>

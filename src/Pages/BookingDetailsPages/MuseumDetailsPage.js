@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaClock, FaShareAlt } from 'react-icons/fa';
-import LoadingPage from '../LoadingPage'; 
+import LoadingPage from '../../Components/LoadingPage/LoadingPage'; 
 import LocationContact from "../../Components/Locations/MuseumLocation";
 import ActivityDisplay from "../../Components/Models/Displays/ActivityDisplay"; // Assuming this is used to display activities for a museum
 

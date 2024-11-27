@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import Logo from '../Assets/Logo.png';
+import Logo from '../../Assets/Logo.png';
 import {
 	AdvertiserRegisterForm,
 	SellerRegisterForm,
 	TourGuideRegisterForm,
 	TouristRegisterForm,
-} from '../Components/Registration Forms/index.js';
+} from '../../Components/Registration Forms/index.js';
 const RegisterPage = () => {
 	const [selectedRole, setSelectedRole] = useState('Tourist');
 	const handleChangeRole = (role) => {

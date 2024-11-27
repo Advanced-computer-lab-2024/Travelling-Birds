@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import Explorer from '../Components/Explore Page/Explorer';
-import ResultsList from '../Components/Explore Page/ResultsList';
+import Explorer from '../Components/ExplorePage/Explorer';
+import ResultsList from '../Components/ExplorePage/ResultsList';
 import ActivityDisplay from '../Components/Models/Displays/ActivityDisplay';
 import ItineraryDisplay from '../Components/Models/Displays/ItineraryDisplay';
 import HistoricalPlaceDisplay from '../Components/Models/Displays/HistoricalPlaceDisplay';
 import MuseumDisplay from '../Components/Models/Displays/MuseumDisplay';
 import Modal from 'react-modal';
-import LoadingPage from './LoadingPage';
+import LoadingPage from '../Components/LoadingPage/LoadingPage';
 
 const ExplorePage = () => {
 	const [results, setResults] = useState({activities: [], itineraries: [], museums: [], historicalPlaces: []});
@@ -130,9 +130,6 @@ const ExplorePage = () => {
 		}
 	};
 
-	const handleItemClick = (item) => {
-		setSelectedItem(item);
-	};
 
 	const renderSelectedItem = () => {
 		if (!selectedItem) return null;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
-import ProductDisplay from '../Components/Models/Displays/ProductsDisplay';
+import ProductDisplay from '../../Components/Models/Displays/ProductsDisplay';
 import { toast } from 'react-toastify';
 
 const MyPurchases = () => {
