@@ -75,9 +75,6 @@ import ManageMuseums from "./Components/Admin Portal/Components/ContentManagemen
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
 
 
-
-
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
@@ -107,35 +104,35 @@ root.render(
 					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
 					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
 					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
-					
-                    <Route path="register" element={<RegisterPage/>}/>
-					<Route path="login" element={<LoginPage/>}/>	
+
+					<Route path="register" element={<RegisterPage/>}/>
+					<Route path="login" element={<LoginPage/>}/>
 					<Route path='wait' element={<WaitPage/>}/>
 
-                    <Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
+					<Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
 					<Route path='flights' element={<FlightSearchPage/>}/>
 					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
 					<Route path='hotels' element={<HotelSearchPage/>}/>
 					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
 
-                    <Route path="bookings" element={<BookingPage/>}/>
+					<Route path="bookings" element={<BookingPage/>}/>
 					<Route path='activities' element={<ActivitiesPage/>}/>
 					<Route path='itineraries' element={<ItinerariesPage/>}/>
 					<Route path='places' element={<PlacesPage/>}/>
-					
+
 					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
 					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
 					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
 					<Route path="museum/:id" element={<MuseumDetail/>}/>
-					
+
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
 
-                    <Route path='profile' element={<ProfilePage/>}/>
+					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
-					<Route path="complaints" element={<ComplaintsPage/>}/>					
-					
+					<Route path="complaints" element={<ComplaintsPage/>}/>
+
 				</Route>
 			</Routes>
 		</BrowserRouter>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import TouristProfile from "../Components/Profiles/TouristProfile";
 import SellerProfile from "../Components/Profiles/SellerProfile";
 import AdvertiserProfile from "../Components/Profiles/AdvertiserProfile";
@@ -6,7 +6,6 @@ import TourGuideProfile from "../Components/Profiles/TourGuideProfile";
 import AdminProfile from "../Components/Profiles/AdminProfile";
 import TourismGovernorProfile from "../Components/Profiles/TourismGovernorProfile";
 
-import logo from '../utils/logoTravelingBirds.png';
 import {toast} from "react-toastify";
 import {userUpdateEvent} from "../utils/userUpdateEvent";
 
@@ -29,7 +28,7 @@ const ProfilePage = () => {
 	);
 	const [favoritePlacesOptions] = useState(['Historical Places', 'Beaches', 'Museums']);
 	const [favoriteFoodOptions] = useState(['Family Friendly', 'Couples only']);
-	const [budgetOptions] = useState(['$500-$1000', '$1000-$4000', '$4000-20,000','$20000 or more']);
+	const [budgetOptions] = useState(['$500-$1000', '$1000-$4000', '$4000-20,000', '$20000 or more']);
 
 	useEffect(() => {
 		localStorage.setItem(`favoritePlaces_${userId}`, JSON.stringify(selectedFavoritePlaces));
@@ -108,7 +107,7 @@ const ProfilePage = () => {
 					toast.success("Profile picture updated successfully");
 					window.dispatchEvent(userUpdateEvent);
 					// Optionally, update the user state if needed
-					setUser((prevUser) => ({ ...prevUser, profilePicture: data.profilePicture }));
+					setUser((prevUser) => ({...prevUser, profilePicture: data.profilePicture}));
 				} else {
 					toast.error("Failed to update profile picture");
 				}
@@ -135,7 +134,7 @@ const ProfilePage = () => {
 				if (data?._id) {
 					toast.success("Background image updated successfully");
 					// Optionally, update the user state if needed
-					setUser((prevUser) => ({ ...prevUser, backDrop: data.backDrop }));
+					setUser((prevUser) => ({...prevUser, backDrop: data.backDrop}));
 				} else {
 					toast.error("Failed to update background image");
 				}
@@ -156,7 +155,6 @@ const ProfilePage = () => {
 	};
 
 
-
 	const handleRemoveProfilePicture = async () => {
 		try {
 			const formData = new FormData();
@@ -170,7 +168,7 @@ const ProfilePage = () => {
 			if (data?._id) {
 				toast.success("Profile picture removed successfully");
 				window.dispatchEvent(userUpdateEvent);
-				setUser((prevUser) => ({ ...prevUser, profilePicture: null })); // Update state to reflect the change
+				setUser((prevUser) => ({...prevUser, profilePicture: null})); // Update state to reflect the change
 			} else {
 				toast.error("Failed to remove profile picture");
 			}
@@ -192,7 +190,7 @@ const ProfilePage = () => {
 
 			if (data?._id) {
 				toast.success("Background image removed successfully");
-				setUser((prevUser) => ({ ...prevUser, backDrop: null })); // Update state to reflect the change
+				setUser((prevUser) => ({...prevUser, backDrop: null})); // Update state to reflect the change
 			} else {
 				toast.error("Failed to remove background image");
 			}
