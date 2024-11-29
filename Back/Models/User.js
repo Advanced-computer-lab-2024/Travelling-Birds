@@ -35,8 +35,12 @@ const user = new Schema({
 	certificates: [{name: { type: String }, file: {data: Buffer, contentType: String}}],
 	taxRegCard: {name: { type: String }, file: {data: Buffer, contentType: String}},
 	activityBookings: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
+	savedActivities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }],
 	itineraryBookings: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
+	savedItineraries: [{ type: Schema.Types.ObjectId, ref: 'Itinerary' }],
 	productPurchases: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+	productWishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+	Cart:[{type: Schema.Types.ObjectId, ref: 'Product'}],
 	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 	ratings: Number
 });
