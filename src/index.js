@@ -56,6 +56,11 @@ import TourismGovernorHistoricalPlaces from "./Pages/MyCreations/ToursimGovernor
 import TourismGovernorMuseums from "./Pages/MyCreations/ToursimGovernor/TourismGovernorMuseums"
 import TourismGovernorTags from "./Pages/MyCreations/ToursimGovernor/TourismGovernorTags"
 
+//my Interests
+import SavedActivities from "./Pages/MyInterests/Events/SavedActivities";
+import SavedItineraries from "./Pages/MyInterests/Events/SavedItineraries";
+import SavedEvents from "./Pages/MyInterests/Events/SavedEvents";
+
 
 //Admin Portal Part 1
 import AdminLayout from "./Components/Admin Portal/AdminLayout";
@@ -140,6 +145,10 @@ root.render(
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
+
+					<Route path="saved-activity" element={<SavedActivities/>}/>
+					<Route path="saved-itinerary" element={<SavedItineraries/>}/>
+					<Route path="saved-events" element={<SavedEvents/>}/>
 
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>

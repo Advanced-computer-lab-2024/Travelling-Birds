@@ -24,6 +24,12 @@ const {
 	removeProductPurchase,
 	getComments,
 	addComment,
+	addSavedActivity,
+	getSavedActivities,
+	removeSavedActivity,
+	addSavedItinerary,
+	getSavedItineraries,
+	removeSavedItinerary,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
@@ -94,11 +100,31 @@ router.get('/product-purchases/:id', getProductPurchases);
 // Remove Product Purchase	
 router.delete('/product-purchase/:id', removeProductPurchase);
 
+// Add Saved Activity
+router.post('/saved-activity/:id', addSavedActivity);
+
+// Get Saved Activities
+router.get('/saved-activities/:id', getSavedActivities);
+
+// Remove Saved Activity
+router.delete('/saved-activity/:id', removeSavedActivity);
+
+// Add Saved Itinerary
+router.post('/saved-itinerary/:id', addSavedItinerary);
+
+// Get Saved Itineraries
+router.get('/saved-itineraries/:id', getSavedItineraries);
+
+// Remove Saved Itinerary
+router.delete('/saved-itinerary/:id', removeSavedItinerary);
+
 // Get all comments for a specific user
 router.get('/:id/comments', getComments);
 
 // Add a comment to a specific user
 router.post('/:id/comments', addComment);
+
+
 
 // Login
 router.post('/login', login);

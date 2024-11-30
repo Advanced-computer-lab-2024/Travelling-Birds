@@ -741,7 +741,167 @@ const getComments = async (req, res) => {
 	}
 }
 
-// Delete user with Checks
+const addSavedActivity = async (req, res) => {
+    const userId = req.params.id;
+    const activityId = req.body.activityId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found' });
+        }
+
+        // Check if the activity is already saved
+        if (user.savedActivities.includes(activityId)) {
+            return res.status(400).json({ message: 'Activity is already saved' });
+        }
+
+        user.savedActivities.push(activityId);
+        await user.save();
+        res.status(200).json({ message: 'Activity saved successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+//get all saved activities
+const getSavedActivities = async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const user = await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const savedActivities = await Activity.find({_id: {$in: user.savedActivities}});
+		res.status(200).json(savedActivities);
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Remove saved activity
+const removeSavedActivity = async (req, res) => {
+	const userId = req.params.id;
+	const activityId = req.body.activityId;
+
+	try {
+		const user
+		= await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const index = user.savedActivities.indexOf(activityId);
+		if (index === -1) {
+			return res.status(400).json({message: 'Activity not found in user saved activities'});
+		}
+
+		user.savedActivities.splice(index, 1);
+		await user.save();
+		res.status(200).json({message: 'Activity removed from saved activities successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//add a saved itinerary
+const addSavedItinerary = async (req, res) => {
+	const userId = req.params.id;
+	const itineraryId = req.body.itineraryId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const itinerary = await Itinerary.findById
+		(itineraryId);
+
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+
+		// Check if the itinerary is already saved
+		if (user.savedItineraries.includes(itineraryId)) {
+			return res.status(400).json({message: 'Itinerary is already saved'});
+		}
+
+		user.savedItineraries.push(itineraryId);
+		await user.save();
+		res.status(200).json({message: 'Itinerary saved successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//get all saved itineraries
+const getSavedItineraries = async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const user = await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const savedItineraries = await Itinerary.find({_id: {$in: user.savedItineraries}});
+		res.status(200).json(savedItineraries);
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Remove saved itinerary
+const removeSavedItinerary = async (req, res) => {
+	const userId = req.params.id;
+	const itineraryId = req.body.itineraryId;
+
+	try {
+		const user
+		= await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const index = user.savedItineraries.indexOf(itineraryId);
+		if (index === -1) {
+			return res.status(400).json({message: 'Itinerary not found in user saved itineraries'});
+		}
+
+		user.savedItineraries.splice(index, 1);
+		await user.save();
+		res.status(200).json({message: 'Itinerary removed from saved itineraries successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+
+
+
+//Delete user with Checks
 const requestDelete = async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id);
@@ -933,6 +1093,12 @@ module.exports = {
 	removeProductPurchase,
 	addComment,
 	getComments,
+	addSavedActivity,
+	getSavedActivities,
+	removeSavedActivity,
+	addSavedItinerary,
+	getSavedItineraries,
+	removeSavedItinerary,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
