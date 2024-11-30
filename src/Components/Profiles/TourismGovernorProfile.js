@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import ReusableInput from "../ReusableInput";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
-import { userDeletionEvent } from "../../utils/userDeletionEvent";
+import {useNavigate} from "react-router-dom";
+import {toast} from "react-toastify";
 
-const TourismGovernorProfile = ({ user, displayOnly }) => {
+const TourismGovernorProfile = ({user, displayOnly}) => {
 	const [firstName, setFirstName] = useState(user.firstName || '');
 	const [lastName, setLastName] = useState(user.lastName || '');
 	const [email, setEmail] = useState(user.email || '');
@@ -19,7 +17,7 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 	const updateTourismGovernor = async () => {
 		try {
 			// Create an object to store only the necessary update data
-			const updateData = { firstName, lastName, email, username };
+			const updateData = {firstName, lastName, email, username};
 
 			// Only add password to updateData if it has been provided (not empty)
 			if (password) {
@@ -43,7 +41,7 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 
 				setIsEditing(false);
 				setShowProfileDetails(false);
-				navigate('/profile', { replace: true });
+				navigate('/profile', {replace: true});
 			} else {
 				toast.error("Failed to update profile");
 			}
@@ -61,7 +59,8 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 	}, [user]);
 
 	return (
-		<div className={`fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 ${!showProfileDetails && 'hidden'}`}>
+		<div
+			className={`fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 ${!showProfileDetails && 'hidden'}`}>
 			{showProfileDetails && (
 				<form
 					className="bg-white shadow-lg rounded-lg p-4 sm:p-6 w-full max-w-md sm:max-w-lg lg:max-w-xl border border-gray-200 z-60 overflow-y-auto max-h-[90vh]"
@@ -71,14 +70,20 @@ const TourismGovernorProfile = ({ user, displayOnly }) => {
 						else setIsEditing(true);
 					}}
 				>
-					{!displayOnly && <h1 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">Profile</h1>}
+					{!displayOnly &&
+						<h1 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4 sm:mb-6">Profile</h1>}
 
 					<div className="grid gap-3 sm:gap-4 mb-4">
-						<ReusableInput type="text" name="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)} disabled={!isEditing}/>
-						<ReusableInput type="text" name="Username" value={username} onChange={e => setUsername(e.target.value)} disabled={true}/>
-						<ReusableInput type="password" name="Password" value={password} onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="First Name" value={firstName}
+						               onChange={e => setFirstName(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="text" name="Last Name" value={lastName}
+						               onChange={e => setLastName(e.target.value)} disabled={!isEditing}/>
+						<ReusableInput type="email" name="Email" value={email} onChange={e => setEmail(e.target.value)}
+						               disabled={!isEditing}/>
+						<ReusableInput type="text" name="Username" value={username}
+						               onChange={e => setUsername(e.target.value)} disabled={true}/>
+						<ReusableInput type="password" name="Password" value={password}
+						               onChange={e => setPassword(e.target.value)} disabled={!isEditing}/>
 					</div>
 
 					{!displayOnly && (

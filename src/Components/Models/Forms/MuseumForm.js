@@ -1,10 +1,8 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
 import {toast} from "react-toastify";
 
-const MuseumForm = ({museum: initialMuseum, museums, setMuseums}) => {
-	const [loading, setLoading] = useState(true);
-	const [museum, setMuseum] = useState(initialMuseum);
+const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 	const [name, setName] = useState(initialMuseum?.name || '');
 	const [description, setDescription] = useState(initialMuseum?.description || '');
 	const [location, setLocation] = useState(initialMuseum?.location || {
@@ -23,13 +21,13 @@ const MuseumForm = ({museum: initialMuseum, museums, setMuseums}) => {
 	const [image, setImage] = useState(null);
 
 	const deleteMuseum = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${museum._id}`, {
+		fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${initialMuseum._id}`, {
 			method: 'DELETE',
 		}).then((response) => response.json())
 			.then((data) => {
 				if (data?.msg === 'Museum deleted successfully') {
 					toast.success('Museum deleted successfully');
-					setMuseums(museums.filter(m => m._id !== museum._id));
+					setMuseums(museums.filter(m => m._id !== initialMuseum._id));
 				} else {
 					toast.error('Failed to delete museum');
 				}

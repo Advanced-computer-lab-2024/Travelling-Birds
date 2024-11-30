@@ -1,11 +1,9 @@
 import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
 import {toast} from "react-toastify";
-import {useNavigate} from "react-router-dom";
 import PropTypes from "prop-types";
 
 const HistoricalPlaceForm = ({historicalPlace: initialHistoricalPlace, historicalPlaces, setHistoricalPlaces}) => {
-	const [historicalPlace, setHistoricalPlace] = useState(initialHistoricalPlace);
 	const [name, setName] = useState(initialHistoricalPlace?.name || '');
 	const [description, setDescription] = useState(initialHistoricalPlace?.description || '');
 	const [startTime, setStartTime] = useState(initialHistoricalPlace?.openingHours?.startTime || '');
@@ -20,25 +18,6 @@ const HistoricalPlaceForm = ({historicalPlace: initialHistoricalPlace, historica
 	const [tags, setTags] = useState(initialHistoricalPlace?.tags?.join(',') || '');
 	const [activities, setActivities] = useState(initialHistoricalPlace?.activities ? Object.values(initialHistoricalPlace.activities).map(activity => activity._id).join(',') : '');
 	const [image, setImage] = useState(null);
-	const navigate = useNavigate();
-
-	const populateFormFields = (placeData) => {
-		if (placeData) {
-			setName(placeData.name || '');
-			setDescription(placeData.description || '');
-			setStartTime(placeData.openingHours?.startTime ? new Date(placeData.openingHours.startTime).toISOString().slice(11, 16) : '');
-			setEndTime(placeData.openingHours?.endTime ? new Date(placeData.openingHours.endTime).toISOString().slice(11, 16) : '');
-			setLat(placeData.location?.lat || '');
-			setLng(placeData.location?.lng || '');
-			setCity(placeData.location?.city || '');
-			setCountry(placeData.location?.country || '');
-			setAddress(placeData.location?.address || '');
-			setArea(placeData.location?.area || '');
-			setTicketPrices(placeData.ticketPrices?.join(',') || '');
-			setTags(placeData.tags?.join(',') || '');
-			setActivities(placeData.activities?.join(',') || '');
-		}
-	};
 
 	const handleFileChange = (e) => {
 		setImage(e.target.files[0]);
@@ -79,7 +58,7 @@ const HistoricalPlaceForm = ({historicalPlace: initialHistoricalPlace, historica
 				body: formData
 			});
 			const data = await res.json();
-			if (data && data._id) {
+			if (data?._id) {
 				toast.success(`Historical place ${initialHistoricalPlace ? 'updated' : 'added'} successfully`);
 				if (initialHistoricalPlace) {
 					const updatedHistoricalPlaces = historicalPlaces.map(place => place._id === data._id ? data : place);

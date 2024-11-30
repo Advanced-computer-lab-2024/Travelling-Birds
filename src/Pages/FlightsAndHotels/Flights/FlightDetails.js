@@ -66,7 +66,7 @@ function FlightDetails() {
 		}
 
 		fetchFlight().then(r => r);
-	}, [flightId]);
+	}, [flightId, origin, destination, departureDate]);
 
 // Handle booking submission
 	const handleBookingSubmit = async () => {

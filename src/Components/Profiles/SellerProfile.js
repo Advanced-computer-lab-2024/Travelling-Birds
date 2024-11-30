@@ -13,7 +13,6 @@ const SellerProfile = ({user, displayOnly}) => {
 	const [description, setDescription] = useState(user.description || '');
 	const [isEditing, setIsEditing] = useState(false);
 	const [showProfileDetails, setShowProfileDetails] = useState(true);
-	const navigate = useNavigate();
 
 	const updateSeller = () => {
 		// Preparing the data object to send in the update request

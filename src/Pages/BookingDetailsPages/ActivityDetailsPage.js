@@ -10,7 +10,6 @@ import {userUpdateEvent} from "../../utils/userUpdateEvent";
 
 const ActivityDetail = () => {
     const [loading, setLoading] = useState(true);
-    const [showAllComments, setShowAllComments] = useState(false);
     const [visibleCommentsCount, setVisibleCommentsCount] = useState(3);
     const [activity, setActivity] = useState(null);
     const [commentText, setCommentText] = useState("");
@@ -27,7 +26,6 @@ const ActivityDetail = () => {
     const [transportation, setTransportation] = useState('');
     const [walletAmount, setWalletAmount] = useState('');
     const [transportations, setTransportations] = useState([]);
-    const currencyCode = sessionStorage.getItem('currency') || 'EGP';
     const activityId = useParams().id;
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');

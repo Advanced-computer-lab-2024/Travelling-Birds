@@ -74,6 +74,7 @@ import ManageItineraries from "./Components/Admin Portal/Components/ContentManag
 import ManageMuseums from "./Components/Admin Portal/Components/ContentManagement/ManageMuseums";
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
 import ManagePromotions from "./Components/Admin Portal/Components/PromotionalManagement/ManagePromotions";
+import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -110,6 +111,7 @@ root.render(
 					<Route path="register" element={<RegisterPage/>}/>
 					<Route path="login" element={<LoginPage/>}/>
 					<Route path='wait' element={<WaitPage/>}/>
+					<Route path='reset-password' element={<ResetPasswordPage/>}/>
 
 					<Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
 					<Route path='flights' element={<FlightSearchPage/>}/>

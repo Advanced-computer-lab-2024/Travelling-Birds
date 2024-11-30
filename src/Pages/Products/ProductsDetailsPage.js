@@ -67,7 +67,8 @@ const ProductsDetailsPage = () => {
 		if (userId) {
 			checkIfPurchased();
 		}
-	}, [productId]);
+
+	}, [productId, userId]);
 
 	let imageBase64 = null;
 	if (product?.picture?.data?.data && product.picture.contentType) {
@@ -154,7 +155,7 @@ const ProductsDetailsPage = () => {
 				body: JSON.stringify({wallet: updatedWalletBalance})
 			});}
 
-			const product =await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+			const product = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
@@ -162,6 +163,10 @@ const ProductsDetailsPage = () => {
 					soldQuantity: soldQuantity+1
 				})
 			});
+
+			if (!product.ok) {
+				throw new Error('Failed to update product quantity');
+			}
 
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',

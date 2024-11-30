@@ -35,7 +35,6 @@ const ItineraryDetail = () => {
 	const [placeholder, setPlaceHolder] = useState('');
 	const [userLocation, setUserLocation] = useState('');
 	const [userEmail, setUserEmail] = useState('');
-	const [tourguideRating, setTourguideRating] = useState(0);
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -69,35 +68,6 @@ const ItineraryDetail = () => {
 				console.error('Error fetching comments', err);
 			}
 		}
-
-		const sendEmail = async () => {
-			setLoading(true);
-			try {
-				const subject = 'Check out this itinerary!';
-				const body = `Here's a link to an interesting itinerary: http://localhost:3000/museum/${itineraryId}`;
-
-				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify({email, subject, message: body}),
-				});
-
-				if (response.ok) {
-					alert('Email sent successfully!');
-				} else {
-					const errorData = await response.json();
-					console.error('Server response error:', errorData);
-					alert(`Failed to send email: ${errorData.message || 'Unknown error'}`);
-				}
-			} catch (error) {
-				console.error('Error sending email:', error);
-				alert('Failed to send email.');
-			} finally {
-				setLoading(false);
-			}
-		};
 
 		const checkUserBooking = async () => {
 			if (userRole !== 'tourist') {
@@ -154,11 +124,7 @@ const ItineraryDetail = () => {
 				checkUserBooking();
 			}
 		});
-	}, [itineraryId, userId, userRole]);
-
-	const openBookingModal = () => {
-		setIsBookingModalOpen(true);
-	};
+	}, [itineraryId, userId, userRole, email]);
 
 	const closeBookingModal = () => {
 		setIsBookingModalOpen(false);
@@ -168,6 +134,7 @@ const ItineraryDetail = () => {
 		setTransportation('');
 		setWalletAmount('');
 	};
+
 	const sendEmail = async () => {
 		setLoading(true);
 		try {
@@ -317,6 +284,7 @@ const ItineraryDetail = () => {
 			toast.error('Failed to send confirmation email. Please try again.');
 		}
 	};
+
 	const handleShowTourGuideDetails = async () => {
 		try {
 			const url = `${process.env.REACT_APP_BACKEND}/api/users/${itinerary?.createdBy}`;
@@ -390,11 +358,6 @@ const ItineraryDetail = () => {
 		? `data:${itinerary.image.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(itinerary.image.data.data)))}`
 		: '';
 
-	// const imageBase64TourGuide = tourGuide?.profilePicture?.data?.data
-	// 	? `data:${tourGuide.profilePicture.contentType};base64,${btoa(String.fromCharCode(...new Uint8Array(tourGuide.profilePicture.data.data)))}`
-	// 	: '';
-
-
 	const renderStars = (rating) => {
 		// check rating correct
 		if (isNaN(rating) || rating < 0 || rating > 5) {
@@ -448,6 +411,7 @@ const ItineraryDetail = () => {
 			toast.error('Failed to add comment. Please try again.');
 		}
 	};
+
 	const handleAddTourGuideComment = async () => {
 		const newComment = {
 			user: sessionStorage.getItem('user id'),
@@ -474,7 +438,6 @@ const ItineraryDetail = () => {
 			toast.error('Failed to add comment. Please try again.');
 		}
 	}
-
 
 	if (loading) return <p>Loading...</p>;
 
@@ -581,7 +544,8 @@ const ItineraryDetail = () => {
 								<div>
 									<p className="text-lg font-semibold">{`${tourGuide.firstName} ${tourGuide.lastName}`}</p>
 									<p className="text-gray-600">Years of Experience: {tourGuide.yearsOfExperience}</p>
-									<div className="flex items-center mt-1">{renderStars((tourGuide.comments.reduce((sum, comment) => sum + comment.stars, 0) / tourGuide.comments.length).toFixed(1))}</div>
+									<div
+										className="flex items-center mt-1">{renderStars((tourGuide.comments.reduce((sum, comment) => sum + comment.stars, 0) / tourGuide.comments.length).toFixed(1))}</div>
 								</div>
 							</div>
 

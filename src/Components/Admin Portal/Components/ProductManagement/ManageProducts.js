@@ -16,13 +16,6 @@ const ManageProducts = () => {
 	const [isArchived, setIsArchived] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null);
 
-	const average = (array) => {
-		if (array.length === 0) {
-			return 0;
-		}
-		return array.reduce((a, b) => a + b) / array.length;
-	}
-
 	useEffect(() => {
 		const fetchProducts = () => {
 			fetch(`${process.env.REACT_APP_BACKEND}/api/products/admin`)

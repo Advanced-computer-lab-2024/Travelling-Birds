@@ -62,13 +62,6 @@ const ProfilePage = () => {
 		if (userId) fetchUserProfile();
 	}, [userId]);
 
-	const toBase64 = (file) => new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => resolve(reader.result);
-		reader.onerror = (error) => reject(error);
-	});
-
 	let profilePicture = null;
 	if (user.profilePicture?.data?.data && user.profilePicture?.contentType) {
 		try {

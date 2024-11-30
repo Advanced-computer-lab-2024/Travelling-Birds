@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
 import ProductDisplay from '../../Components/Models/Displays/ProductsDisplay';
 import { toast } from 'react-toastify';
 
@@ -60,23 +59,6 @@ const MyPurchases = () => {
             </div>
         );
     }
-
-    const renderStars = (rating) => {
-        if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
-            rating = 0;
-        }
-        const totalStars = 5;
-        const fullStars = Math.min(Math.floor(rating), totalStars);
-        const halfStars = rating % 1 !== 0 && fullStars < totalStars;
-
-        return (
-            <>
-                {[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500" />)}
-                {halfStars && <FaStarHalfAlt className="text-yellow-500" />}
-                {[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars} className="text-yellow-500" />)}
-            </>
-        );
-    };
 
     return (
         <div className="text-[#330577] p-6">

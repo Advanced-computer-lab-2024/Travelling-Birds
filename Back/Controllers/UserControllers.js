@@ -4,8 +4,8 @@ const Activity = require('../Models/Activity');
 const Itinerary = require('../Models/Itinerary');
 const Product = require('../Models/Product');
 const defaultProfilePicture = require('../Resources/DefaultProfilePicture');
-const CommentModel = require('../Models/Comment.js');
-const UserModel = require("../Models/User");
+const Comment = require('../Models/Comment.js');
+const UUID = require('uuid').v4;
 
 // Add user
 const addUser = async (req, res) => {
@@ -265,6 +265,11 @@ const login = async (req, res) => {
 		if (['tour_guide', 'advertiser', 'seller'].includes(user.role) && user.isApproved === false) {
 			return res.status(403).json({message: 'Profile not approved yet. Please wait for admin approval.'});
 		}
+		if (user.otp) {
+			user.otp = null;
+			user.save();
+		}
+
 		res.status(200).json({message: 'Login successful', user});
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -700,14 +705,14 @@ const removeProductPurchase = async (req, res) => {
 const addComment = async (req, res) => {
 	const {user, text, stars} = req.body;
 	try {
-		const tourGuide = await UserModel.findById(req.params.id);
+		const tourGuide = await User.findById(req.params.id);
 
-		const newComment = new CommentModel({user, text, stars, date: new Date()});
+		const newComment = new Comment({user, text, stars, date: new Date()});
 		await newComment.save();
 		const totalRating = tourGuide.comments.length * tourGuide.rating + stars;
 		const updatedReviewsCount = tourGuide.reviewsCount + 1;
 		const newRating = (totalRating / updatedReviewsCount).toFixed(1);
-		const userWithComment = await UserModel.findByIdAndUpdate(
+		const userWithComment = await User.findByIdAndUpdate(
 			req.params.id,
 			{
 				$push: {comments: newComment._id},
@@ -725,11 +730,11 @@ const addComment = async (req, res) => {
 // get all comments for a specific tour guide
 const getComments = async (req, res) => {
 	try {
-		const tourGuide = await UserModel.findById(req.params.id);
+		const tourGuide = await User.findById(req.params.id);
 		if (!tourGuide) {
 			return res.status(404).json({message: 'Tour guide not found'});
 		}
-		const comments = await CommentModel.find({_id: {$in: tourGuide.comments}}).populate('user', 'username');
+		const comments = await Comment.find({_id: {$in: tourGuide.comments}}).populate('user', 'username');
 		res.status(200).json(comments);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -790,6 +795,64 @@ const requestDelete = async (req, res) => {
 	}
 }
 
+//Request OTP
+const requestOtp = async (req, res) => {
+	const {email} = req.body;
+	try {
+		const user = await User.findOne({email});
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		// Generate OTP using UUID and send it to the user's email
+		const otp = UUID();
+
+		// Send OTP to user's email
+		const subject = 'Password Reset OTP';
+		const message = `Your OTP is ${otp}`;
+
+		const response = await fetch(`http://localhost:8000/api/mail`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({email, subject, message}),
+		});
+
+		if (response.status !== 200) {
+			return res.status(500).json({message: 'Failed to send OTP'});
+		}
+
+		// Save OTP in the database
+		user.otp = otp;
+		await user.save();
+
+		res.status(200).json({message: 'OTP sent successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Verify OTP and reset password
+const verifyOtpAndResetPassword = async (req, res) => {
+	const {email, otp, newPassword} = req.body;
+	try {
+		const user = await User.findOne({email});
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+		if (user.otp !== otp) {
+			return res.status(403).json({message: 'Invalid OTP'});
+		}
+		user.otp = null;
+		user.password = await bcrypt.hash(newPassword, 10);
+		await user.save();
+		res.status(200).json({message: 'Password reset successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -813,5 +876,7 @@ module.exports = {
 	removeProductPurchase,
 	addComment,
 	getComments,
-	requestDelete
+	requestDelete,
+	requestOtp,
+	verifyOtpAndResetPassword
 };

@@ -8,7 +8,7 @@ const LogIn = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [showTermsModal, setShowTermsModal] = useState(false);
-	const [userId, setuserId] = useState('');
+	const [userId, setUserId] = useState('');
 	const [showAcceptButton, setShowAcceptButton] = useState(false);
 
 	const navigate = useNavigate();
@@ -30,7 +30,7 @@ const LogIn = () => {
 					sessionStorage.setItem('user id', data.user._id);
 					sessionStorage.setItem('role', data.user.role);
 					if (data.user.termsFlag === false && (data.user.role === "tour_guide" || data.user.role === "advertiser" || data.user.role === "seller")) {
-						setuserId(data.user._id);
+						setUserId(data.user._id);
 						setShowTermsModal(true);
 					} else {
 						window.dispatchEvent(sessionStorageEvent);

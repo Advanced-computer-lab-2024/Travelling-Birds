@@ -1,10 +1,6 @@
 import { NavLink } from "react-router-dom";
-import LogOut from "../LogOut";
 
 const NavBar = ({ children }) => {
-	const activeStyle = ({ isActive }) => {
-		return isActive ? 'text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2' : 'text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2';
-	};
 	return (
 		<nav className="bg-[#fcfcfc] border-b border-[#fcfcfc]">
 			<div className="relative w-full px-2 sm:px-6 lg:px-8">

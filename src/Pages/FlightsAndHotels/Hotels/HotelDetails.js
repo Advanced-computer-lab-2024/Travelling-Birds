@@ -24,7 +24,7 @@ function HotelDetails() {
 		}
 
 		fetchHotelDetails();
-	}, [hotelId, checkInDate, checkOutDate]);
+	}, [hotelId, checkInDate, checkOutDate, currencyCode]);
 
 	const handleBooking = async () => {
 		if (new Date().getFullYear() - new Date(travelerDetails.dateOfBirth).getFullYear() < 18) {

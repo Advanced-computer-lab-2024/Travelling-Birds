@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {userDeletionEvent} from "../../../../utils/userDeletionEvent";
 import {toast} from "react-toastify";
 
 const UsersToDelete = () => {

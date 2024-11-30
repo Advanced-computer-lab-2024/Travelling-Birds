@@ -42,7 +42,8 @@ const user = new Schema({
 	productWishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
 	Cart:[{type: Schema.Types.ObjectId, ref: 'Product'}],
 	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-	ratings: Number
+	ratings: Number,
+	otp: String,
 });
 
 module.exports = mongoose.model('User', user);

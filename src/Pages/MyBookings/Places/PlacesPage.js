@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import MyHistoricalPlaceDisplay from "../../../Components/MyBookings/MyHistoricalPlaceDisplay";
 import MyMuseumDisplay from "../../../Components/MyBookings/MyMuseumDisplay";
 
@@ -14,48 +14,47 @@ const PlacesPage = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			if (userRole === 'tourist') {
-			
-			const museumsApiUrl = `${process.env.REACT_APP_BACKEND}/api/museums`;
-			const historicalPlacesApiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces`;
-			const userBookingsApiUrl = `${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`;
 
-			try {
-				// Fetch user bookings
-				const userBookingsRes = await fetch(userBookingsApiUrl);
-				const userBookingsData = await userBookingsRes.json();
-				setBookedActivities(userBookingsData.map(activity => activity._id));
+				const museumsApiUrl = `${process.env.REACT_APP_BACKEND}/api/museums`;
+				const historicalPlacesApiUrl = `${process.env.REACT_APP_BACKEND}/api/historicalPlaces`;
+				const userBookingsApiUrl = `${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`;
 
-				// Fetch museums and historical places
-				const [museumsRes, historicalPlacesRes] = await Promise.all([
-					fetch(museumsApiUrl),
-					fetch(historicalPlacesApiUrl),
-				]);
+				try {
+					// Fetch user bookings
+					const userBookingsRes = await fetch(userBookingsApiUrl);
+					const userBookingsData = await userBookingsRes.json();
+					setBookedActivities(userBookingsData.map(activity => activity._id));
 
-				const museumsData = await museumsRes.json();
-				const historicalPlacesData = await historicalPlacesRes.json();
+					// Fetch museums and historical places
+					const [museumsRes, historicalPlacesRes] = await Promise.all([
+						fetch(museumsApiUrl),
+						fetch(historicalPlacesApiUrl),
+					]);
 
-				// Filter out only those museums and historical places that have booked activities
-				const filteredMuseums = museumsData.filter(museum =>
-					museum.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
-				);
+					const museumsData = await museumsRes.json();
+					const historicalPlacesData = await historicalPlacesRes.json();
 
-				const filteredHistoricalPlaces = historicalPlacesData.filter(historicalPlace =>
-					historicalPlace.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
-				);
+					// Filter out only those museums and historical places that have booked activities
+					const filteredMuseums = museumsData.filter(museum =>
+						museum.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
+					);
 
-				setMuseums(filteredMuseums);
-				setHistoricalPlaces(filteredHistoricalPlaces);
+					const filteredHistoricalPlaces = historicalPlacesData.filter(historicalPlace =>
+						historicalPlace.activities.some(activityId => userBookingsData.some(booked => booked._id === activityId))
+					);
+
+					setMuseums(filteredMuseums);
+					setHistoricalPlaces(filteredHistoricalPlaces);
 
 
-			} catch (err) {
-				console.log("Error fetching data", err);
-			} finally {
-				setLoading(false);
+				} catch (err) {
+					console.log("Error fetching data", err);
+				} finally {
+					setLoading(false);
+				}
 			}
-		}
 		};
 
-	
 
 		fetchData();
 
@@ -65,10 +64,9 @@ const PlacesPage = () => {
 
 		return () => {
 			window.removeEventListener("modelModified", fetchData);
-			
-		};
-	}, [userId]);
 
+		};
+	}, [userId, userRole]);
 
 
 	return (
@@ -85,7 +83,8 @@ const PlacesPage = () => {
 						<div className="grid grid-cols-1 gap-6">
 							{!loading ? (
 								historicalPlaces.map((historicalPlace) => (
-									<MyHistoricalPlaceDisplay key={historicalPlace._id} historicalPlace={historicalPlace} />
+									<MyHistoricalPlaceDisplay key={historicalPlace._id}
+									                          historicalPlace={historicalPlace}/>
 								))
 							) : (
 								<p className="text-[#330577]">Loading historical places...</p>
@@ -100,7 +99,7 @@ const PlacesPage = () => {
 						<div className="grid grid-cols-1 gap-6">
 							{!loading ? (
 								museums.map((museum) => (
-									<MyMuseumDisplay key={museum._id} museum={museum} />
+									<MyMuseumDisplay key={museum._id} museum={museum}/>
 								))
 							) : (
 								<p className="text-[#330577]">Loading museums...</p>

@@ -1,12 +1,10 @@
 // src/Components/Product Page/ProductHomePage.js
 
-import React, { useState, useEffect } from 'react'; // Import React and necessary hooks
-import { toast } from 'react-toastify'; // Import toast and ToastContainer
+import {useEffect, useState} from 'react'; // Import React and necessary hooks
+import {toast} from 'react-toastify'; // Import toast and ToastContainer
 import 'react-toastify/dist/ReactToastify.css';
 import Slider from "rc-slider";
 import ProductDisplay from "../Models/Displays/ProductsDisplay"
-
-import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 
 const ProductHomePage = () => {
 	const [products, setProducts] = useState([]);
@@ -18,7 +16,7 @@ const ProductHomePage = () => {
 	useEffect(() => {
 
 		const fetchAllProducts = async () => {
-			
+
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products`);
 				let data = await response.json();
@@ -57,7 +55,7 @@ const ProductHomePage = () => {
 		fetchAllProducts();
 	}, []);
 
-	 const convertProductImages = (products) => {
+	const convertProductImages = (products) => {
 		return products.map(product => {
 			let imageBase64 = null;
 			if (product.picture?.data && product.picture.contentType) {
@@ -83,16 +81,16 @@ const ProductHomePage = () => {
 			let url = `${process.env.REACT_APP_BACKEND}/api/products/search?name=${encodeURIComponent(searchTerm)}`;
 			let response = await fetch(url);
 			let data = await response.json();
-	
+
 			if (!response.ok) {
 				throw new Error(data.message || 'Failed to fetch search results');
 			}
-	
+
 			// Step 2: Filter the searched products by max price
 			if (maxPrice) {
 				data = data.filter(product => product.price <= maxPrice);
 			}
-	
+
 			// Step 3: Sort the filtered products
 			if (sortOrder === 'asc') {
 				data.sort((a, b) => a.ratings - b.ratings);
@@ -113,7 +111,7 @@ const ProductHomePage = () => {
 			setLoading(false);
 		}
 	};
-	
+
 	return (
 		<div>
 			<div className="w-11/12 max-w-3xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-lg">
@@ -126,12 +124,12 @@ const ProductHomePage = () => {
 							type="text"
 							placeholder="Search by Product Name"
 							className="w-full p-3 border bg-white text-black text-base rounded-lg focus:outline-none focus:ring-2"
-							style={{ borderColor: '#330577' }}
+							style={{borderColor: '#330577'}}
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
 					</div>
-	
+
 					{/* Budget Slider */}
 					<div className="mt-4">
 						<label className="block text-gray-800 text-base mb-2">Budget</label>
@@ -140,12 +138,12 @@ const ProductHomePage = () => {
 							max={10000}
 							defaultValue={maxPrice}
 							onChange={setMaxPrice}
-							trackStyle={{ backgroundColor: '#330577', height: '6px' }}
-							handleStyle={{ borderColor: '#330577', width: '20px', height: '20px' }}
+							trackStyle={{backgroundColor: '#330577', height: '6px'}}
+							handleStyle={{borderColor: '#330577', width: '20px', height: '20px'}}
 						/>
 						<p className="text-base text-gray-700 mt-2">Selected budget: EGP{maxPrice}</p>
 					</div>
-	
+
 					{/* Sort by Average Rating Buttons */}
 					<div className="flex space-x-2 mt-4">
 						<button
@@ -161,11 +159,11 @@ const ProductHomePage = () => {
 							Descending
 						</button>
 					</div>
-	
+
 					{/* Consolidated Button */}
 					<div className="flex justify-center space-x-4 mt-6">
 						<button
-							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice,'asc')}
+							onClick={() => handleSearchFilterAndSort(searchTerm, maxPrice, 'asc')}
 							className="w-full max-w-xs px-6 py-2 bg-[#330577] text-white text-base rounded-lg transition hover:bg-[#4a078c] focus:outline-none focus:ring-2"
 						>
 							Search, Filter, and Sort
@@ -173,15 +171,16 @@ const ProductHomePage = () => {
 					</div>
 				</div>
 			</div>
-	
+
 			{/* Display Products */}
 			{loading ? (
 				<div className="text-center text-lg mt-8">Loading products...</div>
 			) : (
 				products.length > 0 && (
-					<div className="w-full mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
+					<div
+						className="w-full mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
 						{products.map((product) => (
-							<ProductDisplay key={product._id} product={product} />
+							<ProductDisplay key={product._id} product={product}/>
 						))}
 					</div>
 				)

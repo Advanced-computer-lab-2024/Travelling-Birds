@@ -27,7 +27,7 @@ const ItinerariesPage = () => {
         return () => {
             window.removeEventListener('modelModified', fetchItineraries);
         };
-    }, []);
+    }, [userId, userRole]);
 
 
 

@@ -6,7 +6,7 @@ import {toast} from "react-toastify";
 import Logo from "../../Assets/Logo2.png";
 
 const TourismGovernorNavBar = () => {
-	const [id, setId] = useState(sessionStorage.getItem('user id'));
+	const id = sessionStorage.getItem('user id');
 	const [user, setUser] = useState({});
 	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'EGP');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);

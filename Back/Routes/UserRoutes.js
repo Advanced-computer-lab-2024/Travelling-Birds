@@ -24,7 +24,9 @@ const {
 	removeProductPurchase,
 	getComments,
 	addComment,
-	requestDelete
+	requestDelete,
+	requestOtp,
+	verifyOtpAndResetPassword
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload,upload} = require("../Middleware/upload");
 
@@ -96,5 +98,11 @@ router.post('/:id/comments', addComment);
 
 // Login
 router.post('/login', login);
+
+// Request OTP
+router.post('/request-otp', requestOtp);
+
+// Verify OTP and Reset Password
+router.post('/verify-otp', verifyOtpAndResetPassword);
 
 module.exports = router;
