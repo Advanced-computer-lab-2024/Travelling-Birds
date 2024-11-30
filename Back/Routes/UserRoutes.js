@@ -26,15 +26,19 @@ const {
 	addComment,
 	requestDelete,
 	requestOtp,
-	verifyOtpAndResetPassword
+	verifyOtpAndResetPassword,
+	getUserAnalytics
 } = require('../Controllers/UserControllers');
-const {multipleFieldsUpload,upload} = require("../Middleware/upload");
+const {multipleFieldsUpload, upload} = require("../Middleware/upload");
 
 // Add user
-router.post('/',multipleFieldsUpload, addUser);
+router.post('/', multipleFieldsUpload, addUser);
 
 // Get all users
 router.get('/', getUsers);
+
+// Get Recent Users
+router.get('/analytics', getUserAnalytics);
 
 // Get specific username
 router.get('/username', getUsername);
@@ -58,7 +62,7 @@ router.get('/toDelete', getUsersToDelete);
 router.get('/:id', getUser);
 
 // Update user
-router.put('/:id', upload.fields([{ name: 'profilePicture', maxCount: 1 }, { name: 'backDrop', maxCount: 1 }]), updateUser);
+router.put('/:id', upload.fields([{name: 'profilePicture', maxCount: 1}, {name: 'backDrop', maxCount: 1}]), updateUser);
 
 // Delete user
 router.delete('/:id', deleteUser);

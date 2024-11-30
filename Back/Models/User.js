@@ -44,6 +44,7 @@ const user = new Schema({
 	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 	ratings: Number,
 	otp: String,
+	dateCreated: {type: Date, default: Date.now},
 });
 
 module.exports = mongoose.model('User', user);

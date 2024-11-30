@@ -14,28 +14,28 @@ const AdminNavBar = () => {
 			<ul className="menu px-0">
 				<li className="menu-title">Users</li>
 				<li>
-					<Link to='/admin/admin-accounts'>
+					<Link to='/admin/users/admin-accounts'>
 						<i className="fa-solid fa-user-shield fa-fw"></i>
 						{/**/}
 						Admin Accounts
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/approve-users'>
+					<Link to='/admin/users/approve-users'>
 						<i className="fa-solid fa-user-check fa-fw"></i>
 						{/**/}
 						Approve New Users
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/manage-users'>
+					<Link to='/admin/users/manage-users'>
 						<i className="fa-solid fa-users-cog fa-fw"></i>
 						{/**/}
 						Manage Users
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/users-to-delete'>
+					<Link to='/admin/users/users-to-delete'>
 						<i className="fa-solid fa-user-times fa-fw"></i>
 						{/**/}
 						Users to Delete
@@ -44,35 +44,35 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Content</li>
 				<li>
-					<Link to='/admin/activities'>
+					<Link to='/admin/content/activities'>
 						<i className="fa-solid fa-hiking fa-fw"></i>
 						{/**/}
 						Activities
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/itineraries'>
+					<Link to='/admin/content/itineraries'>
 						<i className="fa-solid fa-route fa-fw"></i>
 						{/**/}
 						Itineraries
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/historical-places'>
+					<Link to='/admin/content/historical-places'>
 						<i className="fa-solid fa-landmark fa-fw"></i>
 						{/**/}
 						Historical Places
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/museums'>
+					<Link to='/admin/content/museums'>
 						<i className="fa-solid fa-landmark fa-fw"></i>
 						{/**/}
 						Museums
 					</Link>
 				</li>
 				<li>
-					<Link to='/admin/tags-categories'>
+					<Link to='/admin/content/tags-categories'>
 						<i className="fa-solid fa-tags fa-fw"></i>
 						{/**/}
 						Tags and Categories
@@ -99,10 +99,10 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Analytics</li>
 				<li>
-					<Link to='/admin/analytics'>
+					<Link to='/admin/analytics/user-growth'>
 						<i className="fa-solid fa-chart-bar fa-fw"></i>
 						{/**/}
-						View Analytics
+						User Growth
 					</Link>
 				</li>
 

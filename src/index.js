@@ -75,6 +75,7 @@ import ManageMuseums from "./Components/Admin Portal/Components/ContentManagemen
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
 import ManagePromotions from "./Components/Admin Portal/Components/PromotionalManagement/ManagePromotions";
 import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
+import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowth";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -86,18 +87,25 @@ root.render(
 				<Route path='/' element={<NavBarContainer/>}>
 					<Route index element={<ExplorePage/>}/>
 					<Route path="admin" element={<AdminLayout/>}>
-						<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
-						<Route path='approve-users' element={<ApproveRegistrants/>}/>
-						<Route path='manage-users' element={<ManageUserAccounts/>}/>
-						<Route path='users-to-delete' element={<UsersToDelete/>}/>
-						<Route path='activities' element={<ManageActivities/>}/>
-						<Route path='itineraries' element={<ManageItineraries/>}/>
-						<Route path='museums' element={<ManageMuseums/>}/>
-						<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
-						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
+						<Route path='users'>
+							<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
+							<Route path='approve-users' element={<ApproveRegistrants/>}/>
+							<Route path='manage-users' element={<ManageUserAccounts/>}/>
+							<Route path='users-to-delete' element={<UsersToDelete/>}/>
+						</Route>
+						<Route path='content'>
+							<Route path='activities' element={<ManageActivities/>}/>
+							<Route path='itineraries' element={<ManageItineraries/>}/>
+							<Route path='museums' element={<ManageMuseums/>}/>
+							<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
+							<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
+						</Route>
 						<Route path='products' element={<ManageProducts/>}/>
 						<Route path='complaints' element={<ViewComplaints/>}/>
 						<Route path='promotions' element={<ManagePromotions/>}/>
+						<Route path='analytics'>
+							<Route path='user-growth' element={<UserGrowth/>}/>
+						</Route>
 					</Route>
 
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>

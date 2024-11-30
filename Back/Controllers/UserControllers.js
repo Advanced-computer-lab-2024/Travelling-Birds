@@ -701,7 +701,7 @@ const removeProductPurchase = async (req, res) => {
 	}
 };
 
-//add comment on a specific tour guide
+// Add comment on a specific tour guide
 const addComment = async (req, res) => {
 	const {user, text, stars} = req.body;
 	try {
@@ -727,7 +727,7 @@ const addComment = async (req, res) => {
 	}
 }
 
-// get all comments for a specific tour guide
+// Get all comments for a specific tour guide
 const getComments = async (req, res) => {
 	try {
 		const tourGuide = await User.findById(req.params.id);
@@ -741,7 +741,7 @@ const getComments = async (req, res) => {
 	}
 }
 
-//Delete user with Checks
+// Delete user with Checks
 const requestDelete = async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id);
@@ -795,7 +795,7 @@ const requestDelete = async (req, res) => {
 	}
 }
 
-//Request OTP
+// Request OTP
 const requestOtp = async (req, res) => {
 	const {email} = req.body;
 	try {
@@ -832,7 +832,7 @@ const requestOtp = async (req, res) => {
 	}
 }
 
-//Verify OTP and reset password
+// Verify OTP and reset password
 const verifyOtpAndResetPassword = async (req, res) => {
 	const {email, otp, newPassword} = req.body;
 	try {
@@ -852,6 +852,63 @@ const verifyOtpAndResetPassword = async (req, res) => {
 	}
 }
 
+// Get new Users
+const getUserAnalytics = async (req, res) => {
+	try {
+		const userAnalytics = await User.aggregate([
+			{
+				$facet: {
+					byMonth: [
+						{
+							$group: {
+								_id: {$month: "$dateCreated"},
+								totalUsers: {$sum: 1},
+								users: {
+									$push: {
+										_id: "$_id",
+										firstName: "$firstName",
+										lastName: "$lastName",
+										email: "$email"
+									}
+								}
+							}
+						},
+						{
+							$sort: {"_id": 1}
+						}
+					],
+					past30Days: [
+						{
+							$match: {
+								dateCreated: {
+									$gte: new Date(new Date().setDate(new Date().getDate() - 30))
+								}
+							}
+						},
+						{
+							$group: {
+								_id: null,
+								totalUsers: {$sum: 1},
+								users: {
+									$push: {
+										_id: "$_id",
+										firstName: "$firstName",
+										lastName: "$lastName",
+										email: "$email"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		]);
+
+		res.status(200).json(userAnalytics);
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+};
 
 module.exports = {
 	addUser,
@@ -878,5 +935,6 @@ module.exports = {
 	getComments,
 	requestDelete,
 	requestOtp,
-	verifyOtpAndResetPassword
+	verifyOtpAndResetPassword,
+	getUserAnalytics
 };

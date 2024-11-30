@@ -99,7 +99,7 @@ const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 		<div className="bg-white p-6 rounded-lg shadow-md">
 			<form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleSubmit}>
 				<h1 className="col-span-1 md:col-span-3 text-3xl font-bold text-[#330577] mb-4 text-center">
-					{initialMuseum? 'Update Museum' : 'Register Museum'}
+					{initialMuseum ? 'Update Museum' : 'Register Museum'}
 				</h1>
 
 				{/* Column 1 */}
