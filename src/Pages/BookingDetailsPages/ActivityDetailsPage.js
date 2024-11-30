@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaMapMarkerAlt, FaShareAlt } from 'react-icons/fa';
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import LocationContact from "../../Components/Locations/Location";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,6 +32,7 @@ const ActivityDetail = () => {
     const [userLocation, setUserLocation] = useState('');
     const [userEmail, setUserEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -101,10 +102,24 @@ const ActivityDetail = () => {
                 console.error('Error fetching transportations:', error);
             }
         };
+        const checkIfSaved = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-activities/${userId}`);
+                if (!response.ok) throw new Error('Failed to fetch saved activities');
+                
+                const savedActivities = await response.json();
+                // Check if the activity is already in the saved activities
+                const saved = savedActivities.some(activity => activity._id === activityId);
+                setIsSaved(saved);
+            } catch (error) {
+                console.error('Error checking saved status:', error);
+            }
+        };
         fetchUsers();
         fetchTransportations();
         fetchActivity();
         fetchComments();
+        checkIfSaved();
         if (userId) {
             checkUserBooking();
         }
@@ -377,7 +392,63 @@ const ActivityDetail = () => {
             return `${price.toFixed(2)} EGP`; // Default to EGP
         }
     };
- 
+
+   
+   
+    const saveActivity = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-activity/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activityId })
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                // Check if the activity is already saved
+                if (data.message === 'Activity is already saved') {
+                    toast.info('This activity is already saved.');
+                } else {
+                    throw new Error(data.message || 'Failed to save the activity');
+                }
+                return;
+            }
+    
+            toast.success('Activity saved successfully');
+        } catch (error) {
+            console.error('Error saving activity:', error);
+            toast.error('Failed to save the activity. Please try again.');
+        }
+    };
+
+       // Unsave activity
+       const unsaveActivity = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-activity/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activityId })
+            });
+
+            if (!response.ok) throw new Error('Failed to unsave the activity');
+            setIsSaved(false);
+            toast.success('Activity unsaved successfully');
+        } catch (error) {
+            console.error('Error unsaving activity:', error);
+            toast.error('Failed to unsave the activity. Please try again.');
+        }
+    };
+
+    const toggleSave = async () => {
+        if (isSaved) {
+            await unsaveActivity();
+            setIsSaved(false); // Update state immediately
+        } else {
+            await saveActivity();
+            setIsSaved(true); // Update state immediately
+        }
+    };
 
 
     if (loading) return <p>Loading...</p>;
@@ -410,11 +481,12 @@ const ActivityDetail = () => {
                                 Book Activity
                             </button>
                             <button
-                                className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
-                            >
-                                <AiOutlineHeart className="text-lg mr-2" />
-                                Save
-                            </button>
+                                    onClick={toggleSave}
+                                    className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
+                                >
+                                    {isSaved ? <AiFillHeart className="text-lg mr-2" /> : <AiOutlineHeart className="text-lg mr-2" />}
+                                    {isSaved ? 'Unsave' : 'Save'}
+                                </button>
                             <div className="relative">
                                 <button
                                     onClick={() => setIsShareOpen(!isShareOpen)}

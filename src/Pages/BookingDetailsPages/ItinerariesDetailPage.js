@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {FaClock, FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt} from 'react-icons/fa';
-import {AiOutlineHeart} from "react-icons/ai";
+import {AiOutlineHeart, AiFillHeart} from "react-icons/ai";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../../Components/Locations/Location";
@@ -35,6 +35,7 @@ const ItineraryDetail = () => {
 	const [placeholder, setPlaceHolder] = useState('');
 	const [userLocation, setUserLocation] = useState('');
 	const [userEmail, setUserEmail] = useState('');
+	const [isSaved, setIsSaved] = useState(false);
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -114,12 +115,27 @@ const ItineraryDetail = () => {
 			}
 		};
 
+		const checkIfSaved = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itineraries/${userId}`);
+                if (!response.ok) throw new Error('Failed to fetch saved activities');
+                
+                const savedItinerary = await response.json();
+                // Check if the activity is already in the saved activities
+                const saved = savedItinerary.some(itinerary => itinerary._id === itineraryId);
+                setIsSaved(saved);
+            } catch (error) {
+                console.error('Error checking saved status:', error);
+            }
+        };
+
 
 		fetchItinerary().then(r => {
 			fetchTransportations();
 			fetchActivities();
 			fetchComments();
 			fetchUser();
+			checkIfSaved();
 			if (userId) {
 				checkUserBooking();
 			}
@@ -439,6 +455,61 @@ const ItineraryDetail = () => {
 		}
 	}
 
+	const saveItinerary = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itineraryId })
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                // Check if the activity is already saved
+                if (data.message === 'Itinerary is already saved') {
+                    toast.info('This Itinerary is already saved.');
+                } else {
+                    throw new Error(data.message || 'Failed to save the Itinerary');
+                }
+                return;
+            }
+    
+            toast.success('Itinerary saved successfully');
+        } catch (error) {
+            console.error('Error saving Itinerary:', error);
+            toast.error('Failed to save the Itinerary. Please try again.');
+        }
+    };
+
+       // Unsave activity
+       const unsaveItinerary = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itineraryId })
+            });
+
+            if (!response.ok) throw new Error('Failed to unsave the Itinerary');
+            setIsSaved(false);
+            toast.success('Itinerary unsaved successfully');
+        } catch (error) {
+            console.error('Error unsaving Itinerary:', error);
+            toast.error('Failed to unsave the Itinerary. Please try again.');
+        }
+    };
+
+    const toggleSave = async () => {
+        if (isSaved) {
+            await unsaveItinerary();
+            setIsSaved(false); // Update state immediately
+        } else {
+			await saveItinerary();
+            setIsSaved(true); // Update state immediately
+        }
+    };
+
 	if (loading) return <p>Loading...</p>;
 
 	return (
@@ -470,10 +541,12 @@ const ItineraryDetail = () => {
 								Book Itinerary
 							</button>
 							<button
-								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40">
-								<AiOutlineHeart className="text-lg mr-2"/>
-								Save
-							</button>
+                                    onClick={toggleSave}
+                                    className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
+                                >
+                                    {isSaved ? <AiFillHeart className="text-lg mr-2" /> : <AiOutlineHeart className="text-lg mr-2" />}
+                                    {isSaved ? 'Unsave' : 'Save'}
+                                </button>
 							<div className="relative">
 								<button
 									onClick={() => setIsShareOpen(!isShareOpen)}
