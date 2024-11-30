@@ -73,6 +73,7 @@ import ManageActivities from "./Components/Admin Portal/Components/ContentManage
 import ManageItineraries from "./Components/Admin Portal/Components/ContentManagement/ManageItineraries";
 import ManageMuseums from "./Components/Admin Portal/Components/ContentManagement/ManageMuseums";
 import ManageHistoricalPlaces from "./Components/Admin Portal/Components/ContentManagement/ManageHistoricalPlaces";
+import ManagePromotions from "./Components/Admin Portal/Components/PromotionalManagement/ManagePromotions";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -93,8 +94,9 @@ root.render(
 						<Route path='museums' element={<ManageMuseums/>}/>
 						<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
 						<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
-						<Route path='manage-products' element={<ManageProducts/>}/>
-						<Route path='manage-complaints' element={<ViewComplaints/>}/>
+						<Route path='products' element={<ManageProducts/>}/>
+						<Route path='complaints' element={<ViewComplaints/>}/>
+						<Route path='promotions' element={<ManagePromotions/>}/>
 					</Route>
 
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>

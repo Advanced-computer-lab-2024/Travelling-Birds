@@ -12,7 +12,7 @@ import SalesReports from './Components/ProductManagement/SalesReports';
 import StockAlerts from './Components/ProductManagement/StockAlerts';
 import ViewComplaints from './Components/ComplaintManagement/ViewComplaints';
 import UserGrowth from './Components/Analytics/UserGrowth';
-import CreatePromotionalCodes from './Components/PromotionalManagement/CreatePromotionalCodes';
+import ManagePromotions from './Components/PromotionalManagement/ManagePromotions';
 
 const AdminDashboard = () => {
 	return (
@@ -30,7 +30,7 @@ const AdminDashboard = () => {
 					<Route path="/admin/product-management/stock-alerts" element={<StockAlerts />} />
 					<Route path="/admin/complaint-management/view-complaints" element={<ViewComplaints />} />
 					<Route path="/admin/analytics/user-growth" element={<UserGrowth />} />
-					<Route path="/admin/promotional-management/create-codes" element={<CreatePromotionalCodes />} />
+					<Route path="/admin/promotional-management/create-codes" element={<ManagePromotions />} />
 				</Routes>
 			</div>
 		</div>

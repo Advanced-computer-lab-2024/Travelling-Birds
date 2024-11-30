@@ -81,7 +81,7 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Products</li>
 				<li>
-					<Link to='/admin/manage-products'>
+					<Link to='/admin/products'>
 						<i className="fa-solid fa-box-open fa-fw"></i>
 						{/**/}
 						Manage Products
@@ -90,7 +90,7 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Complaints</li>
 				<li>
-					<Link to='/admin/manage-complaints'>
+					<Link to='/admin/complaints'>
 						<i className="fa-solid fa-comment-dots fa-fw"></i>
 						{/**/}
 						Manage Complaints
@@ -108,7 +108,7 @@ const AdminNavBar = () => {
 
 				<li className="menu-title">Promotions</li>
 				<li>
-					<Link to='/admin/promotional-management'>
+					<Link to='/admin/promotions'>
 						<i className="fa-solid fa-bullhorn fa-fw"></i>
 						{/**/}
 						Manage Promotions

@@ -15,13 +15,14 @@ const flightRoutes = require('./routes/FlightRoutes');
 const hotelRouter = require('./Routes/HotelRoutes');
 const TransportRoutes = require('./Routes/TransportationRoutes');
 const mailRoutes = require('./Routes/MailRoutes');
+const promotionRoutes = require('./Routes/PromotionRoutes');
 const bodyParser = require('body-parser');
 
 require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
 app.use('/api/users', usersRoutes);
 app.use('/api/activities', activitiesRoutes);
 app.use('/api/itineraries', itinerariesRoutes);
@@ -35,8 +36,9 @@ app.use('/api/flights', flightRoutes);
 app.use('/api/hotels', hotelRouter);
 app.use('/api/transports', TransportRoutes);
 app.use('/api/mail', mailRoutes);
+app.use('/api/promotions', promotionRoutes);
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 const PORT = process.env.PORT || 5000;
 
