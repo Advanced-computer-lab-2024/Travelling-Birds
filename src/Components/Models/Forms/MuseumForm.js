@@ -1,6 +1,7 @@
 import {useState} from "react";
 import ReusableInput from "../../ReusableInput";
 import {toast} from "react-toastify";
+import PropTypes from "prop-types";
 
 const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 	const [name, setName] = useState(initialMuseum?.name || '');
@@ -19,22 +20,6 @@ const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 	const [tags, setTags] = useState(initialMuseum?.tags?.join(',') || '');
 	const [activities, setActivities] = useState(initialMuseum?.activities ? Object.values(initialMuseum.activities).map(activity => activity._id).join(',') : '');
 	const [image, setImage] = useState(null);
-
-	const deleteMuseum = () => {
-		fetch(`${process.env.REACT_APP_BACKEND}/api/museums/${initialMuseum._id}`, {
-			method: 'DELETE',
-		}).then((response) => response.json())
-			.then((data) => {
-				if (data?.msg === 'Museum deleted successfully') {
-					toast.success('Museum deleted successfully');
-					setMuseums(museums.filter(m => m._id !== initialMuseum._id));
-				} else {
-					toast.error('Failed to delete museum');
-				}
-			}).catch((error) => {
-			console.log(error);
-		});
-	};
 
 	const handleFileChange = (e) => {
 		setImage(e.target.files[0]);
@@ -94,7 +79,7 @@ const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 				body: formData
 			});
 			const data = await res.json();
-			if (data && data._id) {
+			if (data?._id) {
 				toast.success(`Museum ${initialMuseum ? 'updated' : 'added'} successfully`);
 				if (initialMuseum) {
 					setMuseums(museums.map(m => m._id === data._id ? data : m));
@@ -166,6 +151,32 @@ const MuseumForm = ({initialMuseum, museums, setMuseums}) => {
 			</form>
 		</div>
 	);
+};
+
+MuseumForm.propTypes = {
+	initialMuseum: {
+		_id: PropTypes.string,
+		name: PropTypes.string,
+		description: PropTypes.string,
+		location: PropTypes.shape({
+			city: PropTypes.string,
+			country: PropTypes.string,
+			lat: PropTypes.string,
+			lng: PropTypes.string,
+			address: PropTypes.string,
+			area: PropTypes.string
+		}),
+		openingHours: PropTypes.shape({
+			startTime: PropTypes.string,
+			endTime: PropTypes.string
+		}),
+		ticketPrices: PropTypes.object,
+		tags: PropTypes.array,
+		activities: PropTypes.array,
+		image: PropTypes.string
+	},
+	museums: PropTypes.array,
+	setMuseums: PropTypes.func
 };
 
 export default MuseumForm;
