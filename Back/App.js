@@ -17,6 +17,7 @@ const TransportRoutes = require('./Routes/TransportationRoutes');
 const mailRoutes = require('./Routes/MailRoutes');
 const promotionRoutes = require('./Routes/PromotionRoutes');
 const bodyParser = require('body-parser');
+const {scheduleBirthdayPromo} = require('./Services/scheduleService');
 
 require('dotenv').config();
 
@@ -46,6 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
 	.then(() => {
 		app.listen(PORT, () => {
 			console.log(`Connected to MongoDB & Server running on port ${PORT}`)
+			scheduleBirthdayPromo();
 		})
 	})
 	.catch((error) => {
