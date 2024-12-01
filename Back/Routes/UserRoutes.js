@@ -30,6 +30,9 @@ const {
 	addSavedItinerary,
 	getSavedItineraries,
 	removeSavedItinerary,
+	addProductToWishlist,
+	getProductWishlist,
+	removeProductFromWishlist,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
@@ -117,6 +120,16 @@ router.get('/saved-itineraries/:id', getSavedItineraries);
 
 // Remove Saved Itinerary
 router.delete('/saved-itinerary/:id', removeSavedItinerary);
+
+// Add Product to Wishlist
+router.post('/product-wishlist/:id', addProductToWishlist);
+
+// Get Product Wishlist
+router.get('/product-wishlist/:id', getProductWishlist);
+
+// Remove Product from Wishlist
+router.delete('/product-wishlist/:id', removeProductFromWishlist);
+
 
 // Get all comments for a specific user
 router.get('/:id/comments', getComments);

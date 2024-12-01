@@ -59,7 +59,8 @@ import TourismGovernorTags from "./Pages/MyCreations/ToursimGovernor/TourismGove
 //my Interests
 import SavedActivities from "./Pages/MyInterests/Events/SavedActivities";
 import SavedItineraries from "./Pages/MyInterests/Events/SavedItineraries";
-import SavedEvents from "./Pages/MyInterests/Events/SavedEvents";
+import ProductWishlist from "./Pages/MyInterests/Wishlist/ProductWishlist";
+import MyInterests from "./Pages/MyInterests/MyInterests";
 
 
 //Admin Portal Part 1
@@ -148,7 +149,8 @@ root.render(
 
 					<Route path="saved-activity" element={<SavedActivities/>}/>
 					<Route path="saved-itinerary" element={<SavedItineraries/>}/>
-					<Route path="saved-events" element={<SavedEvents/>}/>
+					<Route path="product-wishlist" element={<ProductWishlist/>}/>
+					<Route path="my-interests" element={<MyInterests/>}/>
 
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
