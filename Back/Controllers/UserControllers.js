@@ -979,6 +979,89 @@ const removeProductFromWishlist = async (req, res) => {
 	}
 }
 
+//adding product to cart
+const addproducttocart = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const product = await Product.findById
+		(productId);
+
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
+		}
+
+		// Check if the product is already saved
+		if (user.cart.includes(productId)) {
+			return res.status(400).json({message: 'Product is already in cart'});
+		}
+
+		user.cart.push(productId);
+		await user.save();
+		res.status(200).json({message: 'Product added to cart successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//get all products in cart
+const getCart = async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const user = await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const cart = await Product.find({_id: {$in: user.cart}});
+		res.status(200).json(cart);
+	}
+
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Remove product from cart
+const removeProductFromCart = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const index = user.cart.indexOf(productId);
+		if (index === -1) {
+			return res.status(400).json({message: 'Product not found in user cart'});
+		}
+
+		user.cart.splice(index, 1);
+		await user.save();
+		res.status(200).json({message: 'Product removed from cart successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+
 
 
 
@@ -1185,6 +1268,9 @@ module.exports = {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
+	addproducttocart,
+	getCart,
+	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,

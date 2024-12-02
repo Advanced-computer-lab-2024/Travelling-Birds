@@ -33,6 +33,9 @@ const {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
+	addproducttocart,
+	getCart,
+	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
@@ -129,6 +132,15 @@ router.get('/product-wishlist/:id', getProductWishlist);
 
 // Remove Product from Wishlist
 router.delete('/product-wishlist/:id', removeProductFromWishlist);
+
+// Add Product to Cart
+router.post('/product-cart/:id', addproducttocart);
+
+// Get Cart
+router.get('/product-cart/:id', getCart);
+
+// Remove Product from Cart
+router.delete('/product-cart/:id', removeProductFromCart);
 
 
 // Get all comments for a specific user
