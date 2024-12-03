@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import ProductDisplay from '../../Components/Models/Displays/ProductsDisplay';
 import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 const ProductCart = () => {
     const [cart, setCart] = useState([]);
     const userId = sessionStorage.getItem('user id');
     const userRole = sessionStorage.getItem('role');
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProductCart = async () => {
@@ -15,25 +16,26 @@ const ProductCart = () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    const productsWithImages = data.map(product => {
+                    const productsWithImages = data.map((product) => {
                         let imageBase64 = null;
                         if (product.picture?.data && product.picture.contentType) {
                             try {
-                                const byteArray = new Uint8Array(product.picture.data.data); // Ensure data access structure is correct
-                                const binaryString = Array.from(byteArray).map(byte => String.fromCharCode(byte)).join('');
+                                const byteArray = new Uint8Array(product.picture.data.data);
+                                const binaryString = Array.from(byteArray)
+                                    .map((byte) => String.fromCharCode(byte))
+                                    .join('');
                                 imageBase64 = `data:${product.picture.contentType};base64,${btoa(binaryString)}`;
                             } catch (error) {
                                 console.error('Error converting image data to base64:', error);
                             }
                         }
-                        // Return the product with the base64 image URL
                         return {
                             ...product,
-                            picture: imageBase64 // Set the picture to the base64 string
+                            picture: imageBase64,
                         };
                     });
 
-                    setCart(productsWithImages); // Update state with products and base64 images
+                    setCart(productsWithImages);
                 } else {
                     toast.error(data.message || 'Failed to fetch products');
                 }
@@ -49,7 +51,6 @@ const ProductCart = () => {
         }
     }, [userId, userRole]);
 
-    // Calculate total price
     const totalPrice = cart.reduce((total, product) => total + product.price, 0);
 
     if (loading) {
@@ -61,51 +62,119 @@ const ProductCart = () => {
         );
     }
 
-    return (
-        <div className="text-[#330577] p-6">
-            {/* Header section with title */}
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-bold">My Cart</h1>
+    const removeProduct = async (productId) => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId }),
+            });
+
+            if (response.ok) {
+                setCart(cart.filter((product) => product._id !== productId));
+                toast.success('Product removed from cart.');
+            } else {
+                toast.error('Failed to remove product.');
+            }
+        } catch (error) {
+            console.error('Error removing product:', error);
+            toast.error('An error occurred.');
+        }
+    };
+
+
+
+return (
+    <div className="text-[#330577] p-6 bg-gray-100 min-h-screen">
+        <h1 className="text-4xl font-extrabold mb-8 text-center">My Shopping Cart</h1>
+        <div className="bg-white rounded-lg shadow-md p-6">
+            {/* Cart Header */}
+            <div className="flex border-b pb-4">
+                <div className="w-2/5 text-lg font-semibold">Description</div>
+                <div className="w-1/5 text-center text-lg font-semibold">Quantity</div>
+                <div className="w-1/5 text-center text-lg font-semibold">Remove</div>
+                <div className="w-1/5 text-right text-lg font-semibold">Price</div>
             </div>
 
-            {/* Cart content */}
-            {cart.length === 0 ? (
-                <p>No Products found.</p>
-            ) : (
-                <div className="flex flex-wrap gap-4">
-                    {/* Product cards */}
-                    {cart.map((product) => (
-                        <div
-                            key={product._id}
-                            className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4"
-                        >
-                            <ProductDisplay product={product} />
+            {/* Cart Items */}
+            {cart.map((product) => (
+                <div key={product._id} className="flex items-center border-b py-4">
+                    {/* Description */}
+                    <div className="w-2/5 flex items-center">
+                        <img
+                            src={product.picture}
+                            alt={product.name}
+                            className="w-16 h-16 rounded mr-4 cursor-pointer"
+                            onClick={() => navigate(`/products/${product._id}`)}
+                        />
+                        <div>
+                            <p className="font-medium">{product.name}</p>
+                            <p className="text-sm text-gray-500">Product Code: {product._id.slice(0, 8)}</p>
                         </div>
-                    ))}
+                    </div>
 
-                    {/* Summary card */}
-                    <div className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4">
-                        <div className="text-xl font-bold mb-4">Order Summary</div>
-                        {cart.map((product) => (
-                            <div key={product._id} className="flex justify-between mb-2">
-                                <span>{product.name}</span>
-                                <span>${product.price.toFixed(2)}</span>
-                            </div>
-                        ))}
-                        <div className="flex justify-between border-t pt-2 mt-2 font-bold text-lg">
-                            <span>Total</span>
-                            <span>${totalPrice.toFixed(2)}</span>
-                        </div>
+                    {/* Quantity */}
+                    <div className="w-1/5 flex items-center justify-center">
                         <button
-                            className="w-full mt-4 bg-[#330577] text-white py-2 px-4 rounded-lg shadow-md hover:bg-[#472393] text-sm font-medium transition-all"
+                            className="px-3 py-1 bg-gray-200 border rounded hover:bg-gray-300"
+                            //onClick={() => updateQuantity(product._id, -1)}
+                            disabled={product.quantity <= 1}
                         >
-                            Check Out
+                            -
+                        </button>
+                        <input
+                            type="number"
+                            value={product.quantity || 1}
+                            readOnly
+                            className="w-12 text-center border rounded mx-2"
+                        />
+                        <button
+                            className="px-3 py-1 bg-gray-200 border rounded hover:bg-gray-300"
+                            //onClick={() => updateQuantity(product._id, 1)}
+                            disabled={product.quantity >= product.availableQuantity}
+                        >
+                            +
                         </button>
                     </div>
+
+                    {/* Remove */}
+                    <div className="w-1/5 flex justify-center">
+                        <button
+                            onClick={() => removeProduct(product._id)}
+                            className="text-red-500 hover:text-red-700 text-3xl"
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    {/* Price */}
+                    <div className="w-1/5 text-right font-semibold">
+                        {product.price.toFixed(2)} EGP
+                    </div>
                 </div>
-            )}
+            ))}
+
+            {/* Order Summary */}
+            <div className="mt-6 flex justify-between items-center border-t pt-4">
+                <p className="text-lg font-bold">Total</p>
+                <p className="text-lg font-bold">{totalPrice.toFixed(2)} EGP</p>
+            </div>
+
+            {/* Buttons */}
+            <div className="mt-6 flex justify-between">
+                <button
+                    onClick={() => navigate("/products")}
+                    className="bg-gray-200 text-black py-2 px-6 rounded hover:bg-gray-300"
+                >
+                    Continue Shopping
+                </button>
+                <button className="bg-[#330577] text-white py-2 px-6 rounded hover:bg-[#472393]">
+                    Checkout
+                </button>
+            </div>
         </div>
-    );
+    </div>
+);
 };
 
 export default ProductCart;
