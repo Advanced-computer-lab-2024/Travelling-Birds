@@ -1000,11 +1000,11 @@ const addproducttocart = async (req, res) => {
 		}
 
 		// Check if the product is already saved
-		if (user.cart.includes(productId)) {
+		if (user.Cart.includes(productId)) {
 			return res.status(400).json({message: 'Product is already in cart'});
 		}
 
-		user.cart.push(productId);
+		user.Cart.push(productId);
 		await user.save();
 		res.status(200).json({message: 'Product added to cart successfully'});
 	}
@@ -1025,7 +1025,7 @@ const getCart = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const cart = await Product.find({_id: {$in: user.cart}});
+		const cart = await Product.find({_id: {$in: user.Cart}});
 		res.status(200).json(cart);
 	}
 
@@ -1047,12 +1047,12 @@ const removeProductFromCart = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const index = user.cart.indexOf(productId);
+		const index = user.Cart.indexOf(productId);
 		if (index === -1) {
 			return res.status(400).json({message: 'Product not found in user cart'});
 		}
 
-		user.cart.splice(index, 1);
+		user.Cart.splice(index, 1);
 		await user.save();
 		res.status(200).json({message: 'Product removed from cart successfully'});
 	}

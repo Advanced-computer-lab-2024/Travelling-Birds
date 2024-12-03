@@ -3,6 +3,7 @@ import {useParams} from 'react-router-dom';
 import {toast} from "react-toastify";
 import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 import {AiFillHeart, AiOutlineHeart} from "react-icons/ai";
+import { set } from "mongoose";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -21,6 +22,7 @@ const ProductsDetailsPage = () => {
 	const [availableQuantity, setAvailableQuantity] = useState(0);
 	const [soldQuantity, setSoldQuantity] = useState(0);
 	const [isSaved, setIsSaved] = useState(false);
+	const [isInCart, setIsInCart] = useState(false);
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -77,9 +79,25 @@ const ProductsDetailsPage = () => {
 			}
 		};
 
+		const checkIfInCart = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`);
+				if (!response.ok) throw new Error('Failed to fetch cart activities');
+
+				const ProductCart = await response.json();
+				// Check if the activity is already in the saved activities
+				const inCart = ProductCart.some(product => product._id === productId);
+				setIsInCart(inCart);
+			} catch (error) {
+				console.error('Error checking cart status:', error);
+			}
+		};
+
+
 		fetchProduct();
 		fetchComments();
 		checkIfSaved();
+		checkIfInCart();
 		if (userId) {
 			checkIfPurchased();
 		}
@@ -266,6 +284,42 @@ const ProductsDetailsPage = () => {
 		}
 	}
 
+	const AddtoCart = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to add product to cart');
+			setIsInCart(true);
+			toast.success('Product added to cart');
+		}
+		catch (error) {
+			console.error('Error adding product to cart:', error);
+			toast.error('Failed to add product to cart. Please try again.');
+		}
+	}
+
+	const removeFromCart = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`, {
+				method: 'DELETE',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to remove product from cart');
+			setIsInCart(false);
+			toast.success('Product removed from cart');
+		}
+		catch (error) {
+			console.error('Error removing product from cart:', error);
+			toast.error('Failed to remove product from cart. Please try again.');
+		}
+	}
+
+
+
 	const toggleSave = async () => {
 		if (isSaved) {
 			await removeFromWishList();
@@ -275,6 +329,17 @@ const ProductsDetailsPage = () => {
 			setIsSaved(true); // Update state immediately
 		}
 	};
+
+	const toggleCart = async () => {
+		if (isInCart) {
+			await removeFromCart();
+			setIsInCart(false); // Update state immediately
+		}
+		else {
+			await AddtoCart();
+			setIsInCart(true); // Update state immediately
+		}
+	}
 
 
 	return (
@@ -327,6 +392,18 @@ const ProductsDetailsPage = () => {
 									)}
 									{isSaved ? 'Remove From WishList' : 'Add To WishList'}
 								</button>
+								<button
+									onClick={toggleCart}
+									className="p-3 px-7 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-full max-w-[200px]"
+								>
+									{isInCart ? ('Remove From Cart') : ('Add To Cart')}
+								</button>
+
+								
+						
+							
+
+								 
 							</div>
 						</div>
 					</div>

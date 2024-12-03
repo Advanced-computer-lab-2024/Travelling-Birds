@@ -18,6 +18,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 
+
 //Login and Register
 import RegisterPage from "./Pages/LoginAndRegister/RegisterPage";
 import LoginPage from "./Pages/LoginAndRegister/LoginPage";
@@ -46,6 +47,7 @@ import MuseumDetail from './Pages/BookingDetailsPages/MuseumDetailsPage';
 import ProductsPage from "./Pages/Products/ProductsPage";
 import ProductDetails from "./Pages/Products/ProductsDetailsPage";
 import MyPurchases from './Pages/Products/MyPurchases';
+import ProductCart from "./Pages/Products/ProductCart";
 
 //my creations
 import AdvertiserActivities from "./Pages/MyCreations/Advertiser/AdvertiserActivities";
@@ -146,6 +148,7 @@ root.render(
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
+					<Route path="product-cart" element={<ProductCart/>}/>
 
 					<Route path="saved-activity" element={<SavedActivities/>}/>
 					<Route path="saved-itinerary" element={<SavedItineraries/>}/>

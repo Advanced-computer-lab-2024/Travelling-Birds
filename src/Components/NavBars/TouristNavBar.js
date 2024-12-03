@@ -317,6 +317,15 @@ const TouristNavBar = () => {
 										</NavLink>
 									</li>
 									<li>
+										<NavLink
+											to='/product-cart'
+											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+											onClick={() => setDropdownVisible(false)}
+										>
+											My Cart
+										</NavLink>
+									</li>
+									<li>
 									<NavLink to='/my-purchases'
 									         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
 									         onClick={() => setDropdownVisible(false)}>
