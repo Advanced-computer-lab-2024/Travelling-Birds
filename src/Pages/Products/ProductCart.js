@@ -220,7 +220,7 @@ const ProductCart = () => {
                     Continue Shopping
                 </button>
                 <button
-                    onClick={()=> navigate("/checkout")}
+
                     className="bg-[#330577] text-white py-2 px-6 rounded hover:bg-[#472393]">
                     Proceed to Checkout
                 </button>
