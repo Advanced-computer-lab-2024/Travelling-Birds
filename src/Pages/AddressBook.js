@@ -20,8 +20,6 @@ const AddressManagement = () => {
 
     const userId = sessionStorage.getItem('user id');
 
-    // Fetch user's addresses
-
     // Fetch user's addresses function
     const fetchAddresses = async () => {
         if (!userId) {

@@ -6,6 +6,7 @@ const{
     deleteAddress,
     updateAddress,
     getUserAddresses,
+    getDefaultAddress
 }= require('../Controllers/AddressControllers.js');
 
 router.post('/:id', addAddress);
@@ -15,5 +16,7 @@ router.get('/:id', getUserAddresses);
 router.put('/:id', updateAddress);
 
 router.delete('/:id', deleteAddress);
+
+router.get('/:id/default', getDefaultAddress);
 
 module.exports = router;

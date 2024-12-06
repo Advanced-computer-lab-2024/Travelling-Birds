@@ -130,11 +130,30 @@ const updateCurrentAddress = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 }
+const getDefaultAddress = async (req, res) => {
+    const userId = req.params.id;
+    try{
+    const user = await User.findById(userId);
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    const addressIds = user.address;
+    const addresses = await Address.find({ _id: { $in: addressIds },isDefault: true });
+        if (addresses.length === 0) {
+            return res.status(404).json({ message: 'No addresses found' });
+        }
+        return res.status(200).json({ addresses });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+}
 
 module.exports = {
     addAddress,
     deleteAddress,
     updateAddress,
     getUserAddresses,
-    updateCurrentAddress
+    updateCurrentAddress,
+    getDefaultAddress
 };

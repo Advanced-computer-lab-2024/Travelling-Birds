@@ -12,6 +12,7 @@ const ProductCart = () => {
     useEffect(() => {
         const fetchProductCart = async () => {
             try {
+                console.log('fetchin');
                 const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`);
                 const data = await response.json();
 
@@ -34,7 +35,7 @@ const ProductCart = () => {
                             picture: imageBase64,
                         };
                     });
-
+                    console.log('done');
                     setCart(productsWithImages);
                 } else {
                     toast.error(data.message || 'Failed to fetch products');
@@ -82,9 +83,56 @@ const ProductCart = () => {
         }
     };
 
+    const updateQuantity = async (productId, change) => {
+        const productIndex = cart.findIndex(product => product._id === productId);
+        if (productIndex === -1) return;  // Exit if product not found
+
+        const product = cart[productIndex];
+        const oldQuantity = product.quantity;
+        const newQuantity = oldQuantity + change;
+
+        if (newQuantity < 1) {
+            await removeProduct(productId);
+            return;
+        }
+
+        // Check if the new quantity exceeds the available stock
+        if (newQuantity > product.availableQuantity) {
+            toast.error('Cannot exceed available stock.');
+            return;
+        }
+
+        // Update the local cart
+        const updatedCart = [...cart];
+        updatedCart[productIndex] = { ...product, quantity: newQuantity };
+        setCart(updatedCart);
+
+        // Calculate how much the available stock should be adjusted
+        const quantityChange = newQuantity - oldQuantity;
+
+        // Update server with new available quantity
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, change: -quantityChange }),  // Subtracting the difference from the available stock
+            });
+
+            if (!response.ok) throw new Error('Failed to update available stock on the server');
+            toast.success('Stock updated successfully.');
+        } catch (error) {
+            console.error('Error updating stock:', error);
+            toast.error('An error occurred while updating stock.');
+            // Optionally, rollback to the original cart state if the server update fails
+            setCart(cart);
+        }
+    };
 
 
-return (
+
+
+
+    return (
     <div className="text-[#330577] p-6 bg-gray-100 min-h-screen">
         <h1 className="text-4xl font-extrabold mb-8 text-center">My Shopping Cart</h1>
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -117,22 +165,25 @@ return (
                     <div className="w-1/5 flex items-center justify-center">
                         <button
                             className="px-3 py-1 bg-gray-200 border rounded hover:bg-gray-300"
-                            //onClick={() => updateQuantity(product._id, -1)}
+                            onClick={() => updateQuantity(product._id, -1)}
                             disabled={product.quantity <= 1}
                         >
                             -
                         </button>
                         <input
                             type="number"
-                            value={product.quantity || 1}
+                            value={product.quantity}
                             readOnly
                             className="w-12 text-center border rounded mx-2"
                         />
                         <button
                             className="px-3 py-1 bg-gray-200 border rounded hover:bg-gray-300"
-                            //onClick={() => updateQuantity(product._id, 1)}
+                            onClick={() => {
+                                updateQuantity(product._id, 1)
+                            }}
                             disabled={product.quantity >= product.availableQuantity}
                         >
+
                             +
                         </button>
                     </div>
@@ -168,8 +219,10 @@ return (
                 >
                     Continue Shopping
                 </button>
-                <button className="bg-[#330577] text-white py-2 px-6 rounded hover:bg-[#472393]">
-                    Checkout
+                <button
+                    onClick={()=> navigate("/checkout")}
+                    className="bg-[#330577] text-white py-2 px-6 rounded hover:bg-[#472393]">
+                    Proceed to Checkout
                 </button>
             </div>
         </div>

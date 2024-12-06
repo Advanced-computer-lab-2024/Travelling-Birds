@@ -48,6 +48,7 @@ import ProductsPage from "./Pages/Products/ProductsPage";
 import ProductDetails from "./Pages/Products/ProductsDetailsPage";
 import MyPurchases from './Pages/Products/MyPurchases';
 import ProductCart from "./Pages/Products/ProductCart";
+import Checkout from "./Pages/Products/Checkout";
 
 //my creations
 import AdvertiserActivities from "./Pages/MyCreations/Advertiser/AdvertiserActivities";
@@ -150,6 +151,7 @@ root.render(
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
 					<Route path="product-cart" element={<ProductCart/>}/>
+					< Route path="checkout" element ={<Checkout/>}/>
 
 					<Route path="saved-activity" element={<SavedActivities/>}/>
 					<Route path="saved-itinerary" element={<SavedItineraries/>}/>
