@@ -41,6 +41,7 @@ const user = new Schema({
 	productPurchases: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
 	productWishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
 	Cart:[{type: Schema.Types.ObjectId, ref: 'Product'}],
+	address: [{type: Schema.Types.ObjectId, ref: 'Address'}],
 	comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
 	ratings: Number,
 	otp: String,

@@ -85,6 +85,7 @@ import ManagePromotions from "./Components/Admin Portal/Components/PromotionalMa
 import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
 import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowth";
 
+import AddressBook from "./Pages/AddressBook";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -158,6 +159,7 @@ root.render(
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="address" element={<AddressBook/>}/>
 
 				</Route>
 			</Routes>
