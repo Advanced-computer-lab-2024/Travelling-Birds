@@ -6,6 +6,8 @@ import LocationContact from "../../Components/Locations/Location";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
+import { CardElement } from '@stripe/react-stripe-js';
+import { useStripe, useElements } from '@stripe/react-stripe-js';
 
 
 const ActivityDetail = () => {
@@ -33,6 +35,8 @@ const ActivityDetail = () => {
 	const [userEmail, setUserEmail] = useState('');
 	const [message, setMessage] = useState('');
 	const [isSaved, setIsSaved] = useState(false);
+	const stripe = useStripe();
+	const elements = useElements();
 
 	useEffect(() => {
 		const fetchActivity = async () => {
@@ -183,7 +187,7 @@ const ActivityDetail = () => {
 			return;
 		}
 
-		if (!cardNumber || !expiryDate || !cvv || !transportation) {
+		if (!transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
@@ -220,6 +224,34 @@ const ActivityDetail = () => {
 				toast.error('Not enough in wallet.');
 				return;
 			}
+			    // Create payment method with Stripe
+				const cardElement = elements.getElement(CardElement);
+				const { paymentMethod, error } = await stripe.createPaymentMethod({
+				  type: 'card',
+				  card: cardElement,
+				});
+			
+				if (error) {
+				  toast.error(`Payment failed: ${error.message}`);
+				  return;
+				}
+			
+				// Call backend to handle payment
+				const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
+				  method: 'POST',
+				  headers: { 'Content-Type': 'application/json' },
+				  body: JSON.stringify({
+					amount: activity.price * 100, // Convert to cents
+					currency: 'usd',
+					paymentMethodId: paymentMethod.id,
+				  }),
+				});
+			
+				const paymentResult = await paymentResponse.json();
+				if (!paymentResult.success) {
+				  toast.error(`Payment failed: ${paymentResult.error}`);
+				  return;
+				}
 
 			// Proceed with booking
 			const userBookingsResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
@@ -535,108 +567,69 @@ const ActivityDetail = () => {
 							</div>
 						</div>
 					</div>
-
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 							<div className="bg-white p-6 rounded-lg shadow-lg w-96">
-								<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
-								<div className="mb-4">
-									<label className="block mb-2">Card Number
-										{/**/}
-										<input
-											type="text"
-											value={cardNumber}
-											onChange={(e) => setCardNumber(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="1234 5678 9012 3456"
-										/>
-									</label>
+							<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+							<div className="mb-4">
+								<label className="block mb-2">Payment Information</label>
+								<div className="w-full border rounded-lg p-2">
+								<CardElement />
 								</div>
-								<div className="mb-4">
-									<label className="block mb-2">Expiry Date
-										{/**/}
-										<input
-											type="text"
-											value={expiryDate}
-											onChange={(e) => setExpiryDate(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="MM/YY"
-										/>
-									</label>
-								</div>
-								<div className="mb-4">
-									<label className="block mb-2">CVV
-										{/**/}
-										<input
-											type="text"
-											value={cvv}
-											onChange={(e) => setCvv(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="123"
-										/>
-									</label>
-								</div>
-								<div className="mb-4">
-									<label className="block mb-2">Transportation
-										{/**/}
-										<select
-											value={transportation}
-											onChange={(e) => setTransportation(e.target.value)}
-											className="w-full border rounded-lg p-2"
-										>
-											<option value="">Select</option>
-											{/* Render dynamically fetched transportations */}
-											{transportations.map((transport) => (
-												<option key={transport._id} value={transport.name}>
-													{transport.name}
-												</option>
-											))}
-											{/* Ensure "My Car" is always an option */}
-											<option value="my car">My Car</option>
-										</select>
-									</label>
-								</div>
-								<div className="mb-4">
-									<label className="block mb-2">Wallet Amount
-										{/**/}
-										<input
-											type="text"
-											value={walletAmount}
-											onChange={(e) => setWalletAmount(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="Enter amount"
-										/>
-									</label>
-								</div>
-								<div className="mb-4">
-									<label className="block mb-2">Location
-										{/**/}
-										<input
-											type="text"
-											value={userLocation}
-											onChange={(e) => setUserLocation(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="Enter your location"
-										/>
-									</label>
-								</div>
-
-								<button
-									onClick={handleCompleteBooking}
-									className={`w-full bg-[#330577] text-white p-2 rounded-lg ${!cardNumber || !expiryDate || !cvv || !transportation ? 'opacity-85 cursor-not-allowed' : 'hover:bg-[#330577]'}`}
-									disabled={!cardNumber || !expiryDate || !cvv || !transportation}
+							</div>
+							<div className="mb-4">
+								<label className="block mb-2">Transportation</label>
+								<select
+								value={transportation}
+								onChange={(e) => setTransportation(e.target.value)}
+								className="w-full border rounded-lg p-2"
 								>
-									Book
-								</button>
-								<button
-									onClick={closeBookingModal}
-									className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
-								>
-									Cancel
-								</button>
+								<option value="">Select</option>
+								{transportations.map((transport) => (
+									<option key={transport._id} value={transport.name}>
+									{transport.name}
+									</option>
+								))}
+								<option value="my car">My Car</option>
+								</select>
+							</div>
+							<div className="mb-4">
+								<label className="block mb-2">Wallet Amount</label>
+								<input
+								type="text"
+								value={walletAmount}
+								onChange={(e) => setWalletAmount(e.target.value)}
+								className="w-full border rounded-lg p-2"
+								placeholder="Enter amount"
+								/>
+							</div>
+							<div className="mb-4">
+                                    <label className="block mb-2">Location
+                                        {/**/}
+                                        <input
+                                            type="text"
+                                            value={userLocation}
+                                            onChange={(e) => setUserLocation(e.target.value)}
+                                            className="w-full border rounded-lg p-2"
+                                            placeholder="Enter your location"
+                                        />
+                                    </label>
+                                </div>
+							<button
+								onClick={handleCompleteBooking}
+								className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
+							>
+								Book
+							</button>
+							<button
+								onClick={closeBookingModal}
+								className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+							>
+								Cancel
+							</button>
 							</div>
 						</div>
-					)}
+						)}
 					{/* Image Gallery */}
 					<div className="mt-8">
 						<img src={imageBase64} alt="Activity"

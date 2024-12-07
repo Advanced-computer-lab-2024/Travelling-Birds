@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.6.0",
+    "@stripe/react-stripe-js": "^3.0.0",
+    "@stripe/stripe-js": "^5.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -36,6 +38,7 @@
     "react-select": "^5.8.2",
     "react-toastify": "^10.0.5",
     "reactjs-popup": "^2.0.6",
+    "stripe": "^17.4.0",
     "uuid": "^11.0.3",
     "web-vitals": "^2.1.4"
   },
