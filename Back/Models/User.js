@@ -49,6 +49,7 @@ const user = new Schema({
 	],
 	productWishlist: [{type: Schema.Types.ObjectId, ref: 'Product'}],
 	Cart: [{type: Schema.Types.ObjectId, ref: 'Product'}],
+	address: [{type: Schema.Types.ObjectId, ref: 'Address'}],
 	comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
 	ratings: Number,
 	otp: String,

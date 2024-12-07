@@ -812,8 +812,7 @@ const removeSavedActivity = async (req, res) => {
 	const activityId = req.body.activityId;
 
 	try {
-		const user
-			= await User.findById(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -898,6 +897,169 @@ const removeSavedItinerary = async (req, res) => {
 		await user.save();
 		res.status(200).json({message: 'Itinerary removed from saved itineraries successfully'});
 	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//add product to wishlist
+const addProductToWishlist = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const product = await Product.findById
+		(productId);
+
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
+		}
+
+		// Check if the product is already saved
+		if (user.productWishlist.includes(productId)) {
+			return res.status(400).json({message: 'Product is already saved'});
+		}
+
+		user.productWishlist.push(productId);
+		await user.save();
+		res.status(200).json({message: 'Product saved successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//get all products in wishlist
+const getProductWishlist = async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const user = await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const productWishlist = await Product.find({_id: {$in: user.productWishlist}});
+		res.status(200).json(productWishlist);
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Remove product from wishlist
+const removeProductFromWishlist = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const index = user.productWishlist.indexOf(productId);
+		if (index === -1) {
+			return res.status(400).json({message: 'Product not found in user product wishlist'});
+		}
+
+		user.productWishlist.splice(index, 1);
+		await user.save();
+		res.status(200).json({message: 'Product removed from product wishlist successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//adding product to cart
+const addproducttocart = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const product = await Product.findById
+		(productId);
+
+		if (!product) {
+			return res.status(404).json({message: 'Product not found'});
+		}
+
+		// Check if the product is already saved
+		if (user.Cart.includes(productId)) {
+			return res.status(400).json({message: 'Product is already in cart'});
+		}
+
+		user.Cart.push(productId);
+		await user.save();
+		res.status(200).json({message: 'Product added to cart successfully'});
+	}
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//get all products in cart
+const getCart = async (req, res) => {
+	const userId = req.params.id;
+
+	try {
+		const user = await
+		User.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const cart = await Product.find({_id: {$in: user.Cart}});
+		res.status(200).json(cart);
+	}
+
+	catch (error) {
+		res.status(500).json({error: error.message});
+	}
+}
+
+//Remove product from cart
+const removeProductFromCart = async (req, res) => {
+	const userId = req.params.id;
+	const productId = req.body.productId;
+
+	try {
+		const user = await User
+		.findById
+		(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const index = user.Cart.indexOf(productId);
+		if (index === -1) {
+			return res.status(400).json({message: 'Product not found in user cart'});
+		}
+
+		user.Cart.splice(index, 1);
+		await user.save();
+		res.status(200).json({message: 'Product removed from cart successfully'});
+	}
+	catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -1147,6 +1309,12 @@ module.exports = {
 	addSavedItinerary,
 	getSavedItineraries,
 	removeSavedItinerary,
+	addProductToWishlist,
+	getProductWishlist,
+	removeProductFromWishlist,
+	addproducttocart,
+	getCart,
+	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,

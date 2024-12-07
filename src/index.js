@@ -18,6 +18,7 @@ import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
 import ComplaintsPage from "./Pages/ComplaintsPage";
 
+
 //Login and Register
 import RegisterPage from "./Pages/LoginAndRegister/RegisterPage";
 import LoginPage from "./Pages/LoginAndRegister/LoginPage";
@@ -46,6 +47,7 @@ import MuseumDetail from './Pages/BookingDetailsPages/MuseumDetailsPage';
 import ProductsPage from "./Pages/Products/ProductsPage";
 import ProductDetails from "./Pages/Products/ProductsDetailsPage";
 import MyPurchases from './Pages/Products/MyPurchases';
+import ProductCart from "./Pages/Products/ProductCart";
 
 //my creations
 import AdvertiserActivities from "./Pages/MyCreations/Advertiser/AdvertiserActivities";
@@ -59,7 +61,8 @@ import TourismGovernorTags from "./Pages/MyCreations/ToursimGovernor/TourismGove
 //my Interests
 import SavedActivities from "./Pages/MyInterests/Events/SavedActivities";
 import SavedItineraries from "./Pages/MyInterests/Events/SavedItineraries";
-import SavedEvents from "./Pages/MyInterests/Events/SavedEvents";
+import ProductWishlist from "./Pages/MyInterests/Wishlist/ProductWishlist";
+import MyInterests from "./Pages/MyInterests/MyInterests";
 
 
 //Admin Portal Part 1
@@ -83,6 +86,7 @@ import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
 import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowth";
 import SellerAnalytics from "./Pages/MyCreations/Seller/SellerAnalytics";
 
+import AddressBook from "./Pages/AddressBook";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -147,14 +151,18 @@ root.render(
 					<Route path="products" element={<ProductsPage/>}/>
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
+					<Route path="product-cart" element={<ProductCart/>}/>
+
 
 					<Route path="saved-activity" element={<SavedActivities/>}/>
 					<Route path="saved-itinerary" element={<SavedItineraries/>}/>
-					<Route path="saved-events" element={<SavedEvents/>}/>
+					<Route path="product-wishlist" element={<ProductWishlist/>}/>
+					<Route path="my-interests" element={<MyInterests/>}/>
 
 					<Route path='profile' element={<ProfilePage/>}/>
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
+					<Route path="address" element={<AddressBook/>}/>
 
 				</Route>
 			</Routes>

@@ -2,7 +2,8 @@ import React, {useEffect, useState} from "react";
 import {useParams} from 'react-router-dom';
 import {toast} from "react-toastify";
 import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
-import {AiOutlineHeart} from "react-icons/ai";
+import {AiFillHeart, AiOutlineHeart} from "react-icons/ai";
+import { set } from "mongoose";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -20,6 +21,8 @@ const ProductsDetailsPage = () => {
 	const [walletAmount, setWalletAmount] = useState('');
 	const [availableQuantity, setAvailableQuantity] = useState(0);
 	const [soldQuantity, setSoldQuantity] = useState(0);
+	const [isSaved, setIsSaved] = useState(false);
+	const [isInCart, setIsInCart] = useState(false);
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -61,8 +64,39 @@ const ProductsDetailsPage = () => {
 			}
 		};
 
+		const checkIfSaved = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-wishlist/${userId}`);
+				if (!response.ok) throw new Error('Failed to fetch saved activities');
+
+				const ProductWishList = await response.json();
+				// Check if the activity is already in the saved activities
+				const saved = ProductWishList.some(product => product._id === productId);
+				setIsSaved(saved);
+			} catch (error) {
+				console.error('Error checking saved status:', error);
+			}
+		};
+
+		const checkIfInCart = async () => {
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`);
+				if (!response.ok) throw new Error('Failed to fetch cart activities');
+
+				const ProductCart = await response.json();
+				// Check if the activity is already in the saved activities
+				const inCart = ProductCart.some(product => product._id === productId);
+				setIsInCart(inCart);
+			} catch (error) {
+				console.error('Error checking cart status:', error);
+			}
+		};
+
+
 		fetchProduct();
 		fetchComments();
+		checkIfSaved();
+		checkIfInCart();
 		if (userId) {
 			checkIfPurchased();
 		}
@@ -219,6 +253,98 @@ const ProductsDetailsPage = () => {
 		}
 	};
 
+	const addToWishList = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-wishlist/${userId}`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to add product to wishlist');
+			setIsSaved(true);
+			toast.success('Product added to wishlist');
+		}
+		catch (error) {
+			console.error('Error adding product to wishlist:', error);
+			toast.error('Failed to add product to wishlist. Please try again.');
+		}
+	}
+
+	const removeFromWishList = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-wishlist/${userId}`, {
+				method: 'DELETE',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to remove product from wishlist');
+			setIsSaved(false);
+			toast.success('Product removed from wishlist');
+		}
+		catch (error) {
+			console.error('Error removing product from wishlist:', error);
+			toast.error('Failed to remove product from wishlist. Please try again.');
+		}
+	}
+
+	const AddtoCart = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to add product to cart');
+			setIsInCart(true);
+			toast.success('Product added to cart');
+		}
+		catch (error) {
+			console.error('Error adding product to cart:', error);
+			toast.error('Failed to add product to cart. Please try again.');
+		}
+	}
+
+	const removeFromCart = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-cart/${userId}`, {
+				method: 'DELETE',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({productId})
+			});
+			if (!response.ok) throw new Error('Failed to remove product from cart');
+			setIsInCart(false);
+			toast.success('Product removed from cart');
+		}
+		catch (error) {
+			console.error('Error removing product from cart:', error);
+			toast.error('Failed to remove product from cart. Please try again.');
+		}
+	}
+
+
+
+	const toggleSave = async () => {
+		if (isSaved) {
+			await removeFromWishList();
+			setIsSaved(false); // Update state immediately
+		} else {
+			await addToWishList();
+			setIsSaved(true); // Update state immediately
+		}
+	};
+
+	const toggleCart = async () => {
+		if (isInCart) {
+			await removeFromCart();
+			setIsInCart(false); // Update state immediately
+		}
+		else {
+			await AddtoCart();
+			setIsInCart(true); // Update state immediately
+		}
+	}
+
+
 	return (
 		<div className="bg-gray-50 min-h-screen py-10">
 			<section className="px-4 py-10 max-w-7xl mx-auto">
@@ -259,14 +385,29 @@ const ProductsDetailsPage = () => {
 								>
 									Purchase Now
 								</button>
-								<button
-									className="p-3 bg-[#330577] text-white rounded-lg shadow hover:bg-[#280466] transition duration-150 flex items-center justify-center space-x-2"
+						        <button
+									onClick={toggleSave}
+									className="p-3 px-7 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-full max-w-[200px]"
 								>
-									<span className="flex items-center">
-										<AiOutlineHeart className="text-lg"/>
-										<span className="ml-2">Save</span>
-									</span>
+									{isSaved ? (
+										<AiFillHeart className="text-2xl mr-2" />
+									) : (
+										<AiOutlineHeart className="text-2xl mr-2" />
+									)}
+									{isSaved ? 'Remove From WishList' : 'Add To WishList'}
 								</button>
+								<button
+									onClick={toggleCart}
+									className="p-3 px-7 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-full max-w-[200px]"
+								>
+									{isInCart ? ('Remove From Cart') : ('Add To Cart')}
+								</button>
+
+								
+						
+							
+
+								 
 							</div>
 						</div>
 					</div>

@@ -16,6 +16,7 @@ const hotelRouter = require('./Routes/HotelRoutes');
 const TransportRoutes = require('./Routes/TransportationRoutes');
 const mailRoutes = require('./Routes/MailRoutes');
 const promotionRoutes = require('./Routes/PromotionRoutes');
+const addressRoutes = require('./Routes/AddressRoutes');
 const bodyParser = require('body-parser');
 const {scheduleBirthdayPromo} = require('./Services/scheduleService');
 const Product = require('./Models/Product');
@@ -40,6 +41,7 @@ app.use('/api/hotels', hotelRouter);
 app.use('/api/transports', TransportRoutes);
 app.use('/api/mail', mailRoutes);
 app.use('/api/promotions', promotionRoutes);
+app.use('/api/address',addressRoutes);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 

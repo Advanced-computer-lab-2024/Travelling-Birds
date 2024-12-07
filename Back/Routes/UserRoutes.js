@@ -30,6 +30,12 @@ const {
 	addSavedItinerary,
 	getSavedItineraries,
 	removeSavedItinerary,
+	addProductToWishlist,
+	getProductWishlist,
+	removeProductFromWishlist,
+	addproducttocart,
+	getCart,
+	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
@@ -121,6 +127,25 @@ router.get('/saved-itineraries/:id', getSavedItineraries);
 
 // Remove Saved Itinerary
 router.delete('/saved-itinerary/:id', removeSavedItinerary);
+
+// Add Product to Wishlist
+router.post('/product-wishlist/:id', addProductToWishlist);
+
+// Get Product Wishlist
+router.get('/product-wishlist/:id', getProductWishlist);
+
+// Remove Product from Wishlist
+router.delete('/product-wishlist/:id', removeProductFromWishlist);
+
+// Add Product to Cart
+router.post('/product-cart/:id', addproducttocart);
+
+// Get Cart
+router.get('/product-cart/:id', getCart);
+
+// Remove Product from Cart
+router.delete('/product-cart/:id', removeProductFromCart);
+
 
 // Get all comments for a specific user
 router.get('/:id/comments', getComments);

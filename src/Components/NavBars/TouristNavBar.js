@@ -317,18 +317,34 @@ const TouristNavBar = () => {
 										</NavLink>
 									</li>
 									<li>
-									<NavLink to='/my-purchases'
-									         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
-									         onClick={() => setDropdownVisible(false)}>
-										 My Purchases
-									</NavLink>
+										<NavLink
+											to='/product-cart'
+											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+											onClick={() => setDropdownVisible(false)}
+										>
+											My Cart
+										</NavLink>
 									</li>
 									<li>
-									<NavLink to='/bookings'
-									         className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
-									         onClick={() => setDropdownVisible(false)}>
-										My Bookings
-									</NavLink>
+										<NavLink to='/my-purchases'
+												 className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+												 onClick={() => setDropdownVisible(false)}>
+											My Purchases
+										</NavLink>
+									</li>
+									<li>
+										<NavLink to='/address'
+												 className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+												 onClick={() => setDropdownVisible(false)}>
+											Address Book
+										</NavLink>
+									</li>
+									<li>
+										<NavLink to='/bookings'
+												 className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
+												 onClick={() => setDropdownVisible(false)}>
+											My Bookings
+										</NavLink>
 									</li>
 									<li>
 										<NavLink
@@ -341,11 +357,11 @@ const TouristNavBar = () => {
 									</li>
 									<li>
 										<NavLink
-										    to='/saved-events'
+											to='/my-interests'
 											className="block px-4 py-2 text-gray-800 hover:bg-gray-100 text-lg"
 											onClick={() => setDropdownVisible(false)}
 										>
-											Saved Events
+											My Interests
 										</NavLink>
 									</li>
 
