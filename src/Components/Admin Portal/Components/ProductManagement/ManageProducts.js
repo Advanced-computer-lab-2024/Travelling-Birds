@@ -153,7 +153,7 @@ const ManageProducts = () => {
 								<td>{product.description}</td>
 								<td>{product.price}</td>
 								<td>{product.availableQuantity}</td>
-								<td>{product.userPurchased.length}</td>
+								<td>{product.purchases.reduce((acc, purchase) => acc + purchase.quantity, 0)}</td>
 								<td>{product.sellerName}</td>
 								<td>{product.ratings}</td>
 								<td>{product.reviews?.join(', ')}</td>

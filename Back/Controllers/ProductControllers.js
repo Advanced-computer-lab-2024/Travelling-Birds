@@ -90,6 +90,7 @@ const deleteProduct = async (req, res) => {
 		res.status(500).json({error: error.message});
 	}
 }
+
 // Search Product
 const searchProducts = async (req, res) => {
 	const {name} = req.query;

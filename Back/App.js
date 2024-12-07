@@ -18,6 +18,8 @@ const mailRoutes = require('./Routes/MailRoutes');
 const promotionRoutes = require('./Routes/PromotionRoutes');
 const bodyParser = require('body-parser');
 const {scheduleBirthdayPromo} = require('./Services/scheduleService');
+const Product = require('./Models/Product');
+
 
 require('dotenv').config();
 
@@ -45,11 +47,11 @@ const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGO_URI)
 	.then(() => {
-		app.listen(PORT, () => {
+		app.listen(PORT, async () => {
 			console.log(`Connected to MongoDB & Server running on port ${PORT}`)
 			scheduleBirthdayPromo();
 		})
 	})
 	.catch((error) => {
-		console.log(error)
+		console.log(error);
 	});

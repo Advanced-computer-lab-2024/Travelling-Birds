@@ -637,6 +637,9 @@ const removeItineraryBooking = async (req, res) => {
 const addProductPurchase = async (req, res) => {
 	const userId = req.params.id;
 	const productId = req.body.productId;
+	const quantity = req.body.quantity;
+	const itemPrice = req.body.itemPrice;
+	const discount = req.body.discount;
 
 	try {
 		const user = await User.findById(userId);
@@ -649,11 +652,28 @@ const addProductPurchase = async (req, res) => {
 			return res.status(404).json({message: 'Product not found'});
 		}
 
-		user.productPurchases.push(productId);
+		user.productPurchases.push({
+			product: productId,
+			quantity,
+			itemPrice,
+			discount,
+			datePurchased: new Date()
+		});
 		await user.save();
+
 		const updatedProduct = await Product.findByIdAndUpdate(productId,
-			{$push: {userPurchased: userId}},
-			{new: true}).populate('userPurchased');
+			{
+				$push: {
+					purchases: {
+						user: userId,
+						quantity,
+						itemPrice,
+						discount,
+						datePurchased: new Date()
+					}
+				}
+			},
+			{new: true});
 		res.status(200).json(updatedProduct);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -742,50 +762,46 @@ const getComments = async (req, res) => {
 }
 
 const addSavedActivity = async (req, res) => {
-    const userId = req.params.id;
-    const activityId = req.body.activityId;
+	const userId = req.params.id;
+	const activityId = req.body.activityId;
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
 
-        const activity = await Activity.findById(activityId);
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
+		const activity = await Activity.findById(activityId);
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
 
-        // Check if the activity is already saved
-        if (user.savedActivities.includes(activityId)) {
-            return res.status(400).json({ message: 'Activity is already saved' });
-        }
+		// Check if the activity is already saved
+		if (user.savedActivities.includes(activityId)) {
+			return res.status(400).json({message: 'Activity is already saved'});
+		}
 
-        user.savedActivities.push(activityId);
-        await user.save();
-        res.status(200).json({ message: 'Activity saved successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+		user.savedActivities.push(activityId);
+		await user.save();
+		res.status(200).json({message: 'Activity saved successfully'});
+	} catch (error) {
+		res.status(500).json({error: error.message});
+	}
 };
-
 
 //get all saved activities
 const getSavedActivities = async (req, res) => {
 	const userId = req.params.id;
 
 	try {
-		const user = await
-		User.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
 		const savedActivities = await Activity.find({_id: {$in: user.savedActivities}});
 		res.status(200).json(savedActivities);
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -797,7 +813,7 @@ const removeSavedActivity = async (req, res) => {
 
 	try {
 		const user
-		= await User.findById(userId);
+			= await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -810,8 +826,7 @@ const removeSavedActivity = async (req, res) => {
 		user.savedActivities.splice(index, 1);
 		await user.save();
 		res.status(200).json({message: 'Activity removed from saved activities successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -822,15 +837,12 @@ const addSavedItinerary = async (req, res) => {
 	const itineraryId = req.body.itineraryId;
 
 	try {
-		const user = await User
-		.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const itinerary = await Itinerary.findById
-		(itineraryId);
+		const itinerary = await Itinerary.findById(itineraryId);
 
 		if (!itinerary) {
 			return res.status(404).json({message: 'Itinerary not found'});
@@ -844,8 +856,7 @@ const addSavedItinerary = async (req, res) => {
 		user.savedItineraries.push(itineraryId);
 		await user.save();
 		res.status(200).json({message: 'Itinerary saved successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -855,17 +866,14 @@ const getSavedItineraries = async (req, res) => {
 	const userId = req.params.id;
 
 	try {
-		const user = await
-		User.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
 		const savedItineraries = await Itinerary.find({_id: {$in: user.savedItineraries}});
 		res.status(200).json(savedItineraries);
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -876,10 +884,7 @@ const removeSavedItinerary = async (req, res) => {
 	const itineraryId = req.body.itineraryId;
 
 	try {
-		const user
-		= await
-		User.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -892,14 +897,10 @@ const removeSavedItinerary = async (req, res) => {
 		user.savedItineraries.splice(index, 1);
 		await user.save();
 		res.status(200).json({message: 'Itinerary removed from saved itineraries successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
-
-
-
 
 //Delete user with Checks
 const requestDelete = async (req, res) => {
@@ -1070,6 +1071,53 @@ const getUserAnalytics = async (req, res) => {
 	}
 };
 
+// Get sales analytics
+const getSalesAnalytics = async (req, res) => {
+	const userId = req.params.id;
+	const {productId, startDate, endDate} = req.query;
+
+	try {
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({message: 'User not found'});
+		}
+
+		const match = {};
+
+		if (user.role !== 'admin') {
+			match.seller = userId;
+		}
+
+		if (productId) {
+			match._id = productId;
+		}
+
+		if (startDate && endDate) {
+			match['purchases.datePurchased'] = {
+				$gte: new Date(startDate),
+				$lte: new Date(endDate),
+			};
+		}
+
+		const products = await Product.aggregate([
+			{$match: match},
+			{$unwind: '$purchases'},
+			{
+				$group: {
+					_id: null,
+					totalRevenue: {$sum: {$multiply: ['$purchases.quantity', {$multiply: ['$purchases.itemPrice', {$subtract: [1, '$purchases.discount']}]}]}},
+					totalSales: {$sum: '$purchases.quantity'}
+				}
+			}
+		]);
+
+		res.json(products[0] || {totalRevenue: 0, totalSales: 0});
+	} catch
+		(error) {
+		res.status(500).json({error: error.message});
+	}
+};
+
 module.exports = {
 	addUser,
 	getUsers: getAllUsers,
@@ -1102,5 +1150,6 @@ module.exports = {
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
-	getUserAnalytics
+	getUserAnalytics,
+	getSalesAnalytics
 };

@@ -24,7 +24,6 @@ const ProductsDetailsPage = () => {
 	useEffect(() => {
 		const fetchProduct = async () => {
 			const apiUrl = `${process.env.REACT_APP_BACKEND}/api/products/${productId}`;
-
 			try {
 				const res = await fetch(apiUrl);
 				const product = await res.json();
@@ -142,25 +141,28 @@ const ProductsDetailsPage = () => {
 				toast.error('Not enough in wallet.');
 				return;
 			}
+
 			if (purchased) {
 				toast.info('Product already purchased');
 				closePurchaseModal();
 				return;
 			}
-			if(!(userWalletBalance === null)) {
-			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
-				method: 'PUT',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({wallet: updatedWalletBalance})
-			});}
+
+			if (userWalletBalance !== null) {
+				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+				await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+					method: 'PUT',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({wallet: updatedWalletBalance})
+				});
+			}
 
 			const product = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
 				method: 'PUT',
 				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
-					availableQuantity:availableQuantity-1 ,
-					soldQuantity: soldQuantity+1
+					availableQuantity: availableQuantity - 1,
+					soldQuantity: soldQuantity + 1
 				})
 			});
 
@@ -171,8 +173,9 @@ const ProductsDetailsPage = () => {
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({productId})
+				body: JSON.stringify({productId, quantity: 1, itemPrice: product.price, discount: 0})
 			});
+
 			if (!response.ok) {
 				throw new Error('Failed to purchase the product');
 			}
@@ -235,7 +238,8 @@ const ProductsDetailsPage = () => {
 						<div className="md:w-2/3 flex flex-col md:flex-row justify-between ml-0 md:ml-6">
 							<div className="mb-4 md:mb-0">
 								<h1 className="text-3xl font-bold text-[#330577] mb-2">{product?.name}</h1>
-								<h4 className="text-3xl font-bold text-[#330577] mb-2">Sold By {product?.seller?.username}</h4>
+								<h4 className="text-3xl font-bold text-[#330577] mb-2">Sold
+									By {product?.seller?.username}</h4>
 								<div className="flex items-center mt-2 space-x-3">
 									<span className="flex items-center text-lg text-yellow-500">
 										{renderStars(product?.ratings)}

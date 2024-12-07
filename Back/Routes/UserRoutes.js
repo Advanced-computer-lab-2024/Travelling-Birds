@@ -33,7 +33,8 @@ const {
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
-	getUserAnalytics
+	getUserAnalytics,
+	getSalesAnalytics
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload, upload} = require("../Middleware/upload");
 
@@ -45,6 +46,9 @@ router.get('/', getUsers);
 
 // Get Recent Users
 router.get('/analytics', getUserAnalytics);
+
+// Get Sales Analytics
+router.post('/sales/:id', getSalesAnalytics);
 
 // Get specific username
 router.get('/username', getUsername);
@@ -123,8 +127,6 @@ router.get('/:id/comments', getComments);
 
 // Add a comment to a specific user
 router.post('/:id/comments', addComment);
-
-
 
 // Login
 router.post('/login', login);
