@@ -40,6 +40,8 @@ const ItineraryDetail = () => {
 	const [isSaved, setIsSaved] = useState(false);
 	const stripe = useStripe();
 	const elements = useElements();
+	const [promoCode, setPromoCode] = useState("");
+	const [ promoCodeValid, setPromoCodeValid] = useState(null);
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -227,9 +229,17 @@ const ItineraryDetail = () => {
 				toast.error('You must be at least 18 to book.');
 				return;
 			}
+
+            let finalprice = itinerary.price;
+
+			if(promoCodeValid){
+				finalprice *= 0.85; // Apply 25% discount
+			}
+				
+
 	
 			// Handle wallet-only payment if sufficient balance is available
-			if (enteredAmount >= itinerary.price && enteredAmount <= userWalletBalance) {
+			if (enteredAmount >= finalprice && enteredAmount <= userWalletBalance) {
 				const updatedWalletBalance = userWalletBalance - enteredAmount;
 	
 				// Update wallet balance
@@ -612,6 +622,33 @@ const ItineraryDetail = () => {
 			}
 		};
 
+
+		const handlePromoCodeChange = async (e) => {
+			const code = e.target.value;
+			setPromoCode(code);
+		  
+			if (!code) {
+			  setPromoCodeValid(null);
+			  return;
+			}
+		  
+			try {
+			  const response = await fetch(
+				`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
+			  );
+			  if (response.ok) {
+				const data = await response.json();
+				setPromoCodeValid(true);
+				
+			  } else {
+				setPromoCodeValid(false);
+			  }
+			} catch (error) {
+			  console.error("Error validating promo code:", error);
+			  setPromoCodeValid(false);
+			}
+		  };
+
 	if (loading) return <p>Loading...</p>;
 
 	return (
@@ -933,6 +970,25 @@ const ItineraryDetail = () => {
                                         />
                                     </label>
                                 </div>
+								<div className="mb-4">
+									<label className="block mb-2">Promo Code (Optional)</label>
+									<input
+										type="text"
+										value={promoCode}
+										onChange={handlePromoCodeChange}
+										className={`w-full border rounded-lg p-2 ${
+										promoCodeValid === true
+											? "border-green-500"
+											: promoCodeValid === false
+											? "border-red-500"
+											: "border-gray-300"
+										}`}
+										placeholder="Enter promo code"
+									/>
+									{promoCodeValid === false && (
+										<p className="text-red-500 text-sm">Invalid promo code</p>
+									)}
+									</div>
 							<button
 								onClick={handleCompleteBooking}
 								className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"

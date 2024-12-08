@@ -38,6 +38,8 @@ const ActivityDetail = () => {
 	const [bookingOpen, setBookingOpen] = useState(true);
 	const stripe = useStripe();
 	const elements = useElements();
+	const [promoCode, setPromoCode] = useState("");
+	const [ promoCodeValid, setPromoCodeValid] = useState(null);
 
 	useEffect(() => {
 		const fetchActivity = async () => {
@@ -226,9 +228,14 @@ const ActivityDetail = () => {
 				toast.error('You must be at least 18 to book.');
 				return;
 			}
+
+			let finalPrice = activity.price;
+			if (promoCodeValid) {
+				finalPrice *= 0.85; // Apply 25% discount
+			}
 	
 			// Check if the wallet balance is sufficient to cover the full price
-			if (enteredWalletAmount >= activity.price && enteredWalletAmount <= userWalletBalance) {
+			if (enteredWalletAmount >= finalPrice && enteredWalletAmount <= userWalletBalance) {
 				// Deduct wallet balance and skip Stripe payment
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 	
@@ -542,6 +549,32 @@ const ActivityDetail = () => {
 		}
 	};
 
+	const handlePromoCodeChange = async (e) => {
+		const code = e.target.value;
+		setPromoCode(code);
+	  
+		if (!code) {
+		  setPromoCodeValid(null);
+		  return;
+		}
+	  
+		try {
+		  const response = await fetch(
+			`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
+		  );
+		  if (response.ok) {
+			const data = await response.json();
+			setPromoCodeValid(true);
+			
+		  } else {
+			setPromoCodeValid(false);
+		  }
+		} catch (error) {
+		  console.error("Error validating promo code:", error);
+		  setPromoCodeValid(false);
+		}
+	  };
+
 
 	if (loading) return <p>Loading...</p>;
 
@@ -643,66 +676,73 @@ const ActivityDetail = () => {
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 							<div className="bg-white p-6 rounded-lg shadow-lg w-96">
-							<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
-							<div className="mb-4">
-								<label className="block mb-2">Payment Information</label>
-								<div className="w-full border rounded-lg p-2">
-								<CardElement />
+								<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+								<div className="mb-4">
+									<label className="block mb-2">Payment Information</label>
+									<div className="w-full border rounded-lg p-2">
+										<CardElement />
+									</div>
 								</div>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Transportation</label>
-								<select
-								value={transportation}
-								onChange={(e) => setTransportation(e.target.value)}
-								className="w-full border rounded-lg p-2"
+								<div className="mb-4">
+									<label className="block mb-2">Transportation</label>
+									<select
+										value={transportation}
+										onChange={(e) => setTransportation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+									>
+										<option value="">Select</option>
+										{transportations.map((transport) => (
+											<option key={transport._id} value={transport.name}>
+												{transport.name}
+											</option>
+										))}
+										<option value="my car">My Car</option>
+									</select>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Wallet Amount</label>
+									<input
+										type="text"
+										value={walletAmount}
+										onChange={(e) => setWalletAmount(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter amount"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Promo Code (Optional)</label>
+									<input
+										type="text"
+										value={promoCode}
+										onChange={handlePromoCodeChange}
+										className={`w-full border rounded-lg p-2 ${
+										promoCodeValid === true
+											? "border-green-500"
+											: promoCodeValid === false
+											? "border-red-500"
+											: "border-gray-300"
+										}`}
+										placeholder="Enter promo code"
+									/>
+									{promoCodeValid === false && (
+										<p className="text-red-500 text-sm">Invalid promo code</p>
+									)}
+									</div>
+								<button
+									onClick={handleCompleteBooking}
+									className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
 								>
-								<option value="">Select</option>
-								{transportations.map((transport) => (
-									<option key={transport._id} value={transport.name}>
-									{transport.name}
-									</option>
-								))}
-								<option value="my car">My Car</option>
-								</select>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Wallet Amount</label>
-								<input
-								type="text"
-								value={walletAmount}
-								onChange={(e) => setWalletAmount(e.target.value)}
-								className="w-full border rounded-lg p-2"
-								placeholder="Enter amount"
-								/>
-							</div>
-							<div className="mb-4">
-                                    <label className="block mb-2">Location
-                                        {/**/}
-                                        <input
-                                            type="text"
-                                            value={userLocation}
-                                            onChange={(e) => setUserLocation(e.target.value)}
-                                            className="w-full border rounded-lg p-2"
-                                            placeholder="Enter your location"
-                                        />
-                                    </label>
-                                </div>
-							<button
-								onClick={handleCompleteBooking}
-								className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
-							>
-								Book
-							</button>
-							<button
-								onClick={closeBookingModal}
-								className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
-							>
-								Cancel
-							</button>
+									Book
+								</button>
+								<button
+									onClick={closeBookingModal}
+									className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+								>
+									Cancel
+								</button>
 							</div>
 						</div>
-						)}
+					)}
 					{/* Image Gallery */}
 					<div className="mt-8">
 						<img src={imageBase64} alt="Activity"
