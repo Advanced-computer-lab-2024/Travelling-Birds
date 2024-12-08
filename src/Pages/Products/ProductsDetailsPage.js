@@ -6,6 +6,7 @@ import {AiFillHeart, AiOutlineHeart} from "react-icons/ai";
 import { set } from "mongoose";
 import { CardElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
+import {userUpdateEvent} from "../../utils/userUpdateEvent";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -224,6 +225,7 @@ const ProductsDetailsPage = () => {
 	
 				console.log('Product purchased successfully using wallet balance.');
 				toast.success('Product purchased successfully using wallet balance!');
+				window.dispatchEvent(userUpdateEvent);
 				closePurchaseModal();
 				return;
 			}

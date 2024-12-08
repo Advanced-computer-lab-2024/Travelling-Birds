@@ -398,18 +398,44 @@ const ItineraryDetail = () => {
 		if (!userConfirmed) {
 			return;
 		}
+	
 		try {
+			// Fetch the user data to get the current wallet balance
+			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+			if (!userResponse.ok) {
+				throw new Error('Failed to fetch user data');
+			}
+			const userData = await userResponse.json();
+			const userWalletBalance = userData.wallet;
+	
+			// Calculate the refund amount
+			const refundAmount = itinerary.price;
+	
+			// Update the wallet balance
+			const updatedWalletBalance = userWalletBalance + refundAmount;
+	
+			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wallet: updatedWalletBalance }),
+			});
+	
+			if (!walletUpdateResponse.ok) {
+				throw new Error('Failed to update wallet balance');
+			}
+	
+			// Cancel the booking
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'DELETE',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({itineraryId})
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ itineraryId }),
 			});
-
+	
 			if (!response.ok) {
 				throw new Error('Failed to cancel the booking');
 			}
-
-			toast.success('Booking canceled successfully');
+	
+			toast.success('Booking canceled successfully. Refund processed.');
 			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false);
 			setCanCancel(false);
@@ -419,7 +445,6 @@ const ItineraryDetail = () => {
 			toast.error('Failed to cancel the booking. Please try again.');
 		}
 	};
-
 	const convertToBase64 = (imageDataObject) => {
 		if (!imageDataObject?.data?.data || !imageDataObject?.contentType) {
 			return null; // Return null if data or content type is missing

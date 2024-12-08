@@ -39,35 +39,78 @@ const ManageItineraries = () => {
 		}
 		fetchItinerary().then(() => setIsModalOpen(true));
 	};
-
 	const handleFlagClick = (itinerary) => {
 		const flagItinerary = async () => {
 			try {
+				// Toggle the flagged status
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries/${itinerary._id}`, {
 					method: 'PUT',
-					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({flaggedInappropriate: !itinerary.flaggedInappropriate})
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ flaggedInappropriate: !itinerary.flaggedInappropriate }),
 				});
-				const data = await response.json();
-				if (data._id) {
-					const updatedItineraries = itineraries.map(a => {
-						if (a._id === itinerary._id) {
-							a.flaggedInappropriate = !itinerary.flaggedInappropriate;
-						}
-						return a;
+	
+				if (!response.ok) {
+					throw new Error('Failed to flag itinerary');
+				}
+	
+				const updatedItineraries = itineraries.map(i => {
+					if (i._id === itinerary._id) {
+						i.flaggedInappropriate = !itinerary.flaggedInappropriate;
+					}
+					return i;
+				});
+	
+				setItineraries(updatedItineraries);
+	
+				// Notify the user about the flagging action
+				const successMessage = itinerary.flaggedInappropriate
+					? 'Itinerary unflagged successfully'
+					: 'Itinerary flagged successfully';
+				toast.success(successMessage);
+	
+				// If flagged, send an email notification to the tour guide
+				if (!itinerary.flaggedInappropriate) {
+					const emailSubject = `Itinerary Flagged as Inappropriate: ${itinerary.title}`;
+					const emailHtmlContent = `
+						<h1>Itinerary Flagged</h1>
+						<p>Your itinerary titled <strong>${itinerary.title}</strong> has been flagged as inappropriate.</p>
+						<p>Please review the itinerary details and address any issues as soon as possible.</p>
+						<p>Thank you for your attention.</p>
+					`;
+	
+					// Fetch tour guide details
+					const tourGuideResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${itinerary.createdBy}`);
+					if (!tourGuideResponse.ok) {
+						throw new Error('Failed to fetch tour guide details');
+					}
+	
+					const tourGuide = await tourGuideResponse.json();
+	
+					// Send email
+					const mailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							email: tourGuide.email,
+							subject: emailSubject,
+							message: '', // Optional plain text fallback
+							htmlContent: emailHtmlContent,
+						}),
 					});
-					setItineraries(updatedItineraries);
-					itinerary.flaggedInappropriate ? toast.success('Itinerary flagged successfully') : toast.success('Itinerary unflagged successfully');
-				} else {
-					toast.error('Failed to flag itinerary');
+	
+					if (!mailResponse.ok) {
+						throw new Error('Failed to send email notification to the tour guide');
+					}
+	
+					toast.success('Email notification sent to the tour guide');
 				}
 			} catch (error) {
 				console.error('Failed to flag itinerary:', error);
 				toast.error('Failed to flag itinerary');
 			}
-		}
+		};
 		flagItinerary().then(() => setIsModalOpen(false));
-	}
+	};
 
 	const handleDeleteClick = (itinerary) => {
 		if (window.confirm(`Are you sure you want to delete ${itinerary.title}?`)) {
