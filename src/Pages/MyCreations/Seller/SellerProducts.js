@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {toast} from "react-toastify";
 
 const SellerDashboard = () => {
@@ -36,7 +36,7 @@ const SellerDashboard = () => {
 			fetch(`${process.env.REACT_APP_BACKEND}/api/products/admin`)
 				.then((response) => response.json())
 				.then((data) => {
-					setProducts(data.filter(product => product.seller === sessionStorage.getItem('user id')));
+					setProducts(data.filter(product => product.seller._id === sessionStorage.getItem('user id')));
 					setLoading(false);
 				});
 		};
@@ -132,19 +132,29 @@ const SellerDashboard = () => {
 	};
 
 	const handleViewImage = (product) => {
-		let imageBase64 = null;
-		if (product.picture?.data?.data && product.picture?.contentType) {
+		const fetchImage = async (product) => {
 			try {
-				const byteArray = new Uint8Array(product.picture?.data.data);
-				const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-				imageBase64 = `data:${product.picture?.contentType};base64,${btoa(binaryString)}`;
-			} catch (error) {
-				console.error('Error converting image data to base64:', error);
-			}
-		}
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${product._id}`);
+				const p = await response.json();
 
-		setImagePreview(imageBase64);
-	};
+				let imageBase64 = null;
+				if (p.picture?.data?.data && p.picture?.contentType) {
+					try {
+						const byteArray = new Uint8Array(p.picture?.data.data);
+						const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+						imageBase64 = `data:${p.picture?.contentType};base64,${btoa(binaryString)}`;
+					} catch (error) {
+						console.error('Error converting image data to base64:', error);
+					}
+				}
+
+				setImagePreview(imageBase64);
+			} catch (error) {
+				console.error('Error fetching image:', error);
+			}
+		};
+		fetchImage(product).then();
+	}
 
 	const closeImagePreview = () => {
 		setImagePreview(null);

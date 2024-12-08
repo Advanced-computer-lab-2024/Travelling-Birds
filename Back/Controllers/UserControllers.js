@@ -908,8 +908,8 @@ const addProductToWishlist = async (req, res) => {
 
 	try {
 		const user = await User
-		.findById
-		(userId);
+			.findById
+			(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -929,8 +929,7 @@ const addProductToWishlist = async (req, res) => {
 		user.productWishlist.push(productId);
 		await user.save();
 		res.status(200).json({message: 'Product saved successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -941,16 +940,15 @@ const getProductWishlist = async (req, res) => {
 
 	try {
 		const user = await
-		User.findById
-		(userId);
+			User.findById
+			(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
 		const productWishlist = await Product.find({_id: {$in: user.productWishlist}});
 		res.status(200).json(productWishlist);
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -962,8 +960,8 @@ const removeProductFromWishlist = async (req, res) => {
 
 	try {
 		const user = await User
-		.findById
-		(userId);
+			.findById
+			(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -976,27 +974,23 @@ const removeProductFromWishlist = async (req, res) => {
 		user.productWishlist.splice(index, 1);
 		await user.save();
 		res.status(200).json({message: 'Product removed from product wishlist successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
 
 //adding product to cart
-const addproducttocart = async (req, res) => {
+const addProductToCart = async (req, res) => {
 	const userId = req.params.id;
 	const productId = req.body.productId;
 
 	try {
-		const user = await User
-		.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const product = await Product.findById
-		(productId);
+		const product = await Product.findById(productId);
 
 		if (!product) {
 			return res.status(404).json({message: 'Product not found'});
@@ -1008,10 +1002,10 @@ const addproducttocart = async (req, res) => {
 		}
 
 		user.Cart.push(productId);
+
 		await user.save();
 		res.status(200).json({message: 'Product added to cart successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -1021,18 +1015,14 @@ const getCart = async (req, res) => {
 	const userId = req.params.id;
 
 	try {
-		const user = await
-		User.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
 
 		const cart = await Product.find({_id: {$in: user.Cart}});
 		res.status(200).json(cart);
-	}
-
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -1043,9 +1033,7 @@ const removeProductFromCart = async (req, res) => {
 	const productId = req.body.productId;
 
 	try {
-		const user = await User
-		.findById
-		(userId);
+		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
@@ -1058,8 +1046,7 @@ const removeProductFromCart = async (req, res) => {
 		user.Cart.splice(index, 1);
 		await user.save();
 		res.status(200).json({message: 'Product removed from cart successfully'});
-	}
-	catch (error) {
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 }
@@ -1312,7 +1299,7 @@ module.exports = {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
-	addproducttocart,
+	addProductToCart,
 	getCart,
 	removeProductFromCart,
 	requestDelete,
