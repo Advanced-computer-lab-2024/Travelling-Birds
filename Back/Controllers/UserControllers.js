@@ -708,7 +708,7 @@ const removeProductPurchase = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const index = user.productPurchases.indexOf(productId);
+		const index = user.productPurchases.findIndex(purchase => purchase.product === productId);
 		if (index === -1) {
 			return res.status(400).json({message: 'Product not found in user purchases'});
 		}
