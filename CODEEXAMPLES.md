@@ -1,3 +1,7 @@
+# Code Examples
+
+## Back End:
+- User model:
 ```javascript
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
