@@ -109,6 +109,7 @@ const TouristNavBar = () => {
 		setDropdownVisible(!dropdownVisible);
 	};
 	const handleBadgeClick = () => {
+	
 		setRedeemPopupVisible(true);
 	};
 	const handleRedeemPointsChange = (increment) => {
@@ -303,10 +304,14 @@ const TouristNavBar = () => {
 							</div>
 						</button>
 						{dropdownVisible && (
+							
 							<div
 								className="absolute right-24 top-full mt-2 w-56 bg-white rounded-lg z-10 shadow-[0px_4px_12px_rgba(0,0,0,0.6)]"
 							>
 								<ul className="py-2">
+                               	    <li className="block px-4 py-2 text-gray-800 text-lg font-bold">
+										Wallet Balance: <span className="text-[#330577]">{user.wallet !== null && user.wallet !== undefined ? `${user.wallet}` : '0'}</span>
+									</li>
 									<li>
 										<NavLink
 											to='/profile'
