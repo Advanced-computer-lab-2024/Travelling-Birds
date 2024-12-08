@@ -4,6 +4,8 @@
 * Valid login for an existing user.
 
 * Invalid login with incorrect credentials.
+
+*  Fetch all users.
 ```javascript
  describe('User Login', () => {
     it('should log in with valid credentials', async () => {
@@ -26,9 +28,7 @@
       expect(response.body).toHaveProperty('message', 'Invalid password. Please try again.');
     });
   });
-```
-* Fetch all users.
-```javascript
+
   describe('User Management', () => {
     it('should fetch all users', async () => {
       const response = await request(app).get('/users');
