@@ -701,14 +701,13 @@ const getProductPurchases = async (req, res) => {
 const removeProductPurchase = async (req, res) => {
 	const userId = req.params.id;
 	const productId = req.body.productId;
-
+	
 	try {
 		const user = await User.findById(userId);
 		if (!user) {
 			return res.status(404).json({message: 'User not found'});
 		}
-
-		const index = user.productPurchases.findIndex(purchase => purchase.product === productId);
+		const index = user.productPurchases.findIndex(purchase => purchase.product.toString() === productId);
 		if (index === -1) {
 			return res.status(400).json({message: 'Product not found in user purchases'});
 		}
