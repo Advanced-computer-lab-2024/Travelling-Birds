@@ -13,15 +13,18 @@ const Notifications = () => {
                 let fetchedNotifications = [];
 
                 if (userRole === 'tourist') {
-                    // Tourist: Upcoming activities and itineraries notifications
+                    // Tourist: Upcoming activities, itineraries, and saved activities notifications
                     const activitiesResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
                     const itinerariesResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`);
-                    if (!activitiesResponse.ok || !itinerariesResponse.ok) {
-                        throw new Error('Failed to fetch bookings');
+                    const savedActivitiesResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-activities/${userId}`);
+                    
+                    if (!activitiesResponse.ok || !itinerariesResponse.ok || !savedActivitiesResponse.ok) {
+                        throw new Error('Failed to fetch bookings or saved activities');
                     }
 
                     const activities = await activitiesResponse.json();
                     const itineraries = await itinerariesResponse.json();
+                    const savedActivities = await savedActivitiesResponse.json();
                     const now = new Date();
 
                     const activityNotifications = activities.filter(activity => {
@@ -37,7 +40,6 @@ const Notifications = () => {
 
                     const itineraryNotifications = itineraries.filter(itinerary => {
                         const itineraryDate = new Date(itinerary.availableDates[0]);
-                        const now = new Date();
                         return (itineraryDate - now) / (1000 * 60 * 60) <= 48;
                     }).map(itinerary => ({
                         type: 'itinerary',
@@ -46,26 +48,35 @@ const Notifications = () => {
                         message: `Reminder: Your itinerary "${itinerary.title}" starts soon on ${new Date(itinerary.availableDates[0]).toLocaleString()}.`,
                     }));
 
-                    fetchedNotifications = [...activityNotifications, ...itineraryNotifications];
+                    const savedActivityNotifications = savedActivities.filter(activity => activity.bookingOpen)
+                        .map(activity => ({
+                            type: 'saved-activity',
+                            title: activity.title,
+                            message: `Great news! Booking has opened for your saved activity "${activity.title}".`,
+                        }));
+
+                    fetchedNotifications = [
+                        ...activityNotifications,
+                        ...itineraryNotifications,
+                        ...savedActivityNotifications,
+                    ];
                 } else if (userRole === 'tour_guide') {
                     const itinerariesResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/itineraries`);
                     if (!itinerariesResponse.ok) {
                         throw new Error('Failed to fetch itineraries');
                     }
-                
+
                     const itineraries = await itinerariesResponse.json();
                     const flaggedItineraries = itineraries.filter(itinerary => 
                         itinerary.createdBy === userId && itinerary.flaggedInappropriate
                     );
-            
-                
+
                     fetchedNotifications = flaggedItineraries.map(itinerary => ({
                         type: 'flagged-itinerary',
                         title: itinerary.title,
                         message: `Your itinerary "${itinerary.title}" has been flagged as inappropriate.`,
                     }));
                 } else if (userRole === 'advertiser') {
-                    // Advertiser: Flagged activities
                     const activitiesResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities`);
                     if (!activitiesResponse.ok) {
                         throw new Error('Failed to fetch activities');
