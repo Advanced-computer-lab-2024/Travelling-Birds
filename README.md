@@ -246,19 +246,23 @@ You can access test examples from [here](./TESTEXAMPLES.md).
 #### 11. Other Roles
 
 - Admin
+  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Manage users, monitor complaints, and oversee the system’s overall health.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Access to analytics and platform settings.
 
 - Advertiser
+  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Create and manage activities displayed across the website.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Access insights on my created activities performance.
 - Seller
+  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Add and manage products in the gift shop.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - View and handle orders placed by users.
 - Tour Guide
+  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Create and manage itineraries displayed across the website.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - Access insights on my created itineraries performance.
