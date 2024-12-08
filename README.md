@@ -196,9 +196,10 @@ The Amadeus API is used for flight search, booking, and retrieving flight detail
 - **Documentation**: [Amadeus Flights API](https://developers.amadeus.com/self-service/category/flights)
 
 ### Endpoints in Project
+
 - **Search Flights**
     ```http
-    POST /api/flights/search
+    POST /api/flights/f
     ```
     **Request Body**:
     ```json
@@ -213,7 +214,7 @@ The Amadeus API is used for flight search, booking, and retrieving flight detail
 
 - **Get Flight Details**
     ```http
-    GET /api/flights/:flightId
+    GET /api/flights/:flightId/:origin/:destination/:departureDate/:currencyCode
     ```
     Fetches detailed information about a specific flight.
 
@@ -239,6 +240,7 @@ The Amadeus API is used for hotel search, details retrieval, and booking.
 - **Documentation**: [Amadeus Hotels API](https://developers.amadeus.com/self-service/category/hotels)
 
 ### Endpoints in Project
+
 - **Search Hotels**
     ```http
     POST /api/hotels/search
@@ -257,7 +259,7 @@ The Amadeus API is used for hotel search, details retrieval, and booking.
 
 - **Get Hotel Details**
     ```http
-    GET /api/hotels/:hotelId
+    GET /api/hotels/:hotelId/:checkInDate/:checkOutDate/:currencyCode
     ```
     Fetches detailed information about a specific hotel.
 
@@ -285,9 +287,10 @@ Nodemailer is used to send transactional emails via Gmail SMTP.
 - **Documentation**: [Nodemailer Usage](https://www.nodemailer.com/usage/)
 
 ### Endpoint in Project
+
 - **Send Email**
     ```http
-    POST /api/email/send
+    POST /api/mail
     ```
     **Request Body**:
     ```json
@@ -308,6 +311,7 @@ Stripe is used for processing payments.
 - **Documentation**: [Stripe API Documentation](https://docs.stripe.com/api/payment_intents)
 
 ### Endpoint in Project
+
 - **Create Payment**
     ```http
     POST /api/payments
@@ -331,7 +335,7 @@ Stripe is used for processing payments.
 
 ---
 
-### How to Get Started
+## How to Get Started
 To use these APIs in your own project:
 1. Register with the respective service providers.
 2. Obtain API keys or credentials.
