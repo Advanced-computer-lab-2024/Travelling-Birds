@@ -991,7 +991,7 @@ const addProductToCart = async (req, res) => {
 
 		const product = await Product.findById(productId);
 
-		if (!product) {
+		if (!product || product.availableQuantity <= 0) {
 			return res.status(404).json({message: 'Product not found'});
 		}
 
@@ -1119,7 +1119,7 @@ const requestOtp = async (req, res) => {
 		const subject = 'Password Reset OTP';
 		const message = `Your OTP is ${otp}`;
 
-		const response = await fetch(`http://localhost:8000/api/mail`, {
+		const response = await fetch(`${process.env.BACKEND_URL}/api/mail`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

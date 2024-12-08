@@ -49,10 +49,10 @@ const ManageActivities = () => {
 				// Flag or unflag the activity
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
 					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ flaggedInappropriate: !activity.flaggedInappropriate }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({flaggedInappropriate: !activity.flaggedInappropriate}),
 				});
-	
+
 				if (response.ok) {
 					const updatedActivities = activities.map(a => {
 						if (a._id === activity._id) {
@@ -61,13 +61,13 @@ const ManageActivities = () => {
 						return a;
 					});
 					setActivities(updatedActivities);
-	
+
 					// Notify user of success
 					const successMessage = activity.flaggedInappropriate
-						? 'Activity unflagged successfully'
-						: 'Activity flagged successfully';
+						? 'Activity flagged successfully'
+						: 'Activity un-flagged successfully';
 					toast.success(successMessage);
-	
+
 					// If flagged, send an email notification to the advertiser
 					if (!activity.flaggedInappropriate) {
 						const emailSubject = `Activity Flagged as Inappropriate: ${activity.title}`;
@@ -77,18 +77,18 @@ const ManageActivities = () => {
 							<p>Please review the activity details and address any issues as soon as possible.</p>
 							<p>Thank you for your attention.</p>
 						`;
-	
+
 						// Fetch advertiser details
 						const advertiserResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${activity.createdBy}`);
 						if (!advertiserResponse.ok) {
 							throw new Error('Failed to fetch advertiser details');
 						}
 						const advertiser = await advertiserResponse.json();
-	
+
 						// Send email
 						const mailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
+							headers: {'Content-Type': 'application/json'},
 							body: JSON.stringify({
 								email: advertiser.email,
 								subject: emailSubject,
@@ -96,11 +96,11 @@ const ManageActivities = () => {
 								htmlContent: emailHtmlContent,
 							}),
 						});
-	
+
 						if (!mailResponse.ok) {
 							throw new Error('Failed to send email notification to the advertiser');
 						}
-	
+
 						toast.success('Email notification sent to the advertiser');
 					}
 				} else {
@@ -172,7 +172,7 @@ const ManageActivities = () => {
 								<td>{activity.rating}</td>
 								<td>{activity.bookingOpen ? 'Yes' : 'No'}</td>
 								<td>{activity.createdByName}</td>
-								<td>{activity.flaggedInappropriate? 'Yes' : 'No'}</td>
+								<td>{activity.flaggedInappropriate ? 'Yes' : 'No'}</td>
 								<td>
 									<button className="btn btn-info btn-sm mr-2"
 									        onClick={() => handleViewClick(activity)}>
@@ -205,7 +205,8 @@ const ManageActivities = () => {
 			{isModalOpen && (
 				<div className="modal modal-open">
 					<div className="modal-box w-full max-w-[100rem]">
-						<ActivityForm activity={selectedActivity} activities={activities} setActivities={setActivities}/>
+						<ActivityForm activity={selectedActivity} activities={activities}
+						              setActivities={setActivities}/>
 						<div className="modal-action">
 							<button className="btn" onClick={closeModal}>Close</button>
 						</div>

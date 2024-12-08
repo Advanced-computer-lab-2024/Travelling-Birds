@@ -15,7 +15,7 @@ const ManagePromotions = () => {
 
 	useEffect(() => {
 		const fetchPromotions = async () => {
-			fetch('http://localhost:8000/api/promotions')
+			fetch(`${process.env.REACT_APP_BACKEND}/api/promotions`)
 				.then(response => response.json())
 				.then(data => setPromotions(data));
 		};
@@ -52,7 +52,7 @@ const ManagePromotions = () => {
 			discount,
 			isActive,
 		};
-		const response = await fetch(`http://localhost:8000/api/promotions${updating ? `/${selectedPromotion._id}` : ""}`, {
+		const response = await fetch(`${process.env.BACKEND_URL}/api/promotions${updating ? `/${selectedPromotion._id}` : ""}`, {
 			method: updating ? 'PUT' : 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const ManagePromotions = () => {
 		const data = {
 			isActive: !promotion.isActive,
 		};
-		const response = await fetch(`http://localhost:8000/api/promotions/${promotion._id}`, {
+		const response = await fetch(`${process.env.BACKEND_URL}/api/promotions/${promotion._id}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const ManagePromotions = () => {
 
 	const handleDelete = async (promotion) => {
 		if (window.confirm('Are you sure you want to delete this promotion?')) {
-			const response = await fetch(`http://localhost:8000/api/promotions/${promotion._id}`, {
+			const response = await fetch(`${process.env.BACKEND_URL}/api/promotions/${promotion._id}`, {
 				method: 'DELETE',
 			});
 			if (response.ok) {

@@ -40,7 +40,7 @@ This project uses the following third-party services, which are subject to their
 - **Google Maps API**  
    Subject to the [Google Maps Platform Terms of Service](https://cloud.google.com/maps-platform/terms).
 
-- **Gmail SMTP** 
-   Used with Nodemailer for sending email notifications, subject to [Gmail's Terms of Service](https://policies.google.com/terms).
+- **Gmail SMTP**  
+   Used with nodemailer for sending email notifications, subject to [Gmail's Terms of Service](https://policies.google.com/terms).
 
 By using or modifying this project, you agree to adhere to the terms and conditions of these third-party services.

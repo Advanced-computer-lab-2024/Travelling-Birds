@@ -14,7 +14,7 @@ const generatePromoCode = () => {
 		isActive: true
 	}
 
-	fetch('http://localhost:8000/api/promotions', {
+	fetch(`${process.env.BACKEND_URL}/api/promotions`, {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify(body)
@@ -28,7 +28,7 @@ const sendPromoCodeEmail = (email, promoCode) => {
 	const subject = "Happy Birthday! Here is your promo code";
 	const message = `Happy Birthday! Use this promo code to get a discount: ${promoCode}`;
 
-	fetch('http://localhost:8000/api/mail', {
+	fetch(`${process.env.BACKEND_URL}/api/mail`, {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify({email, subject, message})
@@ -66,7 +66,7 @@ const scheduleBirthdayPromo = () => {
 	cron.schedule('0 0 * * *', runTask);
 
 	// Run the task immediately for testing
-	runTask().then(() => console.log('Scheduled birthday promo'));
+	//runTask().then(() => console.log('Scheduled birthday promo'));
 };
 
 module.exports = {scheduleBirthdayPromo};
