@@ -13,6 +13,9 @@ import {
 	TouristNavBar
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { NotificationsProvider } from './Components/NotificationsContext';
 
 import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
@@ -87,10 +90,16 @@ import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowt
 
 import AddressBook from "./Pages/AddressBook";
 
+import Notfications from "./Pages/Notfications";
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
 	<React.StrictMode>
+		<Elements stripe={stripePromise}>
+		<NotificationsProvider>
 		<BrowserRouter>
 			<Routes>
 				<Route path='/' element={<NavBarContainer/>}>
@@ -161,10 +170,13 @@ root.render(
 					<Route path="explore" element={<ExplorePage/>}/>
 					<Route path="complaints" element={<ComplaintsPage/>}/>
 					<Route path="address" element={<AddressBook/>}/>
+					<Route path="notifications" element={<Notfications/>}/>
 
 				</Route>
 			</Routes>
 		</BrowserRouter>
+		</NotificationsProvider>
+		</Elements>
 		<ToastContainer/>
 	</React.StrictMode>
 );

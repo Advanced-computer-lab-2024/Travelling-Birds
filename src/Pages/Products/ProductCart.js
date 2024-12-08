@@ -33,6 +33,7 @@ const ProductCart = () => {
                         return {
                             ...product,
                             picture: imageBase64,
+                            quantity: 1,
                         };
                     });
                     console.log('done');
@@ -52,7 +53,7 @@ const ProductCart = () => {
         }
     }, [userId, userRole]);
 
-    const totalPrice = cart.reduce((total, product) => total + product.price, 0);
+    const totalPrice = cart.reduce((total, product) => total + (product.price*product.quantity), 0);
 
     if (loading) {
         return (
@@ -119,11 +120,9 @@ const ProductCart = () => {
             });
 
             if (!response.ok) throw new Error('Failed to update available stock on the server');
-            toast.success('Stock updated successfully.');
         } catch (error) {
             console.error('Error updating stock:', error);
             toast.error('An error occurred while updating stock.');
-            // Optionally, rollback to the original cart state if the server update fails
             setCart(cart);
         }
     };

@@ -4,6 +4,8 @@ import {toast} from "react-toastify";
 import {FaRegStar, FaStar, FaStarHalfAlt} from "react-icons/fa";
 import {AiFillHeart, AiOutlineHeart} from "react-icons/ai";
 import { set } from "mongoose";
+import { CardElement } from '@stripe/react-stripe-js';
+import { useStripe, useElements } from '@stripe/react-stripe-js';
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -23,6 +25,8 @@ const ProductsDetailsPage = () => {
 	const [soldQuantity, setSoldQuantity] = useState(0);
 	const [isSaved, setIsSaved] = useState(false);
 	const [isInCart, setIsInCart] = useState(false);
+	const stripe = useStripe();
+	const elements = useElements();
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -154,73 +158,148 @@ const ProductsDetailsPage = () => {
 	};
 
 	const handleCompletePurchase = async () => {
-		if (!cardNumber || !expiryDate || !cvv) {
-			toast.error('Please complete all fields.');
-			return;
-		}
 		const enteredWalletAmount = parseFloat(walletAmount);
 		if (enteredWalletAmount <= 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
+	
 		try {
+			// Fetch user data to check wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
 				throw new Error('Failed to fetch user data');
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-
+	
 			if (enteredWalletAmount > userWalletBalance) {
 				toast.error('Not enough in wallet.');
 				return;
 			}
-
-			if (purchased) {
-				toast.info('Product already purchased');
+	
+			// Skip card information if the wallet covers the full price
+			if (enteredWalletAmount >= product.price) {
+				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+	
+				// Update wallet balance
+				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ wallet: updatedWalletBalance }),
+				});
+	
+				if (!walletUpdateResponse.ok) {
+					const errorData = await walletUpdateResponse.json();
+					console.error('Wallet update error:', errorData);
+					throw new Error('Failed to update wallet balance');
+				}
+	
+				console.log('Wallet successfully updated.');
+	
+				// Proceed with product purchase
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ productId, quantity: 1, itemPrice: product.price, discount: 0 }),
+				});
+	
+				if (!response.ok) {
+					throw new Error('Failed to purchase the product');
+				}
+	
+				// Update product inventory
+				const productResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						availableQuantity: availableQuantity - 1,
+						soldQuantity: soldQuantity + 1,
+					}),
+				});
+	
+				if (!productResponse.ok) {
+					throw new Error('Failed to update product quantity');
+				}
+	
+				console.log('Product purchased successfully using wallet balance.');
+				toast.success('Product purchased successfully using wallet balance!');
 				closePurchaseModal();
 				return;
 			}
-
-			if (userWalletBalance !== null) {
-				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-				await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
-					method: 'PUT',
-					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({wallet: updatedWalletBalance})
-				});
-			}
-
-			const product = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
-				method: 'PUT',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({
-					availableQuantity: availableQuantity - 1,
-					soldQuantity: soldQuantity + 1
-				})
+	
+			// Proceed with Stripe payment if wallet does not cover the full price
+			const cardElement = elements.getElement(CardElement);
+			const { paymentMethod, error } = await stripe.createPaymentMethod({
+				type: 'card',
+				card: cardElement,
 			});
-
-			if (!product.ok) {
-				throw new Error('Failed to update product quantity');
+	
+			if (error) {
+				toast.error(`Payment failed: ${error.message}`);
+				return;
 			}
-
+	
+			// Call backend to handle payment
+			const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					amount: product.price * 100, // Convert to cents
+					currency: 'usd',
+					paymentMethodId: paymentMethod.id,
+				}),
+			});
+	
+			const paymentResult = await paymentResponse.json();
+			if (!paymentResult.success) {
+				toast.error(`Payment failed: ${paymentResult.error}`);
+				return;
+			}
+	
+			console.log('Stripe payment successful.');
+	
+			// Deduct wallet balance if partially used
+			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wallet: updatedWalletBalance }),
+			});
+	
+			// Finalize product purchase
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({productId, quantity: 1, itemPrice: product.price, discount: 0})
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ productId, quantity: 1, itemPrice: product.price, discount: 0 }),
 			});
-
+	
 			if (!response.ok) {
 				throw new Error('Failed to purchase the product');
 			}
-			toast.success('Product purchased successfully');
+	
+			// Update product inventory
+			const productResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					availableQuantity: availableQuantity - 1,
+					soldQuantity: soldQuantity + 1,
+				}),
+			});
+	
+			if (!productResponse.ok) {
+				throw new Error('Failed to update product quantity');
+			}
+	
+			console.log('Product purchased successfully.');
+			toast.success('Product purchased successfully!');
 			closePurchaseModal();
 		} catch (error) {
 			console.error('Error purchasing product:', error);
 			toast.error('Failed to purchase the product. Please try again.');
 		}
 	};
-
 	const renderStars = (rating) => {
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
 			rating = 0;
@@ -418,35 +497,12 @@ const ProductsDetailsPage = () => {
 						<div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
 							<h2 className="text-xl font-semibold mb-4">Complete Purchase</h2>
 							<div className="mb-4">
-								<label className="block mb-1 text-gray-700">Card Number</label>
-								<input
-									type="text"
-									value={cardNumber}
-									onChange={(e) => setCardNumber(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
-									placeholder="1234 5678 9012 3456"
-								/>
+								<label className="block mb-2">Payment Information</label>
+								<div className="w-full border rounded-lg p-2">
+								<CardElement />
+								</div>
 							</div>
-							<div className="mb-4">
-								<label className="block mb-1 text-gray-700">Expiry Date</label>
-								<input
-									type="text"
-									value={expiryDate}
-									onChange={(e) => setExpiryDate(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
-									placeholder="MM/YY"
-								/>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-1 text-gray-700">CVV</label>
-								<input
-									type="text"
-									value={cvv}
-									onChange={(e) => setCvv(e.target.value)}
-									className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#330577]"
-									placeholder="123"
-								/>
-							</div>
+
 							<div className="mb-4">
 								<label className="block mb-1 text-gray-700">Wallet Amount</label>
 								<input
@@ -459,8 +515,8 @@ const ProductsDetailsPage = () => {
 							</div>
 							<button
 								onClick={handleCompletePurchase}
-								className={`w-full bg-[#330577] text-white p-3 rounded-lg ${!cardNumber || !expiryDate || !cvv ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#280466] transition duration-150'}`}
-								disabled={!cardNumber || !expiryDate || !cvv}
+								className={`w-full bg-[#330577] text-white p-3 rounded-lg ${'hover:bg-[#280466] transition duration-150'}`}
+								
 							>
 								Complete Purchase
 							</button>

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 
 const AddressManagement = () => {
+    const userId = sessionStorage.getItem('user id');
     const [addresses, setAddresses] = useState([]);
     const [newAddress, setNewAddress] = useState({
+        userId: userId,
         country: '',
         city: '',
         street: '',
@@ -17,8 +19,6 @@ const AddressManagement = () => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false); // For delete confirmation
     const [deleteAddressId, setDeleteAddressId] = useState(null);
 
-
-    const userId = sessionStorage.getItem('user id');
 
     // Fetch user's addresses function
     const fetchAddresses = async () => {
@@ -59,33 +59,38 @@ const AddressManagement = () => {
     };
 
     // Handle creating a new address
-    const handleAddAddress = (e) => {
+    const handleAddAddress = async (e) => {
         e.preventDefault();
 
-        fetch(`${process.env.REACT_APP_BACKEND}/api/address/${userId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newAddress)  // Send the new address data as JSON
-        })
-            .then((response) => response.json())  // Parse the response as JSON
-            .then((data) => {
-                setAddresses([...addresses, data.address]);
-                setNewAddress({
-                    country: '',
-                    city: '',
-                    street: '',
-                    postalCode: '',
-                    type: '',
-                    floorNumber: '',
-                    apartmentNumber: '',
-                    isDefault: false
-                });
-            })
-            .catch((error) => console.error('Error adding address:', error));
-    };
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/address/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newAddress),
+            });
+            if (!response.ok) {
+                throw new Error('Failed to add address');
+            }
+            const data = await response.json();
+            setAddresses([...addresses, data.address]);
+            setNewAddress({
+                country: '',
+                city: '',
+                street: '',
+                postalCode: '',
+                type: '',
+                floorNumber: '',
+                apartmentNumber: '',
+                isDefault: false,
+            });
+            await fetchAddresses();
 
+        } catch (error) {
+            console.error('Error adding address:', error);
+        }
+    };
     // Handle editing an address
     const handleEditAddress = (e) => {
         e.preventDefault();

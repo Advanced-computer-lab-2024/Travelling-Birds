@@ -14,6 +14,7 @@ const addAddress = async (req, res) => {
             );
         }
         const newAddress = new Address({
+            userId,
             street,
             city,
             type,
@@ -90,7 +91,6 @@ const updateAddress = async (req, res) => {
     try{
         const userId = req.params.id;
         const { addressId, country, city, street, postalCode, type, floorNumber, apartmentNumber, isDefault } = req.body;
-        // If the address is being updated to default, update all other addresses to not be default
         if (isDefault) {
             await Address.updateMany(
                 { userId: userId, isDefault: true },
@@ -111,25 +111,7 @@ const updateAddress = async (req, res) => {
         return res.status(500).json({ message: 'Server error' });
     }
 }
-const updateCurrentAddress = async (req, res) => {
-    try{
-        const userId = req.params.id;
-        const addressId = req.body;
 
-        const updateCurrentAddress = await User.findOneAndUpdate(
-            {userId},
-            {currentAddress:addressId},
-            {new:true}
-        );
-        if (!updateCurrentAddress) {
-            return res.status(404).json({ message: 'Address not found' });
-        }
-        return res.status(200).json({ message: 'Address updated successfully', address: updatedAddress });
-    }catch(error){
-        console.error(error);
-        return res.status(500).json({ message: 'Server error' });
-    }
-}
 const getDefaultAddress = async (req, res) => {
     const userId = req.params.id;
     try{
@@ -154,6 +136,5 @@ module.exports = {
     deleteAddress,
     updateAddress,
     getUserAddresses,
-    updateCurrentAddress,
     getDefaultAddress
 };
