@@ -33,14 +33,14 @@ const {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
-	addProductToCart,
+	addproducttocart,
 	getCart,
 	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
 	getUserAnalytics,
-	getSalesAnalytics
+	getSalesAnalytics, addProductToCart
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload, upload} = require("../Middleware/upload");
 
@@ -145,6 +145,7 @@ router.get('/product-cart/:id', getCart);
 
 // Remove Product from Cart
 router.delete('/product-cart/:id', removeProductFromCart);
+
 
 // Get all comments for a specific user
 router.get('/:id/comments', getComments);
