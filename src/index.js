@@ -89,6 +89,7 @@ import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
 import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowth";
 
 import AddressBook from "./Pages/AddressBook";
+import ProductCheckout from "./Pages/Products/ProductCheckout";
 
 import Notfications from "./Pages/Notfications";
 
@@ -159,6 +160,7 @@ root.render(
 					<Route path="products/:id" element={<ProductDetails/>}/>
 					<Route path="my-purchases" element={<MyPurchases/>}/>
 					<Route path="product-cart" element={<ProductCart/>}/>
+					<Route path="/checkout" element={<ProductCheckout />} />
 
 
 					<Route path="saved-activity" element={<SavedActivities/>}/>
