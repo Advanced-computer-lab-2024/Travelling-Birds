@@ -12,9 +12,9 @@ We were motivated by the desire to help travelers save time, reduce stress, and 
 The project is fully developed and operational. All core features, including personalized travel planning, seamless booking, budgeting tools, curated local gems, tour guide itineraries, gift shop, and real-time notifications, have been successfully implemented and tested.
 
 #### Known Issues:
-1. Occasional delays in real-time notifications for low-bandwidth networks.
-2. User preferences are not tied to explore page.
-3. Ocassional delays in loading pages due to size of database and images.
+* Occasional delays in real-time notifications for low-bandwidth networks.
+* User preferences are not tied to explore page.
+* Ocassional delays in loading pages due to size of database and images.
 
 ##  Code Style
 The project adheres to the following coding styles:
