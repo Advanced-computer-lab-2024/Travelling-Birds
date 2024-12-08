@@ -146,7 +146,6 @@ router.get('/product-cart/:id', getCart);
 // Remove Product from Cart
 router.delete('/product-cart/:id', removeProductFromCart);
 
-
 // Get all comments for a specific user
 router.get('/:id/comments', getComments);
 
