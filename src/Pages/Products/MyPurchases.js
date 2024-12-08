@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
 import ProductDisplay from '../../Components/Models/Displays/ProductsDisplay';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const MyPurchases = () => {
 	const [purchases, setPurchases] = useState([]);
@@ -54,22 +54,21 @@ const MyPurchases = () => {
 		}
 	}, [userId, userRole]);
 
+	// Cancel Purchase Function
 	const cancelPurchase = async (productId) => {
 		const userId = sessionStorage.getItem('user id');
 		try {
-			// Send a DELETE request with productId in the body
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({productId}), // Send the productId to cancel
+				body: JSON.stringify({ productId }),
 			});
 
 			const data = await response.json();
 			if (response.ok) {
 				toast.success('Purchase cancelled successfully');
-				// Remove the cancelled product from the UI state
 				setPurchases(purchases.filter(product => product._id !== productId));
 			} else {
 				toast.error(data.message || 'Failed to cancel purchase');
@@ -80,6 +79,22 @@ const MyPurchases = () => {
 		}
 	};
 
+	// View Product Status Function
+	const viewProductStatus = async (productId) => {
+		const userId = sessionStorage.getItem('user id');
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-status/${userId}/${productId}`);
+			const data = await response.json();
+			if (response.ok) {
+				toast.success(`Product status: ${data.status}`);  // Assuming status is returned
+			} else {
+				toast.error(data.message || 'Failed to fetch product status');
+			}
+		} catch (error) {
+			console.error('Error fetching product status:', error);
+			toast.error('An error occurred while fetching product status');
+		}
+	};
 
 	if (loading) {
 		return (
@@ -90,6 +105,7 @@ const MyPurchases = () => {
 		);
 	}
 
+	// Render Stars
 	const renderStars = (rating) => {
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
 			rating = 0;
@@ -100,10 +116,9 @@ const MyPurchases = () => {
 
 		return (
 			<>
-				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500"/>)}
-				{halfStars && <FaStarHalfAlt className="text-yellow-500"/>}
-				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars}
-				                                                                                   className="text-yellow-500"/>)}
+				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500" />)}
+				{halfStars && <FaStarHalfAlt className="text-yellow-500" />}
+				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars} className="text-yellow-500" />)}
 			</>
 		);
 	};
@@ -116,15 +131,21 @@ const MyPurchases = () => {
 			) : (
 				<div className="flex flex-wrap gap-4">
 					{purchases.map((purchase) => (
-						<div key={purchase.product._id}
-						     className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4">
-							<ProductDisplay product={purchase.product}/>
+						<div key={purchase.product._id} className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4">
+							<ProductDisplay product={purchase.product} />
 							{/* Cancel Order Button */}
 							<button
 								className="bg-red-500 text-white p-2 rounded mt-4"
 								onClick={() => cancelPurchase(purchase.product._id)}
 							>
 								Cancel Order
+							</button>
+							{/* View Product Status Button */}
+							<button
+								className="bg-blue-500 text-white p-2 rounded mt-4 ml-2"
+								onClick={() => viewProductStatus(purchase.product._id)}
+							>
+								View Product status
 							</button>
 						</div>
 					))}

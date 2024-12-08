@@ -720,6 +720,32 @@ const removeProductPurchase = async (req, res) => {
 	}
 };
 
+// Get product status
+const getProductStatus = async (req, res) => {
+	const userId = req.params.userId;
+	const productId = req.params.productId;
+
+	try {
+		// Fetch the user and product from the database
+		const user = await User.findById(userId);
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		const product = await Product.findById(productId);
+		if (!product) {
+			return res.status(404).json({ message: 'Product not found' });
+		}
+
+		// You can replace this with logic to determine product status
+		const productStatus = 'Delivered'; //  replace with your own logic
+
+		res.status(200).json({ status: productStatus });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+};
+
 // Add comment on a specific tour guide
 const addComment = async (req, res) => {
 	const {user, text, stars} = req.body;
@@ -1287,6 +1313,7 @@ module.exports = {
 	addProductPurchase,
 	getProductPurchases,
 	removeProductPurchase,
+	getProductStatus,
 	addComment,
 	getComments,
 	addSavedActivity,
