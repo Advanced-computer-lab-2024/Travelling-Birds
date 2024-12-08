@@ -35,6 +35,7 @@ const ActivityDetail = () => {
 	const [userEmail, setUserEmail] = useState('');
 	const [message, setMessage] = useState('');
 	const [isSaved, setIsSaved] = useState(false);
+	const [bookingOpen, setBookingOpen] = useState(true);
 	const stripe = useStripe();
 	const elements = useElements();
 
@@ -45,6 +46,9 @@ const ActivityDetail = () => {
 				const res = await fetch(apiUrl);
 				const activityData = await res.json();
 				setActivity(activityData);
+				if (activityData.bookingOpen === false) {
+					setBookingOpen(false);		
+				}
 				setLoading(false);
 			} catch (err) {
 				console.log('Error fetching activity', err);
@@ -542,6 +546,7 @@ const ActivityDetail = () => {
 						<div className="flex flex-col items-center space-y-4">
 							<button
 								onClick={openBookingModal}
+								disabled={bookingOpen === false}
 								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 							>
 								Book Activity

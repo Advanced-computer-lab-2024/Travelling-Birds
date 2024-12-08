@@ -7,6 +7,7 @@ import Badge2 from '../../Assets/Badge/Badge2.png';
 import Badge3 from '../../Assets/Badge/Badge3.png';
 import {toast} from "react-toastify";
 import Logo from "../../Assets/Logo2.png";
+import { useNotifications } from '../NotificationsContext';
 
 const TouristNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
@@ -18,6 +19,7 @@ const TouristNavBar = () => {
 	const [redeemPopupVisible, setRedeemPopupVisible] = useState(false);
 	const [redeemPoints, setRedeemPoints] = useState(0);
 	const [redeemEgp, setRedeemEgp] = useState(0);
+	const { notificationsCount } = useNotifications(); // Access notification count
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
 
@@ -320,6 +322,19 @@ const TouristNavBar = () => {
 										>
 											Profile
 										</NavLink>
+									</li>
+									<li className="flex items-center space-x-2 pl-4">
+										<NavLink
+											to="/notifications"
+											className="text-gray-800 hover:bg-gray-100 text-lg flex items-center"
+										>
+											Notifications
+										</NavLink>
+										{notificationsCount > 0 && (
+											<span className="bg-[#330577] text-white text-base rounded-full w-6 h-6 flex items-center justify-center ml-2">
+												{notificationsCount}
+											</span>
+										)}
 									</li>
 									<li>
 										<NavLink
