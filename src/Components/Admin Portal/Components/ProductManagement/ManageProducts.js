@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {toast} from "react-toastify";
 
 const ManageProducts = () => {
@@ -15,6 +15,12 @@ const ManageProducts = () => {
 	const [seller, setSeller] = useState(sessionStorage.getItem('user id'));
 	const [isArchived, setIsArchived] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null);
+	const [salesReport, setSalesReport] = useState({totalRevenue: 0, totalSales: 0});
+	const [filters, setFilters] = useState({productId: '', startDate: '', endDate: ''});
+
+	useEffect(() => {
+		fetchSalesReport();
+	}, [filters]);
 
 	useEffect(() => {
 		const fetchProducts = () => {
@@ -27,6 +33,24 @@ const ManageProducts = () => {
 		}
 		fetchProducts();
 	}, []);
+
+	const fetchSalesReport = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/sales/${sessionStorage.getItem('user id')}`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(filters),
+			});
+			const data = await response.json();
+			setSalesReport(data);
+		} catch (error) {
+			console.error('Error fetching sales report:', error);
+		}
+	};
+
+	const handleFilterChange = (e) => {
+		setFilters({...filters, [e.target.name]: e.target.value});
+	};
 
 	const handleUpdate = (product) => {
 		setSelectedProduct(product);
@@ -107,18 +131,28 @@ const ManageProducts = () => {
 			});
 	};
 	const handleViewImage = (product) => {
-		let imageBase64 = null;
-		if (product.picture?.data?.data && product.picture?.contentType) {
+		const fetchImage = async (product) => {
 			try {
-				const byteArray = new Uint8Array(product.picture?.data.data);
-				const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-				imageBase64 = `data:${product.picture?.contentType};base64,${btoa(binaryString)}`;
-			} catch (error) {
-				console.error('Error converting image data to base64:', error);
-			}
-		}
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${product._id}`);
+				const p = await response.json();
 
-		setImagePreview(imageBase64);
+				let imageBase64 = null;
+				if (p.picture?.data?.data && p.picture?.contentType) {
+					try {
+						const byteArray = new Uint8Array(p.picture?.data.data);
+						const binaryString = byteArray.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+						imageBase64 = `data:${p.picture?.contentType};base64,${btoa(binaryString)}`;
+					} catch (error) {
+						console.error('Error converting image data to base64:', error);
+					}
+				}
+
+				setImagePreview(imageBase64);
+			} catch (error) {
+				console.error('Error fetching image:', error);
+			}
+		};
+		fetchImage(product).then();
 	}
 
 	const closeImagePreview = () => {
@@ -129,6 +163,51 @@ const ManageProducts = () => {
 	return (
 		<div className="p-4">
 			<h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
+			<h2 className="text-2xl font-bold mb-4">Sales Report</h2>
+			<div className="mb-4">
+				<label className="block mb-1">Product</label>
+				<select
+					name="productId"
+					value={filters.productId}
+					onChange={handleFilterChange}
+					className="w-full border rounded-lg p-3"
+				>
+					<option value="">All Products</option>
+					{products.map((product) => (
+						<option key={product._id} value={product._id}>{product.name}</option>
+					))}
+				</select>
+			</div>
+			<div className="mb-4">
+				<label className="block mb-1">Start Date</label>
+				<input
+					type="date"
+					name="startDate"
+					value={filters.startDate}
+					onChange={handleFilterChange}
+					className="w-full border rounded-lg p-3"
+				/>
+			</div>
+			<div className="mb-4">
+				<label className="block mb-1">End Date</label>
+				<input
+					type="date"
+					name="endDate"
+					value={filters.endDate}
+					onChange={handleFilterChange}
+					className="w-full border rounded-lg p-3"
+				/>
+			</div>
+			<button
+				onClick={fetchSalesReport}
+				className="bg-blue-500 text-white p-3 rounded-lg"
+			>
+				Filter
+			</button>
+			<div className="mt-6">
+				<h3 className="text-xl font-semibold">Total Revenue: ${salesReport.totalRevenue}</h3>
+				<h3 className="text-xl font-semibold">Total Sales: {salesReport.totalSales}</h3>
+			</div>
 			<button className="btn btn-primary mb-2" onClick={() => setCreateModalVisible(true)}>Add Product</button>
 			{!loading && (
 				<div className="overflow-x-auto">
@@ -179,9 +258,11 @@ const ManageProducts = () => {
 				</div>
 			)}
 			{imagePreview && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" onClick={closeImagePreview}>
-					<div className="bg-white p-4 rounded shadow-md flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
-						<img src={imagePreview} alt="Product" className="max-w-full max-h-screen mb-4" />
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+				     onClick={closeImagePreview}>
+					<div className="bg-white p-4 rounded shadow-md flex flex-col items-center"
+					     onClick={(e) => e.stopPropagation()}>
+						<img src={imagePreview} alt="Product" className="max-w-full max-h-screen mb-4"/>
 						<p className="text-gray-700">Click outside the box to exit.</p>
 					</div>
 				</div>

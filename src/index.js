@@ -87,7 +87,6 @@ import ManageHistoricalPlaces from "./Components/Admin Portal/Components/Content
 import ManagePromotions from "./Components/Admin Portal/Components/PromotionalManagement/ManagePromotions";
 import ResetPasswordPage from "./Pages/LoginAndRegister/ResetPasswordPage";
 import UserGrowth from "./Components/Admin Portal/Components/Analytics/UserGrowth";
-import SellerAnalytics from "./Pages/MyCreations/Seller/SellerAnalytics";
 
 import AddressBook from "./Pages/AddressBook";
 
@@ -130,7 +129,6 @@ root.render(
 					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
 					<Route path="transportation" element={<TransportationManagement/>}/>
 					<Route path="seller-products" element={<SellerProducts/>}/>
-					<Route path="seller-analytics" element={<SellerAnalytics/>}/>
 					<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
 					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
 					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>

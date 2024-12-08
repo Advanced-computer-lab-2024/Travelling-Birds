@@ -158,12 +158,7 @@ const sortProductsByRating = async (req, res) => {
 
 const getProductsAdmin = async (req, res) => {
 	try {
-		const Products = await Product.find();
-		const updatedProducts = await Promise.all(Products.map(async (product) => {
-			const user = await UserModel.findById(product.seller).select('firstName lastName');
-			product._doc.sellerName = user ? `${user.firstName} ${user.lastName}` : 'N/A';
-			return product;
-		}));
+		const updatedProducts = await Product.find().populate('seller', '_id firstName lastName').select('-picture');
 		res.status(200).json(updatedProducts);
 	} catch (error) {
 		res.status(500).json({error: error.message});
