@@ -690,7 +690,7 @@ const getProductPurchases = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const productPurchases = await Product.find({_id: {$in: user.productPurchases}});
+		const productPurchases = await Product.find({_id: {$in: user.productPurchases.map(purchase => purchase.product)}});
 		res.status(200).json(productPurchases);
 	} catch (error) {
 		res.status(500).json({error: error.message});
