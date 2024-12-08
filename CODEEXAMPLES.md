@@ -417,3 +417,146 @@ module.exports = router;
 
 
 ## Front End:
+### **Admin Dashboard Navigation**
+File: AdminNavBar.js
+This component provides a responsive sidebar for admin navigation.
+```javascript
+import React from 'react';
+import { Link } from "react-router-dom";
+
+const AdminNavBar = () => {
+  return (
+    <aside className="h-screen sticky top-0 overflow-y-auto w-60 py-6 px-4 bg-base-200">
+      <Link to="/" className="btn btn-ghost">
+        <i className="fa-solid fa-dove fa-fw"></i> Traveling Birds
+      </Link>
+      <ul className="menu px-0">
+        <li><Link to='/admin/manage-users'><i className="fa-solid fa-users-cog fa-fw"></i> Manage Users</Link></li>
+        <li><Link to='/admin/analytics'><i className="fa-solid fa-chart-bar fa-fw"></i> View Analytics</Link></li>
+      </ul>
+    </aside>
+  );
+};
+
+export default AdminNavBar;
+
+```
+### **Register Page**
+File: RegisterPage.js
+Allows users to register with different roles such as Tourist, Advertiser, or Seller.
+```javascript
+import React, { useState } from 'react';
+import {
+  AdvertiserRegisterForm,
+  SellerRegisterForm,
+  TouristRegisterForm,
+} from '../Components/RegistrationForms';
+
+const RegisterPage = () => {
+  const [selectedRole, setSelectedRole] = useState('Tourist');
+
+  const renderForm = () => {
+    switch (selectedRole) {
+      case 'Advertiser':
+        return <AdvertiserRegisterForm />;
+      case 'Seller':
+        return <SellerRegisterForm />;
+      default:
+        return <TouristRegisterForm />;
+    }
+  };
+
+  return (
+    <div className="flex bg-gray-100 h-screen">
+      <div className="w-1/2 flex items-center justify-center">
+        <img src="/logo.png" alt="Logo" />
+      </div>
+      <div className="w-1/2">{renderForm()}</div>
+    </div>
+  );
+};
+
+export default RegisterPage;
+
+```
+### **Search and Filter Activities**
+File: Explorer.js
+This component allows users to search, filter, and sort activities.
+```javascript
+import React, { useState } from 'react';
+
+const Explorer = ({ onSearch }) => {
+  const [activityCategory, setActivityCategory] = useState('');
+
+  const handleSearch = () => {
+    onSearch({ activityCategory });
+  };
+
+  return (
+    <div className="p-4">
+      <input
+        type="text"
+        placeholder="Activity Category"
+        onChange={(e) => setActivityCategory(e.target.value)}
+      />
+      <button onClick={handleSearch} className="btn-primary">Search</button>
+    </div>
+  );
+};
+
+export default Explorer;
+
+```
+
+### **Profile Page**
+File: ProfilePage.js
+Displays user profile details and allows them to upload profile and background images.
+```javascript
+import React, { useState, useEffect } from 'react';
+
+const ProfilePage = () => {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await fetch('/api/users/123');
+      const data = await response.json();
+      setUser(data);
+    };
+    fetchUser();
+  }, []);
+
+  return (
+    <div className="profile-page">
+      <img src={user.profilePicture} alt="Profile" className="profile-picture" />
+      <h1>{user.firstName}</h1>
+      <p>{user.username}</p>
+    </div>
+  );
+};
+
+export default ProfilePage;
+
+```
+### **Dynamic Results Display**
+File: ResultsList.js
+Displays categorized results for activities, itineraries, museums, and historical places.
+```javascript
+import React from 'react';
+
+const ResultsList = ({ activities }) => {
+  return (
+    <div className="grid">
+      {activities.map((activity) => (
+        <div key={activity.id} className="card">
+          <h3>{activity.title}</h3>
+          <p>{activity.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default ResultsList;
+
+```
