@@ -163,93 +163,143 @@ const ProductsDetailsPage = () => {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
+	
 		try {
+			// Fetch user data to check wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
 				throw new Error('Failed to fetch user data');
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-
+	
 			if (enteredWalletAmount > userWalletBalance) {
 				toast.error('Not enough in wallet.');
 				return;
 			}
-			 // Create payment method with Stripe
-			 const cardElement = elements.getElement(CardElement);
-			 const { paymentMethod, error } = await stripe.createPaymentMethod({
-			   type: 'card',
-			   card: cardElement,
-			 });
-		 
-			 if (error) {
-			   toast.error(`Payment failed: ${error.message}`);
-			   return;
-			 }
-		 
-			 // Call backend to handle payment
-			 const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
-			   method: 'POST',
-			   headers: { 'Content-Type': 'application/json' },
-			   body: JSON.stringify({
-				 amount: product.price * 100, // Convert to cents
-				 currency: 'usd',
-				 paymentMethodId: paymentMethod.id,
-			   }),
-			 });
-		 
-			 const paymentResult = await paymentResponse.json();
-			 if (!paymentResult.success) {
-			   toast.error(`Payment failed: ${paymentResult.error}`);
-			   return;
-			 }
-
-
-			if (purchased) {
-				toast.info('Product already purchased');
+	
+			// Skip card information if the wallet covers the full price
+			if (enteredWalletAmount >= product.price) {
+				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+	
+				// Update wallet balance
+				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ wallet: updatedWalletBalance }),
+				});
+	
+				if (!walletUpdateResponse.ok) {
+					const errorData = await walletUpdateResponse.json();
+					console.error('Wallet update error:', errorData);
+					throw new Error('Failed to update wallet balance');
+				}
+	
+				console.log('Wallet successfully updated.');
+	
+				// Proceed with product purchase
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ productId, quantity: 1, itemPrice: product.price, discount: 0 }),
+				});
+	
+				if (!response.ok) {
+					throw new Error('Failed to purchase the product');
+				}
+	
+				// Update product inventory
+				const productResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						availableQuantity: availableQuantity - 1,
+						soldQuantity: soldQuantity + 1,
+					}),
+				});
+	
+				if (!productResponse.ok) {
+					throw new Error('Failed to update product quantity');
+				}
+	
+				console.log('Product purchased successfully using wallet balance.');
+				toast.success('Product purchased successfully using wallet balance!');
 				closePurchaseModal();
 				return;
 			}
-
-			if (userWalletBalance !== null) {
-				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-				await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
-					method: 'PUT',
-					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({wallet: updatedWalletBalance})
-				});
-			}
-
-			const productResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
-				method: 'PUT',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({
-					availableQuantity: availableQuantity - 1,
-					soldQuantity: soldQuantity + 1
-				})
+	
+			// Proceed with Stripe payment if wallet does not cover the full price
+			const cardElement = elements.getElement(CardElement);
+			const { paymentMethod, error } = await stripe.createPaymentMethod({
+				type: 'card',
+				card: cardElement,
 			});
-
-			if (!productResponse.ok) {
-				throw new Error('Failed to update product quantity');
+	
+			if (error) {
+				toast.error(`Payment failed: ${error.message}`);
+				return;
 			}
-
+	
+			// Call backend to handle payment
+			const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					amount: product.price * 100, // Convert to cents
+					currency: 'usd',
+					paymentMethodId: paymentMethod.id,
+				}),
+			});
+	
+			const paymentResult = await paymentResponse.json();
+			if (!paymentResult.success) {
+				toast.error(`Payment failed: ${paymentResult.error}`);
+				return;
+			}
+	
+			console.log('Stripe payment successful.');
+	
+			// Deduct wallet balance if partially used
+			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wallet: updatedWalletBalance }),
+			});
+	
+			// Finalize product purchase
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'POST',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({productId, quantity: 1, itemPrice: product.price, discount: 0})
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ productId, quantity: 1, itemPrice: product.price, discount: 0 }),
 			});
-
+	
 			if (!response.ok) {
 				throw new Error('Failed to purchase the product');
 			}
-			toast.success('Product purchased successfully');
+	
+			// Update product inventory
+			const productResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/products/${productId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					availableQuantity: availableQuantity - 1,
+					soldQuantity: soldQuantity + 1,
+				}),
+			});
+	
+			if (!productResponse.ok) {
+				throw new Error('Failed to update product quantity');
+			}
+	
+			console.log('Product purchased successfully.');
+			toast.success('Product purchased successfully!');
 			closePurchaseModal();
 		} catch (error) {
 			console.error('Error purchasing product:', error);
 			toast.error('Failed to purchase the product. Please try again.');
 		}
 	};
-
 	const renderStars = (rating) => {
 		if (typeof rating !== 'number' || isNaN(rating) || rating < 0) {
 			rating = 0;

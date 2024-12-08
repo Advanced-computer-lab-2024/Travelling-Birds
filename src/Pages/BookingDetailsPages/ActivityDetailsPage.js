@@ -180,7 +180,6 @@ const ActivityDetail = () => {
 		}
 	};
 
-
 	const handleCompleteBooking = async () => {
 		if (userRole !== 'tourist') {
 			toast.error('Only tourists can book activities.');
@@ -194,12 +193,17 @@ const ActivityDetail = () => {
 	
 		// Parse the wallet input amount
 		const enteredWalletAmount = parseFloat(walletAmount);
-		if (enteredWalletAmount <= 0) {
+		if (enteredWalletAmount < 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
 	
 		try {
+			if (hasBooked) {
+				toast.error('Activity already booked.');
+				return;
+			}
+	
 			// Fetch user data to get the wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
@@ -219,13 +223,66 @@ const ActivityDetail = () => {
 				return;
 			}
 	
-			// Check if there is enough balance in the wallet
-			if (enteredWalletAmount > userWalletBalance) {
-				toast.error('Not enough in wallet.');
-				return;
+			// Check if the wallet balance is sufficient to cover the full price
+			if (enteredWalletAmount >= activity.price && enteredWalletAmount <= userWalletBalance) {
+				// Deduct wallet balance and skip Stripe payment
+				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
+	
+				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ wallet: updatedWalletBalance }),
+				});
+	
+				if (!walletUpdateResponse.ok) {
+					const errorData = await walletUpdateResponse.json();
+					console.error('Wallet update error:', errorData);
+					throw new Error('Failed to update wallet balance');
+				}
+	
+				console.log('Wallet successfully updated');
+	
+				// Proceed with booking
+				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ activityId }),
+				});
+	
+				if (!bookingResponse.ok) {
+					throw new Error('Failed to book the activity');
+				}
+	
+				console.log('Activity booked successfully using wallet balance.');
+	
+				// Send payment receipt email
+				const receiptSubject = `Payment Receipt for ${activity?.title}`;
+				const receiptHtml = `
+					<h1>Thank You for Your Payment!</h1>
+					<p>You have successfully booked the activity: <strong>${activity?.title}</strong>.</p>
+					<p><strong>Amount Paid:</strong> ${formatPriceRange(activity.price)}</p>
+					<p>Thank you for choosing our service. Have a great experience!</p>
+				`;
+	
+				await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						email: userEmail,
+						subject: receiptSubject,
+						message: '', // Optional plain text message
+						htmlContent: receiptHtml, // HTML content for the email
+					}),
+				});
+	
+				toast.success('Activity booked successfully using wallet balance!');
+				window.dispatchEvent(userUpdateEvent);
+				window.location.reload();
+				closeBookingModal();
+				return; // Exit after successfully booking with wallet
 			}
 	
-			// Create payment method with Stripe
+			// If wallet is insufficient, proceed with Stripe payment
 			const cardElement = elements.getElement(CardElement);
 			const { paymentMethod, error } = await stripe.createPaymentMethod({
 				type: 'card',
@@ -254,24 +311,9 @@ const ActivityDetail = () => {
 				return;
 			}
 	
-			// Proceed with booking
-			const userBookingsResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-bookings/${userId}`);
-			if (!userBookingsResponse.ok) {
-				throw new Error('Failed to fetch user bookings');
-			}
-	
-			const userBookings = await userBookingsResponse.json();
-			const isAlreadyBooked = userBookings.some((booking) => booking._id === activityId);
-	
-			if (isAlreadyBooked) {
-				toast.info('Activity already booked');
-				closeBookingModal();
-				return;
-			}
-	
-			// Deduct wallet balance
+			// Deduct wallet balance (if any amount is used) and finalize booking
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}/wallet`, {
+			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ wallet: updatedWalletBalance }),
@@ -300,7 +342,7 @@ const ActivityDetail = () => {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					email: userEmail, // Recipient's email
+					email: userEmail,
 					subject: receiptSubject,
 					message: '', // Optional plain text message
 					htmlContent: receiptHtml, // HTML content for the email
@@ -314,39 +356,6 @@ const ActivityDetail = () => {
 		} catch (error) {
 			console.error('Error booking activity:', error);
 			toast.error('Failed to book the activity. Please try again.');
-		}
-	
-		// Send additional confirmation email if transportation is not "My Car"
-		try {
-			if (transportation.toLowerCase() !== 'my car') {
-				const emailSubject = 'Booking Confirmation';
-				const emailHtml = `
-					<h1>Booking Confirmation</h1>
-					<p>Hi,</p>
-					<p>Your transportation (${transportation}) will pick you up from <strong>${userLocation}</strong> at the scheduled time.</p>
-					<p>Thank you for choosing us!</p>
-				`;
-	
-				const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						email: userEmail,
-						subject: emailSubject,
-						message: '', // Optional plain text message
-						htmlContent: emailHtml, // HTML content for the email
-					}),
-				});
-	
-				if (!emailResponse.ok) {
-					throw new Error('Failed to send booking confirmation email');
-				}
-	
-				toast.success('Confirmation email sent successfully!');
-			}
-		} catch (error) {
-			console.error('Error sending confirmation email:', error);
-			toast.error('Failed to send confirmation email. Please try again.');
 		}
 	};
 

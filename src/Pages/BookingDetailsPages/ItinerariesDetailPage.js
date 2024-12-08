@@ -203,13 +203,20 @@ const ItineraryDetail = () => {
 		}
 	
 		try {
+			// Check if the itinerary is already booked
+			if (hasBooked) {
+				toast.error('Itinerary already booked.');
+				return;
+			}
+	
 			// Fetch user details
 			const userRes = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userRes.ok) {
 				throw new Error('Failed to fetch user details');
 			}
-	
 			const user = await userRes.json();
+			const userWalletBalance = user.wallet;
+	
 			const userDob = new Date(user.dob);
 			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
 			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
@@ -221,31 +228,66 @@ const ItineraryDetail = () => {
 				return;
 			}
 	
-			// Check if user has enough balance
-			if (enteredAmount > user.wallet) {
-				toast.error('Not enough balance in wallet.');
-				return;
-			}
+			// Handle wallet-only payment if sufficient balance is available
+			if (enteredAmount >= itinerary.price && enteredAmount <= userWalletBalance) {
+				const updatedWalletBalance = userWalletBalance - enteredAmount;
 	
-			// Check for existing bookings
-			const res = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-bookings/${userId}`);
-			if (!res.ok) {
-				throw new Error('Failed to fetch user bookings');
-			}
+				// Update wallet balance
+				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+					method: 'PUT',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ wallet: updatedWalletBalance }),
+				});
 	
-			const userBookings = await res.json();
-			const isAlreadyBooked = userBookings.some((booking) => booking._id === itineraryId);
+				if (!walletUpdateResponse.ok) {
+					const errorData = await walletUpdateResponse.json();
+					console.error('Wallet update error:', errorData);
+					throw new Error('Failed to update wallet balance');
+				}
 	
-			if (isAlreadyBooked) {
-				toast.info('Itinerary already booked');
+				console.log('Wallet successfully updated.');
+	
+				// Proceed with booking
+				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ itineraryId }),
+				});
+	
+				if (!bookingResponse.ok) {
+					throw new Error('Failed to book the itinerary');
+				}
+	
+				console.log('Itinerary booked successfully using wallet balance.');
+	
+				// Send payment receipt email
+				const receiptSubject = `Payment Receipt for Itinerary: ${itinerary?.title}`;
+				const receiptHtml = `
+					<h1>Thank You for Your Payment!</h1>
+					<p>You have successfully booked the itinerary: <strong>${itinerary?.title}</strong>.</p>
+					<p><strong>Amount Paid:</strong> ${formatPriceRange(itinerary.price)}</p>
+					<p>We hope you enjoy your journey!</p>
+				`;
+	
+				await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						email: userEmail,
+						subject: receiptSubject,
+						message: '', // Plain text fallback
+						htmlContent: receiptHtml,
+					}),
+				});
+	
+				toast.success('Itinerary booked successfully using wallet balance!');
+				window.dispatchEvent(userUpdateEvent);
+				window.location.reload();
 				closeBookingModal();
-				return;
+				return; // Exit after successfully booking with wallet
 			}
 	
-			// Deduct wallet balance
-			const updatedWalletBalance = user.wallet - enteredAmount;
-	
-			// Create payment method with Stripe
+			// Proceed with Stripe payment if wallet is insufficient
 			const cardElement = elements.getElement(CardElement);
 			const { paymentMethod, error } = await stripe.createPaymentMethod({
 				type: 'card',
@@ -274,30 +316,33 @@ const ItineraryDetail = () => {
 				return;
 			}
 	
-			// Make the booking request
-			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId, walletAmount: enteredAmount }),
-			});
+			console.log('Stripe payment successful.');
 	
-			if (!bookingResponse.ok) {
-				throw new Error('Failed to book the itinerary');
-			}
-	
-			// Update wallet balance
+			// Deduct wallet balance (if partially used)
+			const updatedWalletBalance = userWalletBalance - enteredAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ wallet: updatedWalletBalance }),
 			});
 	
+			// Finalize booking
+			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ itineraryId }),
+			});
+	
+			if (!bookingResponse.ok) {
+				throw new Error('Failed to book the itinerary');
+			}
+	
 			// Send payment receipt email
 			const receiptSubject = `Payment Receipt for Itinerary: ${itinerary?.title}`;
 			const receiptHtml = `
 				<h1>Thank You for Your Payment!</h1>
 				<p>You have successfully booked the itinerary: <strong>${itinerary?.title}</strong>.</p>
-				<p><strong>Amount Paid:</strong> $${itinerary?.price}</p>
+				<p><strong>Amount Paid:</strong> ${formatPriceRange(itinerary.price)}</p>
 				<p>We hope you enjoy your journey!</p>
 			`;
 	
@@ -305,10 +350,10 @@ const ItineraryDetail = () => {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					email: userEmail, // Recipient's email
+					email: userEmail,
 					subject: receiptSubject,
 					message: '', // Plain text fallback
-					htmlContent: receiptHtml, // HTML content
+					htmlContent: receiptHtml,
 				}),
 			});
 	
@@ -319,38 +364,6 @@ const ItineraryDetail = () => {
 		} catch (error) {
 			console.error('Error booking itinerary:', error);
 			toast.error('Failed to book the itinerary. Please try again.');
-		}
-	
-		// Send additional confirmation email
-		try {
-			if (transportation.toLowerCase() !== 'my car') {
-				const emailSubject = 'Booking Confirmation';
-				const emailHtml = `
-					<h1>Booking Confirmation</h1>
-					<p>Your transportation (${transportation}) will pick you up from <strong>${userLocation}</strong> at the scheduled time.</p>
-					<p>Thank you for booking with us!</p>
-				`;
-	
-				const emailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						email: userEmail,
-						subject: emailSubject,
-						message: '', // Plain text fallback
-						htmlContent: emailHtml, // HTML content
-					}),
-				});
-	
-				if (!emailResponse.ok) {
-					throw new Error('Failed to send booking confirmation email');
-				}
-	
-				toast.success('Confirmation email sent successfully!');
-			}
-		} catch (error) {
-			console.error('Error sending confirmation email:', error);
-			toast.error('Failed to send confirmation email. Please try again.');
 		}
 	};
 	const handleShowTourGuideDetails = async () => {
@@ -561,6 +574,18 @@ const ItineraryDetail = () => {
             setIsSaved(true); // Update state immediately
         }
     };
+
+		// Helper function to format price range based on currency
+		const formatPriceRange = (price) => {
+			const currency = sessionStorage.getItem('currency') || 'EGP';
+			if (currency === 'USD') {
+				return `$${(price / 49.3).toFixed(2)} USD`;
+			} else if (currency === 'EUR') {
+				return `€${(price / 49.3 * 0.93).toFixed(2)} EUR`;
+			} else {
+				return `${price.toFixed(2)} EGP`; // Default to EGP
+			}
+		};
 
 	if (loading) return <p>Loading...</p>;
 
