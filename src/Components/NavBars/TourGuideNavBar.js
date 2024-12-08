@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { sessionStorageEvent } from "../../utils/sessionStorageEvent";
 import {toast} from "react-toastify";
 import Logo from "../../Assets/Logo2.png";
+import { useNotifications } from '../NotificationsContext';
 
 const TourGuideNavBar = () => {
 	const [id, setId] = useState(sessionStorage.getItem('user id'));
@@ -11,6 +12,7 @@ const TourGuideNavBar = () => {
 	const [currency, setCurrency] = useState(() => sessionStorage.getItem('currency') || 'EGP');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [dropdownVisible, setDropdownVisible] = useState(false);
+	const { notificationsCount } = useNotifications(); // Access notification counts
 	const navigate = useNavigate();
 	const dropdownRef = useRef(null);
 
@@ -167,6 +169,19 @@ const TourGuideNavBar = () => {
 										>
 											Profile
 										</NavLink>
+									</li>
+									<li className="flex items-center space-x-2 pl-4">
+										<NavLink
+											to="/notifications"
+											className="text-gray-800 hover:bg-gray-100 text-lg flex items-center"
+										>
+											Notifications
+										</NavLink>
+										{notificationsCount > 0 && (
+											<span className="bg-[#330577] text-white text-base rounded-full w-6 h-6 flex items-center justify-center ml-2">
+												{notificationsCount}
+											</span>
+										)}
 									</li>
 									<li>
 										<NavLink

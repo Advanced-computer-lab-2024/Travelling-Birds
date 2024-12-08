@@ -363,24 +363,46 @@ const ActivityDetail = () => {
 		}
 	};
 
-	// Function to handle canceling the booking
-	const handleCancelBooking = async () => {
+    const handleCancelBooking = async () => {
 		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
 		if (!userConfirmed) {
 			return; // Do nothing if the user cancels the confirmation dialog
 		}
 		try {
+			// Fetch user data to get the wallet balance
+			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+			if (!userResponse.ok) {
+				throw new Error('Failed to fetch user data');
+			}
+			const userData = await userResponse.json();
+			const userWalletBalance = userData.wallet;
+	
+			// Calculate the updated wallet balance
+			const updatedWalletBalance = userWalletBalance + activity.price;
+	
+			// Update wallet balance in the database
+			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ wallet: updatedWalletBalance }),
+			});
+	
+			if (!walletUpdateResponse.ok) {
+				throw new Error('Failed to update wallet balance');
+			}
+	
+			// Proceed to cancel the booking
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'DELETE',
-				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({activityId})
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ activityId }),
 			});
-
+	
 			if (!response.ok) {
 				throw new Error('Failed to cancel the booking');
 			}
-
-			toast.success('Booking canceled successfully');
+	
+			toast.success('Booking canceled successfully. The amount has been refunded to your wallet.');
 			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false); // Update state to reflect cancellation
 			setCanCancel(false);
@@ -545,8 +567,15 @@ const ActivityDetail = () => {
 						</div>
 						<div className="flex flex-col items-center space-y-4">
 							<button
-								onClick={openBookingModal}
-								disabled={bookingOpen === false}
+								onClick={() => {
+									if (bookingOpen === false) {
+										toast.error('Booking not open yet.');
+										return;
+									}
+									openBookingModal();
+								}}
+								
+			
 								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 							>
 								Book Activity

@@ -46,11 +46,13 @@ const ManageActivities = () => {
 	const handleFlagClick = (activity) => {
 		const flagActivity = async () => {
 			try {
+				// Flag or unflag the activity
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${activity._id}`, {
 					method: 'PUT',
-					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({flaggedInappropriate: !activity.flaggedInappropriate})
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ flaggedInappropriate: !activity.flaggedInappropriate }),
 				});
+	
 				if (response.ok) {
 					const updatedActivities = activities.map(a => {
 						if (a._id === activity._id) {
@@ -59,17 +61,58 @@ const ManageActivities = () => {
 						return a;
 					});
 					setActivities(updatedActivities);
-					activity.flaggedInappropriate ? toast.success('Activity flagged successfully') : toast.success('Activity unflagged successfully');
+	
+					// Notify user of success
+					const successMessage = activity.flaggedInappropriate
+						? 'Activity unflagged successfully'
+						: 'Activity flagged successfully';
+					toast.success(successMessage);
+	
+					// If flagged, send an email notification to the advertiser
+					if (!activity.flaggedInappropriate) {
+						const emailSubject = `Activity Flagged as Inappropriate: ${activity.title}`;
+						const emailHtmlContent = `
+							<h1>Activity Flagged</h1>
+							<p>Your activity titled <strong>${activity.title}</strong> has been flagged as inappropriate.</p>
+							<p>Please review the activity details and address any issues as soon as possible.</p>
+							<p>Thank you for your attention.</p>
+						`;
+	
+						// Fetch advertiser details
+						const advertiserResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${activity.createdBy}`);
+						if (!advertiserResponse.ok) {
+							throw new Error('Failed to fetch advertiser details');
+						}
+						const advertiser = await advertiserResponse.json();
+	
+						// Send email
+						const mailResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({
+								email: advertiser.email,
+								subject: emailSubject,
+								message: '', // Optional plain text fallback
+								htmlContent: emailHtmlContent,
+							}),
+						});
+	
+						if (!mailResponse.ok) {
+							throw new Error('Failed to send email notification to the advertiser');
+						}
+	
+						toast.success('Email notification sent to the advertiser');
+					}
 				} else {
-					toast.error('Failed to flag activity');
+					throw new Error('Failed to flag activity');
 				}
 			} catch (error) {
 				console.error('Failed to flag activity:', error);
 				toast.error('Failed to flag activity');
 			}
-		}
+		};
 		flagActivity().then(() => setIsModalOpen(false));
-	}
+	};
 
 	const handleDeleteClick = (activity) => {
 		if (window.confirm(`Are you sure you want to delete ${activity.title}?`)) {

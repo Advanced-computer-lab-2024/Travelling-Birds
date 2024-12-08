@@ -31,7 +31,7 @@ const ExplorePage = () => {
 				museums: Array.isArray(data[3]) ? data[3] : []
 			}
 			const filteredResults = {
-				activities: results.activities.filter(activity => !activity.flaggedInappropriate && activity.bookingOpen),
+				activities: results.activities.filter(activity => !activity.flaggedInappropriate),
 				itineraries: results.itineraries.filter(itinerary => itinerary.active && !itinerary.flaggedInappropriate),
 				historicalPlaces: results.historicalPlaces,
 				museums: results.museums,
