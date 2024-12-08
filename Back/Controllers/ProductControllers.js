@@ -30,7 +30,13 @@ const addProduct = async (req, res) => {
 // Get products
 const getAllProducts = async (req, res) => {
 	try {
-		const products = await Product.find().populate('seller', '_id username');
+		// Find products where quantity is greater than 0
+		const products = await Product.find({ availableQuantity: { $gt: 0 } }).populate('seller', '_id username');
+		// If no products are found, it's not an error, just no products available
+		if (products.length === 0) {
+			return res.status(404).json({message: 'No products available'});
+		}
+
 		res.status(200).json(products);
 	} catch (error) {
 		res.status(500).json({error: error.message});

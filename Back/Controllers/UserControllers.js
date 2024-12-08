@@ -991,7 +991,7 @@ const addProductToCart = async (req, res) => {
 
 		const product = await Product.findById(productId);
 
-		if (!product) {
+		if (!product || product.availableQuantity <= 0) {
 			return res.status(404).json({message: 'Product not found'});
 		}
 
