@@ -33,7 +33,7 @@ const {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
-	addproducttocart,
+	addProductToCart,
 	getCart,
 	removeProductFromCart,
 	requestDelete,
@@ -138,7 +138,7 @@ router.get('/product-wishlist/:id', getProductWishlist);
 router.delete('/product-wishlist/:id', removeProductFromWishlist);
 
 // Add Product to Cart
-router.post('/product-cart/:id', addproducttocart);
+router.post('/product-cart/:id', addProductToCart);
 
 // Get Cart
 router.get('/product-cart/:id', getCart);

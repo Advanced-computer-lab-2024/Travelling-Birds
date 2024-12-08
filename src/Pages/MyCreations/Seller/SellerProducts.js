@@ -12,7 +12,6 @@ const SellerDashboard = () => {
 	const [price, setPrice] = useState('');
 	const [availableQuantity, setAvailableQuantity] = useState('');
 	const [picture, setPicture] = useState(null);
-	const [seller, setSeller] = useState(sessionStorage.getItem('user id'));
 	const [isArchived, setIsArchived] = useState(false);
 	const [imagePreview, setImagePreview] = useState(null);
 	const [salesReport, setSalesReport] = useState({totalRevenue: 0, totalSales: 0});
@@ -71,8 +70,7 @@ const SellerDashboard = () => {
 		setDescription(product.description);
 		setPrice(product.price);
 		setAvailableQuantity(product.availableQuantity);
-		setPicture(null);
-		setSeller(product.seller);
+		setPicture(null);	
 		setIsArchived(product.isArchived);
 		setModalVisible(true);
 	};
@@ -86,7 +84,6 @@ const SellerDashboard = () => {
 		if (picture) {
 			formData.append('picture', picture);
 		}
-		formData.append('seller', seller);
 		formData.append('isArchived', isArchived);
 
 		const endpoint = selectedProduct ? `${process.env.REACT_APP_BACKEND}/api/products/${selectedProduct}` : `${process.env.REACT_APP_BACKEND}/api/products`;

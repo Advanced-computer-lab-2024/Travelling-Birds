@@ -6,7 +6,7 @@ const sentActivityReminders = new Set();
 const sentProductReminders = new Set();
 
 const start = () => {
-    cron.schedule('*/5 * * * *', async () => {
+    cron.schedule('* * * * *', async () => {
         console.log('Running reminder scheduler...');
         const now = new Date();
 
@@ -80,7 +80,7 @@ const start = () => {
                 if (product.availableQuantity === 0) {
                     const uniqueKey = `product-${product._id}`;
                     if (!sentProductReminders.has(uniqueKey)) {
-                        const sellerResponse = await fetch(`${process.env.BACKEND_URL}/api/users/${product.seller}`);
+                        const sellerResponse = await fetch(`${process.env.BACKEND_URL}/api/users/${product.seller._id}`);
                         if (!sellerResponse.ok) throw new Error('Failed to fetch seller data');
 
                         const seller = await sellerResponse.json();

@@ -30,7 +30,7 @@ const addProduct = async (req, res) => {
 // Get products
 const getAllProducts = async (req, res) => {
 	try {
-		const products = await Product.find().populate('seller', 'username');
+		const products = await Product.find().populate('seller', '_id username');
 		res.status(200).json(products);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -40,7 +40,7 @@ const getAllProducts = async (req, res) => {
 // Get specific product
 const getProduct = async (req, res) => {
 	try {
-		const product = await Product.findById(req.params.id).populate('seller', 'username');
+		const product = await Product.findById(req.params.id).populate('seller', '_id username');
 		if (!product) {
 			return res.status(404).json({message: 'Product not found'});
 		}
