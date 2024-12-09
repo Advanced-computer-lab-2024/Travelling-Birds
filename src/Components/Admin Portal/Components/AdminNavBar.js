@@ -105,6 +105,13 @@ const AdminNavBar = () => {
 						User Growth
 					</Link>
 				</li>
+				<li>
+					<Link to='/admin/analytics/revenue'>
+						<i className="fa-solid fa-chart-bar fa-fw"></i>
+						{/**/}
+						Revenue
+					</Link>
+				</li>
 
 				<li className="menu-title">Promotions</li>
 				<li>

@@ -42,7 +42,7 @@ const ManageProducts = () => {
 				body: JSON.stringify(filters),
 			});
 			const data = await response.json();
-			setSalesReport(data);
+			setSalesReport(data.products);
 		} catch (error) {
 			console.error('Error fetching sales report:', error);
 		}

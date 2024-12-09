@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {FaClock, FaMapMarkerAlt, FaRegStar, FaShareAlt, FaStar, FaStarHalfAlt} from 'react-icons/fa';
-import {AiOutlineHeart, AiFillHeart} from "react-icons/ai";
+import {AiFillHeart, AiOutlineHeart} from "react-icons/ai";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../../Components/Locations/Location";
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
-import { CardElement } from '@stripe/react-stripe-js';
-import { useStripe, useElements } from '@stripe/react-stripe-js';
+import {CardElement, useElements, useStripe} from '@stripe/react-stripe-js';
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);
@@ -41,7 +40,8 @@ const ItineraryDetail = () => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
-	const [ promoCodeValid, setPromoCodeValid] = useState(null);
+	const [promoCodeValid, setPromoCodeValid] = useState(null);
+	const [discount, setDiscount] = useState(0);
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -122,18 +122,18 @@ const ItineraryDetail = () => {
 		};
 
 		const checkIfSaved = async () => {
-            try {
-                const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itineraries/${userId}`);
-                if (!response.ok) throw new Error('Failed to fetch saved activities');
-                
-                const savedItinerary = await response.json();
-                // Check if the activity is already in the saved activities
-                const saved = savedItinerary.some(itinerary => itinerary._id === itineraryId);
-                setIsSaved(saved);
-            } catch (error) {
-                console.error('Error checking saved status:', error);
-            }
-        };
+			try {
+				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itineraries/${userId}`);
+				if (!response.ok) throw new Error('Failed to fetch saved activities');
+
+				const savedItinerary = await response.json();
+				// Check if the activity is already in the saved activities
+				const saved = savedItinerary.some(itinerary => itinerary._id === itineraryId);
+				setIsSaved(saved);
+			} catch (error) {
+				console.error('Error checking saved status:', error);
+			}
+		};
 
 
 		fetchItinerary().then(r => {
@@ -191,26 +191,26 @@ const ItineraryDetail = () => {
 			toast.error('Only tourists can book itineraries.');
 			return;
 		}
-	
+
 		if (!transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
-	
+
 		// Parse wallet amount input to a number
 		const enteredAmount = parseFloat(walletAmount);
 		if (enteredAmount <= 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
-	
+
 		try {
 			// Check if the itinerary is already booked
 			if (hasBooked) {
 				toast.error('Itinerary already booked.');
 				return;
 			}
-	
+
 			// Fetch user details
 			const userRes = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userRes.ok) {
@@ -218,58 +218,50 @@ const ItineraryDetail = () => {
 			}
 			const user = await userRes.json();
 			const userWalletBalance = user.wallet;
-	
+
 			const userDob = new Date(user.dob);
 			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
 			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
 				(new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
 				? ageDifference - 1 : ageDifference;
-	
+
 			if (age < 18) {
 				toast.error('You must be at least 18 to book.');
 				return;
 			}
 
-            let finalprice = itinerary.price;
-
-			if(promoCodeValid){
-				finalprice *= 0.85; // Apply 25% discount
-			}
-				
-
-	
 			// Handle wallet-only payment if sufficient balance is available
-			if (enteredAmount >= finalprice && enteredAmount <= userWalletBalance) {
+			if (enteredAmount >= itinerary.price * (1 - discount) && enteredAmount <= userWalletBalance) {
 				const updatedWalletBalance = userWalletBalance - enteredAmount;
-	
+
 				// Update wallet balance
 				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ wallet: updatedWalletBalance }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({wallet: updatedWalletBalance}),
 				});
-	
+
 				if (!walletUpdateResponse.ok) {
 					const errorData = await walletUpdateResponse.json();
 					console.error('Wallet update error:', errorData);
 					throw new Error('Failed to update wallet balance');
 				}
-	
+
 				console.log('Wallet successfully updated.');
-	
+
 				// Proceed with booking
 				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ itineraryId }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({itineraryId, discount, itineraryPrice: itinerary.price}),
 				});
-	
+
 				if (!bookingResponse.ok) {
 					throw new Error('Failed to book the itinerary');
 				}
-	
+
 				console.log('Itinerary booked successfully using wallet balance.');
-	
+
 				// Send payment receipt email
 				const receiptSubject = `Payment Receipt for Itinerary: ${itinerary?.title}`;
 				const receiptHtml = `
@@ -278,10 +270,10 @@ const ItineraryDetail = () => {
 					<p><strong>Amount Paid:</strong> ${formatPriceRange(itinerary.price)}</p>
 					<p>We hope you enjoy your journey!</p>
 				`;
-	
+
 				await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: {'Content-Type': 'application/json'},
 					body: JSON.stringify({
 						email: userEmail,
 						subject: receiptSubject,
@@ -289,64 +281,64 @@ const ItineraryDetail = () => {
 						htmlContent: receiptHtml,
 					}),
 				});
-	
+
 				toast.success('Itinerary booked successfully using wallet balance!');
 				window.dispatchEvent(userUpdateEvent);
 				window.location.reload();
 				closeBookingModal();
 				return; // Exit after successfully booking with wallet
 			}
-	
+
 			// Proceed with Stripe payment if wallet is insufficient
 			const cardElement = elements.getElement(CardElement);
-			const { paymentMethod, error } = await stripe.createPaymentMethod({
+			const {paymentMethod, error} = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
 			});
-	
+
 			if (error) {
 				toast.error(`Payment failed: ${error.message}`);
 				return;
 			}
-	
+
 			// Call backend to handle payment
 			const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					amount: itinerary.price * 100, // Convert to cents
 					currency: 'usd',
 					paymentMethodId: paymentMethod.id,
 				}),
 			});
-	
+
 			const paymentResult = await paymentResponse.json();
 			if (!paymentResult.success) {
 				toast.error(`Payment failed: ${paymentResult.error}`);
 				return;
 			}
-	
+
 			console.log('Stripe payment successful.');
-	
+
 			// Deduct wallet balance (if partially used)
 			const updatedWalletBalance = userWalletBalance - enteredAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			// Finalize booking
 			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId}),
 			});
-	
+
 			if (!bookingResponse.ok) {
 				throw new Error('Failed to book the itinerary');
 			}
-	
+
 			// Send payment receipt email
 			const receiptSubject = `Payment Receipt for Itinerary: ${itinerary?.title}`;
 			const receiptHtml = `
@@ -355,10 +347,10 @@ const ItineraryDetail = () => {
 				<p><strong>Amount Paid:</strong> ${formatPriceRange(itinerary.price)}</p>
 				<p>We hope you enjoy your journey!</p>
 			`;
-	
+
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					email: userEmail,
 					subject: receiptSubject,
@@ -366,7 +358,7 @@ const ItineraryDetail = () => {
 					htmlContent: receiptHtml,
 				}),
 			});
-	
+
 			toast.success('Itinerary booked successfully, and payment receipt email sent!');
 			window.dispatchEvent(userUpdateEvent);
 			window.location.reload();
@@ -408,7 +400,7 @@ const ItineraryDetail = () => {
 		if (!userConfirmed) {
 			return;
 		}
-	
+
 		try {
 			// Fetch the user data to get the current wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
@@ -417,34 +409,34 @@ const ItineraryDetail = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			// Calculate the refund amount
 			const refundAmount = itinerary.price;
-	
+
 			// Update the wallet balance
 			const updatedWalletBalance = userWalletBalance + refundAmount;
-	
+
 			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			if (!walletUpdateResponse.ok) {
 				throw new Error('Failed to update wallet balance');
 			}
-	
+
 			// Cancel the booking
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/itinerary-booking/${userId}`, {
 				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ itineraryId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId}),
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to cancel the booking');
 			}
-	
+
 			toast.success('Booking canceled successfully. Refund processed.');
 			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false);
@@ -556,98 +548,98 @@ const ItineraryDetail = () => {
 	}
 
 	const saveItinerary = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ itineraryId })
-            });
-    
-            const data = await response.json();
-    
-            if (!response.ok) {
-                // Check if the activity is already saved
-                if (data.message === 'Itinerary is already saved') {
-                    toast.info('This Itinerary is already saved.');
-                } else {
-                    throw new Error(data.message || 'Failed to save the Itinerary');
-                }
-                return;
-            }
-    
-            toast.success('Itinerary saved successfully');
-        } catch (error) {
-            console.error('Error saving Itinerary:', error);
-            toast.error('Failed to save the Itinerary. Please try again.');
-        }
-    };
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId})
+			});
 
-       // Unsave activity
-       const unsaveItinerary = async () => {
-        try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ itineraryId })
-            });
+			const data = await response.json();
 
-            if (!response.ok) throw new Error('Failed to unsave the Itinerary');
-            setIsSaved(false);
-            toast.success('Itinerary unsaved successfully');
-        } catch (error) {
-            console.error('Error unsaving Itinerary:', error);
-            toast.error('Failed to unsave the Itinerary. Please try again.');
-        }
-    };
+			if (!response.ok) {
+				// Check if the activity is already saved
+				if (data.message === 'Itinerary is already saved') {
+					toast.info('This Itinerary is already saved.');
+				} else {
+					throw new Error(data.message || 'Failed to save the Itinerary');
+				}
+				return;
+			}
 
-    const toggleSave = async () => {
-        if (isSaved) {
-            await unsaveItinerary();
-            setIsSaved(false); // Update state immediately
-        } else {
+			toast.success('Itinerary saved successfully');
+		} catch (error) {
+			console.error('Error saving Itinerary:', error);
+			toast.error('Failed to save the Itinerary. Please try again.');
+		}
+	};
+
+	// Unsave activity
+	const unsaveItinerary = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/saved-itinerary/${userId}`, {
+				method: 'DELETE',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({itineraryId})
+			});
+
+			if (!response.ok) throw new Error('Failed to unsave the Itinerary');
+			setIsSaved(false);
+			toast.success('Itinerary unsaved successfully');
+		} catch (error) {
+			console.error('Error unsaving Itinerary:', error);
+			toast.error('Failed to unsave the Itinerary. Please try again.');
+		}
+	};
+
+	const toggleSave = async () => {
+		if (isSaved) {
+			await unsaveItinerary();
+			setIsSaved(false); // Update state immediately
+		} else {
 			await saveItinerary();
-            setIsSaved(true); // Update state immediately
-        }
-    };
+			setIsSaved(true); // Update state immediately
+		}
+	};
 
-		// Helper function to format price range based on currency
-		const formatPriceRange = (price) => {
-			const currency = sessionStorage.getItem('currency') || 'EGP';
-			if (currency === 'USD') {
-				return `$${(price / 49.3).toFixed(2)} USD`;
-			} else if (currency === 'EUR') {
-				return `€${(price / 49.3 * 0.93).toFixed(2)} EUR`;
-			} else {
-				return `${price.toFixed(2)} EGP`; // Default to EGP
-			}
-		};
+	// Helper function to format price range based on currency
+	const formatPriceRange = (price) => {
+		const currency = sessionStorage.getItem('currency') || 'EGP';
+		if (currency === 'USD') {
+			return `$${(price / 49.3).toFixed(2)} USD`;
+		} else if (currency === 'EUR') {
+			return `€${(price / 49.3 * 0.93).toFixed(2)} EUR`;
+		} else {
+			return `${price.toFixed(2)} EGP`; // Default to EGP
+		}
+	};
 
 
-		const handlePromoCodeChange = async (e) => {
-			const code = e.target.value;
-			setPromoCode(code);
-		  
-			if (!code) {
-			  setPromoCodeValid(null);
-			  return;
-			}
-		  
-			try {
-			  const response = await fetch(
-				`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
-			  );
-			  if (response.ok) {
-				const data = await response.json();
-				setPromoCodeValid(true);
-				
-			  } else {
+	const handlePromoCodeChange = async (e) => {
+		const code = e.target.value;
+		setPromoCode(code);
+
+		if (!code) {
+			setPromoCodeValid(null);
+			return;
+		}
+
+		fetch(`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.isActive && new Date(data.endDate) > new Date() && new Date(data.startDate) < new Date()) {
+					setPromoCodeValid(true);
+					setDiscount(data.discount);
+					toast.success(`Promo code applied successfully`);
+				} else {
+					setPromoCodeValid(false);
+				}
+			})
+			.catch((error) => {
+				console.error('Error checking promo code:', error);
 				setPromoCodeValid(false);
-			  }
-			} catch (error) {
-			  console.error("Error validating promo code:", error);
-			  setPromoCodeValid(false);
-			}
-		  };
+			});
+	};
 
 	if (loading) return <p>Loading...</p>;
 
@@ -680,12 +672,13 @@ const ItineraryDetail = () => {
 								Book Itinerary
 							</button>
 							<button
-                                    onClick={toggleSave}
-                                    className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
-                                >
-                                    {isSaved ? <AiFillHeart className="text-lg mr-2" /> : <AiOutlineHeart className="text-lg mr-2" />}
-                                    {isSaved ? 'Unsave' : 'Save'}
-                                </button>
+								onClick={toggleSave}
+								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
+							>
+								{isSaved ? <AiFillHeart className="text-lg mr-2"/> :
+									<AiOutlineHeart className="text-lg mr-2"/>}
+								{isSaved ? 'Unsave' : 'Save'}
+							</button>
 							<div className="relative">
 								<button
 									onClick={() => setIsShareOpen(!isShareOpen)}
@@ -925,51 +918,51 @@ const ItineraryDetail = () => {
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 							<div className="bg-white p-6 rounded-lg shadow-lg w-96">
-							<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
-							<div className="mb-4">
-								<label className="block mb-2">Payment Information</label>
-								<div className="w-full border rounded-lg p-2">
-								<CardElement />
+								<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+								<div className="mb-4">
+									<label className="block mb-2">Payment Information</label>
+									<div className="w-full border rounded-lg p-2">
+										<CardElement/>
+									</div>
 								</div>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Transportation</label>
-								<select
-								value={transportation}
-								onChange={(e) => setTransportation(e.target.value)}
-								className="w-full border rounded-lg p-2"
-								>
-								<option value="">Select</option>
-								{transportations.map((transport) => (
-									<option key={transport._id} value={transport.name}>
-									{transport.name}
-									</option>
-								))}
-								<option value="my car">My Car</option>
-								</select>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Wallet Amount</label>
-								<input
-								type="text"
-								value={walletAmount}
-								onChange={(e) => setWalletAmount(e.target.value)}
-								className="w-full border rounded-lg p-2"
-								placeholder="Enter amount"
-								/>
-							</div>
-							<div className="mb-4">
-                                    <label className="block mb-2">Location
-                                        {/**/}
-                                        <input
-                                            type="text"
-                                            value={userLocation}
-                                            onChange={(e) => setUserLocation(e.target.value)}
-                                            className="w-full border rounded-lg p-2"
-                                            placeholder="Enter your location"
-                                        />
-                                    </label>
-                                </div>
+								<div className="mb-4">
+									<label className="block mb-2">Transportation</label>
+									<select
+										value={transportation}
+										onChange={(e) => setTransportation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+									>
+										<option value="">Select</option>
+										{transportations.map((transport) => (
+											<option key={transport._id} value={transport.name}>
+												{transport.name}
+											</option>
+										))}
+										<option value="my car">My Car</option>
+									</select>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Wallet Amount</label>
+									<input
+										type="text"
+										value={walletAmount}
+										onChange={(e) => setWalletAmount(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter amount"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Location
+										{/**/}
+										<input
+											type="text"
+											value={userLocation}
+											onChange={(e) => setUserLocation(e.target.value)}
+											className="w-full border rounded-lg p-2"
+											placeholder="Enter your location"
+										/>
+									</label>
+								</div>
 								<div className="mb-4">
 									<label className="block mb-2">Promo Code (Optional)</label>
 									<input
@@ -977,33 +970,34 @@ const ItineraryDetail = () => {
 										value={promoCode}
 										onChange={handlePromoCodeChange}
 										className={`w-full border rounded-lg p-2 ${
-										promoCodeValid === true
-											? "border-green-500"
-											: promoCodeValid === false
-											? "border-red-500"
-											: "border-gray-300"
+											promoCodeValid ? "border-green-500"
+												: !promoCodeValid ? "border-red-500"
+													: "border-gray-300"
 										}`}
 										placeholder="Enter promo code"
 									/>
-									{promoCodeValid === false && (
+									{promoCodeValid ? (
+										<p className="text-green-500 text-sm">Promo code applied successfully,
+											Discount {discount}%</p>
+									) : (
 										<p className="text-red-500 text-sm">Invalid promo code</p>
 									)}
-									</div>
-							<button
-								onClick={handleCompleteBooking}
-								className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
-							>
-								Book
-							</button>
-							<button
-								onClick={closeBookingModal}
-								className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
-							>
-								Cancel
-							</button>
+								</div>
+								<button
+									onClick={handleCompleteBooking}
+									className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
+								>
+									Book
+								</button>
+								<button
+									onClick={closeBookingModal}
+									className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+								>
+									Cancel
+								</button>
 							</div>
 						</div>
-						)}
+					)}
 				</div>
 			</section>
 		</div>

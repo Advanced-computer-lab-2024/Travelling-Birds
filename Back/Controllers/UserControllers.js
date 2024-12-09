@@ -433,9 +433,22 @@ const addActivityBooking = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
+		// Find the activity to add the booking
+		const activity = await Activity.findById(activityId);
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
+
 		user.activityBookings.push({
 			activity: activityId,
 			activityPrice,
+			discount,
+			dateBooked: new Date()
+		});
+
+		activity.bookings.push({
+			user: userId,
+			bookingPrice: activityPrice,
 			discount,
 			dateBooked: new Date()
 		});
@@ -455,6 +468,7 @@ const addActivityBooking = async (req, res) => {
 		setUserBadge(user);
 
 		await user.save();
+		await activity.save();
 		res.status(200).json({message: 'Activity booking added successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -548,6 +562,8 @@ const removeActivityBooking = async (req, res) => {
 const addItineraryBooking = async (req, res) => {
 	const userId = req.params.id;
 	const itineraryId = req.body.itineraryId;
+	const itineraryPrice = req.body.itineraryPrice;
+	const discount = req.body.discount;
 
 	try {
 		const user = await User.findById(userId);
@@ -563,7 +579,19 @@ const addItineraryBooking = async (req, res) => {
 			return res.status(404).json({message: 'Itinerary not found'});
 		}
 
-		user.itineraryBookings.push(itineraryId);
+		user.itineraryBookings.push({
+			itinerary: itineraryId,
+			itineraryPrice,
+			discount,
+			dateBooked: new Date()
+		});
+
+		itinerary.bookings.push({
+			user: userId,
+			itineraryPrice,
+			discount,
+			dateBooked: new Date()
+		});
 
 		// Adjust loyalty and redeemable points based on user badge
 		let pointsMultiplier = 0.5;
@@ -580,6 +608,7 @@ const addItineraryBooking = async (req, res) => {
 		setUserBadge(user);
 
 		await user.save();
+		await itinerary.save();
 		res.status(200).json({message: 'Itinerary booking added successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -596,7 +625,7 @@ const getItineraryBookings = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const itineraryBookings = await Itinerary.find({_id: {$in: user.itineraryBookings}});
+		const itineraryBookings = await Itinerary.find({_id: {$in: user.itineraryBookings.map(booking => booking.itinerary)}});
 		res.status(200).json(itineraryBookings);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -614,18 +643,14 @@ const removeItineraryBooking = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const index = user.itineraryBookings.indexOf(itineraryId);
-		if (index === -1) {
-			return res.status(400).json({message: 'Itinerary not found in user bookings'});
-		}
+		user.itineraryBookings = user.itineraryBookings.filter(booking => booking.itinerary.toString() !== itineraryId);
 
 		const itinerary = await Itinerary.findById(itineraryId);
 		if (!itinerary) {
 			return res.status(404).json({message: 'Itinerary not found'});
 		}
 
-		// Remove the itinerary from user's bookings
-		user.itineraryBookings.splice(index, 1);
+		itinerary.bookings = itinerary.bookings.filter(booking => booking.user.toString() !== userId);
 
 		// Adjust loyalty and redeemable points based on user badge
 		let pointsMultiplier = 0.5;
@@ -646,6 +671,7 @@ const removeItineraryBooking = async (req, res) => {
 		setUserBadge(user);
 
 		await user.save();
+		await itinerary.save();
 		res.status(200).json({message: 'Itinerary booking removed successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -751,20 +777,20 @@ const getProductStatus = async (req, res) => {
 		// Fetch the user and product from the database
 		const user = await User.findById(userId);
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({message: 'User not found'});
 		}
 
 		const product = await Product.findById(productId);
 		if (!product) {
-			return res.status(404).json({ message: 'Product not found' });
+			return res.status(404).json({message: 'Product not found'});
 		}
 
 		// You can replace this with logic to determine product status
 		const productStatus = 'Delivered'; //  replace with your own logic
 
-		res.status(200).json({ status: productStatus });
+		res.status(200).json({status: productStatus});
 	} catch (error) {
-		res.status(500).json({ error: error.message });
+		res.status(500).json({error: error.message});
 	}
 };
 
@@ -1270,7 +1296,7 @@ const getUserAnalytics = async (req, res) => {
 // Get sales analytics
 const getSalesAnalytics = async (req, res) => {
 	const userId = req.params.id;
-	const {productId, startDate, endDate} = req.query;
+	const {productId, activityId, itineraryId, startDate, endDate} = req.body;
 
 	try {
 		const user = await User.findById(userId);
@@ -1278,40 +1304,160 @@ const getSalesAnalytics = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const match = {};
+		let match = {};
+		const promises = [];
 
-		if (user.role !== 'admin') {
+		if (user.role === 'seller') {
 			match.seller = userId;
-		}
-
-		if (productId) {
-			match._id = productId;
-		}
-
-		if (startDate && endDate) {
-			match['purchases.datePurchased'] = {
-				$gte: new Date(startDate),
-				$lte: new Date(endDate),
-			};
-		}
-
-		console.log(match);
-
-		const products = await Product.aggregate([
-			{$match: match},
-			{$unwind: '$purchases'},
-			{
-				$group: {
-					_id: null,
-					totalRevenue: {$sum: {$multiply: ['$purchases.quantity', {$multiply: ['$purchases.itemPrice', {$subtract: [1, '$purchases.discount']}]}]}},
-					totalSales: {$sum: '$purchases.quantity'}
-				}
+			if (startDate && endDate) {
+				match['purchases.datePurchased'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
 			}
-		]);
+			if (productId) {
+				match._id = productId;
+			}
 
-		res.json(products[0] || {totalRevenue: 0, totalSales: 0});
-	} catch
-		(error) {
+			promises.push(Product.aggregate([
+				{$match: match},
+				{$unwind: '$purchases'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$purchases.quantity', {$multiply: ['$purchases.itemPrice', {$subtract: [1, {$divide: ['$purchases.discount', 100]}]}]}]}},
+						totalSales: {$sum: '$purchases.quantity'}
+					}
+				}
+			]));
+		}
+
+		if (user.role === 'advertiser') {
+			match.createdBy = userId;
+			if (startDate && endDate) {
+				match['bookings.dateBooked'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
+			}
+			if (activityId) {
+				match._id = activityId;
+			}
+
+			promises.push(Activity.aggregate([
+				{$match: match},
+				{$unwind: '$bookings'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$bookings.bookingPrice', {$subtract: [1, {$divide: ['$bookings.discount', 100]}]}]}},
+						totalBookings: {$sum: 1}
+					}
+				}
+			]));
+		}
+
+		if (user.role === 'tour_guide') {
+			match.createdBy = userId;
+			if (startDate && endDate) {
+				match['bookings.dateBooked'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
+			}
+			if (itineraryId) {
+				match._id = itineraryId;
+			}
+
+			promises.push(Itinerary.aggregate([
+				{$match: match},
+				{$unwind: '$bookings'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$bookings.bookingPrice', {$subtract: [1, {$divide: ['$bookings.discount', 100]}]}]}},
+						totalBookings: {$sum: 1}
+					}
+				}
+			]));
+		}
+
+		if (user.role === 'admin') {
+			if (startDate && endDate) {
+				match['purchases.datePurchased'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
+			}
+			if (productId) {
+				match._id = productId;
+			}
+			console.log(match);
+			promises.push(Product.aggregate([
+				{$match: match},
+				{$unwind: '$purchases'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$purchases.quantity', {$multiply: ['$purchases.itemPrice', {$subtract: [1, {$divide: ['$purchases.discount', 100]}]}]}]}},
+						totalSales: {$sum: '$purchases.quantity'}
+					}
+				}
+			]));
+
+			match = {};
+			if (startDate && endDate) {
+				match['bookings.dateBooked'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
+			}
+			if (activityId) {
+				match._id = activityId;
+			}
+			promises.push(Activity.aggregate([
+				{$match: match},
+				{$unwind: '$bookings'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$bookings.bookingPrice', {$subtract: [1, {$divide: ['$bookings.discount', 100]}]}]}},
+						totalBookings: {$sum: 1}
+					}
+				}
+			]));
+
+			match = {};
+			if (startDate && endDate) {
+				match['bookings.dateBooked'] = {
+					$gte: new Date(startDate),
+					$lte: new Date(endDate),
+				};
+			}
+			if (itineraryId) {
+				match._id = itineraryId;
+			}
+			promises.push(Itinerary.aggregate([
+				{$match: match},
+				{$unwind: '$bookings'},
+				{
+					$group: {
+						_id: null,
+						totalRevenue: {$sum: {$multiply: ['$bookings.bookingPrice', {$subtract: [1, {$divide: ['$bookings.discount', 100]}]}]}},
+						totalBookings: {$sum: 1}
+					}
+				}
+			]));
+		}
+
+		const [products, activities, itineraries] = await Promise.all(promises);
+
+		res.json({
+			products: products[0] ? products[0] : {totalRevenue: 0, totalSales: 0},
+			activities: activities[0] ? activities[0] : {totalRevenue: 0, totalBookings: 0},
+			itineraries: itineraries[0] ? itineraries[0] : {totalRevenue: 0, totalBookings: 0}
+		});
+	} catch (error) {
 		res.status(500).json({error: error.message});
 	}
 };

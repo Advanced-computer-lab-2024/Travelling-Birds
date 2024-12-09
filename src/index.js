@@ -13,9 +13,9 @@ import {
 	TouristNavBar
 } from "./Components/NavBars";
 import {BrowserRouter, Outlet, Route, Routes} from "react-router-dom";
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { NotificationsProvider } from './Components/NotificationsContext';
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+import {NotificationsProvider} from './Components/NotificationsContext';
 
 import ProfilePage from "./Pages/ProfilePage";
 import ExplorePage from "./Pages/ExplorePage";
@@ -92,6 +92,7 @@ import AddressBook from "./Pages/AddressBook";
 import ProductCheckout from "./Pages/Products/ProductCheckout";
 
 import Notfications from "./Pages/Notfications";
+import RevenueAnalytics from "./Components/Admin Portal/Components/Analytics/RevenueAnalytics";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -100,84 +101,86 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 	<React.StrictMode>
 		<Elements stripe={stripePromise}>
-		<NotificationsProvider>
-		<BrowserRouter>
-			<Routes>
-				<Route path='/' element={<NavBarContainer/>}>
-					<Route index element={<ExplorePage/>}/>
-					<Route path="admin" element={<AdminLayout/>}>
-						<Route path='users'>
-							<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
-							<Route path='approve-users' element={<ApproveRegistrants/>}/>
-							<Route path='manage-users' element={<ManageUserAccounts/>}/>
-							<Route path='users-to-delete' element={<UsersToDelete/>}/>
+			<NotificationsProvider>
+				<BrowserRouter>
+					<Routes>
+						<Route path='/' element={<NavBarContainer/>}>
+							<Route index element={<ExplorePage/>}/>
+							<Route path="admin" element={<AdminLayout/>}>
+								<Route path='users'>
+									<Route path='admin-accounts' element={<CreateAdminAccount/>}/>
+									<Route path='approve-users' element={<ApproveRegistrants/>}/>
+									<Route path='manage-users' element={<ManageUserAccounts/>}/>
+									<Route path='users-to-delete' element={<UsersToDelete/>}/>
+								</Route>
+								<Route path='content'>
+									<Route path='activities' element={<ManageActivities/>}/>
+									<Route path='itineraries' element={<ManageItineraries/>}/>
+									<Route path='museums' element={<ManageMuseums/>}/>
+									<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
+									<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
+								</Route>
+								<Route path='products' element={<ManageProducts/>}/>
+								<Route path='complaints' element={<ViewComplaints/>}/>
+								<Route path='promotions' element={<ManagePromotions/>}/>
+								<Route path='analytics'>
+									<Route path='user-growth' element={<UserGrowth/>}/>
+									<Route path='revenue' element={<RevenueAnalytics/>}/>
+								</Route>
+							</Route>
+
+							<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
+							<Route path="transportation" element={<TransportationManagement/>}/>
+							<Route path="seller-products" element={<SellerProducts/>}/>
+							<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
+							<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
+							<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
+							<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
+
+							<Route path="register" element={<RegisterPage/>}/>
+							<Route path="login" element={<LoginPage/>}/>
+							<Route path='wait' element={<WaitPage/>}/>
+							<Route path='reset-password' element={<ResetPasswordPage/>}/>
+
+							<Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
+							<Route path='flights' element={<FlightSearchPage/>}/>
+							<Route path='flights/:flightId/:origin/:destination/:departureDate'
+							       element={<FlightDetails/>}/>
+							<Route path='hotels' element={<HotelSearchPage/>}/>
+							<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
+
+							<Route path="bookings" element={<BookingPage/>}/>
+							<Route path='activities' element={<ActivitiesPage/>}/>
+							<Route path='itineraries' element={<ItinerariesPage/>}/>
+							<Route path='places' element={<PlacesPage/>}/>
+
+							<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
+							<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
+							<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
+							<Route path="museum/:id" element={<MuseumDetail/>}/>
+
+							<Route path="products" element={<ProductsPage/>}/>
+							<Route path="products/:id" element={<ProductDetails/>}/>
+							<Route path="my-purchases" element={<MyPurchases/>}/>
+							<Route path="product-cart" element={<ProductCart/>}/>
+							<Route path="/checkout" element={<ProductCheckout/>}/>
+
+
+							<Route path="saved-activity" element={<SavedActivities/>}/>
+							<Route path="saved-itinerary" element={<SavedItineraries/>}/>
+							<Route path="product-wishlist" element={<ProductWishlist/>}/>
+							<Route path="my-interests" element={<MyInterests/>}/>
+
+							<Route path='profile' element={<ProfilePage/>}/>
+							<Route path="explore" element={<ExplorePage/>}/>
+							<Route path="complaints" element={<ComplaintsPage/>}/>
+							<Route path="address" element={<AddressBook/>}/>
+							<Route path="notifications" element={<Notfications/>}/>
+
 						</Route>
-						<Route path='content'>
-							<Route path='activities' element={<ManageActivities/>}/>
-							<Route path='itineraries' element={<ManageItineraries/>}/>
-							<Route path='museums' element={<ManageMuseums/>}/>
-							<Route path='historical-places' element={<ManageHistoricalPlaces/>}/>
-							<Route path='tags-categories' element={<ManageCategoriesTags/>}/>
-						</Route>
-						<Route path='products' element={<ManageProducts/>}/>
-						<Route path='complaints' element={<ViewComplaints/>}/>
-						<Route path='promotions' element={<ManagePromotions/>}/>
-						<Route path='analytics'>
-							<Route path='user-growth' element={<UserGrowth/>}/>
-						</Route>
-					</Route>
-
-					<Route path="advertiser-activities" element={<AdvertiserActivities/>}/>
-					<Route path="transportation" element={<TransportationManagement/>}/>
-					<Route path="seller-products" element={<SellerProducts/>}/>
-					<Route path="tour-guide-itineraries" element={<TourGuideItineraries/>}/>
-					<Route path="tour-guide-historical-places" element={<TourismGovernorHistoricalPlaces/>}/>
-					<Route path="tour-guide-museums" element={<TourismGovernorMuseums/>}/>
-					<Route path="tour-guide-tags" element={<TourismGovernorTags/>}/>
-
-					<Route path="register" element={<RegisterPage/>}/>
-					<Route path="login" element={<LoginPage/>}/>
-					<Route path='wait' element={<WaitPage/>}/>
-					<Route path='reset-password' element={<ResetPasswordPage/>}/>
-
-					<Route path="flights-and-hotels" element={<FlightsandHotels/>}/>
-					<Route path='flights' element={<FlightSearchPage/>}/>
-					<Route path='flights/:flightId/:origin/:destination/:departureDate' element={<FlightDetails/>}/>
-					<Route path='hotels' element={<HotelSearchPage/>}/>
-					<Route path='hotels/:hotelId/:checkInDate/:checkOutDate' element={<HotelDetails/>}/>
-
-					<Route path="bookings" element={<BookingPage/>}/>
-					<Route path='activities' element={<ActivitiesPage/>}/>
-					<Route path='itineraries' element={<ItinerariesPage/>}/>
-					<Route path='places' element={<PlacesPage/>}/>
-
-					<Route path='activities/:id' element={<ActivityDetailsPage/>}/>
-					<Route path='itineraries/:id' element={<ItineraryDetail/>}/>
-					<Route path="historicalplaces/:id" element={<HistoricalPlaceDetail/>}/>
-					<Route path="museum/:id" element={<MuseumDetail/>}/>
-
-					<Route path="products" element={<ProductsPage/>}/>
-					<Route path="products/:id" element={<ProductDetails/>}/>
-					<Route path="my-purchases" element={<MyPurchases/>}/>
-					<Route path="product-cart" element={<ProductCart/>}/>
-					<Route path="/checkout" element={<ProductCheckout />} />
-
-
-					<Route path="saved-activity" element={<SavedActivities/>}/>
-					<Route path="saved-itinerary" element={<SavedItineraries/>}/>
-					<Route path="product-wishlist" element={<ProductWishlist/>}/>
-					<Route path="my-interests" element={<MyInterests/>}/>
-
-					<Route path='profile' element={<ProfilePage/>}/>
-					<Route path="explore" element={<ExplorePage/>}/>
-					<Route path="complaints" element={<ComplaintsPage/>}/>
-					<Route path="address" element={<AddressBook/>}/>
-					<Route path="notifications" element={<Notfications/>}/>
-
-				</Route>
-			</Routes>
-		</BrowserRouter>
-		</NotificationsProvider>
+					</Routes>
+				</BrowserRouter>
+			</NotificationsProvider>
 		</Elements>
 		<ToastContainer/>
 	</React.StrictMode>

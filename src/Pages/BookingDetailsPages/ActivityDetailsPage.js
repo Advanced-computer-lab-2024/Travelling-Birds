@@ -39,6 +39,7 @@ const ActivityDetail = () => {
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
 	const [promoCodeValid, setPromoCodeValid] = useState(null);
+	const [discount, setDiscount] = useState(0);
 
 	useEffect(() => {
 		const fetchActivity = async () => {
@@ -229,14 +230,9 @@ const ActivityDetail = () => {
 				return;
 			}
 
-			let finalPrice = activity.price;
-			if (promoCodeValid) {
-				finalPrice *= 0.85; // Apply 25% discount
-			}
-
 
 			// Check if the wallet balance is sufficient to cover the full price
-			if (enteredWalletAmount >= finalPrice && enteredWalletAmount <= userWalletBalance) {
+			if (enteredWalletAmount >= activity.price * (1 - discount) && enteredWalletAmount <= userWalletBalance) {
 				// Deduct wallet balance and skip Stripe payment
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 
@@ -258,7 +254,11 @@ const ActivityDetail = () => {
 				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 					method: 'POST',
 					headers: {'Content-Type': 'application/json'},
-					body: JSON.stringify({activityId}),
+					body: JSON.stringify({
+						activityId,
+						activityPrice: activity.price,
+						discount
+					}),
 				});
 
 				if (!bookingResponse.ok) {
@@ -331,13 +331,17 @@ const ActivityDetail = () => {
 				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
 
-			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
+			const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'POST',
 				headers: {'Content-Type': 'application/json'},
-				body: JSON.stringify({activityId}),
+				body: JSON.stringify({
+					activityId,
+					activityPrice: activity.price,
+					discount
+				}),
 			});
 
-			if (!response.ok) {
+			if (!bookingResponse.ok) {
 				throw new Error('Failed to book the activity');
 			}
 
@@ -482,7 +486,6 @@ const ActivityDetail = () => {
 		);
 	};
 
-
 	// Helper function to format price range based on currency
 	const formatPriceRange = (price) => {
 		const currency = sessionStorage.getItem('currency') || 'EGP';
@@ -555,26 +558,26 @@ const ActivityDetail = () => {
 		setPromoCode(code);
 
 		if (!code) {
-		  setPromoCodeValid(null);
-		  return;
+			setPromoCodeValid(null);
+			return;
 		}
 
-		try {
-		  const response = await fetch(
-			`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
-		  );
-		  if (response.ok) {
-			const data = await response.json();
-			setPromoCodeValid(true);
-
-		  } else {
-			setPromoCodeValid(false);
-		  }
-		} catch (error) {
-		  console.error("Error validating promo code:", error);
-		  setPromoCodeValid(false);
-		}
-	  };
+		fetch(`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`)
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.isActive && new Date(data.endDate) > new Date() && new Date(data.startDate) < new Date()) {
+					setPromoCodeValid(true);
+					setDiscount(data.discount);
+					toast.success(`Promo code applied successfully`);
+				} else {
+					setPromoCodeValid(false);
+				}
+			})
+			.catch((error) => {
+				console.error('Error checking promo code:', error);
+				setPromoCodeValid(false);
+			});
+	};
 
 
 	if (loading) return <p>Loading...</p>;
@@ -681,7 +684,7 @@ const ActivityDetail = () => {
 								<div className="mb-4">
 									<label className="block mb-2">Payment Information</label>
 									<div className="w-full border rounded-lg p-2">
-										<CardElement />
+										<CardElement/>
 									</div>
 								</div>
 								<div className="mb-4">
@@ -717,18 +720,21 @@ const ActivityDetail = () => {
 										value={promoCode}
 										onChange={handlePromoCodeChange}
 										className={`w-full border rounded-lg p-2 ${
-										promoCodeValid === true
-											? "border-green-500"
-											: promoCodeValid === false
-											? "border-red-500"
-											: "border-gray-300"
+											promoCodeValid === true
+												? "border-green-500"
+												: promoCodeValid === false
+													? "border-red-500"
+													: "border-gray-300"
 										}`}
 										placeholder="Enter promo code"
 									/>
-									{promoCodeValid === false && (
+									{promoCodeValid ? (
+										<p className="text-green-500 text-sm">Promo code applied successfully,
+											Discount {discount}%</p>
+									) : (
 										<p className="text-red-500 text-sm">Invalid promo code</p>
 									)}
-									</div>
+								</div>
 								<button
 									onClick={handleCompleteBooking}
 									className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
