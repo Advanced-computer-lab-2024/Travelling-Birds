@@ -4,6 +4,7 @@ import { FaClock, FaShareAlt } from 'react-icons/fa';
 import LoadingPage from '../../Components/LoadingPage/LoadingPage';
 import LocationContact from "../../Components/Locations/HistoricalPlaceLocation";
 import ActivityDisplay from "../../Components/Models/Displays/ActivityDisplay";
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 const HistoricalPlaceDetail = () => {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,7 @@ const HistoricalPlaceDetail = () => {
   const [email, setEmail] = useState(''); // State for email input
   const { id: placeId } = useParams();
   const [message, setMessage] = useState('');
+  const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
   useEffect(() => {
     const fetchPlace = async () => {
@@ -93,6 +95,16 @@ const HistoricalPlaceDetail = () => {
 
   return (
     <div>
+
+      		{/* Back Button */}
+          <div className="p-4">
+                <button
+                    onClick={goToPreviousPage}
+                    className="bg-[#330577] text-white px-4 py-2 rounded-lg shadow hover:bg-[#472393]"
+                >
+                    Back
+                </button>
+            </div>
       <section className="px-4 py-10 bg-gray-100">
         <div className="container-xl lg:container m-auto">
           <div className="flex items-center justify-between bg-white p-6 shadow-lg rounded-lg mb-8">

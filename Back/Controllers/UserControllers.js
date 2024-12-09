@@ -169,7 +169,8 @@ const updateUser = async (req, res) => {
 		redeemablePoints,
 		requestToDelete,
 		profilePicture, // Added to handle null value
-		backDrop // Added to handle null value
+		backDrop,// Added to handle null value
+		walkthrough
 	} = req.body;
 
 	try {
@@ -200,7 +201,8 @@ const updateUser = async (req, res) => {
 			termsFlag,
 			loyaltyPoints,
 			redeemablePoints,
-			requestToDelete
+			requestToDelete,
+			walkthrough
 		};
 
 		// Handle setting profilePicture to null
@@ -802,14 +804,14 @@ const addComment = async (req, res) => {
 
 		const newComment = new Comment({user, text, stars, date: new Date()});
 		await newComment.save();
-		const totalRating = tourGuide.comments.length * tourGuide.rating + stars;
-		const updatedReviewsCount = tourGuide.reviewsCount + 1;
+		const totalRating = (tourGuide.comments.length * tourGuide.ratings) + stars;
+		const updatedReviewsCount = tourGuide.comments.length + 1;
 		const newRating = (totalRating / updatedReviewsCount).toFixed(1);
 		const userWithComment = await User.findByIdAndUpdate(
 			req.params.id,
 			{
 				$push: {comments: newComment._id},
-				$set: {rating: newRating}
+				$set: {ratings: newRating}
 			},
 			{new: true}
 		).populate('comments');

@@ -7,6 +7,7 @@ import { set } from "mongoose";
 import { CardElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 const ProductsDetailsPage = () => {
 	const productId = useParams().id;
@@ -30,6 +31,7 @@ const ProductsDetailsPage = () => {
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
 	const [ promoCodeValid, setPromoCodeValid] = useState(null);
+	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -462,6 +464,16 @@ const ProductsDetailsPage = () => {
 
 	return (
 		<div className="bg-gray-50 min-h-screen py-10">
+					{/* Back Button */}
+					<div className="p-4">
+                <button
+                    onClick={goToPreviousPage}
+                    className="bg-[#330577] text-white px-4 py-2 rounded-lg shadow hover:bg-[#472393]"
+                >
+                    Back
+                </button>
+            </div>
+
 			<section className="px-4 py-10 max-w-7xl mx-auto">
 				<div className="bg-white rounded-lg shadow-lg p-6 mb-8">
 					<div className="flex flex-col md:flex-row">

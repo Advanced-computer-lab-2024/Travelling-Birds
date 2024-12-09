@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 const ProductCheckout = () => {
 	const [cart, setCart] = useState([]);
@@ -10,6 +11,7 @@ const ProductCheckout = () => {
 	const userRole = sessionStorage.getItem('role');
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
+	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
 	const fetchProductCart = async () => {
 		try {
@@ -135,6 +137,15 @@ const ProductCheckout = () => {
 
 	return (
 		<div className="text-[#330577] p-6 bg-gray-100 min-h-screen">
+								{/* Back Button */}
+								<div className="p-4">
+                <button
+                    onClick={goToPreviousPage}
+                    className="bg-[#330577] text-white px-4 py-2 rounded-lg shadow hover:bg-[#472393]"
+                >
+                    Back
+                </button>
+            </div>
 			<h2 className="text-4xl font-extrabold mb-4 text-center">CheckOut</h2>
 
 			{/* Shipping Address */}
