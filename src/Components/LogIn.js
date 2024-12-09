@@ -29,6 +29,9 @@ const LogIn = () => {
 				if (data?.user) {
 					sessionStorage.setItem('user id', data.user._id);
 					sessionStorage.setItem('role', data.user.role);
+					sessionStorage.setItem('walkthrough.explore', data.user.walkthrough.explore);
+					sessionStorage.setItem('walkthrough.flights', data.user.walkthrough.flights);
+					sessionStorage.setItem('walkthrough.hotels', data.user.walkthrough.hotels);
 					if (data.user.termsFlag === false && (data.user.role === "tour_guide" || data.user.role === "advertiser" || data.user.role === "seller")) {
 						setUserId(data.user._id);
 						setShowTermsModal(true);

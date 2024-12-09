@@ -54,6 +54,14 @@ const user = new Schema({
 	ratings: Number,
 	otp: String,
 	dateCreated: {type: Date, default: Date.now},
+	// Walkthrough flags (initially set to false)
+	walkthrough:
+		{
+			explore : {type: Boolean, default: false},
+			flights : {type: Boolean, default: false},
+			hotels : {type: Boolean, default: false},
+		}
+
 });
 
 module.exports = mongoose.model('User', user);

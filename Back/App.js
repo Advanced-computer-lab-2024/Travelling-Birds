@@ -49,7 +49,7 @@ app.use('/api/payments', StripeRoute);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
-ReminderScheduler.start();
+
 
 const PORT = process.env.PORT || 5000;
 
@@ -58,6 +58,7 @@ mongoose.connect(process.env.MONGO_URI)
 		app.listen(PORT, async () => {
 			console.log(`Connected to MongoDB & Server running on port ${PORT}`)
 			scheduleBirthdayPromo();
+			ReminderScheduler.start();
 		})
 	})
 	.catch((error) => {
