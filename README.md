@@ -26,105 +26,65 @@ The project adheres to the following coding styles:
 All contributors are encouraged to follow these styles to ensure uniformity and maintainability throughout the project.
 
 ## Screenshots
-<details>
-  <summary>Registeration Page</summary>
-  ![Registeration Page](./READMEAssets/registerationpage.png)
-</details>
+#### 1. **Registeration Page**  
+   ![Registeration Page](./READMEAssets/registerationpage.png)
 
-<details>
-  <summary>Admin Portal</summary>
-  ![Admin Portal](./READMEAssets/admin_portal.png)
-</details>
+#### 2. **Admin Portal**  
+   ![Admin Portal](./READMEAssets/admin_portal.png)
 
-<details>
-  <summary>Explore Page</summary>
-  ![Explore Page](./READMEAssets/explore_page.png)
-</details>
+#### 3. **Explore Page**  
+   ![Explore Page](./READMEAssets/explore_page.png)
 
-<details>
-  <summary>Product Page</summary>
-  ![Product Page](./READMEAssets/product_page.png)
-</details>
+#### 4. **Product Page**  
+   ![Product Page](./READMEAssets/product_page.png)
 
-<details>
-  <summary>Tourist Dropdown</summary>
-  ![Tourist Dropdown](./READMEAssets/tourist_dropdown.png)
-</details>
+#### 5. **Tourist Dropdown**  
+   ![Tourist Dropdown](./READMEAssets/tourist_dropdown.png)
 
-<details>
-  <summary>Profile Page</summary>
-  ![Profile Page](./READMEAssets/profile_page.png)
-</details>
+#### 6. **Profile Page**  
+   ![Profile Page](./READMEAssets/profile_page.png)
 
-<details>
-  <summary>Booking Page</summary>
-  ![Booking Page](./READMEAssets/booking_page.png)
-</details>
+#### 7. **Booking Page**  
+   ![Booking Page](./READMEAssets/booking_page.png)
 
-<details>
-  <summary>Hotel Page</summary>
-  ![Hotel Page](./READMEAssets/hotel_page.png)
-</details>
+#### 8. **Hotel Page**  
+   ![Hotel Page](./READMEAssets/hotel_page.png)
 
-<details>
-  <summary>Flight Page</summary>
-  ![Flight Page](./READMEAssets/flight_page.png)
-</details>
+#### 9. **Flight Page**  
+   ![Flight Page](./READMEAssets/flight_page.png)
 
-<details>
-  <summary>Transportation Page</summary>
-  ![Transportation Page](./READMEAssets/transportation_page.png)
-</details>
+#### 10. **Transportation Page**  
+   ![Transportation Page](./READMEAssets/transportation_page.png)
 
-<details>
-  <summary>Complaints Page</summary>
-  ![Complaints Page](./READMEAssets/complaints_page.png)
-</details>
+#### 11. **Complaints Page**  
+   ![Complaints Page](./READMEAssets/complaints_page.png)
 
-<details>
-  <summary>Tourist My Booking Page</summary>
-  ![Tourist My Booking Page](./READMEAssets/tourist_my_booking_page.png)
-</details>
+#### 12. **Tourist My Booking Page**  
+   ![Tourist My Booking Page](./READMEAssets/tourist_my_booking_page.png)
 
-<details>
-  <summary>Redeem Points Page</summary>
-  ![Redeem Points Page](./READMEAssets/redeem_points_page.png)
-</details>
+#### 13. **Redeem Points Page**  
+   ![Redeem Points Page](./READMEAssets/redeem_points_page.png)
 
-<details>
-  <summary>Cart Page</summary>
-  ![Cart Page](./READMEAssets/cart_page.png)
-</details>
+#### 14. **Cart Page**  
+   ![Cart Page](./READMEAssets/cart_page.png)
 
-<details>
-  <summary>Payment Page</summary>
-  ![Payment Page](./READMEAssets/payment_page.png)
-</details>
+#### 15. **Payment Page**  
+   ![Payment Page](./READMEAssets/payment_page.png)
 
-<details>
-  <summary>Manage Activities Page</summary>
-  ![Manage Activities Page](./READMEAssets/manage_activities_page.png)
-</details>
+#### 16. **Manage Activities Page**  
+   ![Manage Activities Page](./READMEAssets/manage_activities_page.png)
 
-<details>
-  <summary>Manage Itineraries Page</summary>
-  ![Manage Itineraries Page](./READMEAssets/manage_itineraries_page.png)
-</details>
+#### 17. **Manage Itineraries Page**  
+   ![Manage Itineraries Page](./READMEAssets/manage_itineraries_page.png)
 
-<details>
-  <summary>Manage Museums Page</summary>
-  ![Manage Museums Page](./READMEAssets/manage_museums_page.png)
-</details>
+#### 18. **Manage Museums Page**  
+   ![Manage Museums Page](./READMEAssets/manage_museums_page.png)
 
-<details>
-  <summary>Manage HP Page</summary>
-  ![Manage HP Page](./READMEAssets/manage_hp_page.png)
-</details>
+#### 19. **Manage HP Page**  
+   ![Manage HP Page](./READMEAssets/manage_hp_page.png)
 
-<details>
-  <summary>Manage Products Page</summary>
-  ![Manage Products Page](./READMEAssets/manage_products_page.png)
-</details>
+#### 20. **Manage Products Page**  
+   ![Manage Products Page](./READMEAssets/manage_products_page.png)
 
 
 ## Tech/Framework Used
