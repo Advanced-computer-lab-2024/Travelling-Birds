@@ -786,10 +786,11 @@ const getProductStatus = async (req, res) => {
 		if (!product) {
 			return res.status(404).json({message: 'Product not found'});
 		}
-
+		const purchase = user.productPurchases.find(purchase => purchase.product.toString() === productId);
 		// You can replace this with logic to determine product status
-		const productStatus = 'Delivered'; //  replace with your own logic
-
+		const threeDaysAfterPurchase = new Date(purchase.datePurchased);
+		threeDaysAfterPurchase.setDate(threeDaysAfterPurchase.getDate() + 3);
+		const productStatus = (threeDaysAfterPurchase <= new Date()) ? 'Delivered' : 'Not Delivered';
 		res.status(200).json({status: productStatus});
 	} catch (error) {
 		res.status(500).json({error: error.message});
