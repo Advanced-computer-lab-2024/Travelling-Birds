@@ -37,6 +37,8 @@ const ActivityDetail = () => {
 	const [bookingOpen, setBookingOpen] = useState(true);
 	const stripe = useStripe();
 	const elements = useElements();
+	const [promoCode, setPromoCode] = useState("");
+	const [promoCodeValid, setPromoCodeValid] = useState(null);
 
 	useEffect(() => {
 		const fetchActivity = async () => {
@@ -227,8 +229,14 @@ const ActivityDetail = () => {
 				return;
 			}
 
+			let finalPrice = activity.price;
+			if (promoCodeValid) {
+				finalPrice *= 0.85; // Apply 25% discount
+			}
+
+
 			// Check if the wallet balance is sufficient to cover the full price
-			if (enteredWalletAmount >= activity.price && enteredWalletAmount <= userWalletBalance) {
+			if (enteredWalletAmount >= finalPrice && enteredWalletAmount <= userWalletBalance) {
 				// Deduct wallet balance and skip Stripe payment
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 
@@ -542,6 +550,32 @@ const ActivityDetail = () => {
 		}
 	};
 
+	const handlePromoCodeChange = async (e) => {
+		const code = e.target.value;
+		setPromoCode(code);
+
+		if (!code) {
+		  setPromoCodeValid(null);
+		  return;
+		}
+
+		try {
+		  const response = await fetch(
+			`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
+		  );
+		  if (response.ok) {
+			const data = await response.json();
+			setPromoCodeValid(true);
+
+		  } else {
+			setPromoCodeValid(false);
+		  }
+		} catch (error) {
+		  console.error("Error validating promo code:", error);
+		  setPromoCodeValid(false);
+		}
+	  };
+
 
 	if (loading) return <p>Loading...</p>;
 
@@ -647,7 +681,7 @@ const ActivityDetail = () => {
 								<div className="mb-4">
 									<label className="block mb-2">Payment Information</label>
 									<div className="w-full border rounded-lg p-2">
-										<CardElement/>
+										<CardElement />
 									</div>
 								</div>
 								<div className="mb-4">
@@ -677,17 +711,24 @@ const ActivityDetail = () => {
 									/>
 								</div>
 								<div className="mb-4">
-									<label className="block mb-2">Location
-										{/**/}
-										<input
-											type="text"
-											value={userLocation}
-											onChange={(e) => setUserLocation(e.target.value)}
-											className="w-full border rounded-lg p-2"
-											placeholder="Enter your location"
-										/>
-									</label>
-								</div>
+									<label className="block mb-2">Promo Code (Optional)</label>
+									<input
+										type="text"
+										value={promoCode}
+										onChange={handlePromoCodeChange}
+										className={`w-full border rounded-lg p-2 ${
+										promoCodeValid === true
+											? "border-green-500"
+											: promoCodeValid === false
+											? "border-red-500"
+											: "border-gray-300"
+										}`}
+										placeholder="Enter promo code"
+									/>
+									{promoCodeValid === false && (
+										<p className="text-red-500 text-sm">Invalid promo code</p>
+									)}
+									</div>
 								<button
 									onClick={handleCompleteBooking}
 									className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"

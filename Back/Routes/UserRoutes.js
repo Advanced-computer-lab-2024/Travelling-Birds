@@ -33,14 +33,15 @@ const {
 	addProductToWishlist,
 	getProductWishlist,
 	removeProductFromWishlist,
-	addproducttocart,
+	addProductToCart,
 	getCart,
 	removeProductFromCart,
 	requestDelete,
 	requestOtp,
 	verifyOtpAndResetPassword,
 	getUserAnalytics,
-	getSalesAnalytics, addProductToCart
+	getSalesAnalytics,
+	getProductStatus
 } = require('../Controllers/UserControllers');
 const {multipleFieldsUpload, upload} = require("../Middleware/upload");
 
@@ -161,5 +162,7 @@ router.post('/request-otp', requestOtp);
 
 // Verify OTP and Reset Password
 router.post('/verify-otp', verifyOtpAndResetPassword);
+
+router.get('/product-status/:userId/:productId', getProductStatus);
 
 module.exports = router;

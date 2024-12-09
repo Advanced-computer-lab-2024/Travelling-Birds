@@ -185,7 +185,164 @@ You can access code examples from [here](./CODEEXAMPLES.md).
 
 ## API Reference
 
-You can access all API references from [here](./APIREFERENCES.md).
+This project integrates with several external APIs to provide core functionalities like flights, hotels, email, and payment processing. Below are the details of the external APIs used, including links to their official documentation and how they are implemented in this project. If you are looking for internal apis you can access them [here](./APIREFERENCES.md).
+
+---
+
+## 1. Amadeus Flight API
+
+The Amadeus API is used for flight search, booking, and retrieving flight details.
+
+- **Documentation**: [Amadeus Flights API](https://developers.amadeus.com/self-service/category/flights)
+
+### Endpoints in Project
+
+- **Search Flights**
+    ```http
+    POST /api/flights/f
+    ```
+    **Request Body**:
+    ```json
+    {
+      "origin": "CAI",
+      "destination": "DXB",
+      "departureDate": "2024-12-15",
+      "currencyCode": "USD"
+    }
+    ```
+    **Response**: A list of available flight offers.
+
+- **Get Flight Details**
+    ```http
+    GET /api/flights/:flightId/:origin/:destination/:departureDate/:currencyCode
+    ```
+    Fetches detailed information about a specific flight.
+
+- **Book Flight**
+    ```http
+    POST /api/flights/book
+    ```
+    **Request Body**:
+    ```json
+    {
+      "flightDetails": {/* flight details */},
+      "travelerInfo": {/* traveler details */}
+    }
+    ```
+    Confirms and books the selected flight.
+
+---
+
+## 2. Amadeus Hotel API
+
+The Amadeus API is used for hotel search, details retrieval, and booking.
+
+- **Documentation**: [Amadeus Hotels API](https://developers.amadeus.com/self-service/category/hotels)
+
+### Endpoints in Project
+
+- **Search Hotels**
+    ```http
+    POST /api/hotels/search
+    ```
+    **Request Body**:
+    ```json
+    {
+      "cityCode": "NYC",
+      "checkInDate": "2024-12-20",
+      "checkOutDate": "2024-12-25",
+      "adults": 2,
+      "currencyCode": "USD"
+    }
+    ```
+    **Response**: A list of available hotels in the specified city.
+
+- **Get Hotel Details**
+    ```http
+    GET /api/hotels/:hotelId/:checkInDate/:checkOutDate/:currencyCode
+    ```
+    Fetches detailed information about a specific hotel.
+
+- **Book Hotel**
+    ```http
+    POST /api/hotels/book
+    ```
+    **Request Body**:
+    ```json
+    {
+      "hotelId": "12345",
+      "travelerDetails": {/* traveler details */},
+      "checkInDate": "2024-12-20",
+      "checkOutDate": "2024-12-25"
+    }
+    ```
+    Books the selected hotel.
+
+---
+
+## 3. Nodemailer (Email API)
+
+Nodemailer is used to send transactional emails via Gmail SMTP.
+
+- **Documentation**: [Nodemailer Usage](https://www.nodemailer.com/usage/)
+
+### Endpoint in Project
+
+- **Send Email**
+    ```http
+    POST /api/mail
+    ```
+    **Request Body**:
+    ```json
+    {
+      "email": "user@example.com",
+      "subject": "Welcome to Traveling Birds!",
+      "message": "Thank you for registering with us."
+    }
+    ```
+    Sends an email to the specified recipient.
+
+---
+
+## 4. Stripe Payment API
+
+Stripe is used for processing payments.
+
+- **Documentation**: [Stripe API Documentation](https://docs.stripe.com/api/payment_intents)
+
+### Endpoint in Project
+
+- **Create Payment**
+    ```http
+    POST /api/payments
+    ```
+    **Request Body**:
+    ```json
+    {
+      "amount": 5000,
+      "currency": "USD",
+      "paymentMethodId": "pm_card_visa"
+    }
+    ```
+    **Response**:
+    ```json
+    {
+      "success": true,
+      "paymentIntent": {/* payment intent details */}
+    }
+    ```
+    Processes a payment and confirms it.
+
+---
+
+### How to Get Started
+To use these APIs in your own project:
+1. Register with the respective service providers.
+2. Obtain API keys or credentials.
+3. Replace placeholders (e.g., `process.env.API_KEY`) in the code with your actual credentials.
+
+These APIs provide the backbone for critical features like travel bookings and payments, ensuring a smooth user experience.
+
 
 ## Tests
 

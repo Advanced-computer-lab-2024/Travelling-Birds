@@ -28,6 +28,8 @@ const ProductsDetailsPage = () => {
 	const [isInCart, setIsInCart] = useState(false);
 	const stripe = useStripe();
 	const elements = useElements();
+	const [promoCode, setPromoCode] = useState("");
+	const [ promoCodeValid, setPromoCodeValid] = useState(null);
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -178,9 +180,15 @@ const ProductsDetailsPage = () => {
 				toast.error('Not enough in wallet.');
 				return;
 			}
+
+			let finalPrice = product.price;
+
+			if (promoCodeValid) {
+				finalPrice *= 0.85; // Apply 25% discount
+			}
 	
 			// Skip card information if the wallet covers the full price
-			if (enteredWalletAmount >= product.price) {
+			if (enteredWalletAmount >= finalPrice) {
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 	
 				// Update wallet balance
@@ -425,6 +433,32 @@ const ProductsDetailsPage = () => {
 		}
 	}
 
+	const handlePromoCodeChange = async (e) => {
+		const code = e.target.value;
+		setPromoCode(code);
+	  
+		if (!code) {
+		  setPromoCodeValid(null);
+		  return;
+		}
+	  
+		try {
+		  const response = await fetch(
+			`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
+		  );
+		  if (response.ok) {
+			const data = await response.json();
+			setPromoCodeValid(true);
+			
+		  } else {
+			setPromoCodeValid(false);
+		  }
+		} catch (error) {
+		  console.error("Error validating promo code:", error);
+		  setPromoCodeValid(false);
+		}
+	  };
+
 
 	return (
 		<div className="bg-gray-50 min-h-screen py-10">
@@ -515,6 +549,25 @@ const ProductsDetailsPage = () => {
 									placeholder="Enter amount"
 								/>
 							</div>
+							<div className="mb-4">
+									<label className="block mb-2">Promo Code (Optional)</label>
+									<input
+										type="text"
+										value={promoCode}
+										onChange={handlePromoCodeChange}
+										className={`w-full border rounded-lg p-2 ${
+										promoCodeValid === true
+											? "border-green-500"
+											: promoCodeValid === false
+											? "border-red-500"
+											: "border-gray-300"
+										}`}
+										placeholder="Enter promo code"
+									/>
+									{promoCodeValid === false && (
+										<p className="text-red-500 text-sm">Invalid promo code</p>
+									)}
+									</div>
 							<button
 								onClick={handleCompletePurchase}
 								className={`w-full bg-[#330577] text-white p-3 rounded-lg ${'hover:bg-[#280466] transition duration-150'}`}
