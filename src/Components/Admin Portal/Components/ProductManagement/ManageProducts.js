@@ -65,7 +65,9 @@ const ManageProducts = () => {
 	};
 
 	const handleSave = () => {
-		const endpoint = selectedProduct ? `${process.env.REACT_APP_BACKEND}/api/products/${selectedProduct._id}` : `${process.env.REACT_APP_BACKEND}/api/products`;
+		const endpoint = selectedProduct
+			? `${process.env.REACT_APP_BACKEND}/api/products/${selectedProduct._id}`
+			: `${process.env.REACT_APP_BACKEND}/api/products`;
 		const method = selectedProduct ? 'PUT' : 'POST';
 		const formData = new FormData();
 		formData.append('name', name);
@@ -77,6 +79,7 @@ const ManageProducts = () => {
 		}
 		formData.append('seller', seller);
 		formData.append('isArchived', isArchived);
+
 		fetch(endpoint, {
 			method,
 			body: formData
@@ -85,7 +88,11 @@ const ManageProducts = () => {
 			.then((data) => {
 				if (data._id) {
 					toast.success(selectedProduct ? 'Product updated successfully' : 'Product created successfully');
-					setProducts(selectedProduct ? products.map(product => product._id === selectedProduct._id ? data : product) : [...products, data]);
+					setProducts(
+						selectedProduct
+							? products.map(product => product._id === selectedProduct._id ? data : product)
+							: [...products, data]
+					);
 					setModalVisible(false);
 					setCreateModalVisible(false);
 				} else {
@@ -130,6 +137,7 @@ const ManageProducts = () => {
 				}
 			});
 	};
+
 	const handleViewImage = (product) => {
 		const fetchImage = async (product) => {
 			try {
@@ -152,66 +160,77 @@ const ManageProducts = () => {
 				console.error('Error fetching image:', error);
 			}
 		};
-		fetchImage(product).then();
+		fetchImage(product);
 	}
 
 	const closeImagePreview = () => {
 		setImagePreview(null);
 	};
 
-
 	return (
-		<div className="p-4">
-			<h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
-			<h2 className="text-2xl font-bold mb-4">Sales Report</h2>
-			<div className="mb-4">
-				<label className="block mb-1">Product</label>
-				<select
-					name="productId"
-					value={filters.productId}
-					onChange={handleFilterChange}
-					className="w-full border rounded-lg p-3"
+		<div className="container mx-auto p-4">
+			<h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
+
+			<div className="card bg-base-100 shadow p-4 mb-6">
+				<h3 className="text-2xl font-bold mb-4">Sales Report</h3>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+					<div className="form-control">
+						<label className="label"><span className="label-text">Product</span></label>
+						<select
+							name="productId"
+							value={filters.productId}
+							onChange={handleFilterChange}
+							className="select select-bordered w-full"
+						>
+							<option value="">All Products</option>
+							{products.map((product) => (
+								<option key={product._id} value={product._id}>{product.name}</option>
+							))}
+						</select>
+					</div>
+
+					<div className="form-control">
+						<label className="label"><span className="label-text">Start Date</span></label>
+						<input
+							type="date"
+							name="startDate"
+							value={filters.startDate}
+							onChange={handleFilterChange}
+							className="input input-bordered w-full"
+						/>
+					</div>
+
+					<div className="form-control">
+						<label className="label"><span className="label-text">End Date</span></label>
+						<input
+							type="date"
+							name="endDate"
+							value={filters.endDate}
+							onChange={handleFilterChange}
+							className="input input-bordered w-full"
+						/>
+					</div>
+				</div>
+				<button
+					onClick={fetchSalesReport}
+					className="btn btn-primary"
 				>
-					<option value="">All Products</option>
-					{products.map((product) => (
-						<option key={product._id} value={product._id}>{product.name}</option>
-					))}
-				</select>
+					Filter
+				</button>
+
+				<div className="mt-6">
+					<h4 className="text-xl font-semibold">Total Revenue: ${salesReport.totalRevenue}</h4>
+					<h4 className="text-xl font-semibold">Total Sales: {salesReport.totalSales}</h4>
+				</div>
 			</div>
-			<div className="mb-4">
-				<label className="block mb-1">Start Date</label>
-				<input
-					type="date"
-					name="startDate"
-					value={filters.startDate}
-					onChange={handleFilterChange}
-					className="w-full border rounded-lg p-3"
-				/>
+
+			<div className="mb-4 flex justify-end">
+				<button className="btn btn-primary" onClick={() => setCreateModalVisible(true)}>Add Product</button>
 			</div>
-			<div className="mb-4">
-				<label className="block mb-1">End Date</label>
-				<input
-					type="date"
-					name="endDate"
-					value={filters.endDate}
-					onChange={handleFilterChange}
-					className="w-full border rounded-lg p-3"
-				/>
-			</div>
-			<button
-				onClick={fetchSalesReport}
-				className="bg-blue-500 text-white p-3 rounded-lg"
-			>
-				Filter
-			</button>
-			<div className="mt-6">
-				<h3 className="text-xl font-semibold">Total Revenue: ${salesReport.totalRevenue}</h3>
-				<h3 className="text-xl font-semibold">Total Sales: {salesReport.totalSales}</h3>
-			</div>
-			<button className="btn btn-primary mb-2" onClick={() => setCreateModalVisible(true)}>Add Product</button>
+
 			{!loading && (
 				<div className="overflow-x-auto">
-					<table className="table w-full">
+					<table className="table table-zebra w-full">
 						<thead>
 						<tr>
 							<th>Name</th>
@@ -220,9 +239,9 @@ const ManageProducts = () => {
 							<th>Stock</th>
 							<th>Sold</th>
 							<th>Seller</th>
-							<th>Average Rating</th>
-							<th className='w-[25%]'>Reviews</th>
-							<th className='w-[25%]'>Actions</th>
+							<th>Avg Rating</th>
+							<th>Reviews</th>
+							<th>Actions</th>
 						</tr>
 						</thead>
 						<tbody>
@@ -236,18 +255,18 @@ const ManageProducts = () => {
 								<td>{product.sellerName}</td>
 								<td>{product.ratings}</td>
 								<td>{product.reviews?.join(', ')}</td>
-								<td>
-									<button className="btn btn-primary btn-sm mr-2"
+								<td className="flex flex-wrap gap-2">
+									<button className="btn btn-primary btn-sm"
 									        onClick={() => handleUpdate(product)}>Edit
 									</button>
-									<button className="btn btn-secondary btn-sm mr-2"
+									<button className="btn btn-secondary btn-sm"
 									        onClick={() => handleArchive(product)}>
 										{product.isArchived ? 'Un-archive' : 'Archive'}
 									</button>
-									<button className="btn btn-info btn-sm mr-2"
+									<button className="btn btn-info btn-sm"
 									        onClick={() => handleViewImage(product)}>View Image
 									</button>
-									<button className="btn btn-danger btn-sm"
+									<button className="btn btn-error btn-sm"
 									        onClick={() => handleDelete(product)}>Delete
 									</button>
 								</td>
@@ -257,91 +276,94 @@ const ManageProducts = () => {
 					</table>
 				</div>
 			)}
+
 			{imagePreview && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-				     onClick={closeImagePreview}>
-					<div className="bg-white p-4 rounded shadow-md flex flex-col items-center"
-					     onClick={(e) => e.stopPropagation()}>
-						<img src={imagePreview} alt="Product" className="max-w-full max-h-screen mb-4"/>
-						<p className="text-gray-700">Click outside the box to exit.</p>
+				<div className="modal modal-open" onClick={closeImagePreview}>
+					<div className="modal-box max-w-3xl" onClick={(e) => e.stopPropagation()}>
+						<img src={imagePreview} alt="Product" className="w-full h-auto mb-4"/>
+						<div className="modal-action">
+							<button className="btn" onClick={closeImagePreview}>Close</button>
+						</div>
 					</div>
 				</div>
 			)}
+
 			{modalVisible && (
-				<dialog id="update_modal" className="modal modal-bottom sm:modal-middle" open>
+				<div className="modal modal-open">
 					<div className="modal-box">
-						<h3 className="font-bold text-lg">Update Product</h3>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Name</label>
+						<h3 className="font-bold text-lg mb-4">Update Product</h3>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Name</span></label>
 							<input type="text" value={name} onChange={(e) => setName(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Description</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Description</span></label>
 							<textarea value={description} onChange={(e) => setDescription(e.target.value)}
 							          className="textarea textarea-bordered w-full"></textarea>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Price</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Price</span></label>
 							<input type="number" value={price} onChange={(e) => setPrice(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Available Quantity</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Available Quantity</span></label>
 							<input type="number" value={availableQuantity}
 							       onChange={(e) => setAvailableQuantity(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Image</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Image</span></label>
 							<input type="file" accept="image/*" onChange={(e) => setPicture(e.target.files[0])}
-							       className="w-full"/>
+							       className="file-input file-input-bordered w-full"/>
 						</div>
 						<div className="modal-action">
 							<button className="btn btn-primary" onClick={handleSave}>Save</button>
 							<button className="btn" onClick={() => setModalVisible(false)}>Close</button>
 						</div>
 					</div>
-				</dialog>
+				</div>
 			)}
 
 			{createModalVisible && (
-				<dialog id="create_modal" className="modal modal-bottom sm:modal-middle" open>
+				<div className="modal modal-open">
 					<div className="modal-box">
-						<h3 className="font-bold text-lg">Create Product</h3>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Name</label>
+						<h3 className="font-bold text-lg mb-4">Create Product</h3>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Name</span></label>
 							<input type="text" value={name} onChange={(e) => setName(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Description</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Description</span></label>
 							<textarea value={description} onChange={(e) => setDescription(e.target.value)}
 							          className="textarea textarea-bordered w-full"></textarea>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Price</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Price</span></label>
 							<input type="number" value={price} onChange={(e) => setPrice(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Available Quantity</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Available Quantity</span></label>
 							<input type="number" value={availableQuantity}
 							       onChange={(e) => setAvailableQuantity(e.target.value)}
 							       className="input input-bordered w-full"/>
 						</div>
-						<div className="py-4">
-							<label className="block text-sm font-medium text-gray-700">Image</label>
+						<div className="form-control mb-4">
+							<label className="label"><span className="label-text">Image</span></label>
 							<input type="file" accept="image/*" onChange={(e) => setPicture(e.target.files[0])}
-							       className="w-full"/>
+							       className="file-input file-input-bordered w-full"/>
 						</div>
 						<div className="modal-action">
 							<button className="btn btn-primary" onClick={handleSave}>Create</button>
 							<button className="btn" onClick={() => setCreateModalVisible(false)}>Close</button>
 						</div>
 					</div>
-				</dialog>
+				</div>
 			)}
+
 		</div>
 	);
 }

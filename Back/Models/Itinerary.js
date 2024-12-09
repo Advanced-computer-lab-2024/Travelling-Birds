@@ -18,7 +18,15 @@ const itinerarySchema = new Schema({
 	comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
 	createdBy: {type: Schema.Types.ObjectId, ref: 'User', required: true},
 	flaggedInappropriate: {type: Boolean, default: false},
-	active: {type: Boolean, default: true}
+	active: {type: Boolean, default: true},
+	bookings: [
+		{
+			user: {type: Schema.Types.ObjectId, ref: 'User'},
+			bookingPrice: Number,
+			discount: Number,
+			dateBooked: {type: Date, default: Date.now},
+		}
+	]
 });
 
 module.exports = mongoose.model('Itinerary', itinerarySchema);

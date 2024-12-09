@@ -6,8 +6,7 @@ import LocationContact from "../../Components/Locations/Location";
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
-import { CardElement } from '@stripe/react-stripe-js';
-import { useStripe, useElements } from '@stripe/react-stripe-js';
+import {CardElement, useElements, useStripe} from '@stripe/react-stripe-js';
 
 
 const ActivityDetail = () => {
@@ -47,7 +46,7 @@ const ActivityDetail = () => {
 				const activityData = await res.json();
 				setActivity(activityData);
 				if (activityData.bookingOpen === false) {
-					setBookingOpen(false);		
+					setBookingOpen(false);
 				}
 				setLoading(false);
 			} catch (err) {
@@ -100,6 +99,7 @@ const ActivityDetail = () => {
 				console.error('Error fetching user:', error);
 			}
 		};
+
 		const fetchTransportations = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
@@ -189,25 +189,25 @@ const ActivityDetail = () => {
 			toast.error('Only tourists can book activities.');
 			return;
 		}
-	
+
 		if (!transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
-	
+
 		// Parse the wallet input amount
 		const enteredWalletAmount = parseFloat(walletAmount);
 		if (enteredWalletAmount < 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
-	
+
 		try {
 			if (hasBooked) {
 				toast.error('Activity already booked.');
 				return;
 			}
-	
+
 			// Fetch user data to get the wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
@@ -215,50 +215,50 @@ const ActivityDetail = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			const userDob = new Date(userData.dob);
 			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
 			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
 				(new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
 				? ageDifference - 1 : ageDifference;
-	
+
 			if (age < 18) {
 				toast.error('You must be at least 18 to book.');
 				return;
 			}
-	
+
 			// Check if the wallet balance is sufficient to cover the full price
 			if (enteredWalletAmount >= activity.price && enteredWalletAmount <= userWalletBalance) {
 				// Deduct wallet balance and skip Stripe payment
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-	
+
 				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ wallet: updatedWalletBalance }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({wallet: updatedWalletBalance}),
 				});
-	
+
 				if (!walletUpdateResponse.ok) {
 					const errorData = await walletUpdateResponse.json();
 					console.error('Wallet update error:', errorData);
 					throw new Error('Failed to update wallet balance');
 				}
-	
+
 				console.log('Wallet successfully updated');
-	
+
 				// Proceed with booking
 				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ activityId }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({activityId}),
 				});
-	
+
 				if (!bookingResponse.ok) {
 					throw new Error('Failed to book the activity');
 				}
-	
+
 				console.log('Activity booked successfully using wallet balance.');
-	
+
 				// Send payment receipt email
 				const receiptSubject = `Payment Receipt for ${activity?.title}`;
 				const receiptHtml = `
@@ -267,10 +267,10 @@ const ActivityDetail = () => {
 					<p><strong>Amount Paid:</strong> ${formatPriceRange(activity.price)}</p>
 					<p>Thank you for choosing our service. Have a great experience!</p>
 				`;
-	
+
 				await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: {'Content-Type': 'application/json'},
 					body: JSON.stringify({
 						email: userEmail,
 						subject: receiptSubject,
@@ -278,61 +278,61 @@ const ActivityDetail = () => {
 						htmlContent: receiptHtml, // HTML content for the email
 					}),
 				});
-	
+
 				toast.success('Activity booked successfully using wallet balance!');
 				window.dispatchEvent(userUpdateEvent);
 				window.location.reload();
 				closeBookingModal();
 				return; // Exit after successfully booking with wallet
 			}
-	
+
 			// If wallet is insufficient, proceed with Stripe payment
 			const cardElement = elements.getElement(CardElement);
-			const { paymentMethod, error } = await stripe.createPaymentMethod({
+			const {paymentMethod, error} = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
 			});
-	
+
 			if (error) {
 				toast.error(`Payment failed: ${error.message}`);
 				return;
 			}
-	
+
 			// Call backend to handle payment
 			const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					amount: activity.price * 100, // Convert to cents
 					currency: 'usd',
 					paymentMethodId: paymentMethod.id,
 				}),
 			});
-	
+
 			const paymentResult = await paymentResponse.json();
 			if (!paymentResult.success) {
 				toast.error(`Payment failed: ${paymentResult.error}`);
 				return;
 			}
-	
+
 			// Deduct wallet balance (if any amount is used) and finalize booking
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ activityId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({activityId}),
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to book the activity');
 			}
-	
+
 			// Send payment receipt email
 			const receiptSubject = `Payment Receipt for ${activity?.title}`;
 			const receiptHtml = `
@@ -341,10 +341,10 @@ const ActivityDetail = () => {
 				<p><strong>Amount Paid:</strong> ${formatPriceRange(activity.price)}</p>
 				<p>Thank you for choosing our service. Have a great experience!</p>
 			`;
-	
+
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					email: userEmail,
 					subject: receiptSubject,
@@ -352,7 +352,7 @@ const ActivityDetail = () => {
 					htmlContent: receiptHtml, // HTML content for the email
 				}),
 			});
-	
+
 			toast.success('Activity booked successfully, and payment receipt email sent!');
 			window.dispatchEvent(userUpdateEvent);
 			window.location.reload();
@@ -363,7 +363,7 @@ const ActivityDetail = () => {
 		}
 	};
 
-    const handleCancelBooking = async () => {
+	const handleCancelBooking = async () => {
 		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
 		if (!userConfirmed) {
 			return; // Do nothing if the user cancels the confirmation dialog
@@ -376,32 +376,32 @@ const ActivityDetail = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			// Calculate the updated wallet balance
 			const updatedWalletBalance = userWalletBalance + activity.price;
-	
+
 			// Update wallet balance in the database
 			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			if (!walletUpdateResponse.ok) {
 				throw new Error('Failed to update wallet balance');
 			}
-	
+
 			// Proceed to cancel the booking
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ activityId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({activityId}),
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to cancel the booking');
 			}
-	
+
 			toast.success('Booking canceled successfully. The amount has been refunded to your wallet.');
 			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false); // Update state to reflect cancellation
@@ -574,8 +574,8 @@ const ActivityDetail = () => {
 									}
 									openBookingModal();
 								}}
-								
-			
+
+
 								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 							>
 								Book Activity
@@ -643,66 +643,66 @@ const ActivityDetail = () => {
 					{isBookingModalOpen && (
 						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
 							<div className="bg-white p-6 rounded-lg shadow-lg w-96">
-							<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
-							<div className="mb-4">
-								<label className="block mb-2">Payment Information</label>
-								<div className="w-full border rounded-lg p-2">
-								<CardElement />
+								<h2 className="text-2xl font-semibold mb-4">Complete Booking</h2>
+								<div className="mb-4">
+									<label className="block mb-2">Payment Information</label>
+									<div className="w-full border rounded-lg p-2">
+										<CardElement/>
+									</div>
 								</div>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Transportation</label>
-								<select
-								value={transportation}
-								onChange={(e) => setTransportation(e.target.value)}
-								className="w-full border rounded-lg p-2"
+								<div className="mb-4">
+									<label className="block mb-2">Transportation</label>
+									<select
+										value={transportation}
+										onChange={(e) => setTransportation(e.target.value)}
+										className="w-full border rounded-lg p-2"
+									>
+										<option value="">Select</option>
+										{transportations.map((transport) => (
+											<option key={transport._id} value={transport.name}>
+												{transport.name}
+											</option>
+										))}
+										<option value="my car">My Car</option>
+									</select>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Wallet Amount</label>
+									<input
+										type="text"
+										value={walletAmount}
+										onChange={(e) => setWalletAmount(e.target.value)}
+										className="w-full border rounded-lg p-2"
+										placeholder="Enter amount"
+									/>
+								</div>
+								<div className="mb-4">
+									<label className="block mb-2">Location
+										{/**/}
+										<input
+											type="text"
+											value={userLocation}
+											onChange={(e) => setUserLocation(e.target.value)}
+											className="w-full border rounded-lg p-2"
+											placeholder="Enter your location"
+										/>
+									</label>
+								</div>
+								<button
+									onClick={handleCompleteBooking}
+									className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
 								>
-								<option value="">Select</option>
-								{transportations.map((transport) => (
-									<option key={transport._id} value={transport.name}>
-									{transport.name}
-									</option>
-								))}
-								<option value="my car">My Car</option>
-								</select>
-							</div>
-							<div className="mb-4">
-								<label className="block mb-2">Wallet Amount</label>
-								<input
-								type="text"
-								value={walletAmount}
-								onChange={(e) => setWalletAmount(e.target.value)}
-								className="w-full border rounded-lg p-2"
-								placeholder="Enter amount"
-								/>
-							</div>
-							<div className="mb-4">
-                                    <label className="block mb-2">Location
-                                        {/**/}
-                                        <input
-                                            type="text"
-                                            value={userLocation}
-                                            onChange={(e) => setUserLocation(e.target.value)}
-                                            className="w-full border rounded-lg p-2"
-                                            placeholder="Enter your location"
-                                        />
-                                    </label>
-                                </div>
-							<button
-								onClick={handleCompleteBooking}
-								className="w-full bg-[#330577] text-white p-2 rounded-lg hover:bg-[#472393]"
-							>
-								Book
-							</button>
-							<button
-								onClick={closeBookingModal}
-								className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
-							>
-								Cancel
-							</button>
+									Book
+								</button>
+								<button
+									onClick={closeBookingModal}
+									className="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600"
+								>
+									Cancel
+								</button>
 							</div>
 						</div>
-						)}
+					)}
 					{/* Image Gallery */}
 					<div className="mt-8">
 						<img src={imageBase64} alt="Activity"

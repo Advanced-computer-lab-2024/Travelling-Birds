@@ -34,9 +34,25 @@ const user = new Schema({
 	identityCard: {name: {type: String}, file: {data: Buffer, contentType: String}},
 	certificates: [{name: {type: String}, file: {data: Buffer, contentType: String}}],
 	taxRegCard: {name: {type: String}, file: {data: Buffer, contentType: String}},
-	activityBookings: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
+	// activityBookings: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
+	activityBookings: [
+		{
+			activity: {type: Schema.Types.ObjectId, ref: 'Activity'},
+			activityPrice: Number,
+			discount: Number,
+			dateBooked: {type: Date, default: Date.now},
+		}
+	],
 	savedActivities: [{type: Schema.Types.ObjectId, ref: 'Activity'}],
-	itineraryBookings: [{type: Schema.Types.ObjectId, ref: 'Itinerary'}],
+	// itineraryBookings: [{type: Schema.Types.ObjectId, ref: 'Itinerary'}],
+	itineraryBookings: [
+		{
+			itinerary: {type: Schema.Types.ObjectId, ref: 'Itinerary'},
+			itineraryPrice: Number,
+			discount: Number,
+			dateBooked: {type: Date, default: Date.now},
+		}
+	],
 	savedItineraries: [{type: Schema.Types.ObjectId, ref: 'Itinerary'}],
 	productPurchases: [
 		{
