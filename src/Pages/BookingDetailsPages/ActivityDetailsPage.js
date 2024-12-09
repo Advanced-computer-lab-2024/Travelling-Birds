@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
 import { CardElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 
 const ActivityDetail = () => {
@@ -40,6 +41,7 @@ const ActivityDetail = () => {
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
 	const [ promoCodeValid, setPromoCodeValid] = useState(null);
+	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
 	useEffect(() => {
 		const fetchActivity = async () => {
@@ -49,7 +51,7 @@ const ActivityDetail = () => {
 				const activityData = await res.json();
 				setActivity(activityData);
 				if (activityData.bookingOpen === false) {
-					setBookingOpen(false);		
+					setBookingOpen(false);
 				}
 				setLoading(false);
 			} catch (err) {
@@ -102,6 +104,7 @@ const ActivityDetail = () => {
 				console.error('Error fetching user:', error);
 			}
 		};
+
 		const fetchTransportations = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/transports`);
@@ -191,25 +194,25 @@ const ActivityDetail = () => {
 			toast.error('Only tourists can book activities.');
 			return;
 		}
-	
+
 		if (!transportation) {
 			toast.error('Please complete all fields.');
 			return;
 		}
-	
+
 		// Parse the wallet input amount
 		const enteredWalletAmount = parseFloat(walletAmount);
 		if (enteredWalletAmount < 0) {
 			toast.error('Please enter a valid wallet amount.');
 			return;
 		}
-	
+
 		try {
 			if (hasBooked) {
 				toast.error('Activity already booked.');
 				return;
 			}
-	
+
 			// Fetch user data to get the wallet balance
 			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
 			if (!userResponse.ok) {
@@ -217,13 +220,13 @@ const ActivityDetail = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			const userDob = new Date(userData.dob);
 			const ageDifference = new Date().getFullYear() - userDob.getFullYear();
 			const age = (new Date().getMonth() - userDob.getMonth() < 0 ||
 				(new Date().getMonth() === userDob.getMonth() && new Date().getDate() < userDob.getDate()))
 				? ageDifference - 1 : ageDifference;
-	
+
 			if (age < 18) {
 				toast.error('You must be at least 18 to book.');
 				return;
@@ -233,39 +236,40 @@ const ActivityDetail = () => {
 			if (promoCodeValid) {
 				finalPrice *= 0.85; // Apply 25% discount
 			}
-	
+
+
 			// Check if the wallet balance is sufficient to cover the full price
 			if (enteredWalletAmount >= finalPrice && enteredWalletAmount <= userWalletBalance) {
 				// Deduct wallet balance and skip Stripe payment
 				const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
-	
+
 				const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ wallet: updatedWalletBalance }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({wallet: updatedWalletBalance}),
 				});
-	
+
 				if (!walletUpdateResponse.ok) {
 					const errorData = await walletUpdateResponse.json();
 					console.error('Wallet update error:', errorData);
 					throw new Error('Failed to update wallet balance');
 				}
-	
+
 				console.log('Wallet successfully updated');
-	
+
 				// Proceed with booking
 				const bookingResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ activityId }),
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({activityId}),
 				});
-	
+
 				if (!bookingResponse.ok) {
 					throw new Error('Failed to book the activity');
 				}
-	
+
 				console.log('Activity booked successfully using wallet balance.');
-	
+
 				// Send payment receipt email
 				const receiptSubject = `Payment Receipt for ${activity?.title}`;
 				const receiptHtml = `
@@ -274,10 +278,10 @@ const ActivityDetail = () => {
 					<p><strong>Amount Paid:</strong> ${formatPriceRange(activity.price)}</p>
 					<p>Thank you for choosing our service. Have a great experience!</p>
 				`;
-	
+
 				await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: {'Content-Type': 'application/json'},
 					body: JSON.stringify({
 						email: userEmail,
 						subject: receiptSubject,
@@ -285,61 +289,61 @@ const ActivityDetail = () => {
 						htmlContent: receiptHtml, // HTML content for the email
 					}),
 				});
-	
+
 				toast.success('Activity booked successfully using wallet balance!');
 				window.dispatchEvent(userUpdateEvent);
 				window.location.reload();
 				closeBookingModal();
 				return; // Exit after successfully booking with wallet
 			}
-	
+
 			// If wallet is insufficient, proceed with Stripe payment
 			const cardElement = elements.getElement(CardElement);
-			const { paymentMethod, error } = await stripe.createPaymentMethod({
+			const {paymentMethod, error} = await stripe.createPaymentMethod({
 				type: 'card',
 				card: cardElement,
 			});
-	
+
 			if (error) {
 				toast.error(`Payment failed: ${error.message}`);
 				return;
 			}
-	
+
 			// Call backend to handle payment
 			const paymentResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/payments`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					amount: activity.price * 100, // Convert to cents
 					currency: 'usd',
 					paymentMethodId: paymentMethod.id,
 				}),
 			});
-	
+
 			const paymentResult = await paymentResponse.json();
 			if (!paymentResult.success) {
 				toast.error(`Payment failed: ${paymentResult.error}`);
 				return;
 			}
-	
+
 			// Deduct wallet balance (if any amount is used) and finalize booking
 			const updatedWalletBalance = userWalletBalance - enteredWalletAmount;
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ activityId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({activityId}),
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to book the activity');
 			}
-	
+
 			// Send payment receipt email
 			const receiptSubject = `Payment Receipt for ${activity?.title}`;
 			const receiptHtml = `
@@ -348,10 +352,10 @@ const ActivityDetail = () => {
 				<p><strong>Amount Paid:</strong> ${formatPriceRange(activity.price)}</p>
 				<p>Thank you for choosing our service. Have a great experience!</p>
 			`;
-	
+
 			await fetch(`${process.env.REACT_APP_BACKEND}/api/mail`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json'},
 				body: JSON.stringify({
 					email: userEmail,
 					subject: receiptSubject,
@@ -359,7 +363,7 @@ const ActivityDetail = () => {
 					htmlContent: receiptHtml, // HTML content for the email
 				}),
 			});
-	
+
 			toast.success('Activity booked successfully, and payment receipt email sent!');
 			window.dispatchEvent(userUpdateEvent);
 			window.location.reload();
@@ -370,7 +374,7 @@ const ActivityDetail = () => {
 		}
 	};
 
-    const handleCancelBooking = async () => {
+	const handleCancelBooking = async () => {
 		const userConfirmed = window.confirm("Are you sure you want to cancel the booking?");
 		if (!userConfirmed) {
 			return; // Do nothing if the user cancels the confirmation dialog
@@ -383,32 +387,32 @@ const ActivityDetail = () => {
 			}
 			const userData = await userResponse.json();
 			const userWalletBalance = userData.wallet;
-	
+
 			// Calculate the updated wallet balance
 			const updatedWalletBalance = userWalletBalance + activity.price;
-	
+
 			// Update wallet balance in the database
 			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ wallet: updatedWalletBalance }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
 			});
-	
+
 			if (!walletUpdateResponse.ok) {
 				throw new Error('Failed to update wallet balance');
 			}
-	
+
 			// Proceed to cancel the booking
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/activity-booking/${userId}`, {
 				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ activityId }),
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({activityId}),
 			});
-	
+
 			if (!response.ok) {
 				throw new Error('Failed to cancel the booking');
 			}
-	
+
 			toast.success('Booking canceled successfully. The amount has been refunded to your wallet.');
 			window.dispatchEvent(userUpdateEvent);
 			setHasBooked(false); // Update state to reflect cancellation
@@ -552,12 +556,12 @@ const ActivityDetail = () => {
 	const handlePromoCodeChange = async (e) => {
 		const code = e.target.value;
 		setPromoCode(code);
-	  
+
 		if (!code) {
 		  setPromoCodeValid(null);
 		  return;
 		}
-	  
+
 		try {
 		  const response = await fetch(
 			`${process.env.REACT_APP_BACKEND}/api/promotions/check/${code}`
@@ -565,7 +569,7 @@ const ActivityDetail = () => {
 		  if (response.ok) {
 			const data = await response.json();
 			setPromoCodeValid(true);
-			
+
 		  } else {
 			setPromoCodeValid(false);
 		  }
@@ -580,6 +584,16 @@ const ActivityDetail = () => {
 
 	return (
 		<div>
+		{/* Back Button */}
+		    <div className="p-4">
+                <button
+                    onClick={goToPreviousPage}
+                    className="bg-[#330577] text-white px-4 py-2 rounded-lg shadow hover:bg-[#472393]"
+                >
+                    Back
+                </button>
+            </div>
+
 			<section className="px-4 py-10 bg-gray-100">
 				<div className="container-xl lg:container m-auto">
 					<div className="flex items-center justify-between bg-white p-6 shadow-lg rounded-lg mb-4">
@@ -607,8 +621,8 @@ const ActivityDetail = () => {
 									}
 									openBookingModal();
 								}}
-								
-			
+
+
 								className="p-3 px-6 bg-[#330577] text-white rounded-lg shadow hover:bg-[#472393] flex items-center justify-center w-40"
 							>
 								Book Activity

@@ -44,11 +44,10 @@ app.use('/api/hotels', hotelRouter);
 app.use('/api/transports', TransportRoutes);
 app.use('/api/mail', mailRoutes);
 app.use('/api/promotions', promotionRoutes);
-app.use('/api/address',addressRoutes);
+app.use('/api/address', addressRoutes);
 app.use('/api/payments', StripeRoute);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-
 
 
 const PORT = process.env.PORT || 5000;

@@ -426,6 +426,8 @@ const setUserBadge = (user) => {
 const addActivityBooking = async (req, res) => {
 	const userId = req.params.id;
 	const activityId = req.body.activityId;
+	const activityPrice = req.body.activityPrice;
+	const discount = req.body.discount;
 
 	try {
 		const user = await User.findById(userId);
@@ -433,12 +435,12 @@ const addActivityBooking = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const activity = await Activity.findById(activityId);
-		if (!activity) {
-			return res.status(404).json({message: 'Activity not found'});
-		}
-
-		user.activityBookings.push(activityId);
+		user.activityBookings.push({
+			activity: activityId,
+			activityPrice,
+			discount,
+			dateBooked: new Date()
+		});
 
 		// Adjust loyalty and redeemable points based on user badge
 		let pointsMultiplier = 0.5;
@@ -471,7 +473,7 @@ const getActivityBookings = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const activityBookings = await Activity.find({_id: {$in: user.activityBookings}});
+		const activityBookings = await Activity.find({_id: {$in: user.activityBookings.map(booking => booking.activity)}});
 		res.status(200).json(activityBookings);
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -489,20 +491,36 @@ const removeActivityBooking = async (req, res) => {
 			return res.status(404).json({message: 'User not found'});
 		}
 
-		const index = user.activityBookings.indexOf(activityId);
-		if (index === -1) {
+		const activityBooking = user.activityBookings
+			.filter(booking => booking.activity.toString() === activityId)
+			.sort((a, b) => b.dateBooked - a.dateBooked)[0];
+
+		if (!activityBooking) {
 			return res.status(400).json({message: 'Activity not found in user bookings'});
 		}
 
+		//remove the activity from user's bookings
+		user.activityBookings.splice(user.activityBookings.indexOf(activityBooking), 1);
+
+		// Find the activity to get the price
 		const activity = await Activity.findById(activityId);
-		if (!activity) {
-			return res.status(404).json({message: 'Activity not found'});
+
+		// Remove the booking from the activity
+		const userBooking = activity.bookings
+			.filter(booking => booking.user.toString() === userId)
+			.sort((a, b) => b.dateBooked - a.dateBooked)[0];
+
+		if (!userBooking) {
+			return res.status(400).json({message: 'Activity booking not found'});
 		}
 
-		// Remove the activity from user's bookings
-		user.activityBookings.splice(index, 1);
+		activity.bookings.splice(activity.bookings.indexOf(userBooking), 1);
 
 		// Adjust loyalty and redeemable points based on user badge
+
+		const price = activityBooking.activityPrice * (1.0 - activityBooking.discount / 100);
+
+
 		let pointsMultiplier = 0.5;
 		if (user.badge === 'level 2') {
 			pointsMultiplier = 1;
@@ -510,8 +528,8 @@ const removeActivityBooking = async (req, res) => {
 		if (user.badge === 'level 3') {
 			pointsMultiplier = 1.5;
 		}
-		user.loyaltyPoints -= activity.price * pointsMultiplier;
-		user.redeemablePoints -= activity.price * pointsMultiplier;
+		user.loyaltyPoints -= price * pointsMultiplier;
+		user.redeemablePoints -= price * pointsMultiplier;
 
 		// Ensure points do not go below zero
 		user.loyaltyPoints = Math.max(0, user.loyaltyPoints);
@@ -521,6 +539,7 @@ const removeActivityBooking = async (req, res) => {
 		setUserBadge(user);
 
 		await user.save();
+		await activity.save();
 		res.status(200).json({message: 'Activity booking removed successfully'});
 	} catch (error) {
 		res.status(500).json({error: error.message});
@@ -673,6 +692,9 @@ const addProductPurchase = async (req, res) => {
 						discount,
 						datePurchased: new Date()
 					}
+				},
+				$inc: {
+					availableQuantity: -quantity
 				}
 			},
 			{new: true});
@@ -1274,6 +1296,8 @@ const getSalesAnalytics = async (req, res) => {
 				$lte: new Date(endDate),
 			};
 		}
+
+		console.log(match);
 
 		const products = await Product.aggregate([
 			{$match: match},

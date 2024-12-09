@@ -126,6 +126,22 @@ const MyPurchases = () => {
 	return (
 		<div className="text-[#330577] p-6">
 			<h1 className="text-3xl font-bold mb-6">My Purchases</h1>
+			{/* Buttons to toggle between current and past orders */}
+			<div className="mb-6">
+				<button
+					className={`bg-blue-500 text-white p-2 rounded }`}
+
+				>
+					View Current Orders
+				</button>
+				<button
+					className={`bg-blue-500 text-white p-2 rounded ml-4 }`}
+
+				>
+					View Past Orders
+				</button>
+			</div>
+
 			{purchases.length === 0 ? (
 				<p>No purchases found.</p>
 			) : (
