@@ -51,25 +51,70 @@ const MyPurchases = () => {
 
 		if (userRole === 'tourist') {
 			fetchAllProducts();
+			console.log(purchases);
 		}
 	}, [userId, userRole]);
 
 	// Cancel Purchase Function
 	const cancelPurchase = async (productId) => {
-		const userId = sessionStorage.getItem('user id');
 		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-status/${userId}/${productId}`);
+			if (!response.ok) {
+				const errorData = await response.json();
+				toast.error(errorData.message || 'Failed to fetch product status');
+				return;
+			}
+
+			const data = await response.json();
+			if (data.status === 'Delivered') {
+				toast.error('Cannot cancel a delivered product');
+				return;
+			}
+
+			// Proceed with the cancellation logic if the product is not delivered
+			toast.success('Product status allows cancellation. Proceeding...');
+		} catch (error) {
+			console.error('Error fetching product status:', error);
+			toast.error('An error occurred while checking product status.');
+		}
+
+		const userConfirmed = window.confirm("Are you sure you want to cancel the product?");
+		if (!userConfirmed) {
+			return; // Do nothing if the user cancels the confirmation dialog
+		}
+		try {
+			const userResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`);
+			if (!userResponse.ok) {
+				throw new Error('Failed to fetch user data');
+			}
+			const userData = await userResponse.json();
+			const userWalletBalance = userData.wallet;
+
+			// Calculate the updated wallet balance
+			const updatedWalletBalance = userWalletBalance + purchases.find(purchase => purchase.product._id === productId).itemPrice;
+
+			// Update wallet balance in the database
+			const walletUpdateResponse = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/${userId}`, {
+				method: 'PUT',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify({wallet: updatedWalletBalance}),
+			});
+
+			if (!walletUpdateResponse.ok) {
+				throw new Error('Failed to update wallet balance');
+			}
 			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/users/product-purchase/${userId}`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({ productId }),
+				body: JSON.stringify({productId}),
 			});
 
 			const data = await response.json();
 			if (response.ok) {
 				toast.success('Purchase cancelled successfully');
-				setPurchases(purchases.filter(product => product._id !== productId));
+				setPurchases(purchases.filter(purchase => purchase.product._id !== productId));
 			} else {
 				toast.error(data.message || 'Failed to cancel purchase');
 			}
