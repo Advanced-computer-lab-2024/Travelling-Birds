@@ -335,7 +335,7 @@ Stripe is used for processing payments.
 
 ---
 
-## How to Get Started
+### How to Get Started
 To use these APIs in your own project:
 1. Register with the respective service providers.
 2. Obtain API keys or credentials.
