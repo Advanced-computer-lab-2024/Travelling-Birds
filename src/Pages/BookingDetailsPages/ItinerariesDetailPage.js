@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LocationContact from "../../Components/Locations/Location";
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
 import {CardElement, useElements, useStripe} from '@stripe/react-stripe-js';
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);
@@ -43,6 +44,7 @@ const ItineraryDetail = () => {
 	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 	const [promoCodeValid, setPromoCodeValid] = useState(null);
 	const [discount, setDiscount] = useState(0);
+
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
