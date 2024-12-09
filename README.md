@@ -26,10 +26,6 @@ The project adheres to the following coding styles:
 All contributors are encouraged to follow these styles to ensure uniformity and maintainability throughout the project.
 
 ## Screenshots
-<details>
-  <summary>#### 1. **Registeration Page** </summary>
-  ![Registeration Page](path/to/placeholder-image.png)
-</details>
 
 #### 1. **Registeration Page**  
    ![Registeration Page](./READMEAssets/registerationpage.png)
