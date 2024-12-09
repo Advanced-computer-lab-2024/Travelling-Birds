@@ -86,7 +86,7 @@ const TourismGovernorHistoricalPlaces = () => {
 						</tr>
 						</thead>
 						<tbody>
-						{historicalPlaces.map((historicalPlace) => (
+						{historicalPlaces?.map((historicalPlace) => (
 							<tr key={historicalPlace._id}>
 								<td>{historicalPlace.name}</td>
 								<td>{historicalPlace.description}</td>

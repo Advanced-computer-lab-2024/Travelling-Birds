@@ -86,7 +86,7 @@ const ManageMuseums = () => {
 						</tr>
 						</thead>
 						<tbody>
-						{museums.map((museum) => (
+						{museums?.map((museum) => (
 							<tr key={museum._id}>
 								<td>{museum.name}</td>
 								<td>{museum.description}</td>

@@ -14,6 +14,11 @@ const AdvertiserActivities = () => {
 		totalBookings: 0,
 	});
 	const navigate = useNavigate();
+	const [isModal2Open, setIsModal2Open] = useState(false);
+
+
+	const openModal2 = () => setIsModal2Open(true);
+	const closeModal2 = () => setIsModal2Open(false);
 
 	// Fetch activities
 	useEffect(() => {
@@ -40,7 +45,10 @@ const AdvertiserActivities = () => {
 					body: JSON.stringify(filters),
 				});
 				const data = await response.json();
-				setActivitiesReport(data.activities);
+				setActivitiesReport(data?.activities || {
+					totalRevenue: 0,
+					totalBookings: 0,
+				});
 			} catch (error) {
 				console.error('Error fetching activities report:', error);
 			}
@@ -184,6 +192,13 @@ const AdvertiserActivities = () => {
 									        onClick={() => handleViewClick(activity)}>
 										<i className="fas fa-eye"></i> View
 									</button>
+									<button className="btn btn-info btn-sm mr-2"
+									        onClick={() => {
+										        openModal2();
+										        setSelectedActivity(activity)
+									        }}>
+										<i className="fas fa-eye"></i> Report
+									</button>
 									<button className="btn btn-primary btn-sm mr-2"
 									        onClick={() => handleToggleBooking(activity)}>
 										<i className="fas fa-flag"></i> Flag
@@ -216,11 +231,126 @@ const AdvertiserActivities = () => {
 					</div>
 				</div>
 			)}
+
+			<MonthReportModal itineraryId={selectedActivity?._id} isModalOpen={isModal2Open} closeModal={closeModal2}/>
 		</div>
 	);
 };
 
 export default AdvertiserActivities;
+
+const MonthReportModal = ({itineraryId, isModalOpen, closeModal}) => {
+	const [month, setMonth] = useState({month: '', year: ''});
+	const [totalTourists, setTotalTourists] = useState(null);
+	const [loading, setLoading] = useState(false);
+
+	// Generate months and years
+	const months = [
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December"
+	];
+
+	const currentYear = new Date().getFullYear();
+	const years = [currentYear - 1, currentYear, currentYear + 1];  // Last year, current year, next year
+
+	const handleMonthChange = (e) => {
+		setMonth({...month, month: e.target.value});
+	};
+
+	const handleYearChange = (e) => {
+		setMonth({...month, year: e.target.value});
+	};
+
+	const fetchReport = async () => {
+		if (!month.month || !month.year) {
+			toast.error("Please select both month and year.");
+			return;
+		}
+
+		const monthQuery = `${month.year}-${month.month.toString().padStart(2, '0')}`;
+
+		setLoading(true);
+		try {
+			const response = await fetch(`${process.env.REACT_APP_BACKEND}/api/activities/${itineraryId}/report?month=${monthQuery}`);
+			const data = await response.json();
+			setTotalTourists(data.totalTourists);
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			toast.error('Failed to fetch data');
+			console.error('Error fetching report:', error);
+		}
+	};
+
+	return (
+		<div>
+			{isModalOpen && (
+				<div className="modal modal-open">
+					<div className="modal-box">
+						<h2 className="text-xl font-semibold mb-4">Fetch Monthly Report</h2>
+
+						{/* Month Dropdown */}
+						<div className="form-control mb-4">
+							<label className="label">
+								<span className="label-text">Select Month</span>
+							</label>
+							<select
+								name="month"
+								className="select select-bordered w-full"
+								value={month.month}
+								onChange={handleMonthChange}
+							>
+								<option value="">Select Month</option>
+								{months.map((monthName, index) => (
+									<option key={index} value={index + 1}>
+										{monthName}
+									</option>
+								))}
+							</select>
+						</div>
+
+						{/* Year Dropdown */}
+						<div className="form-control mb-4">
+							<label className="label">
+								<span className="label-text">Select Year</span>
+							</label>
+							<select
+								name="year"
+								className="select select-bordered w-full"
+								value={month.year}
+								onChange={handleYearChange}
+							>
+								<option value="">Select Year</option>
+								{years.map((year) => (
+									<option key={year} value={year}>
+										{year}
+									</option>
+								))}
+							</select>
+						</div>
+
+						{/* Fetch Button */}
+						<button className="btn btn-primary mb-4" onClick={fetchReport} disabled={loading}>
+							{loading ? 'Loading...' : 'Fetch Report'}
+						</button>
+
+						{/* Display Total Tourists */}
+						{totalTourists !== null && (
+							<div className="mb-4">
+								<h4 className="font-semibold">Total Tourists:</h4>
+								<p>{totalTourists}</p>
+							</div>
+						)}
+
+						<div className="modal-action">
+							<button className="btn" onClick={closeModal}>Close</button>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+};
 
 const ActivitiesFilter = ({activities, filters, handleFilterChange}) => {
 	return (

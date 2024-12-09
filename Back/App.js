@@ -24,7 +24,6 @@ const ReminderScheduler = require('./Services/ReminderScheduler');
 const Product = require('./Models/Product');
 
 
-
 require('dotenv').config();
 
 app.use(cors());
@@ -57,7 +56,7 @@ mongoose.connect(process.env.MONGO_URI)
 		app.listen(PORT, async () => {
 			console.log(`Connected to MongoDB & Server running on port ${PORT}`)
 			scheduleBirthdayPromo();
-			ReminderScheduler.start();
+			//ReminderScheduler.start();
 		})
 	})
 	.catch((error) => {
