@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { FaRegStar, FaStar, FaStarHalfAlt } from 'react-icons/fa';
+import React, {useEffect, useState} from 'react';
+import {FaRegStar, FaStar, FaStarHalfAlt} from 'react-icons/fa';
 import ProductDisplay from '../../Components/Models/Displays/ProductsDisplay';
-import { toast } from 'react-toastify';
+import {toast} from 'react-toastify';
 
 const MyPurchases = () => {
 	const [purchases, setPurchases] = useState([]);
@@ -161,9 +161,10 @@ const MyPurchases = () => {
 
 		return (
 			<>
-				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500" />)}
-				{halfStars && <FaStarHalfAlt className="text-yellow-500" />}
-				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars} className="text-yellow-500" />)}
+				{[...Array(fullStars)].map((_, i) => <FaStar key={i} className="text-yellow-500"/>)}
+				{halfStars && <FaStarHalfAlt className="text-yellow-500"/>}
+				{[...Array(totalStars - fullStars - (halfStars ? 1 : 0))].map((_, i) => <FaRegStar key={i + fullStars}
+				                                                                                   className="text-yellow-500"/>)}
 			</>
 		);
 	};
@@ -175,13 +176,33 @@ const MyPurchases = () => {
 			<div className="mb-6">
 				<button
 					className={`bg-blue-500 text-white p-2 rounded }`}
+					onClick={() => setPurchases(purchases.filter(purchase => {
+						const purchaseDate = new Date(purchase.datePurchased);
+						const currentDate = new Date();
+
+						// Calculate the difference in milliseconds
+						const differenceInMilliseconds = currentDate - purchaseDate;
+
+						// Check if the difference is less than or equal to 3 days (in milliseconds)
+						return differenceInMilliseconds <= 3 * 24 * 60 * 60 * 1000;
+					}))}
 
 				>
 					View Current Orders
 				</button>
 				<button
 					className={`bg-blue-500 text-white p-2 rounded ml-4 }`}
+					onClick={() => setPurchases(purchases.filter(purchase => {
+						const purchaseDate = new Date(purchase.datePurchased);
+						const currentDate = new Date();
 
+						// Calculate the difference in milliseconds
+						const differenceInMilliseconds = currentDate - purchaseDate;
+
+						// Check if the purchase is less than or equal to 3 days old,
+						// or more than 3 days old
+						return differenceInMilliseconds <= 3 * 24 * 60 * 60 * 1000 || differenceInMilliseconds > 3 * 24 * 60 * 60 * 1000;
+					}))}
 				>
 					View Past Orders
 				</button>
@@ -192,8 +213,9 @@ const MyPurchases = () => {
 			) : (
 				<div className="flex flex-wrap gap-4">
 					{purchases.map((purchase) => (
-						<div key={purchase.product._id} className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4">
-							<ProductDisplay product={purchase.product} />
+						<div key={purchase.product._id}
+						     className="bg-white text-[#330577] p-4 rounded-lg shadow-md w-full md:w-1/3 lg:w-1/4">
+							<ProductDisplay product={purchase.product}/>
 							{/* Cancel Order Button */}
 							<button
 								className="bg-red-500 text-white p-2 rounded mt-4"
