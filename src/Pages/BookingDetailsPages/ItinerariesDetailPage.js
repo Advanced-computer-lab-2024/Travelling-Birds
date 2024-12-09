@@ -8,6 +8,7 @@ import LocationContact from "../../Components/Locations/Location";
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
 import { CardElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 const ItineraryDetail = () => {
 	const [loading, setLoading] = useState(true);
@@ -42,6 +43,7 @@ const ItineraryDetail = () => {
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
 	const [ promoCodeValid, setPromoCodeValid] = useState(null);
+	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
 	useEffect(() => {
 		const fetchItinerary = async () => {
@@ -653,6 +655,16 @@ const ItineraryDetail = () => {
 
 	return (
 		<div>
+
+					{/* Back Button */}
+					<div className="p-4">
+                <button
+                    onClick={goToPreviousPage}
+                    className="bg-[#330577] text-white px-4 py-2 rounded-lg shadow hover:bg-[#472393]"
+                >
+                    Back
+                </button>
+            </div>
 			<section className="px-4 py-10 bg-gray-100">
 				<div className="container mx-auto">
 					{/* Header Section */}
