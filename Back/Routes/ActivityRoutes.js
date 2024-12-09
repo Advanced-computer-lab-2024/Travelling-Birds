@@ -14,6 +14,7 @@ const {
 	getActivitiesBriefForUser,
 	addComment,
 	getComments,
+	getTouristReport
 } = require('../Controllers/ActivityControllers.js');
 const {upload} = require('../Middleware/upload');
 
@@ -60,5 +61,7 @@ router.get('/:id/comments', getComments);
 
 // Create a comment for a specific activity
 router.post('/:id/comments', addComment);
+
+router.get('/:id/report', getTouristReport)
 
 module.exports = router;

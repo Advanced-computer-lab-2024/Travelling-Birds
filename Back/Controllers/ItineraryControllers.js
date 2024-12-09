@@ -227,12 +227,12 @@ const getUpcomingItineraries = async (req, res) => {
 
 		// Find itineraries where the first available date is in the future
 		const itineraries = await ItineraryModel.find({
-			availableDates: { $gte: currentDate } // Check if the first date in availableDates array is greater than or equal to current date
+			availableDates: {$gte: currentDate} // Check if the first date in availableDates array is greater than or equal to current date
 		});
 
 		// If no upcoming itineraries are found, return a 404 response
 		if (itineraries.length === 0) {
-			return res.status(404).json({ message: 'No upcoming itineraries found' });
+			return res.status(404).json({message: 'No upcoming itineraries found'});
 		}
 
 		// Return the filtered upcoming itineraries
@@ -240,7 +240,7 @@ const getUpcomingItineraries = async (req, res) => {
 	} catch (error) {
 		// Handle errors and send a 500 status if something goes wrong
 		console.error('Error fetching upcoming itineraries:', error);
-		res.status(500).json({ message: 'Error fetching upcoming itineraries', error });
+		res.status(500).json({message: 'Error fetching upcoming itineraries', error});
 	}
 }
 
@@ -441,6 +441,32 @@ const getItineraryBriefForUser = async (req, res) => {
 	}
 }
 
+const getTouristReport = async (req, res) => {
+	const {id} = req.params;
+	const {month} = req.query;
+
+	try {
+		const itinerary = await ItineraryModel.findById(id);
+		if (!itinerary) {
+			return res.status(404).json({message: 'Itinerary not found'});
+		}
+
+		let bookings = itinerary.bookings;
+
+		if (month) {
+			const startDate = new Date(month + '-01');
+			const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+			bookings = bookings.filter(booking => booking.dateBooked >= startDate && booking.dateBooked <= endDate);
+		}
+
+		const totalTourists = bookings.length;
+
+		res.status(200).json({totalTourists});
+	} catch (error) {
+		res.status(500).json({message: 'Error generating report', error});
+	}
+};
+
 module.exports = {
 	addItinerary,
 	getAllItineraries,
@@ -456,5 +482,6 @@ module.exports = {
 	addComment,
 	getActivities,
 	getItineraryBrief,
-	getItineraryBriefForUser
+	getItineraryBriefForUser,
+	getTouristReport
 };

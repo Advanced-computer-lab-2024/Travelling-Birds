@@ -336,7 +336,7 @@ const addComment = async (req, res) => {
 		if (!activity) {
 			return res.status(404).json({message: 'Activity not found'});
 		}
-		
+
 		//check user completed activity before commenting
 		if (!((user2.activityBookings.some(booking => booking.activityId === req.params.id)) && (activity.date < new Date()))) {
 			return res.status(400).json({message: 'User must complete the activity before commenting'});
@@ -391,6 +391,32 @@ const getActivitiesBriefForUser = async (req, res) => {
 	}
 }
 
+const getTouristReport = async (req, res) => {
+	const {id} = req.params;
+	const {month} = req.query;
+
+	try {
+		const activity = await ActivityModel.findById(id);
+		if (!activity) {
+			return res.status(404).json({message: 'Activity not found'});
+		}
+
+		let bookings = activity.bookings;
+
+		if (month) {
+			const startDate = new Date(month + '-01');
+			const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+			bookings = bookings.filter(booking => booking.dateBooked >= startDate && booking.dateBooked <= endDate);
+		}
+
+		const totalTourists = bookings.length;
+
+		res.status(200).json({totalTourists});
+	} catch (error) {
+		res.status(500).json({message: 'Error generating report', error});
+	}
+};
+
 module.exports = {
 	addActivity,
 	getAllActivities,
@@ -405,6 +431,7 @@ module.exports = {
 	getComments,
 	addComment,
 	getActivitiesBrief,
-	getActivitiesBriefForUser
+	getActivitiesBriefForUser,
+	getTouristReport
 }
 
