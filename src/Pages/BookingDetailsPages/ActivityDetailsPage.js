@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {userUpdateEvent} from "../../utils/userUpdateEvent";
 import { CardElement } from '@stripe/react-stripe-js';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
+import useNavigationHistory from "../../Components/useNavigationHistory";
 
 
 const ActivityDetail = () => {
@@ -40,6 +41,7 @@ const ActivityDetail = () => {
 	const elements = useElements();
 	const [promoCode, setPromoCode] = useState("");
 	const [ promoCodeValid, setPromoCodeValid] = useState(null);
+	const { goToPreviousPage } = useNavigationHistory(); // Use the custom hook
 
 	useEffect(() => {
 		const fetchActivity = async () => {
