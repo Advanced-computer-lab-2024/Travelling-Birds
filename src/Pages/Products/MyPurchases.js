@@ -199,9 +199,8 @@ const MyPurchases = () => {
 						// Calculate the difference in milliseconds
 						const differenceInMilliseconds = currentDate - purchaseDate;
 
-						// Check if the purchase is less than or equal to 3 days old,
 						// or more than 3 days old
-						return differenceInMilliseconds <= 3 * 24 * 60 * 60 * 1000 || differenceInMilliseconds > 3 * 24 * 60 * 60 * 1000;
+						return differenceInMilliseconds > 3 * 24 * 60 * 60 * 1000;
 					}))}
 				>
 					View Past Orders
