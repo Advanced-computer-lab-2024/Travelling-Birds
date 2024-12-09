@@ -6,7 +6,7 @@ const sentActivityReminders = new Set();
 const sentProductReminders = new Set();
 
 const start = () => {
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('*/30 * * * *', async () => {
         console.log('Running reminder scheduler...');
         const now = new Date();
 
